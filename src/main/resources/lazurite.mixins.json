@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "ClientPlayerNetworkHandlerMixin"
+    "ClientPlayerNetworkHandlerMixin",
+    "ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1
