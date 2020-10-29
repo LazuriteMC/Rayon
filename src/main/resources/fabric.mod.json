@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "lazuriteapi",
+  "version": "${version}",
+
+  "name": "Lazurite API",
+  "description": "This mod is the API used for other Lazurite mods",
+  "authors": [
+    "Ethan Johnson",
+    "Patrick Hofmann"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": "https://github.com/ethanejohnsons/lazurite-api"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/lazurite/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.lazurite.api.server.ServerInitializer"
+    ],
+    "client": [
+      "io.lazurite.api.client.ClientInitializer"
+    ]
+  },
+  "mixins": [
+    "lazurite.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
