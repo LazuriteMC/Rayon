@@ -15,7 +15,7 @@ import java.util.List;
  * registries and configurations.
  */
 @Environment(EnvType.CLIENT)
-public class ClientInitializer implements ClientModInitializer {
+public class LazuriteClient implements ClientModInitializer {
 
     /** The running instance of the minecraft client. */
     public static final MinecraftClient client = MinecraftClient.getInstance();

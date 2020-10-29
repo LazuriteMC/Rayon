@@ -1,6 +1,6 @@
 package io.lazurite.api.mixin;
 
-import io.lazurite.api.client.ClientInitializer;
+import io.lazurite.api.client.LazuriteClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,6 +22,6 @@ public class ClientPlayNetworkHandlerMixin {
      */
     @Inject(at = @At("TAIL"), method = "onGameJoin")
     public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
-        ClientInitializer.remoteLazuriteMods.clear();
+        LazuriteClient.remoteLazuriteMods.clear();
     }
 }

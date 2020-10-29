@@ -7,10 +7,10 @@
     "PlayerManagerMixin"
   ],
   "client": [
-    "ClientPlayerNetworkHandlerMixin",
+    "ClientPlayNetworkHandlerMixin",
     "ClientWorldMixin",
     "GameRendererMixin",
-    "MouseMixin",
+    "MinecraftClientMixin",
     "WorldRendererMixin"
   ],
   "injectors": {

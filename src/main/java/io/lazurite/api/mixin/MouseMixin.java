@@ -22,7 +22,7 @@ public class MouseMixin {
      * @param cursorDeltaX the x cursor position
      * @param cursorDeltaY the y cursor position
      */
-    @Redirect(
+    /*@Redirect(
             method = "updateMouse",
             at = @At(
                     value = "INVOKE",
@@ -30,10 +30,10 @@ public class MouseMixin {
             )
     )
     public void changeLookDirection(ClientPlayerEntity player, double cursorDeltaX, double cursorDeltaY) {
-        /*if (!GogglesItem.isInGoggles()) {
+        if (!GogglesItem.isInGoggles()) {
             player.changeLookDirection(cursorDeltaX, cursorDeltaY);
-        }*/
-    }
+        }
+    }*/
 
     /**
      * This mixin redirects the {@link KeyBinding#setKeyPressed(InputUtil.Key, boolean)} method
@@ -41,7 +41,7 @@ public class MouseMixin {
      * @param key the key being pressed
      * @param pressed whether or not the key is pressed
      */
-    @Redirect(
+    /*@Redirect(
             method = "onMouseButton",
             at = @At(
                     value = "INVOKE",
@@ -49,15 +49,15 @@ public class MouseMixin {
             )
     )
     public void setKeyPressed(InputUtil.Key key, boolean pressed) {
-        //KeyBinding.setKeyPressed(key, !GogglesItem.isInGoggles() && pressed);
-    }
+        KeyBinding.setKeyPressed(key, !GogglesItem.isInGoggles() && pressed);
+    }*/
 
     /**
      * This mixin redirects the {@link KeyBinding#onKeyPressed(InputUtil.Key)} method
      * so that when the player is manipulating the camera, it is not called.
      * @param key the key being pressed
      */
-    @Redirect(
+    /*@Redirect(
             method = "onMouseButton",
             at = @At(
                     value = "INVOKE",
@@ -65,8 +65,8 @@ public class MouseMixin {
             )
     )
     public void onKeyPressed(InputUtil.Key key) {
-        /*if (!GogglesItem.isInGoggles()) {
+        if (!GogglesItem.isInGoggles()) {
             KeyBinding.onKeyPressed(key);
-        }*/
-    }
+        }
+    }*/
 }

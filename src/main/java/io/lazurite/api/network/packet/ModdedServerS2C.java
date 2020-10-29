@@ -1,7 +1,7 @@
 package io.lazurite.api.network.packet;
 
 import io.lazurite.api.LazuriteAPI;
-import io.lazurite.api.client.ClientInitializer;
+import io.lazurite.api.client.LazuriteClient;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
@@ -15,7 +15,7 @@ public class ModdedServerS2C {
 
     public static void accept(PacketContext context, PacketByteBuf buf) {
         String modid = buf.readString();
-        context.getTaskQueue().execute(() -> ClientInitializer.remoteLazuriteMods.add(modid));
+        context.getTaskQueue().execute(() -> LazuriteClient.remoteLazuriteMods.add(modid));
     }
 
     public static void send(ServerPlayerEntity player, String modid) {

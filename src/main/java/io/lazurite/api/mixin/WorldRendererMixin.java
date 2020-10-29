@@ -1,6 +1,6 @@
 package io.lazurite.api.mixin;
 
-import io.lazurite.api.client.ClientInitializer;
+import io.lazurite.api.client.LazuriteClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
@@ -24,7 +24,7 @@ public class WorldRendererMixin {
     /**
      * This mixin modifies the {@link Camera#getFocusedEntity()} method
      * to return the {@link net.minecraft.client.network.ClientPlayerEntity}
-     * whenever {@link ClientInitializer#shouldRenderPlayer} is true.
+     * whenever {@link LazuriteClient#shouldRenderPlayer} is true.
      * @param camera the camera object
      * @return the focused entity
      */
@@ -37,7 +37,7 @@ public class WorldRendererMixin {
             )
     )
     public Entity getFocusedEntity(Camera camera) {
-        if (ClientInitializer.shouldRenderPlayer) {
+        if (LazuriteClient.shouldRenderPlayer) {
             return client.player;
         }
 
