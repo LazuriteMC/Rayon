@@ -16,8 +16,11 @@ public class ClientInitializer implements ClientModInitializer {
     /** The running instance of the minecraft client. */
     public static final MinecraftClient client = MinecraftClient.getInstance();
 
-    /** The physics world used for {@link QuadcopterEntity} objects. */
-//    public static PhysicsWorld physicsWorld;
+    /** Whether or not the connected server is modded. */
+    public static boolean isServerModded = false;
+
+    /** Whether or not the client player should be rendered. */
+    public static boolean shouldRenderPlayer = false;
 
     /**
      * Initializes all of the registries and loads the player config.
@@ -25,6 +28,6 @@ public class ClientInitializer implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         GLFW.glfwInit(); // forcefully initializes GLFW
-//        ClientTick.register();
+        ClientTick.register();
     }
 }
