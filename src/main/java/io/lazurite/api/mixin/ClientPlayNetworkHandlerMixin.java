@@ -22,6 +22,6 @@ public class ClientPlayNetworkHandlerMixin {
      */
     @Inject(at = @At("TAIL"), method = "onGameJoin")
     public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
-        ClientInitializer.isServerModded = false;
+        ClientInitializer.remoteLazuriteMods.clear();
     }
 }

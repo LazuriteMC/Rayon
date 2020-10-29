@@ -4,6 +4,7 @@
   "package": "io.lazurite.api.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "PlayerManagerMixin"
   ],
   "client": [
     "ClientPlayerNetworkHandlerMixin",
