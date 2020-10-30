@@ -1,6 +1,5 @@
-package io.lazurite.api;
+package io.lazurite.api.client;
 
-import io.lazurite.api.client.LazuriteClient;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

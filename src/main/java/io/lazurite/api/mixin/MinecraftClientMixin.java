@@ -1,6 +1,6 @@
 package io.lazurite.api.mixin;
 
-import io.lazurite.api.CameraUtil;
+import io.lazurite.api.client.CameraUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
