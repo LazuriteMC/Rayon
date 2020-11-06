@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Quaternion;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -45,7 +46,9 @@ public class GameRendererMixin {
 	 */
 	@Inject(at = @At("HEAD"), method = "renderHand", cancellable = true)
 	public void renderHand(MatrixStack matrices, Camera camera, float tickDelta, CallbackInfo info) {
-		//if (ClientTick.isInGoggles(client)) info.cancel();
+		if (client.getCameraEntity() != client.player) {
+			info.cancel();
+		}
 	}
 
 	/**
@@ -56,7 +59,7 @@ public class GameRendererMixin {
 	 * @param stack the matrix stack
 	 * @param quat the quaternion to rotate by
 	 */
-	/*@Redirect(
+	@Redirect(
 			method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
 			at = @At(
 					value = "INVOKE",
@@ -65,12 +68,12 @@ public class GameRendererMixin {
 			)
 	)
 	public void yaw(MatrixStack stack, Quaternion quat) {
-		if (ClientTick.isInGoggles(client)) {
+		if (client.getCameraEntity() != client.player) {
 			stack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180));
 		} else {
 			stack.multiply(quat);
 		}
-	}*/
+	}
 
 	/**
 	 * This mixin redirects the {@link MatrixStack#multiply(Quaternion)} method called in
@@ -80,7 +83,7 @@ public class GameRendererMixin {
 	 * @param stack the matrix stack
 	 * @param quat the quaternion to rotate by
 	 */
-	/*@Redirect(
+	@Redirect(
 			method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
 			at = @At(
 					value = "INVOKE",
@@ -89,10 +92,10 @@ public class GameRendererMixin {
 			)
 	)
 	public void pitch(MatrixStack stack, Quaternion quat) {
-		if (ClientTick.isInGoggles(client)) {
+		if (client.getCameraEntity() != client.player) {
 			stack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(0));
 		} else {
 			stack.multiply(quat);
 		}
-	}*/
+	}
 }

@@ -17,7 +17,7 @@ public class ClientPlayNetworkHandlerMixin {
     /**
      * This mixin sends the client's config file to the server and
      * initializes a new physics world whenever a game is joined.
-     * @param packet
+     * @param packet the game join packet
      * @param info required by every mixin injection
      */
     @Inject(at = @At("TAIL"), method = "onGameJoin")

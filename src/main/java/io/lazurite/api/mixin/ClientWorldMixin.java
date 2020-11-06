@@ -32,6 +32,7 @@ public abstract class ClientWorldMixin {
     @Inject(at = @At("HEAD"), method = "doRandomBlockDisplayTicks", cancellable = true)
     public void blockDisplayTicks(int xCenter, int yCenter, int zCenter, CallbackInfo info) {
         Camera cam = client.gameRenderer.getCamera();
+
         int camX = (int) cam.getPos().getX();
         int camY = (int) cam.getPos().getY();
         int camZ = (int) cam.getPos().getZ();
