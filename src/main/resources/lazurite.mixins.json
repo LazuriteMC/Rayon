@@ -7,11 +7,7 @@
     "PlayerManagerMixin"
   ],
   "client": [
-    "ClientPlayNetworkHandlerMixin",
-    "ClientWorldMixin",
-    "GameRendererMixin",
-    "MinecraftClientMixin",
-    "WorldRendererMixin"
+    ""
   ],
   "injectors": {
     "defaultRequire": 1

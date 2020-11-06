@@ -2,6 +2,7 @@ package io.lazurite.api.mixin;
 
 import io.lazurite.api.LazuriteAPI;
 import io.lazurite.api.network.packet.ModdedServerS2C;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
@@ -42,8 +43,8 @@ public class PlayerManagerMixin {
 
     /**
      * This mixin method recalculates the distance between the {@link ServerPlayerEntity} and the entity
-     * which produced a sound by using the position of the drone if the player is moving the camera.
-     * @param player the player
+     * which produced a sound by using the position of the camera entity.
+     * @param playerIn the player
      * @param x the x position of the sound
      * @param y the y position of the sound
      * @param z the z position of the sound
@@ -53,22 +54,23 @@ public class PlayerManagerMixin {
      * @param info required by every mixin injection
      */
     @Inject(method = "sendToAround", at = @At("TAIL"))
-    public void sendToAround(PlayerEntity player, double x, double y, double z, double distance, RegistryKey<World> worldKey, Packet<?> packet, CallbackInfo info) {
-        /*for (int i = 0; i < this.players.size(); ++i) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) this.players.get(i);
+    public void sendToAround(PlayerEntity playerIn, double x, double y, double z, double distance, RegistryKey<World> worldKey, Packet<?> packet, CallbackInfo info) {
+        for (int i = 0; i < this.players.size(); ++i) {
+            ServerPlayerEntity play = this.players.get(i);
 
-            if (serverPlayerEntity != player && serverPlayerEntity.world.getRegistryKey() == worldKey) {
-                if(GogglesItem.isInGoggles(serverPlayerEntity)) {
-                    QuadcopterEntity drone = (QuadcopterEntity) serverPlayerEntity.getCameraEntity();
+            if (play != playerIn && play.world.getRegistryKey() == worldKey) {
+                if (play.getCameraEntity() != play) {
+                    Entity cameraEntity = play.getCameraEntity();
 
-                    double d = x - drone.getX();
-                    double e = y - drone.getY();
-                    double f = z - drone.getZ();
+                    double d = x - cameraEntity.getX();
+                    double e = y - cameraEntity.getY();
+                    double f = z - cameraEntity.getZ();
+
                     if (d * d + e * e + f * f < distance * distance) {
-                        serverPlayerEntity.networkHandler.sendPacket(packet);
+                        play.networkHandler.sendPacket(packet);
                     }
                 }
             }
-        }*/
+        }
     }
 }

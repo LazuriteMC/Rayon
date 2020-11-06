@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class CameraUtil {
+public class CameraLock {
     private static final MinecraftClient client = LazuriteClient.client;
     private static boolean isLocked = false;
 
