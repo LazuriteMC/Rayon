@@ -9,7 +9,9 @@
   "client": [
     "ClientPlayNetworkHandlerMixin",
     "ClientWorldMixin",
-    "GameRendererMixin"
+    "GameRendererMixin",
+    "MinecraftClientMixin",
+    "MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
