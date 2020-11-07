@@ -31,7 +31,7 @@ public class LazuriteClient implements ClientModInitializer {
      */
     @Override
     public void onInitializeClient() {
-        GLFW.glfwInit(); // forcefully initializes GLFW
+//        GLFW.glfwInit(); // forcefully initializes GLFW
         ClientTick.register();
         ModdedServerS2C.register();
     }

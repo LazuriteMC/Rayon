@@ -8,7 +8,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Matrix4f;
 
-import javax.vecmath.Quat4f;
 
 @Environment(EnvType.CLIENT)
 public class RenderTick {
