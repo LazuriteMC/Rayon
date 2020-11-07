@@ -18,7 +18,7 @@ dependencies {
 
 	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	compile "cz.advel.jbullet:jbullet:${project.jbullet_version}"
+	implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 	shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 }
 
@@ -57,6 +57,14 @@ shadowJar {
 jar {
 	from "LICENSE"
 }
+
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+
+task relocateShadowJar(type: ConfigureShadowRelocation) {
+	target = tasks.shadowJar
+}
+
+tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
 remapJar {
 	dependsOn shadowJar
