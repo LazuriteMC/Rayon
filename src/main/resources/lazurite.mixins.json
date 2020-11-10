@@ -1,18 +1,15 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.lazurite.api.mixin",
+  "package": "dev.lazurite.api.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "PlayerManagerMixin"
+    "PlayerManagerMixin",
+    "ServerPlayerEntityMixin"
   ],
   "client": [
     "ClientPlayNetworkHandlerMixin",
-    "ClientWorldMixin",
-    "GameRendererMixin",
-    "MinecraftClientMixin",
-    "MouseMixin",
-    "WorldRendererMixin"
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

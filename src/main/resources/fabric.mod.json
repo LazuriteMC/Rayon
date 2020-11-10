@@ -20,10 +20,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.lazurite.api.LazuriteAPI"
+      "dev.lazurite.api.LazuriteAPI"
     ],
     "client": [
-      "io.lazurite.api.client.LazuriteClient"
+      "dev.lazurite.api.client.LazuriteClient"
     ]
   },
   "mixins": [
