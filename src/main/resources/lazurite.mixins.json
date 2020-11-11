@@ -1,12 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.lazurite.api.mixin",
+  "package": "dev.lazurite.api.physics.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "PlayerManagerMixin",
-    "ServerPlayerEntityMixin"
-  ],
+  "mixins": [],
   "client": [
     "ClientPlayNetworkHandlerMixin",
     "GameRendererMixin"

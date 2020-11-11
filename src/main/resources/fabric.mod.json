@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "id": "lazuriteapi",
+  "id": "lazuritephysics",
   "version": "${version}",
 
-  "name": "Lazurite API",
+  "name": "Lazurite Physics API",
   "description": "This mod is the API used for other Lazurite mods",
   "authors": [
-    "Ethan Johnson",
-    "Patrick Hofmann"
+    "BlueVista",
+    "InnateBit"
   ],
   "contact": {
     "homepage": "",
-    "sources": "https://github.com/ethanejohnsons/lazurite-api"
+    "sources": "https://github.com/lazuritemc/lazurite-physics-api"
   },
 
   "license": "CC0-1.0",
@@ -20,10 +20,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.lazurite.api.LazuriteAPI"
+      "dev.lazurite.api.physics.server.ServerInitializer"
     ],
     "client": [
-      "dev.lazurite.api.client.LazuriteClient"
+      "dev.lazurite.api.physics.client.ClientInitializer"
     ]
   },
   "mixins": [
