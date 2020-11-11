@@ -1,4 +1,4 @@
-package dev.lazurite.api.physics.client.physics.handler;
+package dev.lazurite.api.physics.client.handler;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.BoxShape;
@@ -8,7 +8,7 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.api.physics.client.ClientInitializer;
-import dev.lazurite.api.physics.client.physics.PhysicsWorld;
+import dev.lazurite.api.physics.client.PhysicsWorld;
 import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;

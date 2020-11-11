@@ -1,4 +1,4 @@
-package dev.lazurite.api.physics.client.physics.helper;
+package dev.lazurite.api.physics.client.helper;
 
 import net.minecraft.entity.EntityType;
 

@@ -1,9 +1,9 @@
 package dev.lazurite.api.physics.server.entity;
 
-import dev.lazurite.api.physics.client.physics.handler.ClientPhysicsHandler;
-import dev.lazurite.api.physics.client.physics.handler.PhysicsHandler;
-import dev.lazurite.api.physics.client.physics.handler.ServerPhysicsHandler;
-import dev.lazurite.api.physics.client.physics.helper.AirHelper;
+import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
+import dev.lazurite.api.physics.client.handler.PhysicsHandler;
+import dev.lazurite.api.physics.client.handler.ServerPhysicsHandler;
+import dev.lazurite.api.physics.client.helper.AirHelper;
 import dev.lazurite.api.physics.network.packet.PhysicsHandlerC2S;
 import dev.lazurite.api.physics.network.packet.PhysicsHandlerS2C;
 import dev.lazurite.api.physics.network.tracker.EntityTrackerRegistry;

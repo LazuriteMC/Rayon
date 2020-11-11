@@ -1,4 +1,4 @@
-package dev.lazurite.api.physics.client.physics.handler;
+package dev.lazurite.api.physics.client.handler;
 
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 

@@ -1,6 +1,6 @@
-package dev.lazurite.api.physics.client.physics.helper;
+package dev.lazurite.api.physics.client.helper;
 
-import dev.lazurite.api.physics.client.physics.PhysicsWorld;
+import dev.lazurite.api.physics.client.PhysicsWorld;
 
 import javax.vecmath.Vector3f;
 import java.util.Random;

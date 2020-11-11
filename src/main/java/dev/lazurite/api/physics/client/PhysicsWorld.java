@@ -1,4 +1,4 @@
-package dev.lazurite.api.physics.client.physics;
+package dev.lazurite.api.physics.client;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
@@ -9,9 +9,8 @@ import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.Clock;
-import dev.lazurite.api.physics.client.ClientInitializer;
-import dev.lazurite.api.physics.client.physics.handler.ClientPhysicsHandler;
-import dev.lazurite.api.physics.client.physics.helper.BlockCollisionHelper;
+import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
+import dev.lazurite.api.physics.client.helper.BlockCollisionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;

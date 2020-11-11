@@ -1,6 +1,5 @@
 package dev.lazurite.api.physics.client;
 
-import dev.lazurite.api.physics.client.physics.PhysicsWorld;
 import dev.lazurite.api.physics.network.packet.PhysicsHandlerS2C;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;

@@ -1,4 +1,4 @@
-package dev.lazurite.api.physics.client.physics.helper;
+package dev.lazurite.api.physics.client.helper;
 
 import com.bulletphysics.collision.broadphase.Dispatcher;
 import com.bulletphysics.collision.narrowphase.PersistentManifold;
@@ -9,8 +9,8 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.api.physics.client.ClientInitializer;
-import dev.lazurite.api.physics.client.physics.PhysicsWorld;
-import dev.lazurite.api.physics.client.physics.handler.ClientPhysicsHandler;
+import dev.lazurite.api.physics.client.PhysicsWorld;
+import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

@@ -1,9 +1,9 @@
 package dev.lazurite.api.physics.network.packet;
 
 import dev.lazurite.api.physics.server.ServerInitializer;
-import dev.lazurite.api.physics.client.physics.handler.ClientPhysicsHandler;
+import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
-import dev.lazurite.api.physics.client.physics.handler.PhysicsHandler;
+import dev.lazurite.api.physics.client.handler.PhysicsHandler;
 import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.api.physics.util.math.VectorHelper;
 import io.netty.buffer.Unpooled;
