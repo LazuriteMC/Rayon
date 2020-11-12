@@ -25,6 +25,8 @@ public class PhysicsWorld {
     public static final float AIR_DENSITY = 1.2f;
     public static final float GRAVITY = -9.81f;
 
+    private static PhysicsWorld instance;
+
     public final List<ClientPhysicsHandler> entities;
     public final BlockCollisionHelper blockCollisions;
     private final DiscreteDynamicsWorld dynamicsWorld;
@@ -41,6 +43,8 @@ public class PhysicsWorld {
         SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
         dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
         dynamicsWorld.setGravity(new Vector3f(0, GRAVITY, 0));
+
+        instance = this;
     }
 
     public void stepWorld() {
@@ -115,5 +119,9 @@ public class PhysicsWorld {
 
     public BlockCollisionHelper getBlockCollisions() {
         return this.blockCollisions;
+    }
+
+    public static PhysicsWorld getInstance() {
+        return instance;
     }
 }
