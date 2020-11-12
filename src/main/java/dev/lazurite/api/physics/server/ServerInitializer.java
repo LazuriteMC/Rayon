@@ -6,6 +6,7 @@ import dev.lazurite.api.physics.network.tracker.generic.types.BooleanType;
 import dev.lazurite.api.physics.network.tracker.generic.types.FloatType;
 import dev.lazurite.api.physics.network.tracker.generic.types.IntegerType;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 
 
 public class ServerInitializer implements ModInitializer {
@@ -20,5 +21,9 @@ public class ServerInitializer implements ModInitializer {
 	public void onInitialize() {
 		PhysicsHandlerC2S.register();
 		ServerTick.register();
+
+		TrackedDataHandlerRegistry.register(INTEGER_TYPE);
+		TrackedDataHandlerRegistry.register(FLOAT_TYPE);
+		TrackedDataHandlerRegistry.register(BOOLEAN_TYPE);
 	}
 }

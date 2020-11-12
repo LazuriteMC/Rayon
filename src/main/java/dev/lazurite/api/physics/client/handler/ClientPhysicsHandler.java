@@ -220,7 +220,6 @@ public class ClientPhysicsHandler implements PhysicsHandler {
      * Creates a new {@link RigidBody} based off of the drone's attributes.
      */
     public void createRigidBody() {
-        System.out.println("CREATE: " + entity.getValue(PhysicsEntity.MASS));
         float s = entity.getValue(PhysicsEntity.SIZE) / 16.0f;
         Box cBox = new Box(-s / 2.0f, -s / 8.0f, -s / 2.0f, s / 2.0f, s / 8.0f, s / 2.0f);
         Vector3f inertia = new Vector3f(0.0F, 0.0F, 0.0F);
