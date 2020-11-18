@@ -5,6 +5,11 @@ import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+/**
+ * The basic PhysicsHandler interface. Includes everything
+ * that a PhysicsHandler instance should be able to do.
+ * @author Ethan Johnson
+ */
 public interface PhysicsHandler {
     Vector3f getPosition();
     Vector3f getLinearVelocity();

@@ -3,7 +3,6 @@ package dev.lazurite.api.physics.client.handler;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.collision.shapes.ShapeHull;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
@@ -15,6 +14,7 @@ import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -22,6 +22,10 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+/**
+ * A PhysicsHandler implementation meant to run on the client-side of Minecraft.
+ * @author Ethan Johnson
+ */
 @Environment(EnvType.CLIENT)
 public class ClientPhysicsHandler implements PhysicsHandler {
     private final Quat4f prevOrientation;
@@ -32,13 +36,16 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     private int prevSize = -1;
     private float prevMass = -1;
 
+    /**
+     * The constructor which sets up the {@link PhysicsHandler} and creates a new {@link RigidBody}.
+     * @param entity
+     */
     public ClientPhysicsHandler(PhysicsEntity entity) {
         this.entity = entity;
         this.prevOrientation = new Quat4f(0, 1, 0, 0);
         this.netOrientation = new Quat4f(0, 1, 0, 0);
-
-        this.createRigidBody();
         PhysicsWorld.getInstance().add(this);
+        this.createRigidBody();
     }
 
     /**
@@ -47,7 +54,10 @@ public class ClientPhysicsHandler implements PhysicsHandler {
      * @return whether or not the entity is active
      */
     public boolean isActive() {
-        return entity.age > 1 && entity.getValue(PhysicsEntity.PLAYER_ID) == ClientInitializer.client.player.getEntityId();
+        PlayerEntity player = ClientInitializer.client.player;
+        if (player != null)
+            return entity.age > 1 && entity.getValue(PhysicsEntity.PLAYER_ID) == player.getEntityId();
+        return false;
     }
 
     /**
@@ -82,20 +92,23 @@ public class ClientPhysicsHandler implements PhysicsHandler {
 
     /**
      * Gets the {@link RigidBody}.
-     * @return the drone's current {@link RigidBody}
+     * @return the current {@link RigidBody}
      */
     public RigidBody getRigidBody() {
         return this.body;
     }
 
+    /**
+     * Gets the {@link PhysicsEntity}.
+     * @return the current {@link PhysicsEntity}
+     */
     @Override
     public PhysicsEntity getEntity() {
         return entity;
     }
 
     /**
-     * Sets the position of the {@link RigidBody}.
-     * @param vec the new position
+     * @param vec the position vector
      */
     @Override
     public void setPosition(Vector3f vec) {
@@ -104,34 +117,48 @@ public class ClientPhysicsHandler implements PhysicsHandler {
         this.body.setWorldTransform(trans);
     }
 
+    /**
+     * @return the position vector
+     */
     @Override
     public Vector3f getPosition() {
         return this.body.getCenterOfMassPosition(new Vector3f());
     }
 
+    /**
+     * @param linearVelocity the linear velocity vector
+     */
     @Override
     public void setLinearVelocity(Vector3f linearVelocity) {
         this.body.setLinearVelocity(linearVelocity);
     }
 
+    /**
+     * @return the linear velocity vector
+     */
     @Override
     public Vector3f getLinearVelocity() {
         return this.body.getLinearVelocity(new Vector3f());
     }
 
+    /**
+     * @param angularVelocity the angular velocity vector
+     */
     @Override
     public void setAngularVelocity(Vector3f angularVelocity) {
         this.body.setAngularVelocity(angularVelocity);
     }
 
+    /**
+     * @return the angular velocity vector
+     */
     @Override
     public Vector3f getAngularVelocity() {
         return this.body.getAngularVelocity(new Vector3f());
     }
 
     /**
-     * Sets the orientation of the {@link RigidBody}.
-     * @param q the new orientation
+     * @param q the rotation quaternion
      */
     @Override
     public void setOrientation(Quat4f q) {
@@ -141,8 +168,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     }
 
     /**
-     * Gets the orientation of the {@link RigidBody}.
-     * @return a new {@link Quat4f} containing orientation
+     * @return the rotation quaternion
      */
     @Override
     public Quat4f getOrientation() {
@@ -150,16 +176,14 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     }
 
     /**
-     * Sets the previous orientation of the {@link PhysicsHandler}.
-     * @param prevOrientation the new previous orientation
+     * @param prevOrientation the previous rotation quaternion
      */
     public void setPrevOrientation(Quat4f prevOrientation) {
         this.prevOrientation.set(prevOrientation);
     }
 
     /**
-     * Gets the previous orientation of the {@link PhysicsHandler}.
-     * @return a new previous orientation
+     * @return the previous rotation quaternion
      */
     public Quat4f getPrevOrientation() {
         Quat4f out = new Quat4f();
@@ -168,15 +192,14 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     }
 
     /**
-     * Sets the orientation received over the network.
-     * @param netOrientation the new net orientation
+     * @param netOrientation the net rotation quaternion
      */
     public void setNetOrientation(Quat4f netOrientation) {
         this.netOrientation.set(netOrientation);
     }
 
     /**
-     * Gets the orientation received over the network.
+     * @return the net rotation quaternion
      */
     public Quat4f getNetOrientation() {
         Quat4f out = new Quat4f();
@@ -219,7 +242,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     }
 
     /**
-     * Creates a new {@link RigidBody} based off of the drone's attributes.
+     * Creates a new {@link RigidBody} based off of the entity's attributes.
      */
     public void createRigidBody() {
         float s = entity.getValue(PhysicsEntity.SIZE) / 16.0f;
