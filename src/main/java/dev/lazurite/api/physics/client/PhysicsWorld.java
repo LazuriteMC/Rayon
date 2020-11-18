@@ -26,6 +26,12 @@ import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the main world class behind most of the Physics API. Every physics object, whether block
+ * or entity, ends up in here and is tracked within this class. There are also values which can be changed
+ * (only in the code) such as gravity and air density.
+ * @author Ethan Johnson
+ */
 @Environment(EnvType.CLIENT)
 public class PhysicsWorld extends DiscreteDynamicsWorld {
     public static final int BLOCK_RADIUS = 3;
@@ -39,6 +45,14 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
 
     private static PhysicsWorld instance;
 
+    /**
+     * The constructor. Builds a {@link DiscreteDynamicsWorld} as well as
+     * initializes lists and other class-level attributes.
+     * @param dispatcher
+     * @param broadphase
+     * @param solver
+     * @param collisionConfiguration
+     */
     public PhysicsWorld(CollisionDispatcher dispatcher, BroadphaseInterface broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, solver, collisionConfiguration);
 
@@ -49,6 +63,10 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         this.setDebugDrawer(debugRenderer);
     }
 
+    /**
+     * Creates the {@link PhysicsWorld}. The reason this exists is
+     * because there is more to set up than what can be done in the constructor.
+     */
     public static void create() {
         BroadphaseInterface broadphase = new DbvtBroadphase();
         CollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
@@ -59,6 +77,10 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         PhysicsWorld.instance.setGravity(new Vector3f(0, GRAVITY, 0));
     }
 
+    /**
+     * This method gets called every frame. It updates the physics world
+     * using delta time calculated from the {@link Clock} class.
+     */
     public void stepWorld() {
         ClientWorld world = ClientInitializer.client.world;
         List<ClientPhysicsHandler> toRemove = new ArrayList<>();
@@ -99,15 +121,27 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         this.stepSimulation(delta, (int) maxSubSteps, delta/maxSubSteps);
     }
 
+    /**
+     * Add a physics object into the world.
+     * @param physics The {@link dev.lazurite.api.physics.client.handler.PhysicsHandler} from a {@link dev.lazurite.api.physics.server.entity.PhysicsEntity}
+     */
     public void add(ClientPhysicsHandler physics) {
         this.entities.add(physics);
     }
 
+    /**
+     * Remove a physics object from the world.
+     * @param physics The {@link dev.lazurite.api.physics.client.handler.PhysicsHandler} from a {@link dev.lazurite.api.physics.server.entity.PhysicsEntity}
+     */
     public void remove(ClientPhysicsHandler physics) {
         this.removeRigidBody(physics.getRigidBody());
         this.entities.remove(physics);
     }
 
+    /**
+     * Get a list of rigid bodies. Includes blocks
+     * @return a list of rigid bodies
+     */
     public List<RigidBody> getRigidBodies() {
         List<RigidBody> bodies = new ArrayList<>();
 
@@ -117,41 +151,66 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         return bodies;
     }
 
+    /**
+     * Get the list of blocks from {@link BlockCollisionHelper}.
+     * @return the list of blocks
+     */
     public BlockCollisionHelper getBlockCollisions() {
         return this.blockCollisions;
     }
 
+    /**
+     * Get the list of physics objects.
+     * @return the list of physics objects
+     */
     public List<ClientPhysicsHandler> getEntities() {
         return this.entities;
     }
 
+    /**
+     * @return the debug renderer attribute
+     */
     public DebugRenderer getDebugRenderer() {
         return this.debugRenderer;
     }
 
+    /**
+     * @return the clock attribute
+     */
     public Clock getClock() {
         return this.clock;
     }
 
+    /**
+     * @return the running instance of the physics world
+     */
     public static PhysicsWorld getInstance() {
         return instance;
     }
 
+    /**
+     * Draw the object's rigid body shape. Original code has no implementation of this :(
+     * @param worldTransform the position and rotation
+     * @param shape the rigid body itself
+     * @param color the color of the outline
+     */
     @Override
     public void debugDrawObject(Transform worldTransform, CollisionShape shape, Vector3f color) {
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 
+        /* The distance to the camera */
         Vector3f pos = new Vector3f(worldTransform.origin);
         pos.sub(VectorHelper.vec3dToVector3f(camera.getPos()));
 
-        for (ClientPhysicsHandler handler : entities) {
-            RigidBody body = handler.getRigidBody();
+//        for (ClientPhysicsHandler handler : entities) {
+//            RigidBody body = handler.getRigidBody();
+//
+//            if (body.getWorldTransform(new Transform()) == worldTransform && body.getCollisionShape() == shape) {
+//                return;
+//            }
+//        }
 
-            if (body.getWorldTransform(new Transform()) == worldTransform && body.getCollisionShape() == shape) {
-                return;
-            }
-        }
-
+        /* Compound Shape */
 		if (shape.getShapeType() == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
 			CompoundShape compoundShape = (CompoundShape) shape;
 			for (int i = compoundShape.getNumChildShapes() - 1; i>=0; i--) {
@@ -160,6 +219,8 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
 				debugDrawObject(childTrans, colShape, color);
 			}
 		} else {
+
+		    /* Concave Mesh */
             if (shape.isConcave()) {
                 ConcaveShape concaveMesh = (ConcaveShape) shape;
 
@@ -167,6 +228,8 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
                 Vector3f aabbMin = new Vector3f((float) -1e30, (float) -1e30, (float) -1e30);
 
                 concaveMesh.processAllTriangles(null, aabbMin, aabbMax);
+
+            /* Convex Mesh */
             } else if (shape.getShapeType() == BroadphaseNativeType.CONVEX_TRIANGLEMESH_SHAPE_PROXYTYPE) {
                 BvhTriangleMeshShape convexMesh = (BvhTriangleMeshShape) shape;
 
@@ -174,12 +237,15 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
                 Vector3f aabbMin = new Vector3f((float) -1e30, (float) -1e30, (float) -1e30);
 
                 convexMesh.getMeshInterface().internalProcessAllTriangles(null, aabbMin, aabbMax);
+
+            /* Polyhedral Shape (most common) */
             } else if (shape.isPolyhedral()) {
                 PolyhedralConvexShape polyshape = (PolyhedralConvexShape) shape;
 
                 for (int i = 0; i < polyshape.getNumEdges(); i++) {
                     Vector3f a = new Vector3f();
                     Vector3f b = new Vector3f();
+
                     polyshape.getEdge(i, a, b);
                     getDebugDrawer().drawLine(a, b, color);
                 }
