@@ -32,7 +32,7 @@ public class GameRendererMixin {
 		if (w != null) {
 			if (!client.isPaused())
 				w.stepWorld();
-			else w.clock.reset();
+			else w.getClock().reset();
 		}
 	}
 }

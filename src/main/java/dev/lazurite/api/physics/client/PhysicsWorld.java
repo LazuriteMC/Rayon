@@ -11,15 +11,17 @@ import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.Clock;
-import com.bulletphysics.linearmath.ScalarUtil;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
 import dev.lazurite.api.physics.client.helper.BlockCollisionHelper;
+import dev.lazurite.api.physics.client.render.DebugRenderer;
+import dev.lazurite.api.physics.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 
-import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +32,10 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     public static final float AIR_DENSITY = 1.2f;
     public static final float GRAVITY = -9.81f;
 
-    public final List<ClientPhysicsHandler> entities;
-    public final BlockCollisionHelper blockCollisions;
-    public final Clock clock;
+    private final List<ClientPhysicsHandler> entities;
+    private final BlockCollisionHelper blockCollisions;
+    private final DebugRenderer debugRenderer;
+    private final Clock clock;
 
     private static PhysicsWorld instance;
 
@@ -42,6 +45,8 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         this.clock = new Clock();
         this.entities = new ArrayList<>();
         this.blockCollisions = new BlockCollisionHelper(this);
+        this.debugRenderer = new DebugRenderer(this);
+        this.setDebugDrawer(debugRenderer);
     }
 
     public static void create() {
@@ -116,13 +121,36 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         return this.blockCollisions;
     }
 
+    public List<ClientPhysicsHandler> getEntities() {
+        return this.entities;
+    }
+
+    public DebugRenderer getDebugRenderer() {
+        return this.debugRenderer;
+    }
+
+    public Clock getClock() {
+        return this.clock;
+    }
+
     public static PhysicsWorld getInstance() {
         return instance;
     }
 
     @Override
     public void debugDrawObject(Transform worldTransform, CollisionShape shape, Vector3f color) {
-        super.debugDrawObject(worldTransform, shape, color);
+        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+
+        Vector3f pos = new Vector3f(worldTransform.origin);
+        pos.sub(VectorHelper.vec3dToVector3f(camera.getPos()));
+
+        for (ClientPhysicsHandler handler : entities) {
+            RigidBody body = handler.getRigidBody();
+
+            if (body.getWorldTransform(new Transform()) == worldTransform && body.getCollisionShape() == shape) {
+                return;
+            }
+        }
 
 		if (shape.getShapeType() == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
 			CompoundShape compoundShape = (CompoundShape) shape;
@@ -139,30 +167,20 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
                 Vector3f aabbMin = new Vector3f((float) -1e30, (float) -1e30, (float) -1e30);
 
                 concaveMesh.processAllTriangles(null, aabbMin, aabbMax);
-            }
-
-            if (shape.getShapeType() == BroadphaseNativeType.CONVEX_TRIANGLEMESH_SHAPE_PROXYTYPE) {
+            } else if (shape.getShapeType() == BroadphaseNativeType.CONVEX_TRIANGLEMESH_SHAPE_PROXYTYPE) {
                 BvhTriangleMeshShape convexMesh = (BvhTriangleMeshShape) shape;
 
                 Vector3f aabbMax = new Vector3f((float) 1e30, (float) 1e30, (float) 1e30);
                 Vector3f aabbMin = new Vector3f((float) -1e30, (float) -1e30, (float) -1e30);
 
                 convexMesh.getMeshInterface().internalProcessAllTriangles(null, aabbMin, aabbMax);
-            }
-
-
-            if (shape.isPolyhedral()) {
+            } else if (shape.isPolyhedral()) {
                 PolyhedralConvexShape polyshape = (PolyhedralConvexShape) shape;
 
-                int i;
-                for (i = 0; i < polyshape.getNumEdges(); i++) {
+                for (int i = 0; i < polyshape.getNumEdges(); i++) {
                     Vector3f a = new Vector3f();
                     Vector3f b = new Vector3f();
-
                     polyshape.getEdge(i, a, b);
-                    a.cross(a, worldTransform.origin);
-                    b.cross(b, worldTransform.origin);
-
                     getDebugDrawer().drawLine(a, b, color);
                 }
             }
