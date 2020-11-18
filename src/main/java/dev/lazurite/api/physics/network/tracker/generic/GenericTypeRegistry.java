@@ -10,7 +10,7 @@ public class GenericTypeRegistry {
     public static final GenericType<Float> FLOAT_TYPE = new FloatType();
     public static final GenericType<Boolean> BOOLEAN_TYPE = new BooleanType();
 
-    public static void register() {
+    static {
         TrackedDataHandlerRegistry.register(INTEGER_TYPE);
         TrackedDataHandlerRegistry.register(FLOAT_TYPE);
         TrackedDataHandlerRegistry.register(BOOLEAN_TYPE);

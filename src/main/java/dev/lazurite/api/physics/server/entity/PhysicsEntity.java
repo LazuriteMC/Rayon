@@ -7,10 +7,11 @@ import dev.lazurite.api.physics.client.helper.AirHelper;
 import dev.lazurite.api.physics.network.packet.PhysicsHandlerC2S;
 import dev.lazurite.api.physics.network.packet.PhysicsHandlerS2C;
 import dev.lazurite.api.physics.network.tracker.EntityTrackerRegistry;
-import dev.lazurite.api.physics.server.ServerInitializer;
+import dev.lazurite.api.physics.network.tracker.generic.GenericTypeRegistry;
 import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -19,11 +20,11 @@ import net.minecraft.world.World;
 import javax.vecmath.Vector3f;
 
 public abstract class PhysicsEntity extends NetworkSyncedEntity {
-    public static final EntityTrackerRegistry.Entry<Integer> PLAYER_ID = EntityTrackerRegistry.register("playerId", ServerInitializer.INTEGER_TYPE, -1, PhysicsEntity.class, (entity, value) -> ((PhysicsEntity) entity).setPlayerID(value));
-    public static final EntityTrackerRegistry.Entry<Boolean> NO_CLIP = EntityTrackerRegistry.register("noClip", ServerInitializer.BOOLEAN_TYPE, false, PhysicsEntity.class, (entity, value) -> entity.noClip = value);
-    public static final EntityTrackerRegistry.Entry<Integer> SIZE = EntityTrackerRegistry.register("size", ServerInitializer.INTEGER_TYPE, 2, PhysicsEntity.class);
-    public static final EntityTrackerRegistry.Entry<Float> MASS = EntityTrackerRegistry.register("mass", ServerInitializer.FLOAT_TYPE, 10.0f, PhysicsEntity.class);
-    public static final EntityTrackerRegistry.Entry<Float> DRAG_COEFFICIENT = EntityTrackerRegistry.register("dragCoefficient", ServerInitializer.FLOAT_TYPE, 0.5F, PhysicsEntity.class);
+    public static final EntityTrackerRegistry.Entry<Integer> PLAYER_ID = EntityTrackerRegistry.register("playerId", GenericTypeRegistry.INTEGER_TYPE, -1, PhysicsEntity.class, (entity, value) -> ((PhysicsEntity) entity).setPlayerID(value));
+    public static final EntityTrackerRegistry.Entry<Boolean> NO_CLIP = EntityTrackerRegistry.register("noClip", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class, (entity, value) -> entity.noClip = value);
+    public static final EntityTrackerRegistry.Entry<Integer> SIZE = EntityTrackerRegistry.register("size", GenericTypeRegistry.INTEGER_TYPE, 2, PhysicsEntity.class);
+    public static final EntityTrackerRegistry.Entry<Float> MASS = EntityTrackerRegistry.register("mass", GenericTypeRegistry.FLOAT_TYPE, 10.0f, PhysicsEntity.class);
+    public static final EntityTrackerRegistry.Entry<Float> DRAG_COEFFICIENT = EntityTrackerRegistry.register("dragCoefficient", GenericTypeRegistry.FLOAT_TYPE, 0.5F, PhysicsEntity.class);
 
     protected PhysicsHandler physics;
 
@@ -99,9 +100,9 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
      * @param playerID the player ID
      */
     protected void setPlayerID(int playerID) {
-        PlayerEntity player = (PlayerEntity) getEntityWorld().getEntityById(playerID);
-        if (player != null) {
-            setCustomName(new LiteralText(player.getGameProfile().getName()));
+        Entity entity = getEntityWorld().getEntityById(playerID);
+        if (entity instanceof PlayerEntity) {
+            setCustomName(new LiteralText(((PlayerEntity) entity).getGameProfile().getName()));
             setCustomNameVisible(true);
         }
     }

@@ -26,7 +26,8 @@ public class ClientPlayNetworkHandlerMixin {
      */
     @Inject(at = @At("TAIL"), method = "onGameJoin")
     public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
-        ClientInitializer.physicsWorld = new PhysicsWorld();
+        PhysicsWorld.create();
+        System.out.println(PhysicsWorld.getInstance());
     }
 
     /**

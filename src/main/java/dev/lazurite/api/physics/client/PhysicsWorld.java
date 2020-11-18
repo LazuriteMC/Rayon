@@ -1,50 +1,57 @@
 package dev.lazurite.api.physics.client;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
+import com.bulletphysics.collision.broadphase.BroadphaseNativeType;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionConfiguration;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
+import com.bulletphysics.collision.shapes.*;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.Clock;
+import com.bulletphysics.linearmath.ScalarUtil;
+import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
 import dev.lazurite.api.physics.client.helper.BlockCollisionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
-public class PhysicsWorld {
+public class PhysicsWorld extends DiscreteDynamicsWorld {
     public static final int BLOCK_RADIUS = 3;
     public static final float AIR_DENSITY = 1.2f;
     public static final float GRAVITY = -9.81f;
 
-    private static PhysicsWorld instance;
-
     public final List<ClientPhysicsHandler> entities;
     public final BlockCollisionHelper blockCollisions;
-    private final DiscreteDynamicsWorld dynamicsWorld;
     public final Clock clock;
 
-    public PhysicsWorld() {
+    private static PhysicsWorld instance;
+
+    public PhysicsWorld(CollisionDispatcher dispatcher, BroadphaseInterface broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collisionConfiguration) {
+        super(dispatcher, broadphase, solver, collisionConfiguration);
+
+        this.clock = new Clock();
         this.entities = new ArrayList<>();
         this.blockCollisions = new BlockCollisionHelper(this);
-        this.clock = new Clock();
+    }
 
+    public static void create() {
         BroadphaseInterface broadphase = new DbvtBroadphase();
         CollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
         CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
         SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
-        dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-        dynamicsWorld.setGravity(new Vector3f(0, GRAVITY, 0));
 
-        instance = this;
+        PhysicsWorld.instance = new PhysicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+        PhysicsWorld.instance.setGravity(new Vector3f(0, GRAVITY, 0));
     }
 
     public void stepWorld() {
@@ -66,7 +73,7 @@ public class PhysicsWorld {
 
                     /* Add the rigid body to the world if it isn't already there */
                     if (!physics.getRigidBody().isInWorld()) {
-                        this.dynamicsWorld.addRigidBody(physics.getRigidBody());
+                        this.addRigidBody(physics.getRigidBody());
                     }
 
                     /* Load in block collisions */
@@ -76,7 +83,7 @@ public class PhysicsWorld {
                 } else {
                     /* Remove the rigid body if it is in the world */
                     if (physics.getRigidBody().isInWorld()) {
-                        this.dynamicsWorld.removeRigidBody(physics.getRigidBody());
+                        this.removeRigidBody(physics.getRigidBody());
                     }
                 }
             }
@@ -84,7 +91,7 @@ public class PhysicsWorld {
 
         this.blockCollisions.unload();
         toRemove.forEach(entities::remove);
-        this.dynamicsWorld.stepSimulation(delta, (int) maxSubSteps, delta/maxSubSteps);
+        this.stepSimulation(delta, (int) maxSubSteps, delta/maxSubSteps);
     }
 
     public void add(ClientPhysicsHandler physics) {
@@ -92,16 +99,8 @@ public class PhysicsWorld {
     }
 
     public void remove(ClientPhysicsHandler physics) {
-        this.dynamicsWorld.removeRigidBody(physics.getRigidBody());
+        this.removeRigidBody(physics.getRigidBody());
         this.entities.remove(physics);
-    }
-
-    public void addRigidBody(RigidBody body) {
-        this.dynamicsWorld.addRigidBody(body);
-    }
-
-    public void removeRigidBody(RigidBody body) {
-        this.dynamicsWorld.removeRigidBody(body);
     }
 
     public List<RigidBody> getRigidBodies() {
@@ -113,15 +112,60 @@ public class PhysicsWorld {
         return bodies;
     }
 
-    public DiscreteDynamicsWorld getDynamicsWorld() {
-        return this.dynamicsWorld;
-    }
-
     public BlockCollisionHelper getBlockCollisions() {
         return this.blockCollisions;
     }
 
     public static PhysicsWorld getInstance() {
         return instance;
+    }
+
+    @Override
+    public void debugDrawObject(Transform worldTransform, CollisionShape shape, Vector3f color) {
+        super.debugDrawObject(worldTransform, shape, color);
+
+		if (shape.getShapeType() == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
+			CompoundShape compoundShape = (CompoundShape) shape;
+			for (int i = compoundShape.getNumChildShapes() - 1; i>=0; i--) {
+				Transform childTrans = compoundShape.getChildTransform(i, new Transform());
+				CollisionShape colShape = compoundShape.getChildShape(i);
+				debugDrawObject(childTrans, colShape, color);
+			}
+		} else {
+            if (shape.isConcave()) {
+                ConcaveShape concaveMesh = (ConcaveShape) shape;
+
+                Vector3f aabbMax = new Vector3f((float) 1e30, (float) 1e30, (float) 1e30);
+                Vector3f aabbMin = new Vector3f((float) -1e30, (float) -1e30, (float) -1e30);
+
+                concaveMesh.processAllTriangles(null, aabbMin, aabbMax);
+            }
+
+            if (shape.getShapeType() == BroadphaseNativeType.CONVEX_TRIANGLEMESH_SHAPE_PROXYTYPE) {
+                BvhTriangleMeshShape convexMesh = (BvhTriangleMeshShape) shape;
+
+                Vector3f aabbMax = new Vector3f((float) 1e30, (float) 1e30, (float) 1e30);
+                Vector3f aabbMin = new Vector3f((float) -1e30, (float) -1e30, (float) -1e30);
+
+                convexMesh.getMeshInterface().internalProcessAllTriangles(null, aabbMin, aabbMax);
+            }
+
+
+            if (shape.isPolyhedral()) {
+                PolyhedralConvexShape polyshape = (PolyhedralConvexShape) shape;
+
+                int i;
+                for (i = 0; i < polyshape.getNumEdges(); i++) {
+                    Vector3f a = new Vector3f();
+                    Vector3f b = new Vector3f();
+
+                    polyshape.getEdge(i, a, b);
+                    a.cross(a, worldTransform.origin);
+                    b.cross(b, worldTransform.origin);
+
+                    getDebugDrawer().drawLine(a, b, color);
+                }
+            }
+        }
     }
 }

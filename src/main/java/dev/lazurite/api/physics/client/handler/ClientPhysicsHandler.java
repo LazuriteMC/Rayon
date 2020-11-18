@@ -3,12 +3,14 @@ package dev.lazurite.api.physics.client.handler;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.collision.shapes.ShapeHull;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.api.physics.client.ClientInitializer;
 import dev.lazurite.api.physics.client.PhysicsWorld;
+import dev.lazurite.api.physics.client.helper.ShapeHelper;
 import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;
@@ -36,7 +38,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
         this.netOrientation = new Quat4f(0, 1, 0, 0);
 
         this.createRigidBody();
-        ClientInitializer.physicsWorld.add(this);
+        PhysicsWorld.getInstance().add(this);
     }
 
     /**
@@ -227,7 +229,13 @@ public class ClientPhysicsHandler implements PhysicsHandler {
                 ((float) (cBox.maxX - cBox.minX) / 2.0F) + 0.005f,
                 ((float) (cBox.maxY - cBox.minY) / 2.0F) + 0.005f,
                 ((float) (cBox.maxZ - cBox.minZ) / 2.0F) + 0.005f);
-        CollisionShape shape = new BoxShape(box);
+
+        CollisionShape shape;
+        if (ShapeHelper.shape != null) {
+            shape = ShapeHelper.shape;
+        } else {
+            shape = new BoxShape(box);
+        }
         shape.calculateLocalInertia(entity.getValue(PhysicsEntity.MASS), inertia);
 
         Vec3d pos = entity.getPos();
@@ -237,7 +245,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
         if (getRigidBody() != null) {
             RigidBody old = getRigidBody();
             motionState = new DefaultMotionState(old.getWorldTransform(new Transform()));
-            ClientInitializer.physicsWorld.removeRigidBody(old);
+            PhysicsWorld.getInstance().removeRigidBody(old);
         } else {
             motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(0, 1, 0, 0), position, 1.0f)));
         }
@@ -246,7 +254,6 @@ public class ClientPhysicsHandler implements PhysicsHandler {
         RigidBody body = new RigidBody(ci);
         body.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
 
-        ClientInitializer.physicsWorld.addRigidBody(body);
         this.body = body;
     }
 }

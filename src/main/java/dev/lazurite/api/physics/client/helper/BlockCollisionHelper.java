@@ -115,9 +115,9 @@ public class BlockCollisionHelper {
      * @return a list of touching {@link Block}s
      */
     public static Set<Block> getTouchingBlocks(PhysicsEntity entity, Direction... directions) {
-        PhysicsWorld physicsWorld = ClientInitializer.physicsWorld;
+        PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
         ClientPhysicsHandler physics = (ClientPhysicsHandler) entity.getPhysics();
-        Dispatcher dispatcher = physicsWorld.getDynamicsWorld().getDispatcher();
+        Dispatcher dispatcher = physicsWorld.getDispatcher();
         Set<Block> blocks = new HashSet<>();
 
         for (int manifoldNum = 0; manifoldNum < dispatcher.getNumManifolds(); ++manifoldNum) {

@@ -16,9 +16,6 @@ public class ClientInitializer implements ClientModInitializer {
     /** The running instance of the minecraft client. */
     public static final MinecraftClient client = MinecraftClient.getInstance();
 
-    /** Physics World object */
-    public static PhysicsWorld physicsWorld;
-
     /**
      * Initializes all of the registries and loads the player config.
      */
