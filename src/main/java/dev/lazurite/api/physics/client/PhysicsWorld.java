@@ -202,22 +202,11 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         Vector3f pos = new Vector3f(worldTransform.origin);
         pos.sub(VectorHelper.vec3dToVector3f(camera.getPos()));
 
-//        for (ClientPhysicsHandler handler : entities) {
-//            RigidBody body = handler.getRigidBody();
-//
-//            if (body.getWorldTransform(new Transform()) == worldTransform && body.getCollisionShape() == shape) {
-//                return;
-//            }
-//        }
-
         /* Compound Shape */
 		if (shape.getShapeType() == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
-			CompoundShape compoundShape = (CompoundShape) shape;
-			for (int i = compoundShape.getNumChildShapes() - 1; i>=0; i--) {
-				Transform childTrans = compoundShape.getChildTransform(i, new Transform());
-				CollisionShape colShape = compoundShape.getChildShape(i);
-				debugDrawObject(childTrans, colShape, color);
-			}
+            for (CompoundShapeChild child : ((CompoundShape) shape).getChildList()) {
+                debugDrawObject(child.transform, child.childShape, color);
+            }
 		} else {
 
 		    /* Concave Mesh */
