@@ -50,16 +50,16 @@ public class PhysicsHandlerS2C {
             if (player != null) {
                 entity = (PhysicsEntity) player.world.getEntityById(entityID);
 
-                if (entity != null && entity.getValue(PhysicsEntity.DIRTY)) {
-                    entity.setValue(PhysicsEntity.DIRTY, false);
+                if (entity != null) {
                     physics = (ClientPhysicsHandler) entity.getPhysics();
 
                     /* Physics Vectors (orientation, position, velocity, etc.) */
-                    if (!physics.isActive() && entity.age > 10) {
+                    if (!physics.isActive() && entity.age > 5 && entity.getValue(PhysicsEntity.DIRTY)) {
                         physics.setPosition(position);
                         physics.getRigidBody().setLinearVelocity(linearVel);
                         physics.getRigidBody().setAngularVelocity(angularVel);
                         physics.setNetOrientation(orientation);
+                        entity.setValue(PhysicsEntity.DIRTY, false);
                     }
                 }
             }
