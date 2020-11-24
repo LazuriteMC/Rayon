@@ -35,6 +35,7 @@ public class ServerPhysicsHandler implements PhysicsHandler {
     @Override
     public void setPosition(Vector3f position) {
         this.position.set(position);
+        this.entity.markDirty();
     }
 
     /**
@@ -51,6 +52,7 @@ public class ServerPhysicsHandler implements PhysicsHandler {
     @Override
     public void setLinearVelocity(Vector3f linearVelocity) {
         this.linearVelocity.set(linearVelocity);
+        this.entity.markDirty();
     }
 
     /**
@@ -67,6 +69,7 @@ public class ServerPhysicsHandler implements PhysicsHandler {
     @Override
     public void setAngularVelocity(Vector3f angularVelocity) {
         this.angularVelocity.set(angularVelocity);
+        this.entity.markDirty();
     }
 
     /**
@@ -83,6 +86,7 @@ public class ServerPhysicsHandler implements PhysicsHandler {
     @Override
     public void setOrientation(Quat4f orientation) {
         this.orientation.set(orientation);
+        this.entity.markDirty();
     }
 
     /**

@@ -76,7 +76,7 @@ public class DebugRenderer extends IDebugDraw {
         RenderSystem.lineWidth(1.0F);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(GL11.GL_LINES, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(GL11.GL_LINE_STRIP, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(from.x, from.y, from.z).color(color.x, color.y, color.z, 0.5F).next();
         bufferBuilder.vertex(to.x, to.y, to.z).color(color.x, color.y, color.z, 0.5F).next();
         Tessellator.getInstance().draw();

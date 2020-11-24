@@ -21,8 +21,9 @@ import javax.vecmath.Vector3f;
 
 public abstract class PhysicsEntity extends NetworkSyncedEntity {
     public static final EntityTrackerRegistry.Entry<Integer> PLAYER_ID = EntityTrackerRegistry.register("playerId", GenericTypeRegistry.INTEGER_TYPE, -1, PhysicsEntity.class, (entity, value) -> ((PhysicsEntity) entity).setPlayerID(value));
-    public static final EntityTrackerRegistry.Entry<Boolean> NO_CLIP = EntityTrackerRegistry.register("noClip", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class, (entity, value) -> entity.noClip = value);
     public static final EntityTrackerRegistry.Entry<Integer> SIZE = EntityTrackerRegistry.register("size", GenericTypeRegistry.INTEGER_TYPE, 2, PhysicsEntity.class);
+    public static final EntityTrackerRegistry.Entry<Boolean> NO_CLIP = EntityTrackerRegistry.register("noClip", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class, (entity, value) -> entity.noClip = value);
+    public static final EntityTrackerRegistry.Entry<Boolean> DIRTY = EntityTrackerRegistry.register("dirty", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class);
     public static final EntityTrackerRegistry.Entry<Float> MASS = EntityTrackerRegistry.register("mass", GenericTypeRegistry.FLOAT_TYPE, 10.0f, PhysicsEntity.class);
     public static final EntityTrackerRegistry.Entry<Float> DRAG_COEFFICIENT = EntityTrackerRegistry.register("dragCoefficient", GenericTypeRegistry.FLOAT_TYPE, 0.5F, PhysicsEntity.class);
 
@@ -126,6 +127,10 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
         while(yaw - prevYaw >= 180.0F) {
             prevYaw += 360.0F;
         }
+    }
+
+    public void markDirty() {
+        setValue(DIRTY, true);
     }
 
     @Override

@@ -50,7 +50,8 @@ public class PhysicsHandlerS2C {
             if (player != null) {
                 entity = (PhysicsEntity) player.world.getEntityById(entityID);
 
-                if (entity != null) {
+                if (entity != null && entity.getValue(PhysicsEntity.DIRTY)) {
+                    entity.setValue(PhysicsEntity.DIRTY, false);
                     physics = (ClientPhysicsHandler) entity.getPhysics();
 
                     /* Physics Vectors (orientation, position, velocity, etc.) */
