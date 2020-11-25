@@ -100,6 +100,21 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     }
 
     /**
+     * Set the collision shape
+     * @param shape the new collision shape
+     */
+    public void setCollisionShape(CollisionShape shape) {
+        this.shape = shape;
+    }
+
+    /**
+     * @return the collision shape
+     */
+    public CollisionShape getCollisionShape() {
+        return this.shape;
+    }
+
+    /**
      * Gets the {@link PhysicsEntity}.
      * @return the current {@link PhysicsEntity}
      */
