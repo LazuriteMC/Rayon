@@ -4,18 +4,18 @@
   "version": "${version}",
 
   "name": "Lazurite Physics API",
-  "description": "This mod is the API used for other Lazurite mods",
+  "description": "This mod is serves as an interface between Minecraft and JBullet",
   "authors": [
-    "BlueVista",
-    "InnateBit"
+    "Lazurite Team"
   ],
   "contact": {
     "homepage": "",
     "sources": "https://github.com/lazuritemc/lazurite-physics-api"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/lazurite/icon.png",
+  "license": "MIT",
+  "icon": "assets/lazurite-physics/icon.png",
+  "accessWidener": "lazurite-physics.accessWidener",
 
   "environment": "*",
   "entrypoints": {
@@ -27,7 +27,7 @@
     ]
   },
   "mixins": [
-    "lazurite.mixins.json"
+    "lazurite-physics.mixins.json"
   ],
 
   "depends": {
