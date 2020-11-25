@@ -15,7 +15,7 @@
 
   "license": "MIT",
   "icon": "assets/lazurite-physics/icon.png",
-  "accessWidener": "lazurite-physics.accessWidener",
+  "accessWidener": "lazurite-physics.accesswidener",
 
   "environment": "*",
   "entrypoints": {

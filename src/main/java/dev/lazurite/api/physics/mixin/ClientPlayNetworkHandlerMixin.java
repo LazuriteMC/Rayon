@@ -1,6 +1,5 @@
 package dev.lazurite.api.physics.mixin;
 
-import dev.lazurite.api.physics.client.ClientInitializer;
 import dev.lazurite.api.physics.client.PhysicsWorld;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -27,7 +26,6 @@ public class ClientPlayNetworkHandlerMixin {
     @Inject(at = @At("TAIL"), method = "onGameJoin")
     public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
         PhysicsWorld.create();
-        System.out.println(PhysicsWorld.getInstance());
     }
 
     /**

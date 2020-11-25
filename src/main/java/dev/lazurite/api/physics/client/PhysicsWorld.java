@@ -41,7 +41,9 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     private final List<ClientPhysicsHandler> entities;
     private final BlockCollisionHelper blockCollisions;
     private final DebugRenderer debugRenderer;
-    private final Clock clock;
+    private final PhysicsThread thread;
+
+    private boolean destroyed;
 
     private static PhysicsWorld instance;
 
@@ -56,11 +58,13 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     public PhysicsWorld(CollisionDispatcher dispatcher, BroadphaseInterface broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, solver, collisionConfiguration);
 
-        this.clock = new Clock();
         this.entities = new ArrayList<>();
         this.blockCollisions = new BlockCollisionHelper(this);
         this.debugRenderer = new DebugRenderer(this);
         this.setDebugDrawer(debugRenderer);
+
+        this.thread = new PhysicsThread(this, MinecraftClient.getInstance(), 100);
+        this.thread.start();
     }
 
     /**
@@ -68,6 +72,10 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
      * because there is more to set up than what can be done in the constructor.
      */
     public static void create() {
+        if (PhysicsWorld.getInstance() != null) {
+            PhysicsWorld.getInstance().destroy();
+        }
+
         BroadphaseInterface broadphase = new DbvtBroadphase();
         CollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
         CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
@@ -78,16 +86,20 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     }
 
     /**
+     * @return the running instance of the physics world
+     */
+    public static PhysicsWorld getInstance() {
+        return instance;
+    }
+
+    /**
      * This method gets called every frame. It updates the physics world
      * using delta time calculated from the {@link Clock} class.
      */
-    public void stepWorld() {
+    public synchronized void stepWorld(float delta) {
         ClientWorld world = ClientInitializer.client.world;
         List<ClientPhysicsHandler> toRemove = new ArrayList<>();
-
-        float delta = clock.getTimeMicroseconds() / 1000000F;
         float maxSubSteps = 5.0f;
-        clock.reset();
 
         this.entities.forEach(physics -> {
             if (physics.getEntity().removed) {
@@ -174,18 +186,12 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         return this.debugRenderer;
     }
 
-    /**
-     * @return the clock attribute
-     */
-    public Clock getClock() {
-        return this.clock;
+    public void destroy() {
+        destroyed = true;
     }
 
-    /**
-     * @return the running instance of the physics world
-     */
-    public static PhysicsWorld getInstance() {
-        return instance;
+    public boolean isDestroyed() {
+        return destroyed;
     }
 
     /**
