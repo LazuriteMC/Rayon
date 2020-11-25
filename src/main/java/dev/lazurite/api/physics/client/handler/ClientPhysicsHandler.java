@@ -14,8 +14,8 @@ import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 import javax.vecmath.Matrix4f;
@@ -31,6 +31,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     private final Quat4f prevOrientation;
     private final Quat4f netOrientation;
     private final PhysicsEntity entity;
+    private CollisionShape shape;
     private RigidBody body;
 
     private int prevSize = -1;
@@ -38,7 +39,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
 
     /**
      * The constructor which sets up the {@link PhysicsHandler} and creates a new {@link RigidBody}.
-     * @param entity
+     * @param entity the physics entity
      */
     public ClientPhysicsHandler(PhysicsEntity entity) {
         this.entity = entity;
@@ -245,20 +246,11 @@ public class ClientPhysicsHandler implements PhysicsHandler {
      * Creates a new {@link RigidBody} based off of the entity's attributes.
      */
     public void createRigidBody() {
-        float s = entity.getValue(PhysicsEntity.SIZE) / 16.0f;
-        Box cBox = new Box(-s / 2.0f, -s / 8.0f, -s / 2.0f, s / 2.0f, s / 8.0f, s / 2.0f);
-        Vector3f inertia = new Vector3f(0.0F, 0.0F, 0.0F);
-        Vector3f box = new Vector3f(
-                ((float) (cBox.maxX - cBox.minX) / 2.0F) + 0.005f,
-                ((float) (cBox.maxY - cBox.minY) / 2.0F) + 0.005f,
-                ((float) (cBox.maxZ - cBox.minZ) / 2.0F) + 0.005f);
-
-        CollisionShape shape;
-        if (ShapeHelper.shape != null) {
-            shape = ShapeHelper.shape;
-        } else {
-            shape = new BoxShape(box);
+        if (shape == null) {
+            shape = new BoxShape(new Vector3f(0.5f, 0.5f, 0.5f));
         }
+
+        Vector3f inertia = new Vector3f(0.0F, 0.0F, 0.0F);
         shape.calculateLocalInertia(entity.getValue(PhysicsEntity.MASS), inertia);
 
         Vec3d pos = entity.getPos();
