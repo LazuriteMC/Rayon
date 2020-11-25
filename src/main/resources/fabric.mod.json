@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "lazuritephysics",
+  "id": "lazurite-physics",
   "version": "${version}",
 
   "name": "Lazurite Physics API",
