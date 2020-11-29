@@ -38,12 +38,11 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     public static final float AIR_DENSITY = 1.2f;
     public static final float GRAVITY = -9.81f;
 
+    private final MinecraftClient client;
     private final List<ClientPhysicsHandler> entities;
     private final BlockCollisionHelper blockCollisions;
     private final DebugRenderer debugRenderer;
-    private final PhysicsThread thread;
-
-    private boolean destroyed;
+    private final Clock clock;
 
     private static PhysicsWorld instance;
 
@@ -58,13 +57,14 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     public PhysicsWorld(CollisionDispatcher dispatcher, BroadphaseInterface broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, solver, collisionConfiguration);
 
+        this.client = MinecraftClient.getInstance();
         this.entities = new ArrayList<>();
         this.blockCollisions = new BlockCollisionHelper(this);
         this.debugRenderer = new DebugRenderer(this);
-        this.setDebugDrawer(debugRenderer);
+        this.clock = new Clock();
 
-        this.thread = new PhysicsThread(this, MinecraftClient.getInstance(), 100);
-        this.thread.start();
+        this.setDebugDrawer(debugRenderer);
+        this.setGravity(new Vector3f(0, GRAVITY, 0));
     }
 
     /**
@@ -72,6 +72,8 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
      * because there is more to set up than what can be done in the constructor.
      */
     public static void create() {
+
+        /* Remove old instance */
         if (PhysicsWorld.getInstance() != null) {
             PhysicsWorld.getInstance().destroy();
         }
@@ -82,7 +84,6 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
         SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
 
         PhysicsWorld.instance = new PhysicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-        PhysicsWorld.instance.setGravity(new Vector3f(0, GRAVITY, 0));
     }
 
     /**
@@ -96,10 +97,13 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
      * This method gets called every frame. It updates the physics world
      * using delta time calculated from the {@link Clock} class.
      */
-    public synchronized void stepWorld(float delta) {
+    public synchronized void stepWorld() {
         ClientWorld world = ClientInitializer.client.world;
         List<ClientPhysicsHandler> toRemove = new ArrayList<>();
         float maxSubSteps = 5.0f;
+
+        float delta = clock.getTimeMicroseconds() / 1000000F;
+        clock.reset();
 
         this.entities.forEach(physics -> {
             if (physics.getEntity().removed) {
@@ -184,14 +188,6 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
      */
     public DebugRenderer getDebugRenderer() {
         return this.debugRenderer;
-    }
-
-    public void destroy() {
-        destroyed = true;
-    }
-
-    public boolean isDestroyed() {
-        return destroyed;
     }
 
     /**
