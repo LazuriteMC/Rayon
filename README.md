@@ -1,4 +1,6 @@
-# Lazurite Physics API
+# Rayon
+
+A physics API for Fabric.
 
 [![Discord chat](https://img.shields.io/badge/chat%20on-discord-7289DA)](https://discord.gg/efCMR7U)
 
