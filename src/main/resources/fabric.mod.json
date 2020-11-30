@@ -1,33 +1,33 @@
 {
   "schemaVersion": 1,
-  "id": "lazurite-physics",
+  "id": "rayon",
   "version": "${version}",
 
-  "name": "Lazurite Physics API",
-  "description": "This mod is serves as an interface between Minecraft and JBullet",
+  "name": "Rayon",
+  "description": "A physics API for Fabric.",
   "authors": [
     "Lazurite Team"
   ],
   "contact": {
     "homepage": "",
-    "sources": "https://github.com/lazuritemc/lazurite-physics-api"
+    "sources": "https://github.com/lazuritemc/rayon"
   },
 
   "license": "MIT",
-  "icon": "assets/lazurite-physics/icon.png",
-  "accessWidener": "lazurite-physics.accesswidener",
+  "icon": "assets/rayon/icon.png",
+  "accessWidener": "rayon.accesswidener",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.lazurite.api.physics.server.ServerInitializer"
+      "dev.lazurite.rayon.server.ServerInitializer"
     ],
     "client": [
-      "dev.lazurite.api.physics.client.ClientInitializer"
+      "dev.lazurite.rayon.client.ClientInitializer"
     ]
   },
   "mixins": [
-    "lazurite-physics.mixins.json"
+    "rayon.mixins.json"
   ],
 
   "depends": {

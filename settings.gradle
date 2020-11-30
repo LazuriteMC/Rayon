@@ -8,3 +8,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+
+rootProject.name = 'rayon'
+
+include "example"
+project(":example").projectDir = file("example")
