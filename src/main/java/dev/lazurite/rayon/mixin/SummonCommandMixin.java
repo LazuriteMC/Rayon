@@ -50,12 +50,13 @@ public class SummonCommandMixin {
     private static void execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize, CallbackInfoReturnable<Integer> info, CompoundTag tag, ServerWorld world, Entity entity2) throws CommandSyntaxException {
         if (entity2 instanceof PhysicsEntity) {
             PhysicsEntity physicsEntity = (PhysicsEntity) entity2;
+            Vector3f position = new Vector3f((float) pos.x, (float) pos.y, (float) pos.z);
+            int id = source.getPlayer().getEntityId();
+            float yaw = source.getPlayer().yaw;
 
-            physicsEntity.getPhysics().setPosition(new Vector3f((float) pos.x, (float) pos.y, (float) pos.z));
-            physicsEntity.setYaw(source.getPlayer().yaw);
-            physicsEntity.setValue(PhysicsEntity.PLAYER_ID, source.getPlayer().getEntityId());
-
-            System.out.println("MASS? " + physicsEntity.getValue(PhysicsEntity.MASS));
+            physicsEntity.setYaw(yaw);
+            physicsEntity.getPhysics().setPosition(position);
+            physicsEntity.setValue(PhysicsEntity.PLAYER_ID, id);
         }
     }
 }

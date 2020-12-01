@@ -3,7 +3,6 @@ package dev.lazurite.rayon.server.entity;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import dev.lazurite.rayon.client.handler.ClientPhysicsHandler;
 import dev.lazurite.rayon.client.handler.PhysicsHandler;
-import dev.lazurite.rayon.client.helper.AirHelper;
 import dev.lazurite.rayon.client.helper.ShapeHelper;
 import dev.lazurite.rayon.network.packet.PhysicsHandlerC2S;
 import dev.lazurite.rayon.network.packet.PhysicsHandlerS2C;
@@ -60,12 +59,11 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
 
         if (world.isClient()) {
             ClientPhysicsHandler physics = (ClientPhysicsHandler) this.physics;
-//            physics.setMass(getValue(MASS));
             physics.updateNetOrientation();
         } else {
-//            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
+            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
 //                kill();
-//            }
+            }
         }
     }
 
@@ -79,9 +77,9 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
     public void step(float delta) {
         ClientPhysicsHandler physics = (ClientPhysicsHandler) getPhysics();
 
-        if (age > 2) {
-            physics.applyForce(AirHelper.getResistanceForce(physics.getLinearVelocity(), getValue(DRAG_COEFFICIENT)));
-        }
+//        if (age > 2) {
+//            physics.applyForce(AirHelper.getResistanceForce(physics.getLinearVelocity(), getValue(DRAG_COEFFICIENT)));
+//        }
     }
 
     /**

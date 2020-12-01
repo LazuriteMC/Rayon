@@ -12,13 +12,17 @@ import javax.vecmath.Vector3f;
 public class TestEntity extends PhysicsEntity {
     public TestEntity(EntityType<?> type, World world) {
         super(type, world, new BoxShape(new Vector3f(0.5f, 0.5f, 0.5f)));
+
         this.setValue(MASS, 1.5f);
         this.setValue(DRAG_COEFFICIENT, 0.005f);
+        System.out.println("IS SERVER? " + !world.isClient() + ", set mass to: " + getValue(MASS) + " kg.");
     }
 
     @Override
     public void tick() {
         super.tick();
+
+        System.out.println(getValue(MASS));
     }
 
     @Override
