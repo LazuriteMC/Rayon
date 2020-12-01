@@ -28,15 +28,6 @@ public abstract class NetworkSyncedEntity extends Entity {
     }
 
     /**
-     * Basic entity constructor. Passes a sync rate of 5 ticks to the other constructor.
-     * @param type the entity type
-     * @param world the world
-     */
-    public NetworkSyncedEntity(EntityType<?> type, World world) {
-        this(type, world, 5);
-    }
-
-    /**
      * Controls the release of synced data packets.
      */
     @Override

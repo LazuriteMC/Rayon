@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "rayon-example",
+  "id": "entity-example",
   "version": "${version}",
 
-  "name": "Rayon Example",
-  "description": "Example mod for Rayon",
+  "name": "Rayon Entity Example",
+  "description": "Entity example mod for Rayon",
   "authors": [
     "Lazurite Team"
   ],
@@ -13,14 +13,15 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.lazurite.rayon.example.server.ServerInitializer"
+      "dev.lazurite.rayon.entity_example.server.ServerInitializer"
     ],
     "client": [
-      "dev.lazurite.rayon.example.client.ClientInitializer"
+      "dev.lazurite.rayon.entity_example.client.ClientInitializer"
     ]
   },
+
   "mixins": [
-    "rayon-example.mixins.json"
+    "entity-example.mixins.json"
   ],
 
   "depends": {
@@ -28,6 +29,7 @@
     "fabric": "*",
     "minecraft": "1.16.x"
   },
+
   "suggests": {
     "flamingo": "*"
   }

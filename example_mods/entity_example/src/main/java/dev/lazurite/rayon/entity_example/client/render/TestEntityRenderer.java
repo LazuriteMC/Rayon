@@ -1,7 +1,7 @@
-package dev.lazurite.api.physics.example.client.render;
+package dev.lazurite.rayon.entity_example.client.render;
 
-import dev.lazurite.api.physics.example.server.ServerInitializer;
-import dev.lazurite.api.physics.example.server.entity.TestEntity;
+import dev.lazurite.rayon.entity_example.server.ServerInitializer;
+import dev.lazurite.rayon.entity_example.server.entity.TestEntity;
 import dev.lazurite.rayon.client.handler.ClientPhysicsHandler;
 import dev.lazurite.rayon.client.helper.QuaternionHelper;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -10,16 +10,19 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.PigEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
 public class TestEntityRenderer extends EntityRenderer<TestEntity> {
-    private EntityModel<TestEntity> model;
+    private static final Identifier TEXTURE = new Identifier("textures/entity/pig/pig.png");
+
+    private final PigEntityModel<TestEntity> model;
 
     protected TestEntityRenderer(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
+        model = new PigEntityModel<>();
     }
 
     @Override
@@ -28,8 +31,8 @@ public class TestEntityRenderer extends EntityRenderer<TestEntity> {
         matrixStack.push();
 
         /* Rotate the entity according to the Rigid Body */
-        Quaternion orientation = QuaternionHelper.quat4fToQuaternion(physics.getOrientation(delta));
-        matrixStack.peek().getModel().multiply(orientation);
+//        Quaternion orientation = QuaternionHelper.quat4fToQuaternion(physics.getOrientation(delta));
+//        matrixStack.peek().getModel().multiply(orientation);
 
         /* Render the entity */
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(getTexture(testEntity)));
@@ -41,7 +44,7 @@ public class TestEntityRenderer extends EntityRenderer<TestEntity> {
 
     @Override
     public Identifier getTexture(TestEntity entity) {
-        return null;
+        return TEXTURE;
     }
 
     public static void register() {

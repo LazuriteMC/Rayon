@@ -1,9 +1,10 @@
 package dev.lazurite.rayon.server.entity;
 
+import com.bulletphysics.collision.shapes.CollisionShape;
 import dev.lazurite.rayon.client.handler.ClientPhysicsHandler;
 import dev.lazurite.rayon.client.handler.PhysicsHandler;
-import dev.lazurite.rayon.client.handler.ServerPhysicsHandler;
 import dev.lazurite.rayon.client.helper.AirHelper;
+import dev.lazurite.rayon.client.helper.ShapeHelper;
 import dev.lazurite.rayon.network.packet.PhysicsHandlerC2S;
 import dev.lazurite.rayon.network.packet.PhysicsHandlerS2C;
 import dev.lazurite.rayon.network.tracker.EntityTrackerRegistry;
@@ -28,14 +29,22 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
     public static final EntityTrackerRegistry.Entry<Integer> PLAYER_ID = EntityTrackerRegistry.register("playerId", GenericTypeRegistry.INTEGER_TYPE, -1, PhysicsEntity.class, (entity, value) -> ((PhysicsEntity) entity).setPlayerID(value));
     public static final EntityTrackerRegistry.Entry<Boolean> NO_CLIP = EntityTrackerRegistry.register("noClip", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class, (entity, value) -> entity.noClip = value);
     public static final EntityTrackerRegistry.Entry<Boolean> DIRTY = EntityTrackerRegistry.register("dirty", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class);
-    public static final EntityTrackerRegistry.Entry<Float> MASS = EntityTrackerRegistry.register("mass", GenericTypeRegistry.FLOAT_TYPE, 10.0f, PhysicsEntity.class);
     public static final EntityTrackerRegistry.Entry<Float> DRAG_COEFFICIENT = EntityTrackerRegistry.register("dragCoefficient", GenericTypeRegistry.FLOAT_TYPE, 0.5F, PhysicsEntity.class);
+    public static final EntityTrackerRegistry.Entry<Float> MASS = EntityTrackerRegistry.register("mass", GenericTypeRegistry.FLOAT_TYPE, 5.0f, PhysicsEntity.class, (entity, value) -> {
+        if (entity.getEntityWorld().isClient()) {
+            ((ClientPhysicsHandler) ((PhysicsEntity) entity).getPhysics()).setMass(value);
+        }
+    });
 
     protected PhysicsHandler physics;
 
     public PhysicsEntity(EntityType<?> type, World world) {
-        super(type, world);
-        this.physics = PhysicsHandler.create(this);
+        this(type, world, ShapeHelper.getEntityShape(type));
+    }
+
+    public PhysicsEntity(EntityType<?> type, World world, CollisionShape shape) {
+        super(type, world, 5);
+        this.physics = PhysicsHandler.create(this, shape);
     }
 
     @Override
@@ -51,7 +60,7 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
 
         if (world.isClient()) {
             ClientPhysicsHandler physics = (ClientPhysicsHandler) this.physics;
-            physics.setMass(getValue(MASS));
+//            physics.setMass(getValue(MASS));
             physics.updateNetOrientation();
         } else {
 //            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
@@ -90,10 +99,8 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
     @Override
     protected void sendNetworkPacket() {
         if (getEntityWorld().isClient()) {
-            ClientPhysicsHandler physics = (ClientPhysicsHandler) getPhysics();
-
             if (physics.isActive()) {
-                PhysicsHandlerC2S.send(physics);
+                PhysicsHandlerC2S.send(getPhysics());
             }
         } else {
             PhysicsHandlerS2C.send(getPhysics());

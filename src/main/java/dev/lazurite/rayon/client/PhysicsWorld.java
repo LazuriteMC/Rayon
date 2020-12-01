@@ -93,7 +93,7 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
      * This method gets called every frame. It updates the physics world
      * using delta time calculated from the {@link Clock} class.
      */
-    public synchronized void stepWorld() {
+    public void stepWorld() {
         ClientWorld world = ClientInitializer.client.world;
         List<ClientPhysicsHandler> toRemove = new ArrayList<>();
         float maxSubSteps = 5.0f;

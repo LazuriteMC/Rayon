@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.client.handler;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
-import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
@@ -28,23 +27,29 @@ import javax.vecmath.Vector3f;
 public class ClientPhysicsHandler implements PhysicsHandler {
     private final Quat4f prevOrientation;
     private final Quat4f netOrientation;
-    private final PhysicsEntity entity;
-    private CollisionShape shape;
-    private RigidBody body;
 
-    private int prevSize = -1;
+    /** The entity that this handler belongs to. */
+    private final PhysicsEntity entity;
+
+    /** The shape of the rigid body. */
+    private final CollisionShape shape;
+
     private float prevMass = -1;
+    private RigidBody body;
 
     /**
      * The constructor which sets up the {@link PhysicsHandler} and creates a new {@link RigidBody}.
      * @param entity the physics entity
      */
-    public ClientPhysicsHandler(PhysicsEntity entity) {
+    public ClientPhysicsHandler(PhysicsEntity entity, CollisionShape shape) {
         this.entity = entity;
+        this.shape = shape;
+
         this.prevOrientation = new Quat4f(0, 1, 0, 0);
         this.netOrientation = new Quat4f(0, 1, 0, 0);
-        PhysicsWorld.getInstance().add(this);
+
         this.createRigidBody();
+        PhysicsWorld.getInstance().add(this);
     }
 
     /**
@@ -55,8 +60,11 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     @Override
     public boolean isActive() {
         PlayerEntity player = ClientInitializer.client.player;
-        if (player != null)
-            return entity.age > 1 && entity.getValue(PhysicsEntity.PLAYER_ID) == player.getEntityId();
+
+        if (player != null) {
+            return entity.age > 5 && entity.getValue(PhysicsEntity.PLAYER_ID) == player.getEntityId();
+        }
+
         return false;
     }
 
@@ -96,21 +104,6 @@ public class ClientPhysicsHandler implements PhysicsHandler {
      */
     public RigidBody getRigidBody() {
         return this.body;
-    }
-
-    /**
-     * Set the collision shape
-     * @param shape the new collision shape
-     */
-    public void setCollisionShape(CollisionShape shape) {
-        this.shape = shape;
-    }
-
-    /**
-     * @return the collision shape
-     */
-    public CollisionShape getCollisionShape() {
-        return this.shape;
     }
 
     /**
@@ -244,10 +237,6 @@ public class ClientPhysicsHandler implements PhysicsHandler {
      * Creates a new {@link RigidBody} based off of the entity's attributes.
      */
     public void createRigidBody() {
-        if (shape == null) {
-            shape = new BoxShape(new Vector3f(0.5f, 0.5f, 0.5f));
-        }
-
         Vector3f inertia = new Vector3f(0.0F, 0.0F, 0.0F);
         shape.calculateLocalInertia(entity.getValue(PhysicsEntity.MASS), inertia);
 
@@ -263,6 +252,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
             motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(0, 1, 0, 0), position, 1.0f)));
         }
 
+        System.out.println(entity.getValue(PhysicsEntity.MASS));
         RigidBodyConstructionInfo ci = new RigidBodyConstructionInfo(entity.getValue(PhysicsEntity.MASS), motionState, shape, inertia);
         RigidBody body = new RigidBody(ci);
         body.setActivationState(CollisionObject.DISABLE_DEACTIVATION);

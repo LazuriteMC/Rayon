@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.client.handler;
 
+import com.bulletphysics.collision.shapes.CollisionShape;
+import dev.lazurite.rayon.client.helper.ShapeHelper;
 import dev.lazurite.rayon.server.entity.PhysicsEntity;
 
 import javax.vecmath.Quat4f;
@@ -23,9 +25,9 @@ public interface PhysicsHandler {
     void setOrientation(Quat4f orientation);
     boolean isActive();
 
-    static PhysicsHandler create(PhysicsEntity physicsEntity) {
+    static PhysicsHandler create(PhysicsEntity physicsEntity, CollisionShape shape) {
         if (physicsEntity.getEntityWorld().isClient()) {
-            return new ClientPhysicsHandler(physicsEntity);
+            return new ClientPhysicsHandler(physicsEntity, shape);
         } else {
             return new ServerPhysicsHandler(physicsEntity);
         }

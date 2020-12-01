@@ -1,6 +1,6 @@
-package dev.lazurite.api.physics.example.client;
+package dev.lazurite.rayon.entity_example.client;
 
-import dev.lazurite.api.physics.example.client.render.TestEntityRenderer;
+import dev.lazurite.rayon.entity_example.client.render.TestEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

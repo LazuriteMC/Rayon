@@ -54,7 +54,7 @@ public class PhysicsHandlerS2C {
                     physics = (ClientPhysicsHandler) entity.getPhysics();
 
                     /* Physics Vectors (orientation, position, velocity, etc.) */
-                    if (!physics.isActive() && entity.age > 5 && entity.getValue(PhysicsEntity.DIRTY)) {
+                    if (!physics.isActive() || entity.getValue(PhysicsEntity.DIRTY)) {
                         physics.setPosition(position);
                         physics.getRigidBody().setLinearVelocity(linearVel);
                         physics.getRigidBody().setAngularVelocity(angularVel);
