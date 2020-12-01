@@ -31,8 +31,8 @@ public class TestEntityRenderer extends EntityRenderer<TestEntity> {
         matrixStack.push();
 
         /* Rotate the entity according to the Rigid Body */
-//        Quaternion orientation = QuaternionHelper.quat4fToQuaternion(physics.getOrientation(delta));
-//        matrixStack.peek().getModel().multiply(orientation);
+        Quaternion orientation = QuaternionHelper.quat4fToQuaternion(physics.getOrientation(delta));
+        matrixStack.peek().getModel().multiply(orientation);
 
         /* Render the entity */
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(getTexture(testEntity)));
