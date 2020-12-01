@@ -21,4 +21,13 @@ public interface PhysicsHandler {
     void setLinearVelocity(Vector3f linearVelocity);
     void setAngularVelocity(Vector3f angularVelocity);
     void setOrientation(Quat4f orientation);
+    boolean isActive();
+
+    static PhysicsHandler create(PhysicsEntity physicsEntity) {
+        if (physicsEntity.getEntityWorld().isClient()) {
+            return new ClientPhysicsHandler(physicsEntity);
+        } else {
+            return new ServerPhysicsHandler(physicsEntity);
+        }
+    }
 }

@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.client;
 
-import dev.lazurite.rayon.client.render.TestEntityRenderer;
 import dev.lazurite.rayon.network.packet.PhysicsHandlerS2C;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -23,6 +22,5 @@ public class ClientInitializer implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         PhysicsHandlerS2C.register();
-        TestEntityRenderer.register();
     }
 }

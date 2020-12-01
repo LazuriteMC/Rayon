@@ -52,6 +52,7 @@ public class ClientPhysicsHandler implements PhysicsHandler {
      * is in the {@link PhysicsWorld}.
      * @return whether or not the entity is active
      */
+    @Override
     public boolean isActive() {
         PlayerEntity player = ClientInitializer.client.player;
         if (player != null)
@@ -190,19 +191,24 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     }
 
     /**
-     * @param prevOrientation the previous rotation quaternion
+     * @param delta delta time
+     * @return the slerped rotation quaternion
      */
-    public void setPrevOrientation(Quat4f prevOrientation) {
-        this.prevOrientation.set(prevOrientation);
+    public Quat4f getOrientation(float delta) {
+        if (isActive()) {
+            return getOrientation();
+        }
+
+        return QuaternionHelper.slerp(prevOrientation, getOrientation(), delta);
     }
 
     /**
-     * @return the previous rotation quaternion
+     * Changes prevOrientation and sets the current
+     * orientation to netOrientation.
      */
-    public Quat4f getPrevOrientation() {
-        Quat4f out = new Quat4f();
-        out.set(prevOrientation);
-        return out;
+    public void updateNetOrientation() {
+        prevOrientation.set(getOrientation());
+        setOrientation(netOrientation);
     }
 
     /**
@@ -210,15 +216,6 @@ public class ClientPhysicsHandler implements PhysicsHandler {
      */
     public void setNetOrientation(Quat4f netOrientation) {
         this.netOrientation.set(netOrientation);
-    }
-
-    /**
-     * @return the net rotation quaternion
-     */
-    public Quat4f getNetOrientation() {
-        Quat4f out = new Quat4f();
-        out.set(netOrientation);
-        return out;
     }
 
     /**
@@ -231,18 +228,6 @@ public class ClientPhysicsHandler implements PhysicsHandler {
         }
 
         prevMass = mass;
-    }
-
-    /**
-     * Sets the size of the physics entity. Also refreshes the {@link RigidBody}.
-     * @param size the new size
-     */
-    public void setSize(int size) {
-        if (prevSize != size) {
-           createRigidBody();
-        }
-
-        prevSize = size;
     }
 
     /**

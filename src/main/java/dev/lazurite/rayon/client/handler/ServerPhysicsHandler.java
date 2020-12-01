@@ -104,4 +104,9 @@ public class ServerPhysicsHandler implements PhysicsHandler {
     public PhysicsEntity getEntity() {
         return entity;
     }
+
+    @Override
+    public boolean isActive() {
+        return false;
+    }
 }

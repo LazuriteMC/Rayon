@@ -9,8 +9,7 @@ pluginManagement {
     }
 }
 
-
 rootProject.name = 'rayon'
 
-include "example"
-project(":example").projectDir = file("example")
+include "entity_example"
+project(":entity_example").projectDir = file("example_mods/entity_example")

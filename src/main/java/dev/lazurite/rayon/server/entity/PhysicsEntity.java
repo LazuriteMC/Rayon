@@ -19,9 +19,13 @@ import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
 
+/**
+ * This class is the main class to be used by mod authors utilizing Rayon. Any entity you
+ * want to have physics attributes and behave accordingly must extend from this class.
+ * @author Ethan Johnson
+ */
 public abstract class PhysicsEntity extends NetworkSyncedEntity {
     public static final EntityTrackerRegistry.Entry<Integer> PLAYER_ID = EntityTrackerRegistry.register("playerId", GenericTypeRegistry.INTEGER_TYPE, -1, PhysicsEntity.class, (entity, value) -> ((PhysicsEntity) entity).setPlayerID(value));
-    public static final EntityTrackerRegistry.Entry<Integer> SIZE = EntityTrackerRegistry.register("size", GenericTypeRegistry.INTEGER_TYPE, 2, PhysicsEntity.class);
     public static final EntityTrackerRegistry.Entry<Boolean> NO_CLIP = EntityTrackerRegistry.register("noClip", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class, (entity, value) -> entity.noClip = value);
     public static final EntityTrackerRegistry.Entry<Boolean> DIRTY = EntityTrackerRegistry.register("dirty", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class);
     public static final EntityTrackerRegistry.Entry<Float> MASS = EntityTrackerRegistry.register("mass", GenericTypeRegistry.FLOAT_TYPE, 10.0f, PhysicsEntity.class);
@@ -31,49 +35,52 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
 
     public PhysicsEntity(EntityType<?> type, World world) {
         super(type, world);
-        this.noClip = false;
-        this.physics = createPhysicsHandler(this);
-    }
-
-    public static PhysicsHandler createPhysicsHandler(PhysicsEntity entity) {
-        if (entity.getEntityWorld().isClient()) {
-            return new ClientPhysicsHandler(entity);
-        } else {
-            return new ServerPhysicsHandler(entity);
-        }
+        this.physics = PhysicsHandler.create(this);
     }
 
     @Override
     public void tick() {
         super.tick();
-        updatePosition();
+
         updateEulerRotations();
+        updatePosition(
+                getPhysics().getPosition().x,
+                getPhysics().getPosition().y,
+                getPhysics().getPosition().z
+        );
 
         if (world.isClient()) {
             ClientPhysicsHandler physics = (ClientPhysicsHandler) this.physics;
             physics.setMass(getValue(MASS));
-            physics.setSize(getValue(SIZE));
-        }
-
-        // kil
-        if (!world.isClient()) {
-            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
-                kill();
-            }
+            physics.updateNetOrientation();
+        } else {
+//            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
+//                kill();
+//            }
         }
     }
 
+    /**
+     * This method is called every frame on the render thread. The purpose is
+     * to make changes to the {@link PhysicsHandler} here, on the client. For example,
+     * if you wish to apply a constant force, do it here, not in {@link PhysicsEntity#tick()}.
+     * @param delta delta time
+     */
     @Environment(EnvType.CLIENT)
     public void step(float delta) {
+        ClientPhysicsHandler physics = (ClientPhysicsHandler) getPhysics();
+
         if (age > 2) {
-            ((ClientPhysicsHandler) getPhysics()).applyForce(AirHelper.getResistanceForce(
-                    physics.getLinearVelocity(),
-                    getValue(SIZE),
-                    getValue(DRAG_COEFFICIENT)
-            ));
+            physics.applyForce(AirHelper.getResistanceForce(physics.getLinearVelocity(), getValue(DRAG_COEFFICIENT)));
         }
     }
 
+    /**
+     * Updates the position and angles of the entity in Minecraft and also Rayon.
+     * @param position the entity's position
+     * @param yaw the entity's yaw angle
+     * @param pitch the entity's pitch angle
+     */
     public void updatePositionAndAngles(Vector3f position, float yaw, float pitch) {
         this.updatePositionAndAngles(position.x, position.y, position.z, yaw, pitch);
         physics.setPosition(position);
@@ -87,9 +94,6 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
 
             if (physics.isActive()) {
                 PhysicsHandlerC2S.send(physics);
-            } else {
-                physics.setPrevOrientation(physics.getOrientation());
-                physics.setOrientation(physics.getNetOrientation());
             }
         } else {
             PhysicsHandlerS2C.send(getPhysics());
@@ -108,14 +112,10 @@ public abstract class PhysicsEntity extends NetworkSyncedEntity {
         }
     }
 
-    protected void updatePosition() {
-        updatePosition(
-                getPhysics().getPosition().x,
-                getPhysics().getPosition().y,
-                getPhysics().getPosition().z
-        );
-    }
-
+    /**
+     * Changes the vanilla minecraft rotations
+     * to match the physics orientation.
+     */
     protected void updateEulerRotations() {
         prevYaw = yaw;
         yaw = QuaternionHelper.getYaw(physics.getOrientation());
