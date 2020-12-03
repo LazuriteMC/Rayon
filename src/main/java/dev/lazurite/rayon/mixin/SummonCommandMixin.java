@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.mixin;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.lazurite.rayon.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;

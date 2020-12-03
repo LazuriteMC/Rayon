@@ -2,7 +2,7 @@ package dev.lazurite.rayon.entity_example.server.item;
 
 import dev.lazurite.rayon.entity_example.server.ServerInitializer;
 import dev.lazurite.rayon.entity_example.server.entity.TestEntity;
-import dev.lazurite.rayon.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

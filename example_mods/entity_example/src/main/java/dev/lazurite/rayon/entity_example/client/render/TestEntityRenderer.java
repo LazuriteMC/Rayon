@@ -2,8 +2,8 @@ package dev.lazurite.rayon.entity_example.client.render;
 
 import dev.lazurite.rayon.entity_example.server.ServerInitializer;
 import dev.lazurite.rayon.entity_example.server.entity.TestEntity;
-import dev.lazurite.rayon.client.handler.ClientPhysicsHandler;
-import dev.lazurite.rayon.client.helper.QuaternionHelper;
+import dev.lazurite.rayon.physics.handler.ClientPhysicsHandler;
+import dev.lazurite.rayon.helper.QuaternionHelper;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;

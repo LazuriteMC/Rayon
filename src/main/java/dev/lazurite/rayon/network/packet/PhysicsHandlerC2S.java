@@ -1,11 +1,11 @@
 package dev.lazurite.rayon.network.packet;
 
-import dev.lazurite.rayon.server.ServerInitializer;
-import dev.lazurite.rayon.client.handler.ClientPhysicsHandler;
-import dev.lazurite.rayon.server.entity.PhysicsEntity;
-import dev.lazurite.rayon.client.handler.PhysicsHandler;
-import dev.lazurite.rayon.client.helper.QuaternionHelper;
-import dev.lazurite.rayon.client.helper.VectorHelper;
+import dev.lazurite.rayon.side.server.ServerInitializer;
+import dev.lazurite.rayon.physics.handler.ClientPhysicsHandler;
+import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.physics.handler.PhysicsHandler;
+import dev.lazurite.rayon.helper.QuaternionHelper;
+import dev.lazurite.rayon.helper.VectorHelper;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;

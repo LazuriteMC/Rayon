@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin;
 
-import dev.lazurite.rayon.client.PhysicsWorld;
+import dev.lazurite.rayon.side.client.PhysicsWorld;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;

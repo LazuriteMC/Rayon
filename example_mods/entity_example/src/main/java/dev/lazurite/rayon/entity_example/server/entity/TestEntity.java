@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity_example.server.entity;
 
 import com.bulletphysics.collision.shapes.BoxShape;
-import dev.lazurite.rayon.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -12,10 +12,8 @@ import javax.vecmath.Vector3f;
 public class TestEntity extends PhysicsEntity {
     public TestEntity(EntityType<?> type, World world) {
         super(type, world, new BoxShape(new Vector3f(0.5f, 0.5f, 0.5f)));
-
-        this.setValue(MASS, 1.5f);
-        this.setValue(DRAG_COEFFICIENT, 0.005f);
-        System.out.println("IS SERVER? " + !world.isClient() + ", set mass to: " + getValue(MASS) + " kg.");
+        setValue(MASS, 1.5f);
+        setValue(DRAG_COEFFICIENT, 0.005f);
     }
 
     @Override
