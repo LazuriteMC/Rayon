@@ -17,7 +17,7 @@ import dev.lazurite.rayon.helper.BlockCollisionHelper;
 import dev.lazurite.rayon.side.client.render.DebugRenderer;
 import dev.lazurite.rayon.helper.VectorHelper;
 import dev.lazurite.rayon.physics.handler.PhysicsHandler;
-import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

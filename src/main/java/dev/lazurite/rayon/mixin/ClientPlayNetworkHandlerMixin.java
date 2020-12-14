@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.mixin;
 
 import dev.lazurite.rayon.side.client.PhysicsWorld;
-import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.entity.PhysicsEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;

@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.physics.handler;
 
-import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.entity.PhysicsEntity;
 
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;

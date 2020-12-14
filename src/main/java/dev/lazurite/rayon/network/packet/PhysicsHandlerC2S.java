@@ -2,7 +2,7 @@ package dev.lazurite.rayon.network.packet;
 
 import dev.lazurite.rayon.side.server.ServerInitializer;
 import dev.lazurite.rayon.physics.handler.ClientPhysicsHandler;
-import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.entity.PhysicsEntity;
 import dev.lazurite.rayon.physics.handler.PhysicsHandler;
 import dev.lazurite.rayon.helper.QuaternionHelper;
 import dev.lazurite.rayon.helper.VectorHelper;

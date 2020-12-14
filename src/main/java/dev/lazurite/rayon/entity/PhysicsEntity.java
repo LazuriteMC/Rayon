@@ -1,7 +1,6 @@
-package dev.lazurite.rayon.side.server.entity;
+package dev.lazurite.rayon.entity;
 
 import dev.lazurite.rayon.physics.handler.ClientPhysicsHandler;
-import dev.lazurite.rayon.physics.handler.PhysicsHandler;
 import dev.lazurite.rayon.helper.ShapeHelper;
 import dev.lazurite.rayon.network.packet.PhysicsHandlerC2S;
 import dev.lazurite.rayon.network.packet.PhysicsHandlerS2C;
@@ -21,7 +20,6 @@ import javax.vecmath.Vector3f;
  */
 public abstract class PhysicsEntity extends NetworkSyncedEntity {
     public static final EntityTrackerRegistry.Entry<Boolean> NO_CLIP = EntityTrackerRegistry.register("noClip", GenericTypeRegistry.BOOLEAN_TYPE, false, PhysicsEntity.class, (entity, value) -> entity.noClip = value);
-
 
     /**
      * Updates the position and angles of the entity in Minecraft and also Rayon.

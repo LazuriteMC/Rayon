@@ -1,40 +1,36 @@
-package dev.lazurite.rayon.component;
+package dev.lazurite.rayon.composition;
 
-import dev.lazurite.thimble.component.Component;
-import dev.lazurite.thimble.synchronizer.SynchronizedKey;
-import dev.lazurite.thimble.synchronizer.type.SynchronizedTypes;
+import dev.lazurite.thimble.composition.Composition;
+import dev.lazurite.thimble.synchronizer.Synchronizer;
+import dev.lazurite.thimble.synchronizer.key.SynchronizedKey;
+import dev.lazurite.thimble.synchronizer.type.SynchronizedTypeRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-public abstract class PhysicsComponent extends Component<Entity> {
-    public static final SynchronizedKey<Integer> PLAYER_ID = new SynchronizedKey<>(SynchronizedTypes.INTEGER, -1, (component, value) -> {
-        Entity entity = (Entity) component.getOwner();
-        PlayerEntity player = entity.getEntityWorld().getEntityById(playerID);
-        if (entity instanceof PlayerEntity) {
-            setCustomName(new LiteralText(((PlayerEntity) entity).getGameProfile().getName()));
-            setCustomNameVisible(true);
-        }
-    });
-    public static final SynchronizedKey<Float> MASS = new SynchronizedKey<>(SynchronizedTypes.FLOAT, 0.0f);
-    public static final SynchronizedKey<Float> DRAG_COEFFICIENT = new SynchronizedKey<>(SynchronizedTypes.FLOAT, 0.0f);
-    public static final SynchronizedKey<Boolean> NO_CLIP = new SynchronizedKey<>(SynchronizedTypes.BOOLEAN, false);
+public class PhysicsComposition extends Composition {
+    public static final Identifier IDENTIFIER = new Identifier(ServerInitializer.MODID, "physics");
 
-    public static final SynchronizedKey<Vector3f> POSITION = new SynchronizedKey<>(PhysicsTypes.VECTOR3F, new Vector3f());
-    public static final SynchronizedKey<Vector3f> LINEAR_VELOCITY = new SynchronizedKey<>(PhysicsTypes.VECTOR3F, new Vector3f());
-    public static final SynchronizedKey<Vector3f> ANGULAR_VELOCITY = new SynchronizedKey<>(PhysicsTypes.VECTOR3F, new Vector3f());
-    public static final SynchronizedKey<Quat4f> ORIENTATION = new SynchronizedKey<>(PhysicsTypes.QUAT4F, new Quat4f());
+    public static final SynchronizedKey<Integer> PLAYER_ID = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "player_id"), SynchronizedTypeRegistry.INTEGER, -1);
+    public static final SynchronizedKey<Float> MASS = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "mass"), SynchronizedTypeRegistry.FLOAT, 0.0f);
+    public static final SynchronizedKey<Float> DRAG_COEFFICIENT = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "drag_coefficient"), SynchronizedTypeRegistry.FLOAT, 0.0f);
+    public static final SynchronizedKey<Boolean> NO_CLIP = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "no_clip"), SynchronizedTypeRegistry.BOOLEAN, false);
 
-    public PhysicsComponent(Entity owner) {
-        super(owner);
+    public static final SynchronizedKey<Vector3f> POSITION = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "position"), PhysicsTypes.VECTOR3F, new Vector3f());
+    public static final SynchronizedKey<Vector3f> LINEAR_VELOCITY = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "linear_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
+    public static final SynchronizedKey<Vector3f> ANGULAR_VELOCITY = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "angular_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
+    public static final SynchronizedKey<Quat4f> ORIENTATION = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "orientation"), PhysicsTypes.QUAT4F, new Quat4f());
+
+    public PhysicsComposition(Synchronizer synchronizer) {
+        super(synchronizer);
     }
 
     @Override
-    public void tick() {
-        Entity entity = getOwner();
+    public void onTick(Entity entity) {
         Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
         Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
 
@@ -60,6 +56,16 @@ public abstract class PhysicsComponent extends Component<Entity> {
 //                kill();
             }
         }
+    }
+
+    @Override
+    public boolean onInteract(PlayerEntity player, Hand hand) {
+        return false;
+    }
+
+    @Override
+    public void onRemove() {
+
     }
 
     /**
@@ -103,5 +109,10 @@ public abstract class PhysicsComponent extends Component<Entity> {
         getSynchronizer().track(LINEAR_VELOCITY);
         getSynchronizer().track(ANGULAR_VELOCITY);
         getSynchronizer().track(ORIENTATION);
+    }
+
+    @Override
+    public Identifier getIdentifier() {
+        return IDENTIFIER;
     }
 }

@@ -9,7 +9,7 @@ import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.side.client.ClientInitializer;
 import dev.lazurite.rayon.side.client.PhysicsWorld;
 import dev.lazurite.rayon.helper.QuaternionHelper;
-import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;

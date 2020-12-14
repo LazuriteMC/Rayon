@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity_example.server.entity;
 
 import com.bulletphysics.collision.shapes.BoxShape;
-import dev.lazurite.rayon.side.server.entity.PhysicsEntity;
+import dev.lazurite.rayon.entity.PhysicsEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
