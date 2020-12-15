@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.helper;
+package dev.lazurite.rayon.physics.helper;
 
-import dev.lazurite.rayon.side.client.PhysicsWorld;
+import dev.lazurite.rayon.physics.PhysicsWorld;
 
 import javax.vecmath.Vector3f;
 import java.util.Random;

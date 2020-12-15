@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.side.client.shape;
+package dev.lazurite.rayon.physics.shape;
 
 import com.bulletphysics.collision.shapes.CompoundShape;
 import com.bulletphysics.collision.shapes.ConvexHullShape;

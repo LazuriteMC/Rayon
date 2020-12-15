@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.helper;
+package dev.lazurite.rayon.physics.helper;
 
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;

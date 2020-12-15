@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.side.client;
+package dev.lazurite.rayon.physics;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.BroadphaseNativeType;
@@ -13,9 +13,9 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import com.bulletphysics.linearmath.Clock;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.physics.handler.ClientPhysicsHandler;
-import dev.lazurite.rayon.helper.BlockCollisionHelper;
-import dev.lazurite.rayon.side.client.render.DebugRenderer;
-import dev.lazurite.rayon.helper.VectorHelper;
+import dev.lazurite.rayon.physics.helper.BlockCollisionHelper;
+import dev.lazurite.rayon.render.DebugRenderer;
+import dev.lazurite.rayon.physics.helper.VectorHelper;
 import dev.lazurite.rayon.physics.handler.PhysicsHandler;
 import dev.lazurite.rayon.entity.PhysicsEntity;
 import net.fabricmc.api.EnvType;

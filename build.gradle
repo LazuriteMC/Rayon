@@ -48,8 +48,8 @@ allprojects {
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-		modImplementation 'com.github.LazuriteMC:Thimble:mc1.16.4-1.0.1'
-		include 'com.github.LazuriteMC:Thimble:mc1.16.4-1.0.1'
+		modImplementation "com.github.LazuriteMC:Thimble:${project.thimble_version}"
+		include "com.github.LazuriteMC:Thimble:${project.thimble_version}"
 
 		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 		shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"

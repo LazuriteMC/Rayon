@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.helper;
+package dev.lazurite.rayon.physics.helper;
 
 import net.minecraft.util.math.Quaternion;
 

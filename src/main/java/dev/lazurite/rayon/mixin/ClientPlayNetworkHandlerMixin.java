@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin;
 
-import dev.lazurite.rayon.side.client.PhysicsWorld;
+import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.entity.PhysicsEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.composition;
+package dev.lazurite.rayon.physics.composition;
 
 import dev.lazurite.rayon.side.server.ServerInitializer;
 import dev.lazurite.rayon.type.PhysicsTypes;
@@ -10,12 +10,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-public class PhysicsComposition extends Composition {
-    public static final Identifier IDENTIFIER = new Identifier(ServerInitializer.MODID, "physics");
+public class DynamicPhysicsComposition extends Composition {
+    public static final Identifier IDENTIFIER = new Identifier(ServerInitializer.MODID, "dynamic_physics");
 
     public static final SynchronizedKey<Integer> PLAYER_ID = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "player_id"), SynchronizedTypeRegistry.INTEGER, -1);
     public static final SynchronizedKey<Float> MASS = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "mass"), SynchronizedTypeRegistry.FLOAT, 0.0f);
@@ -27,12 +28,13 @@ public class PhysicsComposition extends Composition {
     public static final SynchronizedKey<Vector3f> ANGULAR_VELOCITY = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "angular_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
     public static final SynchronizedKey<Quat4f> ORIENTATION = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "orientation"), PhysicsTypes.QUAT4F, new Quat4f());
 
-    public PhysicsComposition(Synchronizer synchronizer) {
+    public DynamicPhysicsComposition(Synchronizer synchronizer) {
         super(synchronizer);
     }
 
     @Override
     public void onTick(Entity entity) {
+        World world = entity.getEntityWorld();
         Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
         Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
 
@@ -49,14 +51,13 @@ public class PhysicsComposition extends Composition {
             entity.prevYaw += 360.0F;
         }
 
-
         if (world.isClient()) {
             ClientPhysicsHandler physics = (ClientPhysicsHandler) this.physics;
             physics.updateNetOrientation();
         } else {
-            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
+//            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
 //                kill();
-            }
+//            }
         }
     }
 

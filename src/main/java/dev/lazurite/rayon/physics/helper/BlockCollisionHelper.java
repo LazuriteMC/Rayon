@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.helper;
+package dev.lazurite.rayon.physics.helper;
 
 import com.bulletphysics.collision.broadphase.Dispatcher;
 import com.bulletphysics.collision.narrowphase.PersistentManifold;
@@ -9,11 +9,8 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.composition.PhysicsComposition;
-import dev.lazurite.rayon.side.client.PhysicsWorld;
-import dev.lazurite.rayon.physics.handler.ClientPhysicsHandler;
-import dev.lazurite.thimble.Thimble;
-import dev.lazurite.thimble.composition.Composition;
+import dev.lazurite.rayon.physics.composition.DynamicPhysicsComposition;
+import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -118,7 +115,7 @@ public class BlockCollisionHelper {
      */
     public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
         PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
-        PhysicsComposition physics = Rayon.getPhysics(entity);
+        DynamicPhysicsComposition physics = Rayon.getPhysics(entity);
 
         Dispatcher dispatcher = physicsWorld.getDispatcher();
         Set<Block> blocks = new HashSet<>();

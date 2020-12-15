@@ -7,6 +7,14 @@ import net.minecraft.network.PacketByteBuf;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+/**
+ * Definition of a couple extra data types that Thimble
+ * doesn't come with. Includes:
+ *    javax.vecmath.Vector3f
+ *    javax.vecmath.Quat4f
+ *
+ * @author Ethan Johnson
+ */
 public class PhysicsTypes {
     public static final SynchronizedType<Vector3f> VECTOR3F = new SynchronizedType<Vector3f>() {
         @Override

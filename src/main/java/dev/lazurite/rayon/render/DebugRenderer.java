@@ -1,11 +1,10 @@
-package dev.lazurite.rayon.side.client.render;
+package dev.lazurite.rayon.render;
 
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.lazurite.rayon.side.client.PhysicsWorld;
-import dev.lazurite.rayon.helper.QuaternionHelper;
+import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;

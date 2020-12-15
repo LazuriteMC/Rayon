@@ -21,9 +21,6 @@
   "entrypoints": {
     "main": [
       "dev.lazurite.rayon.server.ServerInitializer"
-    ],
-    "client": [
-      "dev.lazurite.rayon.client.ClientInitializer"
     ]
   },
   "mixins": [
