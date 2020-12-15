@@ -1,7 +1,5 @@
 package dev.lazurite.rayon.helper;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Quaternion;
 
 import javax.vecmath.Quat4f;
@@ -85,32 +83,6 @@ public class QuaternionHelper {
     }
 
     /**
-     * Places the given {@link Quat4f} information inside of the given {@link CompoundTag}.
-     * @param quat the {@link Quat4f} to place in a {@link CompoundTag}
-     * @param tag the {@link CompoundTag} to place the {@link Quat4f} inside of
-     */
-    public static void toTag(Quat4f quat, CompoundTag tag) {
-        tag.putFloat("x", quat.x);
-        tag.putFloat("y", quat.y);
-        tag.putFloat("z", quat.z);
-        tag.putFloat("w", quat.w);
-    }
-
-    /**
-     * Retrieves {@link Quat4f} information from the given {@link CompoundTag}.
-     * @param tag the {@link CompoundTag} to retrieve the {@link Quat4f} information from
-     * @return the new {@link Quat4f}
-     */
-    public static Quat4f fromTag(CompoundTag tag) {
-        Quat4f quat = new Quat4f();
-        quat.set(tag.getFloat("x"),
-                 tag.getFloat("y"),
-                 tag.getFloat("z"),
-                 tag.getFloat("w"));
-        return quat;
-    }
-
-    /**
      * Converts a {@link Quat4f} to a {@link Quaternion}.
      * @param quat the {@link Quat4f} to convert
      * @return the new {@link Quaternion}
@@ -151,22 +123,13 @@ public class QuaternionHelper {
         return (float) Math.toDegrees(QuaternionHelper.toEulerAngles(quat).y);
     }
 
-    public static void serializeQuaternion(PacketByteBuf buf, Quat4f q) {
-        buf.writeFloat(q.x);
-        buf.writeFloat(q.y);
-        buf.writeFloat(q.z);
-        buf.writeFloat(q.w);
-    }
-
-    public static Quat4f deserializeQuaternion(PacketByteBuf buf) {
-        Quat4f q = new Quat4f();
-        q.x = buf.readFloat();
-        q.y = buf.readFloat();
-        q.z = buf.readFloat();
-        q.w = buf.readFloat();
-        return q;
-    }
-
+    /**
+     * Lerp, but for spherical stuffs (hence Slerp).
+     * @param q1 the first {@link Quat4f} to slerp
+     * @param q2 the second {@link Quat4f} to slerp
+     * @param t the delta time
+     * @return the slerped {@link Quat4f}
+     */
     public static Quat4f slerp(Quat4f q1, Quat4f q2, float t) {
         Quat4f out = new Quat4f();
 
@@ -175,11 +138,9 @@ public class QuaternionHelper {
             return out;
         }
 
-        float result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z)
-                + (q1.w * q2.w);
+        float result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
 
         if (result < 0.0f) {
-            // Negate the second quaternion and the result of the dot product
             q2.x = -q2.x;
             q2.y = -q2.y;
             q2.z = -q2.z;
@@ -187,32 +148,22 @@ public class QuaternionHelper {
             result = -result;
         }
 
-        // Set the first and second scale for the interpolation
         float scale0 = 1 - t;
         float scale1 = t;
 
-        // Check if the angle between the 2 quaternions was big enough to
-        // warrant such calculations
-        if ((1 - result) > 0.1f) {// Get the angle between the 2 quaternions,
-            // and then store the sin() of that angle
+        if ((1 - result) > 0.1f) {
             float theta = (float) Math.acos(result);
             float invSinTheta = 1f / (float) Math.sin(theta);
 
-            // Calculate the scale for q1 and q2, according to the angle and
-            // it's sine value
             scale0 = (float) Math.sin((1 - t) * theta) * invSinTheta;
             scale1 = (float) Math.sin((t * theta)) * invSinTheta;
         }
 
-        // Calculate the x, y, z and w values for the quaternion by using a
-        // special
-        // form of linear interpolation for quaternions.
         out.x = (scale0 * q1.x) + (scale1 * q2.x);
         out.y = (scale0 * q1.y) + (scale1 * q2.y);
         out.z = (scale0 * q1.z) + (scale1 * q2.z);
         out.w = (scale0 * q1.w) + (scale1 * q2.w);
 
-        // Return the interpolated quaternion
         return out;
     }
 }
