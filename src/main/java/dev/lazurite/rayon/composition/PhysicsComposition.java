@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.composition;
 
+import dev.lazurite.rayon.side.server.ServerInitializer;
+import dev.lazurite.rayon.type.PhysicsTypes;
 import dev.lazurite.thimble.composition.Composition;
 import dev.lazurite.thimble.synchronizer.Synchronizer;
 import dev.lazurite.thimble.synchronizer.key.SynchronizedKey;

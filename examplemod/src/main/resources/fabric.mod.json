@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "entity-example",
+  "id": "examplemod",
   "version": "${version}",
 
-  "name": "Rayon Entity Example",
-  "description": "Entity example mod for Rayon",
+  "name": "Rayon Example Mod",
+  "description": "Example mod for Rayon",
   "authors": [
     "Lazurite Team"
   ],
@@ -14,14 +14,11 @@
   "entrypoints": {
     "main": [
       "dev.lazurite.rayon.entity_example.server.ServerInitializer"
-    ],
-    "client": [
-      "dev.lazurite.rayon.entity_example.client.ClientInitializer"
     ]
   },
 
   "mixins": [
-    "entity-example.mixins.json"
+    "examplemod.mixins.json"
   ],
 
   "depends": {

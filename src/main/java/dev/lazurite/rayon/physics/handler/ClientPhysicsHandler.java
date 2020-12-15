@@ -28,9 +28,6 @@ public class ClientPhysicsHandler implements PhysicsHandler {
     private final Quat4f prevOrientation;
     private final Quat4f netOrientation;
 
-    /** The entity that this handler belongs to. */
-    private final PhysicsEntity entity;
-
     /** The shape of the rigid body. */
     private final CollisionShape shape;
 

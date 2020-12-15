@@ -10,8 +10,6 @@ minecraft {
 	accessWidener "src/main/resources/rayon.accesswidener"
 }
 
-
-
 subprojects {
 	apply plugin: 'fabric-loom'
 	archivesBaseName = rootProject.archives_base_name + "-" + project.name
@@ -31,6 +29,7 @@ subprojects {
 
 allprojects {
 	apply plugin: 'com.github.johnrengelman.shadow'
+	apply plugin: 'fabric-loom'
 
 	sourceCompatibility = JavaVersion.VERSION_1_8
 	targetCompatibility = JavaVersion.VERSION_1_8
@@ -50,6 +49,7 @@ allprojects {
 
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 		modImplementation 'com.github.LazuriteMC:Thimble:mc1.16.4-1.0.1'
+		include 'com.github.LazuriteMC:Thimble:mc1.16.4-1.0.1'
 
 		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 		shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"

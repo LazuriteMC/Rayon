@@ -11,5 +11,5 @@ pluginManagement {
 
 rootProject.name = 'rayon'
 
-include "entity_example"
-project(":entity_example").projectDir = file("example_mods/entity_example")
+include "examplemod"
+project(":examplemod").projectDir = file("examplemod")
