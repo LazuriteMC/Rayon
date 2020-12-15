@@ -9,8 +9,9 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.composition.DynamicPhysicsComposition;
+import dev.lazurite.rayon.physics.composition.DynPhysicsComposition;
 import dev.lazurite.rayon.physics.PhysicsWorld;
+import dev.lazurite.rayon.util.Constants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -40,7 +41,7 @@ public class BlockCollisionHelper {
     }
 
     public void load(Entity entity, ClientWorld world) {
-        Box area = new Box(new BlockPos(entity.getPos())).expand(PhysicsWorld.BLOCK_RADIUS);
+        Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
 
@@ -115,7 +116,7 @@ public class BlockCollisionHelper {
      */
     public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
         PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
-        DynamicPhysicsComposition physics = Rayon.getPhysics(entity);
+        DynPhysicsComposition physics = Rayon.getPhysics(entity);
 
         Dispatcher dispatcher = physicsWorld.getDispatcher();
         Set<Block> blocks = new HashSet<>();

@@ -1,21 +1,33 @@
 package dev.lazurite.rayon.physics.composition;
 
-import dev.lazurite.rayon.side.server.ServerInitializer;
-import dev.lazurite.rayon.type.PhysicsTypes;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.linearmath.Transform;
+import dev.lazurite.rayon.physics.PhysicsWorld;
+import dev.lazurite.rayon.physics.helper.QuaternionHelper;
+import dev.lazurite.rayon.server.ServerInitializer;
+import dev.lazurite.rayon.util.PhysicsTypes;
 import dev.lazurite.thimble.composition.Composition;
 import dev.lazurite.thimble.synchronizer.Synchronizer;
 import dev.lazurite.thimble.synchronizer.key.SynchronizedKey;
 import dev.lazurite.thimble.synchronizer.type.SynchronizedTypeRegistry;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-public class DynamicPhysicsComposition extends Composition {
+public class DynPhysicsComposition extends Composition {
     public static final Identifier IDENTIFIER = new Identifier(ServerInitializer.MODID, "dynamic_physics");
 
     public static final SynchronizedKey<Integer> PLAYER_ID = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "player_id"), SynchronizedTypeRegistry.INTEGER, -1);
@@ -28,7 +40,9 @@ public class DynamicPhysicsComposition extends Composition {
     public static final SynchronizedKey<Vector3f> ANGULAR_VELOCITY = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "angular_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
     public static final SynchronizedKey<Quat4f> ORIENTATION = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "orientation"), PhysicsTypes.QUAT4F, new Quat4f());
 
-    public DynamicPhysicsComposition(Synchronizer synchronizer) {
+    private RigidBody rigidBody;
+
+    public DynPhysicsComposition(Synchronizer synchronizer) {
         super(synchronizer);
     }
 
@@ -52,12 +66,67 @@ public class DynamicPhysicsComposition extends Composition {
         }
 
         if (world.isClient()) {
-            ClientPhysicsHandler physics = (ClientPhysicsHandler) this.physics;
-            physics.updateNetOrientation();
+//            ClientPhysicsHandler physics = (ClientPhysicsHandler) this.physics;
+//            physics.updateNetOrientation();
         } else {
 //            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
 //                kill();
 //            }
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void step(Entity entity, float delta) {
+
+    }
+
+    /**
+     * Creates a new {@link RigidBody} based off of the entity's attributes.
+     */
+    @Environment(EnvType.CLIENT)
+    public void createRigidBody(Entity entity) {
+        Vector3f inertia = new Vector3f(0.0F, 0.0F, 0.0F);
+        shape.calculateLocalInertia(getSynchronizer().get(MASS), inertia);
+
+        Vec3d pos = entity.getPos();
+        Vector3f position = new Vector3f((float) pos.x, (float) pos.y + 0.125f, (float) pos.z);
+
+        DefaultMotionState motionState;
+        if (getRigidBody() != null) {
+            RigidBody old = getRigidBody();
+            motionState = new DefaultMotionState(old.getWorldTransform(new Transform()));
+            PhysicsWorld.getInstance().removeRigidBody(old);
+        } else {
+            motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(0, 1, 0, 0), position, 1.0f)));
+        }
+
+        RigidBodyConstructionInfo ci = new RigidBodyConstructionInfo(getSynchronizer().get(MASS), motionState, shape, inertia);
+        RigidBody body = new RigidBody(ci);
+        body.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
+
+        this.body = body;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public RigidBody getRigidBody() {
+        return this.rigidBody;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public boolean isHost(Entity entity) {
+        PlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (player != null) {
+            return entity.age > 5 && getSynchronizer().get(PLAYER_ID) == player.getEntityId();
+        }
+
+        return false;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void applyForce(Vector3f... forces) {
+        for (Vector3f force : forces) {
+            getRigidBody().applyCentralForce(force);
         }
     }
 

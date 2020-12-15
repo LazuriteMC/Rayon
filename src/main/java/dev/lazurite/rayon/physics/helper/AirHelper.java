@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.physics.helper;
 
-import dev.lazurite.rayon.physics.PhysicsWorld;
+import dev.lazurite.rayon.util.Constants;
 
 import javax.vecmath.Vector3f;
 import java.util.Random;
@@ -18,7 +18,7 @@ public class AirHelper {
         // TODO Get size based on model shape in direction of movement (ask peyon)
 
         int size = 8;
-        float k = (PhysicsWorld.AIR_DENSITY * dragCoefficient * (float) Math.pow(size / 16f, 2)) / 2.0f;
+        float k = (Constants.AIR_DENSITY * dragCoefficient * (float) Math.pow(size / 16f, 2)) / 2.0f;
         Vector3f force = new Vector3f();
         force.set(velocity);
         force.scale(k);

@@ -11,12 +11,3 @@
             setCustomNameVisible(true);
         }
     }
-
-    public void setYaw(float yaw) {
-        if (world.isClient()) {
-            ((ClientPhysicsHandler) physics).rotateY(yaw);
-        }
-
-        this.prevYaw = this.yaw;
-        this.yaw = yaw;
-    }

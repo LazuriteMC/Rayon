@@ -4,7 +4,10 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.PhysicsWorld;
+import dev.lazurite.rayon.physics.composition.DynPhysicsComposition;
+import dev.lazurite.rayon.physics.helper.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
@@ -29,20 +32,16 @@ public class DebugRenderer extends IDebugDraw {
 
         if (blocks) {
             this.world.getRigidBodies().forEach(body -> {
-                render(
-                        body,
-                        body.getOrientation(new Quat4f()),
-                        body.getCenterOfMassPosition(new Vector3f()),
-                        camPos,
-                        color
-                );
+                render(body, body.getOrientation(new Quat4f()), body.getCenterOfMassPosition(new Vector3f()), camPos, color);
             });
         } else {
-            this.world.getEntities().forEach(physics -> {
+            this.world.getEntities().forEach(entity -> {
+                DynPhysicsComposition physics = Rayon.getPhysics(entity);
+
                 render(
                         physics.getRigidBody(),
-                        physics.getOrientation(),
-                        physics.getPosition(),
+                        physics.getSynchronizer().get(DynPhysicsComposition.ORIENTATION),
+                        physics.getSynchronizer().get(DynPhysicsComposition.POSITION),
                         camPos,
                         color
                 );

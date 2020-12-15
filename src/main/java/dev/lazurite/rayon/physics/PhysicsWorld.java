@@ -12,17 +12,18 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.Clock;
 import com.bulletphysics.linearmath.Transform;
-import dev.lazurite.rayon.physics.handler.ClientPhysicsHandler;
+import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.physics.composition.DynPhysicsComposition;
 import dev.lazurite.rayon.physics.helper.BlockCollisionHelper;
 import dev.lazurite.rayon.render.DebugRenderer;
 import dev.lazurite.rayon.physics.helper.VectorHelper;
-import dev.lazurite.rayon.physics.handler.PhysicsHandler;
-import dev.lazurite.rayon.entity.PhysicsEntity;
+import dev.lazurite.rayon.util.Constants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
 import java.util.ArrayList;
@@ -35,13 +36,8 @@ import java.util.List;
  * @author Ethan Johnson
  */
 @Environment(EnvType.CLIENT)
-public class PhysicsWorld extends DiscreteDynamicsWorld {
-    public static final int BLOCK_RADIUS = 3;
-    public static final float AIR_DENSITY = 1.2f;
-    public static final float GRAVITY = -9.81f;
-
-    private final MinecraftClient client;
-    private final List<ClientPhysicsHandler> entities;
+public final class PhysicsWorld extends DiscreteDynamicsWorld {
+    private final List<Entity> entities;
     private final BlockCollisionHelper blockCollisions;
     private final DebugRenderer debugRenderer;
     private final Clock clock;
@@ -59,14 +55,13 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     private PhysicsWorld(CollisionDispatcher dispatcher, BroadphaseInterface broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, solver, collisionConfiguration);
 
-        this.client = MinecraftClient.getInstance();
         this.entities = new ArrayList<>();
         this.blockCollisions = new BlockCollisionHelper(this);
         this.debugRenderer = new DebugRenderer(this);
         this.clock = new Clock();
 
         this.setDebugDrawer(debugRenderer);
-        this.setGravity(new Vector3f(0, GRAVITY, 0));
+        this.setGravity(new Vector3f(0, Constants.GRAVITY, 0));
     }
 
     /**
@@ -83,32 +78,35 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
     }
 
     /**
-     * @return the running instance of the physics world
+     * @return the running instance of {@link PhysicsWorld}
      */
     public static PhysicsWorld getInstance() {
         return instance;
     }
 
     /**
-     * This method gets called every frame. It updates the physics world
-     * using delta time calculated from the {@link Clock} class.
+     * This method gets called on the render thread every frame. It updates the
+     * {@link PhysicsWorld} using delta time calculated from the {@link Clock} class.
      */
     public void stepWorld() {
-        ClientWorld world = ClientInitializer.client.world;
-        List<ClientPhysicsHandler> toRemove = new ArrayList<>();
+        World world = MinecraftClient.getInstance().world;
+        List<Entity> toRemove = new ArrayList<>();
         float maxSubSteps = 5.0f;
 
         float delta = clock.getTimeMicroseconds() / 1000000F;
         clock.reset();
 
-        this.entities.forEach(physics -> {
-            if (physics.getEntity().removed) {
-                toRemove.add(physics);
+        this.entities.forEach(entity -> {
+            if (entity.removed) {
+                toRemove.add(entity);
+                return;
             }
+
+            DynPhysicsComposition physics = Rayon.getPhysics(entity);
 
             if (world != null) {
                 if (physics.isActive()) {
-                    physics.getEntity().step(delta);
+                    physics.step(entity, delta);
 
                     /* Add the rigid body to the world if it isn't already there */
                     if (!physics.getRigidBody().isInWorld()) {
@@ -175,7 +173,7 @@ public class PhysicsWorld extends DiscreteDynamicsWorld {
      * Get the list of physics objects.
      * @return the list of physics objects
      */
-    public List<ClientPhysicsHandler> getEntities() {
+    public List<Entity> getEntities() {
         return this.entities;
     }
 

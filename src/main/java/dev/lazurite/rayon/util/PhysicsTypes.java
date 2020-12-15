@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.type;
+package dev.lazurite.rayon.util;
 
 import dev.lazurite.thimble.synchronizer.type.SynchronizedType;
 import net.minecraft.nbt.CompoundTag;
