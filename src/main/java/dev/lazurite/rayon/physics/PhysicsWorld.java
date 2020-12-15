@@ -12,8 +12,10 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.Clock;
 import com.bulletphysics.linearmath.Transform;
+import com.google.common.collect.Lists;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.composition.DynPhysicsComposition;
+import dev.lazurite.rayon.exception.PhysicsWorldTrackingException;
+import dev.lazurite.rayon.physics.composition.PhysicsComposition;
 import dev.lazurite.rayon.physics.helper.BlockCollisionHelper;
 import dev.lazurite.rayon.render.DebugRenderer;
 import dev.lazurite.rayon.physics.helper.VectorHelper;
@@ -22,26 +24,33 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the main world class behind most of the Physics API. Every physics object, whether block
- * or entity, ends up in here and is tracked within this class. There are also values which can be changed
- * (only in the code) such as gravity and air density.
+ * This is the main world class behind most of the Physics API. Every {@link RigidBody}, whether
+ * it represents a block or an entity, ends up in here and is tracked within this class.
  * @author Ethan Johnson
  */
 @Environment(EnvType.CLIENT)
 public final class PhysicsWorld extends DiscreteDynamicsWorld {
+    /** The list of {@link Entity} objects that are tracked by the {@link PhysicsWorld}. */
     private final List<Entity> entities;
-    private final BlockCollisionHelper blockCollisions;
+
+    /** The {@link BlockCollisionHelper} responsible for loading/unloading blocks from the {@link PhysicsWorld}. */
+    private final BlockCollisionHelper blockCollisionHelper;
+
+    /** The renderer responsible for showing outlines of {@link RigidBody} objects in-game. */
     private final DebugRenderer debugRenderer;
+
+    /** The {@link Clock} used for keeping time and calculating delta time in the main loop. */
     private final Clock clock;
 
+    /** The instance variable used in place of instantiating {@link PhysicsWorld} yourself. */
     private static PhysicsWorld instance;
 
     /**
@@ -56,7 +65,7 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
         super(dispatcher, broadphase, solver, collisionConfiguration);
 
         this.entities = new ArrayList<>();
-        this.blockCollisions = new BlockCollisionHelper(this);
+        this.blockCollisionHelper = new BlockCollisionHelper(this);
         this.debugRenderer = new DebugRenderer(this);
         this.clock = new Clock();
 
@@ -89,7 +98,9 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
      * {@link PhysicsWorld} using delta time calculated from the {@link Clock} class.
      */
     public void stepWorld() {
-        World world = MinecraftClient.getInstance().world;
+        MinecraftClient client = MinecraftClient.getInstance();
+        ClientWorld world = client.world;
+
         List<Entity> toRemove = new ArrayList<>();
         float maxSubSteps = 5.0f;
 
@@ -97,76 +108,95 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
         clock.reset();
 
         this.entities.forEach(entity -> {
+            if (!Rayon.hasPhysics(entity)) {
+                toRemove.add(entity);
+                return;
+            }
+
+            /* Get the Physics Composition object for the given entity. */
+            PhysicsComposition physics = Rayon.getPhysics(entity);
+
+            /* Build a list of entities to remove later-on. */
             if (entity.removed) {
                 toRemove.add(entity);
                 return;
             }
 
-            DynPhysicsComposition physics = Rayon.getPhysics(entity);
-
             if (world != null) {
-                if (physics.isActive()) {
-                    physics.step(entity, delta);
+                physics.step(entity, delta);
 
-                    /* Add the rigid body to the world if it isn't already there */
-                    if (!physics.getRigidBody().isInWorld()) {
-                        this.addRigidBody(physics.getRigidBody());
-                    }
+                /* Add the rigid body to the world if it isn't already there */
+                if (!physics.getRigidBody().isInWorld()) {
+                    this.addRigidBody(physics.getRigidBody());
+                }
 
-                    /* Load in block collisions */
-                    if (!physics.getEntity().noClip) {
-                        this.blockCollisions.load(physics.getEntity(), world);
-                    }
-                } else {
-                    /* Remove the rigid body if it is in the world */
-                    if (physics.getRigidBody().isInWorld()) {
-                        this.removeRigidBody(physics.getRigidBody());
-                    }
+                /* Load in block collisions */
+                if (!physics.getSynchronizer().get(PhysicsComposition.NO_CLIP)) {
+                    this.blockCollisionHelper.load(entity, world);
                 }
             }
         });
 
-        this.blockCollisions.unload();
+        /* Clean out unnecessary blocks. */
+        this.blockCollisionHelper.unload();
+
+        /* Clean out all "to remove" entities. */
         toRemove.forEach(entities::remove);
+
+        /* Step the world using delta. */
         this.stepSimulation(delta, (int) maxSubSteps, delta/maxSubSteps);
     }
 
     /**
-     * Add a physics object into the world.
-     * @param physics The {@link PhysicsHandler} from a {@link PhysicsEntity}
+     * Add an {@link Entity} which has a {@link PhysicsComposition}.
+     * Throws a {@link PhysicsWorldTrackingException} if the {@link Entity}
+     * doesn't have a {@link PhysicsComposition} stitched to it.
+     * @param entity The {@link Entity} to add
      */
-    public void add(ClientPhysicsHandler physics) {
-        this.entities.add(physics);
+    public void track(Entity entity) throws PhysicsWorldTrackingException {
+        if (!Rayon.hasPhysics(entity)) {
+            throw new PhysicsWorldTrackingException("Cannot add entity without PhysicsComposition");
+        }
+
+        this.entities.add(entity);
     }
 
     /**
-     * Remove a physics object from the world.
-     * @param physics The {@link PhysicsHandler} from a {@link PhysicsEntity}
+     * Stop tracking an {@link Entity} within the {@link PhysicsWorld}.
+     * @param entity The {@link Entity} to stop tracking
      */
-    public void remove(ClientPhysicsHandler physics) {
-        this.removeRigidBody(physics.getRigidBody());
-        this.entities.remove(physics);
+    public void stopTracking(Entity entity) {
+        this.entities.remove(entity);
     }
 
     /**
-     * Get a list of rigid bodies. Includes blocks
+     * Get a list of rigid bodies. Includes blocks.
      * @return a list of rigid bodies
      */
     public List<RigidBody> getRigidBodies() {
-        List<RigidBody> bodies = new ArrayList<>();
+        List<RigidBody> bodies = Lists.newArrayList();
 
-        entities.forEach(physics -> bodies.add(physics.getRigidBody()));
-        bodies.addAll(this.blockCollisions.getRigidBodies());
+        /* Add all blocks. */
+        bodies.addAll(this.blockCollisionHelper.getRigidBodies());
+
+        /* Add all entities. */
+        entities.forEach(entity -> {
+            PhysicsComposition physics = Rayon.getPhysics(entity);
+
+            if (physics != null) {
+                bodies.add(physics.getRigidBody());
+            }
+        });
 
         return bodies;
     }
 
     /**
-     * Get the list of blocks from {@link BlockCollisionHelper}.
-     * @return the list of blocks
+     * Get the {@link BlockCollisionHelper} object.
+     * @return the helper used for loading/unloading blocks
      */
-    public BlockCollisionHelper getBlockCollisions() {
-        return this.blockCollisions;
+    public BlockCollisionHelper getBlockCollisionHelper() {
+        return this.blockCollisionHelper;
     }
 
     /**

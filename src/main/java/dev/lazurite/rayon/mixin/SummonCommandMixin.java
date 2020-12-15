@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.mixin;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.lazurite.rayon.entity.PhysicsEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
@@ -48,7 +47,7 @@ public class SummonCommandMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private static void execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize, CallbackInfoReturnable<Integer> info, CompoundTag tag, ServerWorld world, Entity entity2) throws CommandSyntaxException {
-        if (entity2 instanceof PhysicsEntity) {
+        /*if (entity2 instanceof PhysicsEntity) {
             PhysicsEntity physicsEntity = (PhysicsEntity) entity2;
             Vector3f position = new Vector3f((float) pos.x, (float) pos.y, (float) pos.z);
             int id = source.getPlayer().getEntityId();
@@ -57,6 +56,6 @@ public class SummonCommandMixin {
             physicsEntity.setYaw(yaw);
             physicsEntity.getPhysics().setPosition(position);
             physicsEntity.setValue(PhysicsEntity.PLAYER_ID, id);
-        }
+        }*/
     }
 }

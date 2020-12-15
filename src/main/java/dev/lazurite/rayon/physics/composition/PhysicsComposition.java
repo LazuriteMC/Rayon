@@ -1,12 +1,15 @@
 package dev.lazurite.rayon.physics.composition;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.physics.helper.QuaternionHelper;
+import dev.lazurite.rayon.physics.helper.VectorHelper;
 import dev.lazurite.rayon.server.ServerInitializer;
 import dev.lazurite.rayon.util.PhysicsTypes;
 import dev.lazurite.thimble.composition.Composition;
@@ -20,39 +23,44 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-public class DynPhysicsComposition extends Composition {
+public class PhysicsComposition extends Composition {
     public static final Identifier IDENTIFIER = new Identifier(ServerInitializer.MODID, "dynamic_physics");
 
-    public static final SynchronizedKey<Integer> PLAYER_ID = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "player_id"), SynchronizedTypeRegistry.INTEGER, -1);
-    public static final SynchronizedKey<Float> MASS = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "mass"), SynchronizedTypeRegistry.FLOAT, 0.0f);
-    public static final SynchronizedKey<Float> DRAG_COEFFICIENT = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "drag_coefficient"), SynchronizedTypeRegistry.FLOAT, 0.0f);
-    public static final SynchronizedKey<Boolean> NO_CLIP = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "no_clip"), SynchronizedTypeRegistry.BOOLEAN, false);
+    public static final SynchronizedKey<Integer> PLAYER_ID = Synchronizer.register(new Identifier(ServerInitializer.MODID, "player_id"), SynchronizedTypeRegistry.INTEGER, -1);
+    public static final SynchronizedKey<Float> MASS = Synchronizer.register(new Identifier(ServerInitializer.MODID, "mass"), SynchronizedTypeRegistry.FLOAT, 0.0f);
+    public static final SynchronizedKey<Float> DRAG_COEFFICIENT = Synchronizer.register(new Identifier(ServerInitializer.MODID, "drag_coefficient"), SynchronizedTypeRegistry.FLOAT, 0.0f);
+    public static final SynchronizedKey<Boolean> NO_CLIP = Synchronizer.register(new Identifier(ServerInitializer.MODID, "no_clip"), SynchronizedTypeRegistry.BOOLEAN, false);
 
-    public static final SynchronizedKey<Vector3f> POSITION = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "position"), PhysicsTypes.VECTOR3F, new Vector3f());
-    public static final SynchronizedKey<Vector3f> LINEAR_VELOCITY = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "linear_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
-    public static final SynchronizedKey<Vector3f> ANGULAR_VELOCITY = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "angular_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
-    public static final SynchronizedKey<Quat4f> ORIENTATION = new SynchronizedKey<>(new Identifier(ServerInitializer.MODID, "orientation"), PhysicsTypes.QUAT4F, new Quat4f());
+    public static final SynchronizedKey<Vector3f> POSITION = Synchronizer.register(new Identifier(ServerInitializer.MODID, "position"), PhysicsTypes.VECTOR3F, new Vector3f());
+    public static final SynchronizedKey<Vector3f> LINEAR_VELOCITY = Synchronizer.register(new Identifier(ServerInitializer.MODID, "linear_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
+    public static final SynchronizedKey<Vector3f> ANGULAR_VELOCITY = Synchronizer.register(new Identifier(ServerInitializer.MODID, "angular_velocity"), PhysicsTypes.VECTOR3F, new Vector3f());
+    public static final SynchronizedKey<Quat4f> ORIENTATION = Synchronizer.register(new Identifier(ServerInitializer.MODID, "orientation"), PhysicsTypes.QUAT4F, new Quat4f());
 
     private RigidBody rigidBody;
+    private float prevMass;
 
-    public DynPhysicsComposition(Synchronizer synchronizer) {
+    public PhysicsComposition(Synchronizer synchronizer) {
         super(synchronizer);
     }
 
     @Override
     public void onTick(Entity entity) {
         World world = entity.getEntityWorld();
-        Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
-        Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
 
+        /* Update the position of the entity based on the rigid body. */
+        Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
         entity.updatePosition(position.x, position.y, position.z);
+
+        /* Update the orientation of the entity based on the rigid body. */
+        Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
 
         entity.prevYaw = entity.yaw;
         entity.yaw = QuaternionHelper.getYaw(orientation);
@@ -66,31 +74,46 @@ public class DynPhysicsComposition extends Composition {
         }
 
         if (world.isClient()) {
-//            ClientPhysicsHandler physics = (ClientPhysicsHandler) this.physics;
-//            physics.updateNetOrientation();
-        } else {
-//            if (getValue(PLAYER_ID) != -1 && getEntityWorld().getEntityById(getValue(PLAYER_ID)) == null) {
-//                kill();
-//            }
+            /* Check for a change in mass. */
+            if (getSynchronizer().get(MASS) != prevMass) {
+                createRigidBody(entity, null);
+            }
         }
     }
 
     @Environment(EnvType.CLIENT)
     public void step(Entity entity, float delta) {
+        MinecraftClient client = MinecraftClient.getInstance();
 
+        if (this.belongsTo(client.player)) {
+
+        }
     }
 
     /**
      * Creates a new {@link RigidBody} based off of the entity's attributes.
+     * Creates a {@link BoxShape} if there is no {@link CollisionShape} specified.
      */
     @Environment(EnvType.CLIENT)
-    public void createRigidBody(Entity entity) {
+    public void createRigidBody(Entity entity, @Nullable CollisionShape shape) {
+        /* Create a BoxShape if a shape isn't passed in. */
+        if (shape == null) {
+            Box bb = entity.getBoundingBox();
+            shape = new BoxShape(new Vector3f(
+                    (float) (bb.maxX - (bb.minX / 2.0f)),
+                    (float) (bb.maxY - (bb.minY / 2.0f)),
+                    (float) (bb.maxZ - (bb.minZ / 2.0f))
+            ));
+        }
+
+        /* Calculate the inertia of the shape. */
         Vector3f inertia = new Vector3f(0.0F, 0.0F, 0.0F);
         shape.calculateLocalInertia(getSynchronizer().get(MASS), inertia);
 
-        Vec3d pos = entity.getPos();
-        Vector3f position = new Vector3f((float) pos.x, (float) pos.y + 0.125f, (float) pos.z);
+        /* Get the position of the entity. */
+        Vector3f position = VectorHelper.vec3dToVector3f(entity.getPos());
 
+        /* Calculate the new/modified motion state. */
         DefaultMotionState motionState;
         if (getRigidBody() != null) {
             RigidBody old = getRigidBody();
@@ -100,11 +123,15 @@ public class DynPhysicsComposition extends Composition {
             motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(0, 1, 0, 0), position, 1.0f)));
         }
 
+        /* Create the RigidBody based on the construction info. */
         RigidBodyConstructionInfo ci = new RigidBodyConstructionInfo(getSynchronizer().get(MASS), motionState, shape, inertia);
-        RigidBody body = new RigidBody(ci);
-        body.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
+        RigidBody rigidBody = new RigidBody(ci);
 
-        this.body = body;
+        /* Set the activation state so that deactivation is disabled. */
+        rigidBody.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
+
+        /* Set the class attribute. */
+        this.rigidBody = rigidBody;
     }
 
     @Environment(EnvType.CLIENT)
@@ -170,19 +197,45 @@ public class DynPhysicsComposition extends Composition {
         getSynchronizer().set(ORIENTATION, quat);
     }
 
+    /**
+     * Find whether or not this {@link PhysicsComposition}
+     * belongs to given {@link PlayerEntity}
+     * @param playerId the {@link PlayerEntity} Id
+     * @return whether or not the {@link PlayerEntity} Id is equal to the synchronized Id
+     */
+    public boolean belongsTo(int playerId) {
+        return getSynchronizer().get(PLAYER_ID).equals(playerId);
+    }
+
+    /**
+     * Same as {@link PhysicsComposition#belongsTo(int)}, except
+     * it passes the {@link PlayerEntity} Id number in.
+     * @param player the {@link PlayerEntity}
+     * @return whether or not the {@link PlayerEntity} is equal
+     */
+    public boolean belongsTo(PlayerEntity player) {
+        return belongsTo(player.getEntityId());
+    }
+
+    /**
+     * Start tracking all of the necessary
+     * synchronized values.
+     */
     @Override
     public void initSynchronizer() {
         getSynchronizer().track(PLAYER_ID);
         getSynchronizer().track(MASS);
         getSynchronizer().track(DRAG_COEFFICIENT);
         getSynchronizer().track(NO_CLIP);
-
         getSynchronizer().track(POSITION);
         getSynchronizer().track(LINEAR_VELOCITY);
         getSynchronizer().track(ANGULAR_VELOCITY);
         getSynchronizer().track(ORIENTATION);
     }
 
+    /**
+     * @return the {@link Identifier} used in packets and data tags
+     */
     @Override
     public Identifier getIdentifier() {
         return IDENTIFIER;

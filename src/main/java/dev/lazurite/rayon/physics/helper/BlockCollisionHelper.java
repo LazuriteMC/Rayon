@@ -9,7 +9,7 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.composition.DynPhysicsComposition;
+import dev.lazurite.rayon.physics.composition.PhysicsComposition;
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.util.Constants;
 import net.fabricmc.api.EnvType;
@@ -116,7 +116,7 @@ public class BlockCollisionHelper {
      */
     public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
         PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
-        DynPhysicsComposition physics = Rayon.getPhysics(entity);
+        PhysicsComposition physics = Rayon.getPhysics(entity);
 
         Dispatcher dispatcher = physicsWorld.getDispatcher();
         Set<Block> blocks = new HashSet<>();
@@ -124,8 +124,8 @@ public class BlockCollisionHelper {
         for (int manifoldNum = 0; manifoldNum < dispatcher.getNumManifolds(); ++manifoldNum) {
             PersistentManifold manifold = dispatcher.getManifoldByIndexInternal(manifoldNum);
 
-            if (physicsWorld.getBlockCollisions().contains((RigidBody) manifold.getBody0()) &&
-                    physicsWorld.getBlockCollisions().contains((RigidBody) manifold.getBody1())) {
+            if (physicsWorld.getBlockCollisionHelper().contains((RigidBody) manifold.getBody0()) &&
+                    physicsWorld.getBlockCollisionHelper().contains((RigidBody) manifold.getBody1())) {
                 continue;
             }
 

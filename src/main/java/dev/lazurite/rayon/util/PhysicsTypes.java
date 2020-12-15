@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.util;
 
 import dev.lazurite.thimble.synchronizer.type.SynchronizedType;
+import dev.lazurite.thimble.synchronizer.type.SynchronizedTypeRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 
@@ -89,4 +90,9 @@ public class PhysicsTypes {
             return Quat4f.class;
         }
     };
+
+    static {
+        SynchronizedTypeRegistry.register(VECTOR3F);
+        SynchronizedTypeRegistry.register(QUAT4F);
+    }
 }
