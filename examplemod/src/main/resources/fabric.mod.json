@@ -13,13 +13,9 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.lazurite.rayon.entity_example.server.ServerInitializer"
+      "dev.lazurite.rayon.examplemod.ServerInitializer"
     ]
   },
-
-  "mixins": [
-    "examplemod.mixins.json"
-  ],
 
   "depends": {
     "fabricloader": ">=0.7.4",

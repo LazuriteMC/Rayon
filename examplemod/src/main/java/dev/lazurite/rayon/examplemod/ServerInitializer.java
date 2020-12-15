@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.examplemod.server;
+package dev.lazurite.rayon.examplemod;
 
-import dev.lazurite.rayon.examplemod.server.item.TestItem;
+import dev.lazurite.rayon.examplemod.item.WandItem;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -13,16 +13,15 @@ import net.minecraft.util.registry.Registry;
  * @author Ethan Johnson
  */
 public class ServerInitializer implements ModInitializer {
+    public static final String MODID = "examplemod";
 
-    public static final String MODID = "rayon_entity_example";
-
-    public static TestItem TEST_ITEM;
+    public static WandItem TEST_ITEM;
 
     @Override
     public void onInitialize() {
         TEST_ITEM = Registry.register(
                 Registry.ITEM,
-                new Identifier(MODID, "test_item"),
-                new TestItem(new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
+                new Identifier(MODID, "wand_item"),
+                new WandItem(new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     }
 }

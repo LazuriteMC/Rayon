@@ -1,5 +1,9 @@
-package dev.lazurite.rayon.examplemod.server.item;
+package dev.lazurite.rayon.examplemod.item;
 
+import dev.lazurite.rayon.physics.composition.PhysicsComposition;
+import dev.lazurite.thimble.Thimble;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,6 +39,12 @@ public class WandItem extends Item {
         HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 
         if (!world.isClient()) {
+            CowEntity cow = EntityType.COW.create(world);
+
+            cow.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+            Thimble.stitch(PhysicsComposition::new, cow);
+            world.spawnEntity(cow);
+
             return TypedActionResult.success(itemStack);
         }
 

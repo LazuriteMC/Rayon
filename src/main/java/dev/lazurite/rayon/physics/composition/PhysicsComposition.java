@@ -55,6 +55,15 @@ public class PhysicsComposition extends Composition {
     public void onTick(Entity entity) {
         World world = entity.getEntityWorld();
 
+        if (world.isClient()) {
+            /* Check for a change in mass. */
+            if (getRigidBody() == null || getSynchronizer().get(MASS) != prevMass) {
+                createRigidBody(entity, null);
+            }
+
+            getSynchronizer().set(POSITION, getRigidBody().getCenterOfMassPosition(new Vector3f()));
+        }
+
         /* Update the position of the entity based on the rigid body. */
         Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
         entity.updatePosition(position.x, position.y, position.z);
@@ -71,13 +80,6 @@ public class PhysicsComposition extends Composition {
 
         while(entity.yaw - entity.prevYaw >= 180.0F) {
             entity.prevYaw += 360.0F;
-        }
-
-        if (world.isClient()) {
-            /* Check for a change in mass. */
-            if (getSynchronizer().get(MASS) != prevMass) {
-                createRigidBody(entity, null);
-            }
         }
     }
 
@@ -132,6 +134,8 @@ public class PhysicsComposition extends Composition {
 
         /* Set the class attribute. */
         this.rigidBody = rigidBody;
+
+        getSynchronizer().set(POSITION, getRigidBody().getCenterOfMassPosition(new Vector3f()));
     }
 
     @Environment(EnvType.CLIENT)
@@ -164,7 +168,7 @@ public class PhysicsComposition extends Composition {
 
     @Override
     public void onRemove() {
-
+        System.out.println("BOOM. GONE");
     }
 
     /**
