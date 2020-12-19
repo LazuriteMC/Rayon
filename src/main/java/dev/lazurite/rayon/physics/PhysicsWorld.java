@@ -108,21 +108,21 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
         clock.reset();
 
         this.entities.forEach(entity -> {
-            if (!Rayon.hasPhysics(entity)) {
-                toRemove.add(entity);
-                return;
-            }
+//            if (!Rayon.hasPhysics(entity)) {
+//                toRemove.add(entity);
+//                return;
+//            }
 
             /* Get the Physics Composition object for the given entity. */
             PhysicsComposition physics = Rayon.getPhysics(entity);
 
-            /* Build a list of entities to remove later-on. */
+            /* Build a list of entities to remove later on. */
             if (entity.removed) {
                 toRemove.add(entity);
                 return;
             }
 
-            if (world != null) {
+            if (world != null && physics.getRigidBody() != null) {
                 physics.step(entity, delta);
 
                 /* Add the rigid body to the world if it isn't already there */
@@ -153,12 +153,14 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
      * doesn't have a {@link PhysicsComposition} stitched to it.
      * @param entity The {@link Entity} to add
      */
-    public void track(Entity entity) throws PhysicsWorldTrackingException {
+    public void track(Entity entity) {
         if (!Rayon.hasPhysics(entity)) {
             throw new PhysicsWorldTrackingException("Cannot add entity without PhysicsComposition");
         }
 
-        this.entities.add(entity);
+        if (!this.entities.contains(entity)) {
+            this.entities.add(entity);
+        }
     }
 
     /**

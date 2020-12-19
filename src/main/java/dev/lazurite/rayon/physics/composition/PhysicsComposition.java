@@ -56,31 +56,33 @@ public class PhysicsComposition extends Composition {
         World world = entity.getEntityWorld();
 
         if (world.isClient()) {
+            PhysicsWorld.getInstance().track(entity);
+
             /* Check for a change in mass. */
             if (getRigidBody() == null || getSynchronizer().get(MASS) != prevMass) {
                 createRigidBody(entity, null);
             }
 
             getSynchronizer().set(POSITION, getRigidBody().getCenterOfMassPosition(new Vector3f()));
+        } else {
+            /* Update the position of the entity based on the rigid body. */
+            Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
+            entity.updatePosition(position.x, position.y, position.z);
         }
 
-        /* Update the position of the entity based on the rigid body. */
-        Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
-        entity.updatePosition(position.x, position.y, position.z);
-
-        /* Update the orientation of the entity based on the rigid body. */
-        Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
-
-        entity.prevYaw = entity.yaw;
-        entity.yaw = QuaternionHelper.getYaw(orientation);
-
-        while(entity.yaw - entity.prevYaw < -180.0F) {
-            entity.prevYaw -= 360.0F;
-        }
-
-        while(entity.yaw - entity.prevYaw >= 180.0F) {
-            entity.prevYaw += 360.0F;
-        }
+//        /* Update the orientation of the entity based on the rigid body. */
+//        Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
+//
+//        entity.prevYaw = entity.yaw;
+//        entity.yaw = QuaternionHelper.getYaw(orientation);
+//
+//        while(entity.yaw - entity.prevYaw < -180.0F) {
+//            entity.prevYaw -= 360.0F;
+//        }
+//
+//        while(entity.yaw - entity.prevYaw >= 180.0F) {
+//            entity.prevYaw += 360.0F;
+//        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -162,7 +164,7 @@ public class PhysicsComposition extends Composition {
     }
 
     @Override
-    public boolean onInteract(PlayerEntity player, Hand hand) {
+    public boolean onInteract(Entity entity, PlayerEntity player, Hand hand) {
         return false;
     }
 

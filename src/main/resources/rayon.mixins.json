@@ -9,6 +9,7 @@
   "client": [
     "ClientPlayNetworkHandlerMixin",
     "DebugRendererMixin",
+    "EntityMixin",
     "GameRendererMixin"
   ],
   "injectors": {

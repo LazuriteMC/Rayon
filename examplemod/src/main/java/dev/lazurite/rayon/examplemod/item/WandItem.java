@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.examplemod.item;
 
+import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.physics.composition.PhysicsComposition;
 import dev.lazurite.thimble.Thimble;
 import net.minecraft.entity.EntityType;

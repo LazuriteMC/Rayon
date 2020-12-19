@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.mixin;
 
-import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.physics.composition.PhysicsComposition;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -45,9 +44,9 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityPosition(EntityPositionS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (Rayon.hasPhysics(entity)) {
-            info.cancel();
-        }
+//        if (RayonClient.belongsTo(entity)) {
+//            info.cancel();
+//        }
     }
 
     /**
@@ -64,8 +63,8 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityUpdate(EntityS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (Rayon.hasPhysics(entity)) {
-            info.cancel();
-        }
+//        if (RayonClient.belongsTo(entity)) {
+//            info.cancel();
+//        }
     }
 }
