@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.examplemod.item;
 
-import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.physics.composition.PhysicsComposition;
+import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import dev.lazurite.thimble.Thimble;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
@@ -43,7 +42,7 @@ public class WandItem extends Item {
             CowEntity cow = EntityType.COW.create(world);
 
             cow.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-            Thimble.stitch(PhysicsComposition::new, cow);
+            Thimble.stitch(DynamicBodyComposition::new, cow);
             world.spawnEntity(cow);
 
             return TypedActionResult.success(itemStack);

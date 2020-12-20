@@ -20,7 +20,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.lazurite.rayon.server.ServerInitializer"
+      "dev.lazurite.rayon.init.ServerInitializer"
+    ],
+    "client": [
+      "dev.lazurite.rayon.init.ClientInitializer"
     ]
   },
   "mixins": [

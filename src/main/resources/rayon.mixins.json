@@ -8,9 +8,9 @@
   ],
   "client": [
     "ClientPlayNetworkHandlerMixin",
-    "DebugRendererMixin",
     "EntityMixin",
-    "GameRendererMixin"
+    "render.DebugRendererMixin",
+    "render.GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

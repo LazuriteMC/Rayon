@@ -1,0 +1,70 @@
+{
+  "blocks": [
+    {
+      "name": "block.minecraft.ice",
+      "friction": 0.9
+    },
+    {
+      "name": "block.minecraft.packed_ice",
+      "friction": 0.9
+    },
+    {
+      "name": "block.minecraft.frosted_ice",
+      "friction": 0.9
+    },
+    {
+      "name": "block.minecraft.blue_ice",
+      "friction": 0.9
+    },
+    {
+      "name": "block.minecraft.soul_sand",
+      "friction": 2.0
+    },
+    {
+      "name": "block.minecraft.slime_block",
+      "friction": 2.0
+    },
+    {
+      "name": "block.minecraft.honey_block",
+      "friction": 2.0
+    },
+    {
+      "name": "block.minecraft.snow",
+      "friction": 1.25
+    },
+    {
+      "name": "block.minecraft.snow_block",
+      "friction": 1.25
+    },
+    {
+      "name": "block.minecraft.oak_leaves",
+      "friction": 1.25,
+      "permeable": true
+    },
+    {
+      "name": "block.minecraft.spruce_leaves",
+      "friction": 1.25,
+      "permeable": true
+    },
+    {
+      "name": "block.minecraft.birch_leaves",
+      "friction": 1.25,
+      "permeable": true
+    },
+    {
+      "name": "block.minecraft.jungle_leaves",
+      "friction": 1.25,
+      "permeable": true
+    },
+    {
+      "name": "block.minecraft.acacia_leaves",
+      "friction": 1.25,
+      "permeable": true
+    },
+    {
+      "name": "block.minecraft.dark_oak_leaves",
+      "friction": 1.25,
+      "permeable": true
+    }
+  ]
+}

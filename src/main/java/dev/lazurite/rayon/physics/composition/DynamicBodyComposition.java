@@ -8,9 +8,9 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.physics.helper.QuaternionHelper;
-import dev.lazurite.rayon.physics.helper.VectorHelper;
-import dev.lazurite.rayon.server.ServerInitializer;
+import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
+import dev.lazurite.rayon.physics.helper.math.VectorHelper;
+import dev.lazurite.rayon.init.ServerInitializer;
 import dev.lazurite.rayon.util.PhysicsTypes;
 import dev.lazurite.thimble.composition.Composition;
 import dev.lazurite.thimble.synchronizer.Synchronizer;
@@ -20,6 +20,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -31,8 +32,8 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-public class PhysicsComposition extends Composition {
-    public static final Identifier IDENTIFIER = new Identifier(ServerInitializer.MODID, "dynamic_physics");
+public class DynamicBodyComposition extends Composition {
+    public static final Identifier IDENTIFIER = new Identifier(ServerInitializer.MODID, "dynamic_body");
 
     public static final SynchronizedKey<Integer> PLAYER_ID = Synchronizer.register(new Identifier(ServerInitializer.MODID, "player_id"), SynchronizedTypeRegistry.INTEGER, -1);
     public static final SynchronizedKey<Float> MASS = Synchronizer.register(new Identifier(ServerInitializer.MODID, "mass"), SynchronizedTypeRegistry.FLOAT, 0.0f);
@@ -45,44 +46,57 @@ public class PhysicsComposition extends Composition {
     public static final SynchronizedKey<Quat4f> ORIENTATION = Synchronizer.register(new Identifier(ServerInitializer.MODID, "orientation"), PhysicsTypes.QUAT4F, new Quat4f());
 
     private RigidBody rigidBody;
-    private float prevMass;
 
-    public PhysicsComposition(Synchronizer synchronizer) {
+    public DynamicBodyComposition(Synchronizer synchronizer) {
         super(synchronizer);
     }
 
     @Override
     public void onTick(Entity entity) {
         World world = entity.getEntityWorld();
+        entity.noClip = getSynchronizer().get(NO_CLIP);
 
         if (world.isClient()) {
             PhysicsWorld.getInstance().track(entity);
 
-            /* Check for a change in mass. */
-            if (getRigidBody() == null || getSynchronizer().get(MASS) != prevMass) {
+            if (getRigidBody() == null) {
                 createRigidBody(entity, null);
             }
 
+            Quat4f orientation = getRigidBody().getOrientation(new Quat4f());
+            QuaternionHelper.rotateY(orientation, 2);
+
+            Transform trans = getRigidBody().getWorldTransform(new Transform());
+            trans.setRotation(orientation);
+            getRigidBody().setWorldTransform(trans);
+
             getSynchronizer().set(POSITION, getRigidBody().getCenterOfMassPosition(new Vector3f()));
+            getSynchronizer().set(LINEAR_VELOCITY, getRigidBody().getLinearVelocity(new Vector3f()));
+            getSynchronizer().set(ANGULAR_VELOCITY, getRigidBody().getAngularVelocity(new Vector3f()));
+            getSynchronizer().set(ORIENTATION, getRigidBody().getOrientation(new Quat4f()));
         } else {
             /* Update the position of the entity based on the rigid body. */
             Vector3f position = new Vector3f(getSynchronizer().get(POSITION));
             entity.updatePosition(position.x, position.y, position.z);
-        }
 
-//        /* Update the orientation of the entity based on the rigid body. */
-//        Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
-//
-//        entity.prevYaw = entity.yaw;
-//        entity.yaw = QuaternionHelper.getYaw(orientation);
-//
-//        while(entity.yaw - entity.prevYaw < -180.0F) {
-//            entity.prevYaw -= 360.0F;
-//        }
-//
-//        while(entity.yaw - entity.prevYaw >= 180.0F) {
-//            entity.prevYaw += 360.0F;
-//        }
+            /* Update the orientation of the entity based on the rigid body. */
+            Quat4f orientation = new Quat4f(getSynchronizer().get(ORIENTATION));
+
+            entity.prevYaw = entity.yaw;
+            entity.yaw = QuaternionHelper.getYaw(orientation);
+
+            while (entity.yaw - entity.prevYaw < -180.0F) {
+                entity.prevYaw -= 360.0F;
+            }
+
+            while (entity.yaw - entity.prevYaw >= 180.0F) {
+                entity.prevYaw += 360.0F;
+            }
+
+            if (entity instanceof LivingEntity) {
+                ((LivingEntity) entity).bodyYaw = entity.yaw;
+            }
+        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -104,9 +118,9 @@ public class PhysicsComposition extends Composition {
         if (shape == null) {
             Box bb = entity.getBoundingBox();
             shape = new BoxShape(new Vector3f(
-                    (float) (bb.maxX - (bb.minX / 2.0f)),
-                    (float) (bb.maxY - (bb.minY / 2.0f)),
-                    (float) (bb.maxZ - (bb.minZ / 2.0f))
+                    (float) (bb.maxX - (bb.minX)),
+                    (float) (bb.maxY - (bb.minY)),
+                    (float) (bb.maxZ - (bb.minZ))
             ));
         }
 
@@ -169,7 +183,7 @@ public class PhysicsComposition extends Composition {
     }
 
     @Override
-    public void onRemove() {
+    public void onRemove(Entity entity) {
         System.out.println("BOOM. GONE");
     }
 
@@ -204,7 +218,7 @@ public class PhysicsComposition extends Composition {
     }
 
     /**
-     * Find whether or not this {@link PhysicsComposition}
+     * Find whether or not this {@link DynamicBodyComposition}
      * belongs to given {@link PlayerEntity}
      * @param playerId the {@link PlayerEntity} Id
      * @return whether or not the {@link PlayerEntity} Id is equal to the synchronized Id
@@ -214,7 +228,7 @@ public class PhysicsComposition extends Composition {
     }
 
     /**
-     * Same as {@link PhysicsComposition#belongsTo(int)}, except
+     * Same as {@link DynamicBodyComposition#belongsTo(int)}, except
      * it passes the {@link PlayerEntity} Id number in.
      * @param player the {@link PlayerEntity}
      * @return whether or not the {@link PlayerEntity} is equal

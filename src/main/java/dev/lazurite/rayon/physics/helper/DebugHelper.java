@@ -1,13 +1,13 @@
-package dev.lazurite.rayon.render;
+package dev.lazurite.rayon.physics.helper;
 
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.physics.DynamicBody;
 import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.physics.composition.PhysicsComposition;
-import dev.lazurite.rayon.physics.helper.QuaternionHelper;
+import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
+import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
@@ -20,10 +20,10 @@ import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 @Environment(EnvType.CLIENT)
-public class DebugRenderer extends IDebugDraw {
+public class DebugHelper extends IDebugDraw {
     private final PhysicsWorld world;
 
-    public DebugRenderer(PhysicsWorld world) {
+    public DebugHelper(PhysicsWorld world) {
         this.world = world;
     }
 
@@ -36,12 +36,12 @@ public class DebugRenderer extends IDebugDraw {
             });
         } else {
             this.world.getEntities().forEach(entity -> {
-                PhysicsComposition physics = Rayon.getPhysics(entity);
+                DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
                 render(
                         physics.getRigidBody(),
-                        physics.getSynchronizer().get(PhysicsComposition.ORIENTATION),
-                        physics.getSynchronizer().get(PhysicsComposition.POSITION),
+                        physics.getSynchronizer().get(DynamicBodyComposition.ORIENTATION),
+                        physics.getSynchronizer().get(DynamicBodyComposition.POSITION),
                         camPos,
                         color
                 );

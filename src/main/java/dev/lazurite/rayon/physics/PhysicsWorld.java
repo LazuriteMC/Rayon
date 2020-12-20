@@ -13,12 +13,11 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import com.bulletphysics.linearmath.Clock;
 import com.bulletphysics.linearmath.Transform;
 import com.google.common.collect.Lists;
-import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.exception.PhysicsWorldTrackingException;
-import dev.lazurite.rayon.physics.composition.PhysicsComposition;
-import dev.lazurite.rayon.physics.helper.BlockCollisionHelper;
-import dev.lazurite.rayon.render.DebugRenderer;
-import dev.lazurite.rayon.physics.helper.VectorHelper;
+import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
+import dev.lazurite.rayon.physics.helper.BlockHelper;
+import dev.lazurite.rayon.physics.helper.DebugHelper;
+import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.util.Constants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,6 +27,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 
 import javax.vecmath.Vector3f;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,17 +41,17 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     /** The list of {@link Entity} objects that are tracked by the {@link PhysicsWorld}. */
     private final List<Entity> entities;
 
-    /** The {@link BlockCollisionHelper} responsible for loading/unloading blocks from the {@link PhysicsWorld}. */
-    private final BlockCollisionHelper blockCollisionHelper;
-
-    /** The renderer responsible for showing outlines of {@link RigidBody} objects in-game. */
-    private final DebugRenderer debugRenderer;
-
     /** The {@link Clock} used for keeping time and calculating delta time in the main loop. */
     private final Clock clock;
 
     /** The instance variable used in place of instantiating {@link PhysicsWorld} yourself. */
     private static PhysicsWorld instance;
+
+    /** The {@link BlockHelper} responsible for loading/unloading blocks from the {@link PhysicsWorld}. */
+    public final BlockHelper blockHelper;
+
+    /** The renderer responsible for showing outlines of {@link RigidBody} objects in-game. */
+    public final DebugHelper debugHelper;
 
     /**
      * The constructor. Builds a {@link DiscreteDynamicsWorld} as well as
@@ -64,13 +64,13 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     private PhysicsWorld(CollisionDispatcher dispatcher, BroadphaseInterface broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, solver, collisionConfiguration);
 
-        this.entities = new ArrayList<>();
-        this.blockCollisionHelper = new BlockCollisionHelper(this);
-        this.debugRenderer = new DebugRenderer(this);
+        this.entities = Lists.newArrayList();
+        this.blockHelper = new BlockHelper(this);
+        this.debugHelper = new DebugHelper(this);
         this.clock = new Clock();
 
-        this.setDebugDrawer(debugRenderer);
-        this.setGravity(new Vector3f(0, Constants.GRAVITY, 0));
+        setDebugDrawer(debugHelper);
+        setGravity(new Vector3f(0, Constants.GRAVITY, 0));
     }
 
     /**
@@ -108,13 +108,13 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
         clock.reset();
 
         this.entities.forEach(entity -> {
-//            if (!Rayon.hasPhysics(entity)) {
-//                toRemove.add(entity);
-//                return;
-//            }
+            if (!((DynamicBody) entity).hasDynamicBody()) {
+                toRemove.add(entity);
+                return;
+            }
 
             /* Get the Physics Composition object for the given entity. */
-            PhysicsComposition physics = Rayon.getPhysics(entity);
+            DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
             /* Build a list of entities to remove later on. */
             if (entity.removed) {
@@ -131,14 +131,14 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
                 }
 
                 /* Load in block collisions */
-                if (!physics.getSynchronizer().get(PhysicsComposition.NO_CLIP)) {
-                    this.blockCollisionHelper.load(entity, world);
+                if (!physics.getSynchronizer().get(DynamicBodyComposition.NO_CLIP)) {
+                    this.blockHelper.load(entity, world);
                 }
             }
         });
 
         /* Clean out unnecessary blocks. */
-        this.blockCollisionHelper.unload();
+        this.blockHelper.unload();
 
         /* Clean out all "to remove" entities. */
         toRemove.forEach(entities::remove);
@@ -148,13 +148,13 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     }
 
     /**
-     * Add an {@link Entity} which has a {@link PhysicsComposition}.
+     * Add an {@link Entity} which has a {@link DynamicBodyComposition}.
      * Throws a {@link PhysicsWorldTrackingException} if the {@link Entity}
-     * doesn't have a {@link PhysicsComposition} stitched to it.
+     * doesn't have a {@link DynamicBodyComposition} stitched to it.
      * @param entity The {@link Entity} to add
      */
     public void track(Entity entity) {
-        if (!Rayon.hasPhysics(entity)) {
+        if (!((DynamicBody) entity).hasDynamicBody()) {
             throw new PhysicsWorldTrackingException("Cannot add entity without PhysicsComposition");
         }
 
@@ -179,11 +179,11 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
         List<RigidBody> bodies = Lists.newArrayList();
 
         /* Add all blocks. */
-        bodies.addAll(this.blockCollisionHelper.getRigidBodies());
+        bodies.addAll(this.blockHelper.getRigidBodies());
 
         /* Add all entities. */
         entities.forEach(entity -> {
-            PhysicsComposition physics = Rayon.getPhysics(entity);
+            DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
             if (physics != null) {
                 bodies.add(physics.getRigidBody());
@@ -194,11 +194,11 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     }
 
     /**
-     * Get the {@link BlockCollisionHelper} object.
+     * Get the {@link BlockHelper} object.
      * @return the helper used for loading/unloading blocks
      */
-    public BlockCollisionHelper getBlockCollisionHelper() {
-        return this.blockCollisionHelper;
+    public BlockHelper getBlockHelper() {
+        return this.blockHelper;
     }
 
     /**
@@ -212,8 +212,12 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     /**
      * @return the debug renderer attribute
      */
-    public DebugRenderer getDebugRenderer() {
-        return this.debugRenderer;
+    public DebugHelper getDebugHelper() {
+        return this.debugHelper;
+    }
+
+    public void addPropertyFile(InputStreamReader input) {
+
     }
 
     /**

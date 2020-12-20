@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.mixin;
+package dev.lazurite.rayon.mixin.render;
 
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.minecraft.client.MinecraftClient;
@@ -18,7 +18,7 @@ public class DebugRendererMixin {
     public void render(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo info) {
         if (MinecraftClient.getInstance().options.debugEnabled) {
             Vector3f color = new Vector3f(1.0f, 0.0f, 0.0f); // red
-            PhysicsWorld.getInstance().getDebugRenderer().renderWorld(cameraX, cameraY, cameraZ, color, false);
+            PhysicsWorld.getInstance().getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, color, false);
         }
     }
 }

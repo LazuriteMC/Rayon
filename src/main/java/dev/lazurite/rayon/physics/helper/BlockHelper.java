@@ -8,8 +8,14 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
-import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.composition.PhysicsComposition;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dev.lazurite.rayon.physics.DynamicBody;
+import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.util.Constants;
 import net.fabricmc.api.EnvType;
@@ -29,15 +35,17 @@ import javax.vecmath.Vector3f;
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
-public class BlockCollisionHelper {
+public class BlockHelper {
     private final PhysicsWorld physicsWorld;
+    private final JsonArray blockProperties;
     private final Map<BlockPos, RigidBody> collisionBlocks;
     private final List<BlockPos> toKeepBlocks;
 
-    public BlockCollisionHelper(PhysicsWorld physicsWorld)  {
+    public BlockHelper(PhysicsWorld physicsWorld)  {
         this.physicsWorld = physicsWorld;
-        this.collisionBlocks = new HashMap<>();
-        this.toKeepBlocks = new ArrayList<>();
+        this.blockProperties = PropertyHelper.get("blocks");
+        this.collisionBlocks = Maps.newHashMap();
+        this.toKeepBlocks = Lists.newArrayList();
     }
 
     public void load(Entity entity, ClientWorld world) {
@@ -46,36 +54,43 @@ public class BlockCollisionHelper {
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
 
         blockList.forEach((blockPos, blockState) -> {
-            if (!blockState.getBlock().canMobSpawnInside()) {
+            float friction = 1.0f;
+            boolean permeable = false;
+
+            /* Get properties for this specific block */
+            for (JsonElement property : blockProperties) {
+                String currentBlock = blockState.getBlock().getTranslationKey();
+                String name = ((JsonObject) property).get("name").toString();
+
+                if (currentBlock.equals(name)) {
+                    friction = ((JsonObject) property).get("friction").getAsFloat();
+                    permeable = ((JsonObject) property).get("permeable").getAsBoolean();
+                }
+            }
+
+            /* Check if block is solid or not */
+            if (!blockState.getBlock().canMobSpawnInside() && !permeable) {
                 if (!this.collisionBlocks.containsKey(blockPos)) {
                     VoxelShape coll = blockState.getCollisionShape(blockView, blockPos);
 
                     if (!coll.isEmpty()) {
+                        /* Create the box shape for the block */
                         Box b = coll.getBoundingBox();
-
                         Vector3f box = new Vector3f(
                                 ((float) (b.maxX - b.minX) / 2.0F) + 0.005f,
                                 ((float) (b.maxY - b.minY) / 2.0F) + 0.005f,
                                 ((float) (b.maxZ - b.minZ) / 2.0F) + 0.005f);
                         CollisionShape shape = new BoxShape(box);
 
+                        /* Set the position of the rigid body to the block's position */
                         Vector3f position = new Vector3f(blockPos.getX() + box.x, blockPos.getY() + box.y, blockPos.getZ() + box.z);
-                        DefaultMotionState motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(), position, 1.0f)));
+                        DefaultMotionState motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(), position, friction)));
+
+                        /* Set up the rigid body's construction info and initialization */
                         RigidBodyConstructionInfo ci = new RigidBodyConstructionInfo(0, motionState, shape, new Vector3f(0, 0, 0));
                         RigidBody body = new RigidBody(ci);
 
-                        if (blockState.getBlock() instanceof IceBlock) {
-                            body.setFriction(0.05f);
-                        } else if (
-                                blockState.getBlock() instanceof HoneyBlock ||
-                                        blockState.getBlock() instanceof SlimeBlock ||
-                                        blockState.getBlock() instanceof SoulSandBlock
-                        ) {
-                            body.setFriction(1.5f);
-                        } else {
-                            body.setFriction(0.9f);
-                        }
-
+                        /* Add it to the necessary locations */
                         this.collisionBlocks.put(blockPos, body);
                         this.physicsWorld.addRigidBody(body);
                     }
@@ -87,7 +102,7 @@ public class BlockCollisionHelper {
     }
 
     public void unload() {
-        List<BlockPos> toRemove = new ArrayList<>();
+        List<BlockPos> toRemove = Lists.newArrayList();
 
         this.collisionBlocks.forEach((pos, body) -> {
             if (!toKeepBlocks.contains(pos)) {
@@ -116,16 +131,16 @@ public class BlockCollisionHelper {
      */
     public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
         PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
-        PhysicsComposition physics = Rayon.getPhysics(entity);
+        DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
         Dispatcher dispatcher = physicsWorld.getDispatcher();
-        Set<Block> blocks = new HashSet<>();
+        Set<Block> blocks = Sets.newHashSet();
 
         for (int manifoldNum = 0; manifoldNum < dispatcher.getNumManifolds(); ++manifoldNum) {
             PersistentManifold manifold = dispatcher.getManifoldByIndexInternal(manifoldNum);
 
-            if (physicsWorld.getBlockCollisionHelper().contains((RigidBody) manifold.getBody0()) &&
-                    physicsWorld.getBlockCollisionHelper().contains((RigidBody) manifold.getBody1())) {
+            if (physicsWorld.blockHelper.contains((RigidBody) manifold.getBody0()) &&
+                    physicsWorld.getBlockHelper().contains((RigidBody) manifold.getBody1())) {
                 continue;
             }
 
@@ -179,7 +194,7 @@ public class BlockCollisionHelper {
     }
 
     public static Map<BlockPos, BlockState> getBlockList(ClientWorld world, Box area) {
-        Map<BlockPos, BlockState> map = new HashMap<>();
+        Map<BlockPos, BlockState> map = Maps.newHashMap();
         for (int i = (int) area.minX; i < area.maxX; i++) {
             for (int j = (int) area.minY; j < area.maxY; j++) {
                 for (int k = (int) area.minZ; k < area.maxZ; k++) {

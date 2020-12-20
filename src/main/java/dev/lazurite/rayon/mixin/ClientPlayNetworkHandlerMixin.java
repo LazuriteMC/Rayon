@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.mixin;
 
 import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.physics.composition.PhysicsComposition;
+import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -32,7 +32,7 @@ public class ClientPlayNetworkHandlerMixin {
 
     /**
      * This mixin cancels all {@link Entity} position updates from the server if it receives
-     * information for an {@link Entity} which has a {@link PhysicsComposition}.
+     * information for an {@link Entity} which has a {@link DynamicBodyComposition}.
      * @param packet the packet containing the entity position info
      * @param info required by every mixin injection
      * @param entity the {@link Entity} on which the injection point was originally called
@@ -51,7 +51,7 @@ public class ClientPlayNetworkHandlerMixin {
 
     /**
      * This mixin cancels all {@link Entity} movement updates from the server if it receives
-     * information for an {@link Entity} which has a {@link PhysicsComposition}.
+     * information for an {@link Entity} which has a {@link DynamicBodyComposition}.
      * @param packet the packet containing the entity update info
      * @param info required by every mixin injection
      * @param entity the {@link Entity} on which the injection point was originally called

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.mixin;
+package dev.lazurite.rayon.mixin.render;
 
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.minecraft.client.render.GameRenderer;
