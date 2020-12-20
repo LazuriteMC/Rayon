@@ -57,8 +57,6 @@ public class DynamicBodyComposition extends Composition {
         entity.noClip = getSynchronizer().get(NO_CLIP);
 
         if (world.isClient()) {
-            PhysicsWorld.getInstance().track(entity);
-
             if (getRigidBody() == null) {
                 createRigidBody(entity, null);
             }

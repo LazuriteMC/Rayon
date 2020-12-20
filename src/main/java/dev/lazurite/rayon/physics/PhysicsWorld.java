@@ -13,18 +13,20 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import com.bulletphysics.linearmath.Clock;
 import com.bulletphysics.linearmath.Transform;
 import com.google.common.collect.Lists;
-import dev.lazurite.rayon.exception.PhysicsWorldTrackingException;
+import dev.lazurite.rayon.exception.DynamicBodyException;
 import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.util.Constants;
+import dev.lazurite.thimble.Thimble;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 
 import javax.vecmath.Vector3f;
 import java.io.InputStreamReader;
@@ -149,13 +151,17 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
 
     /**
      * Add an {@link Entity} which has a {@link DynamicBodyComposition}.
-     * Throws a {@link PhysicsWorldTrackingException} if the {@link Entity}
-     * doesn't have a {@link DynamicBodyComposition} stitched to it.
+     * Adds a new {@link DynamicBodyComposition} if the {@link Entity}
+     * doesn't have one stitched to it.
      * @param entity The {@link Entity} to add
      */
     public void track(Entity entity) {
         if (!((DynamicBody) entity).hasDynamicBody()) {
-            throw new PhysicsWorldTrackingException("Cannot add entity without PhysicsComposition");
+            if (entity instanceof LivingEntity) {
+                throw new DynamicBodyException("Using physics with living entities is unsupported.");
+            } else {
+                Thimble.stitch(DynamicBodyComposition::new, entity);
+            }
         }
 
         if (!this.entities.contains(entity)) {
