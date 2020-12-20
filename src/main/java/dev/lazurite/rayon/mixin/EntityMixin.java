@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.vecmath.Vector3f;
+
 @Mixin(Entity.class)
 public class EntityMixin implements DynamicBody {
     @Unique
@@ -60,8 +62,7 @@ public class EntityMixin implements DynamicBody {
         }
     }
 
-    @Unique
-    @Override
+    @Unique @Override
     public DynamicBodyComposition getDynamicBody() {
         for (Composition composition : Thimble.getStitches(entity)) {
             if (composition instanceof DynamicBodyComposition) {
@@ -72,14 +73,12 @@ public class EntityMixin implements DynamicBody {
         return null;
     }
 
-    @Unique
-    @Override
+    @Unique @Override
     public boolean hasDynamicBody() {
         return getDynamicBody() != null;
     }
 
-    @Unique
-    @Override
+    @Unique @Override
     @Environment(EnvType.CLIENT)
     public boolean belongsToClient() {
         PlayerEntity player = MinecraftClient.getInstance().player;
@@ -90,5 +89,11 @@ public class EntityMixin implements DynamicBody {
         }
 
         return false;
+    }
+
+    @Unique @Override
+    public void updatePositionAndAngles(Vector3f position, float yaw, float pitch) {
+        entity.updatePositionAndAngles(position.x, position.y, position.z, yaw, pitch);
+        ((DynamicBody) entity).getDynamicBody().setPos(position);
     }
 }

@@ -37,5 +37,9 @@
   },
   "suggests": {
     "flamingo": "*"
+  },
+
+  "custom": {
+    "modmenu:api": true
   }
 }

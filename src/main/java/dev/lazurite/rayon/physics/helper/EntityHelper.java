@@ -24,6 +24,7 @@ public class EntityHelper {
         this.collisionEntities = Maps.newHashMap();
     }
 
+    // TODO soft collisions
     public void load(Entity entity, ClientWorld world) {
         Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
         List<Entity> entityList = world.getOtherEntities(entity, area);

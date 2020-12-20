@@ -175,6 +175,19 @@ public class DynamicBodyComposition extends Composition {
         }
     }
 
+    @Environment(EnvType.CLIENT)
+    public void setPos(Vector3f pos) {
+        Transform trans = getRigidBody().getWorldTransform(new Transform());
+        trans.origin.set(pos);
+        getRigidBody().setWorldTransform(trans);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void setYaw(float yaw) {
+        Quat4f orientation = getRigidBody().getOrientation(new Quat4f());
+
+    }
+
     @Override
     public boolean onInteract(Entity entity, PlayerEntity player, Hand hand) {
         return false;
