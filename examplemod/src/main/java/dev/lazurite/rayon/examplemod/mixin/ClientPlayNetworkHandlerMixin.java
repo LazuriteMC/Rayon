@@ -46,7 +46,7 @@ public class ClientPlayNetworkHandlerMixin {
             RectangularPrismEntity entity = new RectangularPrismEntity(type, world);
 
             int i = packet.getId();
-            entity.updatePositionAndAngles(new Vector3f((float) x, (float) y, (float) z), (float)(packet.getYaw() * 360) / 256.0F, 0);
+//            entity.updatePositionAndAngles(new Vector3f((float) x, (float) y, (float) z), (float)(packet.getYaw() * 360) / 256.0F, 0);
             entity.setEntityId(i);
             entity.setUuid(packet.getUuid());
             this.world.addEntity(i, entity);

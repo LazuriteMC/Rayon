@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.examplemod.item;
 
-import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,7 +40,7 @@ public class WandItem extends Item {
             CowEntity cow = EntityType.COW.create(world);
 
             cow.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-            PhysicsWorld.getInstance().track(cow);
+//            PhysicsWorld.getInstance().track(cow);
             world.spawnEntity(cow);
 
             return TypedActionResult.success(itemStack);

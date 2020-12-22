@@ -2,6 +2,7 @@ package dev.lazurite.rayon.examplemod;
 
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
+import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
@@ -25,20 +26,22 @@ public class ServerInitializer implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        PhysicsWorld.getInstance();
+
         WAND_ITEM = Registry.register(
                 Registry.ITEM,
                 new Identifier(MODID, "wand_item"),
                 new WandItem(new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
 
-        RECTANGULAR_PRISM_ENTITY = Registry.register(
-                Registry.ENTITY_TYPE,
-                new Identifier(MODID, "rectangular_prism_entity"),
-                FabricEntityTypeBuilder.create(SpawnGroup.MISC, RectangularPrismEntity::new)
-                        .dimensions(EntityDimensions.changing(1.0f, 0.5f))
-                        .trackedUpdateRate(3)
-                        .trackRangeBlocks(80)
-                        .forceTrackedVelocityUpdates(true)
-                        .build()
-        );
+//        RECTANGULAR_PRISM_ENTITY = Registry.register(
+//                Registry.ENTITY_TYPE,
+//                new Identifier(MODID, "rectangular_prism_entity"),
+//                FabricEntityTypeBuilder.create(SpawnGroup.MISC, RectangularPrismEntity::new)
+//                        .dimensions(EntityDimensions.changing(1.0f, 0.5f))
+//                        .trackedUpdateRate(3)
+//                        .trackRangeBlocks(80)
+//                        .forceTrackedVelocityUpdates(true)
+//                        .build()
+//        );
     }
 }

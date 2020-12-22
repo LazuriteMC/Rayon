@@ -6,7 +6,6 @@ import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.physics.DynamicBody;
 import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,15 +35,15 @@ public class DebugHelper extends IDebugDraw {
             });
         } else {
             this.world.getEntities().forEach(entity -> {
-                DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
+//                DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
-                render(
-                        physics.getRigidBody(),
-                        physics.getSynchronizer().get(DynamicBodyComposition.ORIENTATION),
-                        physics.getSynchronizer().get(DynamicBodyComposition.POSITION),
-                        camPos,
-                        color
-                );
+//                render(
+//                        physics.getRigidBody(),
+//                        physics.getSynchronizer().get(DynamicBodyComposition.ORIENTATION),
+//                        physics.getSynchronizer().get(DynamicBodyComposition.POSITION),
+//                        camPos,
+//                        color
+//                );
             });
         }
     }

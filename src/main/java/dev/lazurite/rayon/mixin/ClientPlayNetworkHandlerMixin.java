@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.mixin;
 
 import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;

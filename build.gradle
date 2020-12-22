@@ -10,23 +10,22 @@ minecraft {
 	accessWidener "src/main/resources/rayon.accesswidener"
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
 subprojects {
 	apply plugin: 'fabric-loom'
 	archivesBaseName = rootProject.archives_base_name + "-" + project.name
 	group = rootProject.maven_group + "." + rootProject.archives_base_name
 
 	repositories {
-		maven { url = "https://jitpack.io" }
+		maven { url 'https://jitpack.io' }
 	}
 
 	dependencies {
 		compile rootProject.sourceSets.main.output
+
+		// Fabric API
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-		// Additional (helpful) mods
+		// Additional, Helpful mods
 		modImplementation "io.github.prospector:modmenu:1.14.6+build.31"
 		modImplementation "com.github.joaoh1:OkZoomer:4.0.0-alpha.4.1.16.1"
 	}
@@ -35,6 +34,9 @@ subprojects {
 allprojects {
 	apply plugin: 'com.github.johnrengelman.shadow'
 	apply plugin: 'fabric-loom'
+
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 
 	archivesBaseName = project.archives_base_name
 	version = project.mod_version
@@ -61,13 +63,11 @@ allprojects {
 		// Cardinal Components API
 		modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
 		modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
-
-		// JBullet Physics
-		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
-
-		// in-jar dependencies
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
+
+		// JBullet
+		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 		shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 	}
 
@@ -125,7 +125,6 @@ allprojects {
 		}
 
 		repositories {
-			mavenLocal()
 		}
 	}
 }

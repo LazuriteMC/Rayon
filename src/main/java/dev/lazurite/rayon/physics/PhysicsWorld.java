@@ -14,12 +14,10 @@ import com.bulletphysics.linearmath.Clock;
 import com.bulletphysics.linearmath.Transform;
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.exception.DynamicBodyException;
-import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.util.Constants;
-import dev.lazurite.thimble.Thimble;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -116,7 +114,7 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
             }
 
             /* Get the Physics Composition object for the given entity. */
-            DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
+//            DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
             /* Build a list of entities to remove later on. */
             if (entity.removed) {
@@ -124,19 +122,19 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
                 return;
             }
 
-            if (world != null && physics.getRigidBody() != null) {
-                physics.step(entity, delta);
-
-                /* Add the rigid body to the world if it isn't already there */
-                if (!physics.getRigidBody().isInWorld()) {
-                    this.addRigidBody(physics.getRigidBody());
-                }
-
-                /* Load in block collisions */
-                if (!physics.getSynchronizer().get(DynamicBodyComposition.NO_CLIP)) {
-                    this.blockHelper.load(entity, world);
-                }
-            }
+//            if (world != null && physics.getRigidBody() != null) {
+//                physics.step(entity, delta);
+//
+//                /* Add the rigid body to the world if it isn't already there */
+//                if (!physics.getRigidBody().isInWorld()) {
+//                    this.addRigidBody(physics.getRigidBody());
+//                }
+//
+//                /* Load in block collisions */
+//                if (!physics.getSynchronizer().get(DynamicBodyComposition.NO_CLIP)) {
+//                    this.blockHelper.load(entity, world);
+//                }
+//            }
         });
 
         /* Clean out unnecessary blocks. */
@@ -160,7 +158,7 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
             if (entity instanceof LivingEntity) {
                 throw new DynamicBodyException("Using physics with living entities is unsupported.");
             } else {
-                Thimble.stitch(DynamicBodyComposition::new, entity);
+//                Thimble.stitch(DynamicBodyComposition::new, entity);
             }
         }
 
@@ -189,11 +187,11 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
 
         /* Add all entities. */
         entities.forEach(entity -> {
-            DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
-
-            if (physics != null) {
-                bodies.add(physics.getRigidBody());
-            }
+//            DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
+//
+//            if (physics != null) {
+//                bodies.add(physics.getRigidBody());
+//            }
         });
 
         return bodies;

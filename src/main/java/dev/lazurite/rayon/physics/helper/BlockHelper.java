@@ -15,7 +15,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lazurite.rayon.physics.DynamicBody;
-import dev.lazurite.rayon.physics.composition.DynamicBodyComposition;
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.util.Constants;
 import net.fabricmc.api.EnvType;
@@ -131,7 +130,7 @@ public class BlockHelper {
      */
     public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
         PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
-        DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
+//        DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
         Dispatcher dispatcher = physicsWorld.getDispatcher();
         Set<Block> blocks = Sets.newHashSet();
@@ -146,47 +145,47 @@ public class BlockHelper {
 
             for (int contactNum = 0; contactNum < manifold.getNumContacts(); ++contactNum) {
                 if (manifold.getContactPoint(contactNum).getDistance() <= 0.0f) {
-                    if (physics.getRigidBody().equals(manifold.getBody0()) || physics.getRigidBody().equals(manifold.getBody1())) {
-                        Vector3f droneRigidBodyPos = physics.getRigidBody().equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f());
-                        Vector3f otherRigidBodyPos = physics.getRigidBody().equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f());
-
-                        for (Direction direction : directions) {
-                            switch (direction) {
-                                case UP:
-                                    if (droneRigidBodyPos.y < otherRigidBodyPos.y) {
-                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
-                                    }
-                                    break;
-                                case DOWN:
-                                    if (droneRigidBodyPos.y > otherRigidBodyPos.y) {
-                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
-                                    }
-                                    break;
-                                case EAST:
-                                    if (droneRigidBodyPos.x < otherRigidBodyPos.x) {
-                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
-                                    }
-                                    break;
-                                case WEST:
-                                    if (droneRigidBodyPos.x > otherRigidBodyPos.x) {
-                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
-                                    }
-                                    break;
-                                case NORTH:
-                                    if (droneRigidBodyPos.z < otherRigidBodyPos.z) {
-                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
-                                    }
-                                    break;
-                                case SOUTH:
-                                    if (droneRigidBodyPos.z > otherRigidBodyPos.z) {
-                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
+//                    if (physics.getRigidBody().equals(manifold.getBody0()) || physics.getRigidBody().equals(manifold.getBody1())) {
+//                        Vector3f droneRigidBodyPos = physics.getRigidBody().equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f());
+//                        Vector3f otherRigidBodyPos = physics.getRigidBody().equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f());
+//
+//                        for (Direction direction : directions) {
+//                            switch (direction) {
+//                                case UP:
+//                                    if (droneRigidBodyPos.y < otherRigidBodyPos.y) {
+//                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
+//                                    }
+//                                    break;
+//                                case DOWN:
+//                                    if (droneRigidBodyPos.y > otherRigidBodyPos.y) {
+//                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
+//                                    }
+//                                    break;
+//                                case EAST:
+//                                    if (droneRigidBodyPos.x < otherRigidBodyPos.x) {
+//                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
+//                                    }
+//                                    break;
+//                                case WEST:
+//                                    if (droneRigidBodyPos.x > otherRigidBodyPos.x) {
+//                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
+//                                    }
+//                                    break;
+//                                case NORTH:
+//                                    if (droneRigidBodyPos.z < otherRigidBodyPos.z) {
+//                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
+//                                    }
+//                                    break;
+//                                case SOUTH:
+//                                    if (droneRigidBodyPos.z > otherRigidBodyPos.z) {
+//                                        blocks.add(entity.world.getBlockState(new BlockPos(otherRigidBodyPos.x, otherRigidBodyPos.y, otherRigidBodyPos.z)).getBlock());
+//                                    }
+//                                    break;
+//                                default:
+//                                    break;
+//                            }
+//                        }
+//                    }
                 }
             }
         }
