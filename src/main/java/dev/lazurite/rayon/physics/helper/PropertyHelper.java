@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.lazurite.rayon.init.ServerInitializer;
+import dev.lazurite.rayon.Rayon;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -16,7 +16,7 @@ public class PropertyHelper {
     private static final Map<String, JsonObject> properties = Maps.newHashMap();
 
     static {
-        PropertyHelper.add(ServerInitializer.MODID, "assets/rayon/physics.properties.json");
+        PropertyHelper.add(Rayon.MODID, "assets/rayon/physics.properties.json");
     }
 
     public static void add(String modid, String fileName) {

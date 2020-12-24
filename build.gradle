@@ -50,10 +50,8 @@ allprojects {
 	}
 
 	dependencies {
-		// Minecraft
+		// Minecraft + Yarn
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
-
-		// Yarn
 		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 
 		// Fabric Loader + API
@@ -125,6 +123,7 @@ allprojects {
 		}
 
 		repositories {
+			mavenLocal()
 		}
 	}
 }

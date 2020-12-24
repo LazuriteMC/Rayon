@@ -18,8 +18,8 @@ import javax.vecmath.Vector3f;
 
 @Mixin(Entity.class)
 public class EntityMixin implements DynamicBody {
-    @Unique
-    private final Entity entity = (Entity) (Object) this;
+//    @Unique
+//    private final Entity entity = (Entity) (Object) this;
 
     /*
      * TODO
@@ -55,6 +55,6 @@ public class EntityMixin implements DynamicBody {
 
     @Unique @Override
     public void updatePositionAndAngles(Vector3f position, float yaw, float pitch) {
-        entity.updatePositionAndAngles(position.x, position.y, position.z, yaw, pitch);
+//        entity.updatePositionAndAngles(position.x, position.y, position.z, yaw, pitch);
     }
 }

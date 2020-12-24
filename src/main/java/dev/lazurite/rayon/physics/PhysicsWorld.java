@@ -45,7 +45,7 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     private final Clock clock;
 
     /** The instance variable used in place of instantiating {@link PhysicsWorld} yourself. */
-    private static PhysicsWorld instance;
+    public static PhysicsWorld INSTANCE;
 
     /** The {@link BlockHelper} responsible for loading/unloading blocks from the {@link PhysicsWorld}. */
     public final BlockHelper blockHelper;
@@ -83,14 +83,7 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
         CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
         SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
 
-        PhysicsWorld.instance = new PhysicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-    }
-
-    /**
-     * @return the running instance of {@link PhysicsWorld}
-     */
-    public static PhysicsWorld getInstance() {
-        return instance;
+        PhysicsWorld.INSTANCE = new PhysicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
     }
 
     /**

@@ -23,6 +23,6 @@ public class GameRendererMixin {
      */
     @Inject(at = @At("HEAD"), method = "renderWorld")
     public void renderWorld(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo info) {
-        PhysicsWorld.getInstance().stepWorld(); // STEP
+        PhysicsWorld.INSTANCE.stepWorld(); // STEP
     }
 }

@@ -18,7 +18,7 @@ public class DebugRendererMixin {
     public void render(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo info) {
         if (MinecraftClient.getInstance().options.debugEnabled) {
             Vector3f color = new Vector3f(1.0f, 0.0f, 0.0f); // red
-            PhysicsWorld.getInstance().getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, color, false);
+            PhysicsWorld.INSTANCE.getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, color, false);
         }
     }
 }

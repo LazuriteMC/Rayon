@@ -2,12 +2,8 @@ package dev.lazurite.rayon.examplemod;
 
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
-import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
@@ -26,8 +22,6 @@ public class ServerInitializer implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        PhysicsWorld.getInstance();
-
         WAND_ITEM = Registry.register(
                 Registry.ITEM,
                 new Identifier(MODID, "wand_item"),

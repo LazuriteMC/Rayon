@@ -129,7 +129,7 @@ public class BlockHelper {
      * @return a list of touching {@link Block}s
      */
     public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
-        PhysicsWorld physicsWorld = PhysicsWorld.getInstance();
+        PhysicsWorld physicsWorld = PhysicsWorld.INSTANCE;
 //        DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
         Dispatcher dispatcher = physicsWorld.getDispatcher();
