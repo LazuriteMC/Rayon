@@ -1,9 +1,12 @@
 package dev.lazurite.rayon.mixin.render;
 
 import dev.lazurite.rayon.physics.PhysicsWorld;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,6 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
+    @Shadow @Final
+    private MinecraftClient client;
+
     /**
      * Steps the physics world every frame.
      * @param tickDelta minecraft tick delta (0 - 1.0)
@@ -23,6 +29,6 @@ public class GameRendererMixin {
      */
     @Inject(at = @At("HEAD"), method = "renderWorld")
     public void renderWorld(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo info) {
-        PhysicsWorld.INSTANCE.stepWorld(); // STEP
+        PhysicsWorld.INSTANCE.stepWorld(client); // STEP
     }
 }

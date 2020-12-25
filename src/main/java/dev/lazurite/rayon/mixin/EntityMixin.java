@@ -42,11 +42,6 @@ public class EntityMixin implements DynamicBody {
     }
 
     @Unique @Override
-    public boolean hasDynamicBody() {
-        return false;
-    }
-
-    @Unique @Override
     @Environment(EnvType.CLIENT)
     public boolean belongsToClient() {
         PlayerEntity player = MinecraftClient.getInstance().player;

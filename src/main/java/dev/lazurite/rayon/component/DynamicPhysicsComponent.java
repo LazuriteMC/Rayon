@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.component;
 
+import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +10,7 @@ public class DynamicPhysicsComponent implements PhysicsComponent, AutoSyncedComp
     private final Entity entity;
 
     public DynamicPhysicsComponent(@NotNull Entity entity) {
+        PhysicsWorld.INSTANCE.track(entity);
         this.entity = entity;
     }
 

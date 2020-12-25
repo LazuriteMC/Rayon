@@ -10,9 +10,9 @@ import com.bulletphysics.collision.shapes.*;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
-import com.bulletphysics.linearmath.Clock;
 import com.bulletphysics.linearmath.Transform;
 import com.google.common.collect.Lists;
+import dev.lazurite.rayon.component.PhysicsComponent;
 import dev.lazurite.rayon.exception.DynamicBodyException;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
@@ -22,9 +22,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 import javax.vecmath.Vector3f;
 import java.io.InputStreamReader;
@@ -41,8 +40,8 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     /** The list of {@link Entity} objects that are tracked by the {@link PhysicsWorld}. */
     private final List<Entity> entities;
 
-    /** The {@link Clock} used for keeping time and calculating delta time in the main loop. */
-    private final Clock clock;
+    /** The {@link Delta} used for keeping time and calculating delta time in the main loop. */
+    private final Delta clock;
 
     /** The instance variable used in place of instantiating {@link PhysicsWorld} yourself. */
     public static PhysicsWorld INSTANCE;
@@ -64,10 +63,10 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
     private PhysicsWorld(CollisionDispatcher dispatcher, BroadphaseInterface broadphase, SequentialImpulseConstraintSolver solver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, solver, collisionConfiguration);
 
+        this.clock = new Delta();
         this.entities = Lists.newArrayList();
         this.blockHelper = new BlockHelper(this);
         this.debugHelper = new DebugHelper(this);
-        this.clock = new Clock();
 
         setDebugDrawer(debugHelper);
         setGravity(new Vector3f(0, Constants.GRAVITY, 0));
@@ -88,36 +87,35 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
 
     /**
      * This method gets called on the render thread every frame. It updates the
-     * {@link PhysicsWorld} using delta time calculated from the {@link Clock} class.
+     * {@link PhysicsWorld} using delta time calculated from the {@link Delta} class.
      */
-    public void stepWorld() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        ClientWorld world = client.world;
+    public void stepWorld(@NotNull MinecraftClient client) {
+        float delta = clock.get();
 
-        List<Entity> toRemove = new ArrayList<>();
+        /* Step all the entities. */
+        if (client.world != null) {
+            stepEntities(delta);
+        }
+
+        /* Step the world simulation using delta. */
         float maxSubSteps = 5.0f;
+        stepSimulation(delta, (int) maxSubSteps, delta/maxSubSteps);
+    }
 
-        float delta = clock.getTimeMicroseconds() / 1000000F;
-        clock.reset();
+    public void stepEntities(float delta) {
+        List<Entity> toRemove = Lists.newArrayList();
 
-        this.entities.forEach(entity -> {
-            if (!((DynamicBody) entity).hasDynamicBody()) {
-                toRemove.add(entity);
-                return;
-            }
-
+        for (Entity entity : entities) {
             /* Get the Physics Composition object for the given entity. */
-//            DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
+            PhysicsComponent physics = PhysicsComponent.get(entity);
 
-            /* Build a list of entities to remove later on. */
-            if (entity.removed) {
+            if (entity.removed || physics == null) {
                 toRemove.add(entity);
-                return;
+                continue;
             }
 
-//            if (world != null && physics.getRigidBody() != null) {
-//                physics.step(entity, delta);
-//
+            physics.step(delta);
+
 //                /* Add the rigid body to the world if it isn't already there */
 //                if (!physics.getRigidBody().isInWorld()) {
 //                    this.addRigidBody(physics.getRigidBody());
@@ -127,44 +125,26 @@ public final class PhysicsWorld extends DiscreteDynamicsWorld {
 //                if (!physics.getSynchronizer().get(DynamicBodyComposition.NO_CLIP)) {
 //                    this.blockHelper.load(entity, world);
 //                }
-//            }
-        });
+        }
 
         /* Clean out unnecessary blocks. */
         this.blockHelper.unload();
 
         /* Clean out all "to remove" entities. */
         toRemove.forEach(entities::remove);
-
-        /* Step the world using delta. */
-        this.stepSimulation(delta, (int) maxSubSteps, delta/maxSubSteps);
     }
 
-    /**
-     * Add an {@link Entity} which has a {@link DynamicBodyComposition}.
-     * Adds a new {@link DynamicBodyComposition} if the {@link Entity}
-     * doesn't have one stitched to it.
-     * @param entity The {@link Entity} to add
-     */
-    public void track(Entity entity) {
-        if (!((DynamicBody) entity).hasDynamicBody()) {
-            if (entity instanceof LivingEntity) {
-                throw new DynamicBodyException("Using physics with living entities is unsupported.");
-            } else {
-//                Thimble.stitch(DynamicBodyComposition::new, entity);
-            }
-        }
+    public void track(@NotNull Entity entity) {
+        PhysicsComponent component = PhysicsComponent.get(entity);
 
-        if (!this.entities.contains(entity)) {
-            this.entities.add(entity);
+        if (entities.contains(entity) || component == null) {
+            throw new DynamicBodyException("Entity is not registered.");
+        } else {
+            entities.add(entity);
         }
     }
 
-    /**
-     * Stop tracking an {@link Entity} within the {@link PhysicsWorld}.
-     * @param entity The {@link Entity} to stop tracking
-     */
-    public void stopTracking(Entity entity) {
+    public void untrack(Entity entity) {
         this.entities.remove(entity);
     }
 

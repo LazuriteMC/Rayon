@@ -4,7 +4,6 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.lazurite.rayon.physics.DynamicBody;
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
@@ -20,21 +19,21 @@ import javax.vecmath.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class DebugHelper extends IDebugDraw {
-    private final PhysicsWorld world;
+    private final PhysicsWorld physicsWorld;
 
-    public DebugHelper(PhysicsWorld world) {
-        this.world = world;
+    public DebugHelper(PhysicsWorld physicsWorld) {
+        this.physicsWorld = physicsWorld;
     }
 
     public void renderWorld(double cameraX, double cameraY, double cameraZ, Vector3f color, boolean blocks) {
         Vector3f camPos = new Vector3f((float) cameraX, (float) cameraY, (float) cameraZ);
 
         if (blocks) {
-            this.world.getRigidBodies().forEach(body -> {
+            this.physicsWorld.getRigidBodies().forEach(body -> {
                 render(body, body.getOrientation(new Quat4f()), body.getCenterOfMassPosition(new Vector3f()), camPos, color);
             });
         } else {
-            this.world.getEntities().forEach(entity -> {
+            this.physicsWorld.getEntities().forEach(entity -> {
 //                DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
 //                render(
@@ -60,7 +59,7 @@ public class DebugHelper extends IDebugDraw {
         RenderSystem.multMatrix(newMat);
 
         // Actually draw now
-        world.debugDrawObject(new Transform(), body.getCollisionShape(), color);
+        physicsWorld.debugDrawObject(new Transform(), body.getCollisionShape(), color);
 
         RenderSystem.popMatrix();
     }
