@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics;
+package dev.lazurite.rayon.physics.util;
 
 import com.bulletphysics.linearmath.Clock;
 

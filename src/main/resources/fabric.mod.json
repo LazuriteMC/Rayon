@@ -26,7 +26,10 @@
       "dev.lazurite.rayon.Rayon::onInitClient"
     ],
     "cardinal-components-entity": [
-      "dev.lazurite.rayon.Rayon::onInitComponent"
+      "dev.lazurite.rayon.Rayon::onInitEntityComponents"
+    ],
+    "cardinal-components-world": [
+      "dev.lazurite.rayon.Rayon::onInitWorldComponents"
     ]
   },
   "mixins": [

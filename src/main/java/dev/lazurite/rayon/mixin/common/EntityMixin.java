@@ -1,6 +1,5 @@
-package dev.lazurite.rayon.mixin;
+package dev.lazurite.rayon.mixin.common;
 
-import dev.lazurite.rayon.physics.DynamicBody;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -17,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.vecmath.Vector3f;
 
 @Mixin(Entity.class)
-public class EntityMixin implements DynamicBody {
+public class EntityMixin {
 //    @Unique
 //    private final Entity entity = (Entity) (Object) this;
 
@@ -39,17 +38,5 @@ public class EntityMixin implements DynamicBody {
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MovementType type, Vec3d movement, CallbackInfo info) {
 
-    }
-
-    @Unique @Override
-    @Environment(EnvType.CLIENT)
-    public boolean belongsToClient() {
-        PlayerEntity player = MinecraftClient.getInstance().player;
-        return false;
-    }
-
-    @Unique @Override
-    public void updatePositionAndAngles(Vector3f position, float yaw, float pitch) {
-//        entity.updatePositionAndAngles(position.x, position.y, position.z, yaw, pitch);
     }
 }

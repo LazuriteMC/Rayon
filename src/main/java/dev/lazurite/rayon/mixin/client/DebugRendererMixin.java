@@ -1,6 +1,5 @@
-package dev.lazurite.rayon.mixin.render;
+package dev.lazurite.rayon.mixin.client;
 
-import dev.lazurite.rayon.physics.PhysicsWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;

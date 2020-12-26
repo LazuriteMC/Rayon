@@ -1,11 +1,13 @@
 package dev.lazurite.rayon;
 
 import com.google.common.collect.Lists;
-import dev.lazurite.rayon.component.DynamicPhysicsComponent;
-import dev.lazurite.rayon.component.PhysicsComponent;
+import dev.lazurite.rayon.physics.component.entity.DynamicPhysicsComponent;
+import dev.lazurite.rayon.physics.component.entity.PhysicsEntityComponent;
+import dev.lazurite.rayon.physics.component.world.DynamicsWorldComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
@@ -17,7 +19,9 @@ import java.util.List;
 public class Rayon {
 	public static final String MODID = "rayon";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
-	public static final ComponentKey<PhysicsComponent> PHYSICS = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "physics"), PhysicsComponent.class);
+
+	public static final ComponentKey<PhysicsEntityComponent> PHYSICS_ENTITY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "physics_entity"), PhysicsEntityComponent.class);
+	public static final ComponentKey<DynamicsWorldComponent> PHYSICS_WORLD = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "physics_world"), DynamicsWorldComponent.class);
 
 	private static final List<Class<? extends Entity>> entityContainer = Lists.newArrayList();
 
@@ -45,9 +49,13 @@ public class Rayon {
 
 	}
 
-	public void onInitComponent(EntityComponentFactoryRegistry registry) {
+	public void onInitEntityComponents(EntityComponentFactoryRegistry registry) {
 		getEntityContainer().forEach(
-				value -> registry.registerFor(value, PHYSICS, DynamicPhysicsComponent::new)
+				entity -> registry.registerFor(entity, PHYSICS_ENTITY, DynamicPhysicsComponent::new)
 		);
+	}
+
+	public void onInitWorldComponents(WorldComponentFactoryRegistry registry) {
+		registry.register(PHYSICS_WORLD, DynamicsWorldComponent::new);
 	}
 }

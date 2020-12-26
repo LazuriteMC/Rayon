@@ -14,40 +14,41 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lazurite.rayon.physics.DynamicBody;
+import dev.lazurite.rayon.physics.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.physics.PhysicsWorld;
 import dev.lazurite.rayon.util.Constants;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 import java.util.*;
 
-@Environment(EnvType.CLIENT)
 public class BlockHelper {
-    private final PhysicsWorld physicsWorld;
+    private final MinecraftDynamicsWorld physicsWorld;
     private final JsonArray blockProperties;
     private final Map<BlockPos, RigidBody> collisionBlocks;
     private final List<BlockPos> toKeepBlocks;
 
-    public BlockHelper(PhysicsWorld physicsWorld)  {
+    public BlockHelper(MinecraftDynamicsWorld physicsWorld)  {
         this.physicsWorld = physicsWorld;
         this.blockProperties = PropertyHelper.get("blocks");
         this.collisionBlocks = Maps.newHashMap();
         this.toKeepBlocks = Lists.newArrayList();
     }
 
-    public void load(Entity entity, ClientWorld world) {
+    public void load(List<Entity> entities, World world) {
+        entities.forEach(entity -> load(entity, world));
+    }
+
+    public void load(Entity entity, World world) {
         Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
@@ -192,7 +193,7 @@ public class BlockHelper {
         return blocks;
     }
 
-    public static Map<BlockPos, BlockState> getBlockList(ClientWorld world, Box area) {
+    public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
         Map<BlockPos, BlockState> map = Maps.newHashMap();
         for (int i = (int) area.minX; i < area.maxX; i++) {
             for (int j = (int) area.minY; j < area.maxY; j++) {

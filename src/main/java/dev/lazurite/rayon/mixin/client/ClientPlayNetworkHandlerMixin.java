@@ -1,12 +1,15 @@
-package dev.lazurite.rayon.mixin;
+package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.physics.PhysicsWorld;
+import dev.lazurite.rayon.util.WorldStorage;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
+    @Shadow private ClientWorld world;
+
     /**
      * Creates a new {@link PhysicsWorld} on game join.
      * @param packet the game join packet
@@ -26,12 +31,10 @@ public class ClientPlayNetworkHandlerMixin {
      */
     @Inject(at = @At("TAIL"), method = "onGameJoin")
     public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
-        PhysicsWorld.create();
+        ((WorldStorage) world).setPhysicsWorld(PhysicsWorld.create());
     }
 
     /**
-     * This mixin cancels all {@link Entity} position updates from the server if it receives
-     * information for an {@link Entity} which has a {@link DynamicBodyComposition}.
      * @param packet the packet containing the entity position info
      * @param info required by every mixin injection
      * @param entity the {@link Entity} on which the injection point was originally called
@@ -49,8 +52,6 @@ public class ClientPlayNetworkHandlerMixin {
     }
 
     /**
-     * This mixin cancels all {@link Entity} movement updates from the server if it receives
-     * information for an {@link Entity} which has a {@link DynamicBodyComposition}.
      * @param packet the packet containing the entity update info
      * @param info required by every mixin injection
      * @param entity the {@link Entity} on which the injection point was originally called

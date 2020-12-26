@@ -4,13 +4,13 @@
   "package": "dev.lazurite.rayon.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "SummonCommandMixin"
+    "common.SummonCommandMixin",
+    "common.EntityMixin"
   ],
   "client": [
-    "ClientPlayNetworkHandlerMixin",
-    "EntityMixin",
-    "render.DebugRendererMixin",
-    "render.GameRendererMixin"
+    "client.play.ClientPlayNetworkHandlerMixin",
+    "client.render.DebugRendererMixin",
+    "client.render.GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

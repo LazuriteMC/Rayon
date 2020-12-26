@@ -4,7 +4,9 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.lazurite.rayon.physics.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.physics.PhysicsWorld;
+import dev.lazurite.rayon.physics.component.entity.PhysicsEntityComponent;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,9 +21,9 @@ import javax.vecmath.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class DebugHelper extends IDebugDraw {
-    private final PhysicsWorld physicsWorld;
+    private final MinecraftDynamicsWorld physicsWorld;
 
-    public DebugHelper(PhysicsWorld physicsWorld) {
+    public DebugHelper(MinecraftDynamicsWorld physicsWorld) {
         this.physicsWorld = physicsWorld;
     }
 
@@ -34,15 +36,15 @@ public class DebugHelper extends IDebugDraw {
             });
         } else {
             this.physicsWorld.getEntities().forEach(entity -> {
-//                DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
+                PhysicsEntityComponent physics = PhysicsEntityComponent.get(entity);
 
-//                render(
-//                        physics.getRigidBody(),
-//                        physics.getSynchronizer().get(DynamicBodyComposition.ORIENTATION),
-//                        physics.getSynchronizer().get(DynamicBodyComposition.POSITION),
-//                        camPos,
-//                        color
-//                );
+                render(
+                        physics.getBody(),
+                        physics.getSynchronizer().get(DynamicBodyComposition.ORIENTATION),
+                        physics.getSynchronizer().get(DynamicBodyComposition.POSITION),
+                        camPos,
+                        color
+                );
             });
         }
     }

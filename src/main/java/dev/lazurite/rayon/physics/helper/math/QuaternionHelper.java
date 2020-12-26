@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.physics.helper.math;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Quaternion;
 
 import javax.vecmath.Quat4f;
@@ -103,6 +104,24 @@ public class QuaternionHelper {
         q.z = quat.getZ();
         q.w = quat.getW();
         return q;
+    }
+
+    public static CompoundTag toTag(Quat4f quat) {
+        CompoundTag tag = new CompoundTag();
+        tag.putFloat("x", quat.x);
+        tag.putFloat("y", quat.y);
+        tag.putFloat("z", quat.z);
+        tag.putFloat("w", quat.w);
+        return tag;
+    }
+
+    public static Quat4f fromTag(CompoundTag tag) {
+        return new Quat4f(
+                tag.getFloat("x"),
+                tag.getFloat("y"),
+                tag.getFloat("z"),
+                tag.getFloat("w")
+        );
     }
 
     /**
