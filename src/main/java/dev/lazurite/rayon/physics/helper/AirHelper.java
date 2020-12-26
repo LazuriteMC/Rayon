@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.physics.helper;
 
-import dev.lazurite.rayon.util.Constants;
+import dev.lazurite.rayon.physics.util.Constants;
 
 import javax.vecmath.Vector3f;
 import java.util.Random;

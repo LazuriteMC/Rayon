@@ -16,7 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lazurite.rayon.physics.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.util.Constants;
+import dev.lazurite.rayon.physics.util.Constants;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;

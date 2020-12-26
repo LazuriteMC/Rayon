@@ -3,7 +3,7 @@ package dev.lazurite.rayon.physics.helper;
 import com.bulletphysics.dynamics.RigidBody;
 import com.google.common.collect.Maps;
 import dev.lazurite.rayon.physics.PhysicsWorld;
-import dev.lazurite.rayon.util.Constants;
+import dev.lazurite.rayon.physics.util.Constants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;

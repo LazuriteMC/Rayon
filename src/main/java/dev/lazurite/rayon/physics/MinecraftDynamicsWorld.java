@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import dev.lazurite.rayon.util.Constants;
+import dev.lazurite.rayon.physics.util.Constants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

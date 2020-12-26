@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.util;
+package dev.lazurite.rayon.physics.util;
 
 public class Constants {
     public static final int BLOCK_RADIUS = 3;
