@@ -1,12 +1,11 @@
 package dev.lazurite.rayon.physics.helper;
 
 import com.google.common.collect.Lists;
-import dev.lazurite.rayon.physics.util.Constants;
+import dev.lazurite.rayon.physics.entity.PhysicsEntityComponent;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
 
 import java.util.List;
 
@@ -17,18 +16,33 @@ public class EntityHelper {
         this.dynamicsWorld = dynamicsWorld;
     }
 
-    // TODO soft collisions
-    public void load() {
-        World world = dynamicsWorld.getWorld();
-        Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
-        List<Entity> entityList = world.getOtherEntities(entity, area);
+    public void step(float delta) {
+        for (Entity entity : getEntities()) {
+            PhysicsEntityComponent physics = PhysicsEntityComponent.get(entity);
 
-        entityList.forEach(otherEntity -> {
-
-        });
+            if (physics != null) {
+                physics.step(delta);
+            }
+        }
     }
 
     public List<Entity> getEntities() {
-        return Lists.newArrayList(collisionEntities.keySet());
+        List<Entity> out = Lists.newArrayList();
+
+        if (dynamicsWorld.getWorld().isClient()) {
+            ((ClientWorld) dynamicsWorld.getWorld()).getEntities().forEach(entity -> {
+                if (PhysicsEntityComponent.get(entity) != null) {
+                    out.add(entity);
+                }
+            });
+        } else {
+            ((ServerWorld) dynamicsWorld.getWorld()).entitiesByUuid.values().forEach(entity -> {
+                if (PhysicsEntityComponent.get(entity) != null) {
+                    out.add(entity);
+                }
+            });
+        }
+
+        return out;
     }
 }

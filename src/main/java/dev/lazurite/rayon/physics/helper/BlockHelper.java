@@ -34,17 +34,15 @@ public class BlockHelper {
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final JsonArray blockProperties;
     private final Map<BlockPos, RigidBody> collisionBlocks;
-    private final List<BlockPos> toKeepBlocks;
 
     public BlockHelper(MinecraftDynamicsWorld dynamicsWorld)  {
         this.dynamicsWorld = dynamicsWorld;
         this.blockProperties = PropertyHelper.get("blocks");
         this.collisionBlocks = Maps.newHashMap();
-        this.toKeepBlocks = Lists.newArrayList();
     }
 
     public void load(EntityHelper entities) {
-        entities.getAll().forEach(this::load);
+        entities.getEntities().forEach(this::load);
     }
 
     public void load(Entity entity) {
@@ -52,6 +50,7 @@ public class BlockHelper {
         Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
+        List<BlockPos> toKeepBlocks = Lists.newArrayList();
 
         blockList.forEach((blockPos, blockState) -> {
             float friction = 1.0f;
@@ -96,23 +95,19 @@ public class BlockHelper {
                     }
                 }
 
-                this.toKeepBlocks.add(blockPos);
+                toKeepBlocks.add(blockPos);
             }
         });
-    }
 
-    public void unload() {
+        // TODO clean this up
         List<BlockPos> toRemove = Lists.newArrayList();
-
         this.collisionBlocks.forEach((pos, body) -> {
             if (!toKeepBlocks.contains(pos)) {
                 dynamicsWorld.removeRigidBody(body);
                 toRemove.add(pos);
             }
         });
-
         toRemove.forEach(this.collisionBlocks::remove);
-        toKeepBlocks.clear();
     }
 
     public boolean contains(RigidBody body) {
@@ -123,13 +118,13 @@ public class BlockHelper {
         return this.collisionBlocks.values();
     }
 
-    /**
+    /*/**
      * Finds and returns a {@link Set} of {@link Block} objects that the
      * {@link Entity} is touching based on the provided {@link Direction}(s)
      * @param directions the {@link Direction}s of the desired touching {@link Block}s
      * @return a list of touching {@link Block}s
      */
-    public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
+    /*public static Set<Block> getTouchingBlocks(Entity entity, Direction... directions) {
         PhysicsWorld physicsWorld = PhysicsWorld.INSTANCE;
 //        DynamicBodyComposition physics = ((DynamicBody) entity).getDynamicBody();
 
@@ -191,7 +186,7 @@ public class BlockHelper {
             }
         }
         return blocks;
-    }
+    } */
 
     public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
         Map<BlockPos, BlockState> map = Maps.newHashMap();

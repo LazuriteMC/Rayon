@@ -20,16 +20,16 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.lazurite.rayon.Rayon::onInitServer"
+      "dev.lazurite.rayon.physics.Rayon::onInitServer"
     ],
     "client": [
-      "dev.lazurite.rayon.Rayon::onInitClient"
+      "dev.lazurite.rayon.physics.Rayon::onInitClient"
     ],
     "cardinal-components-entity": [
-      "dev.lazurite.rayon.Rayon::onInitEntityComponents"
+      "dev.lazurite.rayon.physics.Rayon::onInitEntityComponents"
     ],
     "cardinal-components-world": [
-      "dev.lazurite.rayon.Rayon::onInitWorldComponents"
+      "dev.lazurite.rayon.physics.Rayon::onInitWorldComponents"
     ]
   },
   "mixins": [

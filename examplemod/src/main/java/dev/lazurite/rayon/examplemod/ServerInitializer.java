@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.examplemod;
 
-import dev.lazurite.rayon.physics.Rayon;
+import dev.lazurite.rayon.api.DynamicEntityRegistry;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import net.fabricmc.api.ModInitializer;
@@ -24,7 +24,7 @@ public class ServerInitializer implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Rayon.register(PigEntity.class);
+        DynamicEntityRegistry.register(PigEntity.class);
 
         WAND_ITEM = Registry.register(
                 Registry.ITEM,

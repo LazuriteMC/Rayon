@@ -5,12 +5,13 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "common.SummonCommandMixin",
-    "common.EntityMixin"
+    "common.EntityMixin",
+    "step.ServerStepMixin"
   ],
   "client": [
-    "client.play.ClientPlayNetworkHandlerMixin",
-    "client.render.DebugRendererMixin",
-    "client.render.GameRendererMixin"
+    "client.ClientPlayNetworkHandlerMixin",
+    "client.DebugRendererMixin",
+    "step.ClientStepMixin"
   ],
   "injectors": {
     "defaultRequire": 1

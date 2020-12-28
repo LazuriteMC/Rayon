@@ -9,16 +9,17 @@ import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import dev.lazurite.rayon.physics.Rayon;
-import dev.lazurite.rayon.physics.entity.PhysicsEntityComponent;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.EntityHelper;
 import dev.lazurite.rayon.physics.util.Constants;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
+import java.util.List;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3, AutoSyncedComponent {
     private final BlockHelper blocks;
@@ -47,17 +48,17 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
     }
 
     public void step(float delta) {
-        blocks.load(entities, world);
-        entities.load(world);
-
-        entities.getAll().forEach(entity -> PhysicsEntityComponent.get(entity).step(delta));
-
-        blocks.unload();
+        blocks.load(entities);
+        entities.step(delta);
         stepSimulation(delta, 5, delta/5.0f);
     }
 
     public World getWorld() {
         return this.world;
+    }
+
+    public List<Entity> getEntities() {
+        return this.entities.getEntities();
     }
 
     @Override

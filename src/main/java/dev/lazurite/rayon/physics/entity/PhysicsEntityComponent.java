@@ -5,7 +5,6 @@ import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.entity.Entity;
-import org.apache.logging.log4j.Level;
 
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
@@ -16,7 +15,7 @@ public interface PhysicsEntityComponent extends ComponentV3, CommonTickingCompon
         try {
             return Rayon.PHYSICS_ENTITY.get(entity);
         } catch (NoSuchElementException e) {
-            Rayon.LOGGER.log(Level.ERROR, "Entity is not registered.");
+//            Rayon.LOGGER.log(Level.ERROR, "Entity is not registered.");
             return null;
         }
     }

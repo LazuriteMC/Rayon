@@ -22,8 +22,6 @@ public class DynamicEntityPhysics implements PhysicsEntityComponent {
     public DynamicEntityPhysics(@NotNull Entity entity) {
         this.entity = entity;
         this.body = BodyHelper.create(entity, new BoxShape(new Vector3f(1, 1, 1)), 1.0f);
-
-        PhysicsWorld.INSTANCE.track(entity);
     }
 
     @Override
