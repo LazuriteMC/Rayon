@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.examplemod;
 
-import dev.lazurite.rayon.api.Rayon;
+import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import net.fabricmc.api.ModInitializer;

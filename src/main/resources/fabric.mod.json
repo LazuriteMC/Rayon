@@ -48,7 +48,8 @@
   "custom": {
     "modmenu:api": true,
     "cardinal-components": [
-      "rayon:physics"
+      "rayon:entity",
+      "rayon:world"
     ]
   }
 }
