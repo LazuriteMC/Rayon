@@ -51,6 +51,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         blocks.load(entities);
         entities.step(delta);
         stepSimulation(delta, 5, delta/5.0f);
+        blocks.purge();
     }
 
     public World getWorld() {

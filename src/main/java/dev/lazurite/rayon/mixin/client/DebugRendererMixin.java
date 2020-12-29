@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.vecmath.Vector3f;
-
 @Mixin(DebugRenderer.class)
 public class DebugRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
@@ -19,8 +17,7 @@ public class DebugRendererMixin {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.options.debugEnabled) {
-            Vector3f color = new Vector3f(1.0f, 0.0f, 0.0f); // red
-            MinecraftDynamicsWorld.get(client.world).getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, color);
+            MinecraftDynamicsWorld.get(client.world).getDebugHelper().renderWorld(cameraX, cameraY, cameraZ);
         }
     }
 }

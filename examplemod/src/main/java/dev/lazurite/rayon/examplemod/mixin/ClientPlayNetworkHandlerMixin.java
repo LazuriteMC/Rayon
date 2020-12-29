@@ -2,6 +2,7 @@ package dev.lazurite.rayon.examplemod.mixin;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
+import dev.lazurite.rayon.physics.entity.DynamicEntityPhysics;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import javax.vecmath.Vector3f;
 
 /**
  * Contains mixins mostly relating to {@link Entity} spawning, movement, and positioning.
@@ -45,7 +48,7 @@ public class ClientPlayNetworkHandlerMixin {
 
             int i = packet.getId();
             float yaw = ((float) packet.getYaw() * 360) / 256.0F;
-            entity.updatePositionAndAngles(x, y, z, yaw, 0);
+            DynamicEntityPhysics.get(entity).setPosition(new Vector3f((float) x, (float) y, (float) z));
             entity.setEntityId(i);
             entity.setUuid(packet.getUuid());
             this.world.addEntity(i, entity);

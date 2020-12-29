@@ -1,77 +1,38 @@
 package dev.lazurite.rayon.physics.entity;
 
-import com.bulletphysics.collision.shapes.BoxShape;
-import com.bulletphysics.dynamics.RigidBody;
-import dev.lazurite.rayon.physics.helper.BodyHelper;
+import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
-import java.util.UUID;
-
-public class DynamicEntityPhysics implements PhysicsEntityComponent {
-    private final Entity entity;
-    private RigidBody body;
-
-    private UUID owner;
-
+public class DynamicEntityPhysics extends RigidBodyEntity implements ComponentV3, AutoSyncedComponent, CommonTickingComponent {
     public DynamicEntityPhysics(@NotNull Entity entity) {
-        this.entity = entity;
-        this.body = BodyHelper.create(entity, new BoxShape(new Vector3f(1, 1, 1)), 1.0f);
+        super(entity);
+    }
+
+    public static DynamicEntityPhysics get(Entity entity) {
+        try {
+            return Rayon.PHYSICS_ENTITY.get(entity);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void tick() {
+        Rayon.LOGGER.log(Level.INFO, getPosition());
+        entity.pos = VectorHelper.vector3fToVec3d(getPosition());
     }
 
     @Override
     public void step(float delta) {
 
-    }
-
-    @Override
-    public void tick() {
-        entity.setVelocity(0, 0.1, 0);
-    }
-
-    @Override
-    public void setOrientation(Quat4f orientation) {
-
-    }
-
-    @Override
-    public void setPosition(Vector3f position) {
-
-    }
-
-    @Override
-    public void setLinearVelocity(Vector3f linearVelocity) {
-
-    }
-
-    @Override
-    public void setAngularVelocity(Vector3f angularVelocity) {
-
-    }
-
-    @Override
-    public Quat4f getOrientation() {
-        return body.getOrientation(new Quat4f());
-    }
-
-    @Override
-    public Vector3f getPosition() {
-        return body.getCenterOfMassPosition(new Vector3f());
-    }
-
-    @Override
-    public Vector3f getLinearVelocity() {
-        return body.getLinearVelocity(new Vector3f());
-    }
-
-    @Override
-    public Vector3f getAngularVelocity() {
-        return body.getAngularVelocity(new Vector3f());
     }
 
     @Override

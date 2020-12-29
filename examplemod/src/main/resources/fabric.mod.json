@@ -12,7 +12,10 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main:": [
+    "main": [
+      "dev.lazurite.rayon.examplemod.ExampleMod"
+    ],
+    "client": [
       "dev.lazurite.rayon.examplemod.ExampleMod"
     ]
   },

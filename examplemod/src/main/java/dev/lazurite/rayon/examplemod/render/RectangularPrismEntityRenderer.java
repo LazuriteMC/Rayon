@@ -3,7 +3,7 @@ package dev.lazurite.rayon.examplemod.render;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
-import dev.lazurite.rayon.physics.entity.PhysicsEntityComponent;
+import dev.lazurite.rayon.physics.entity.DynamicEntityPhysics;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,13 +24,13 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     public RectangularPrismEntityRenderer(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
         this.shadowRadius = 0.2F;
-        this.model = new RectangularPrismModel(5, 2, 5);
+        this.model = new RectangularPrismModel(20, 15, 20);
     }
 
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
 
-        PhysicsEntityComponent component = PhysicsEntityComponent.get(rectangularPrism);
+        DynamicEntityPhysics component = DynamicEntityPhysics.get(rectangularPrism);
 
         if (component != null) {
             matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(component.getOrientation()));

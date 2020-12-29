@@ -4,6 +4,7 @@ import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.lazurite.rayon.physics.util.TypedRigidBody;
 import dev.lazurite.rayon.physics.world.DebuggableDynamicsWorld;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
@@ -25,11 +26,19 @@ public class DebugHelper extends IDebugDraw {
     }
 
     @Environment(EnvType.CLIENT)
-    public void renderWorld(double cameraX, double cameraY, double cameraZ, Vector3f color) {
+    public void renderWorld(double cameraX, double cameraY, double cameraZ) {
         Vector3f camPos = new Vector3f((float) cameraX, (float) cameraY, (float) cameraZ);
 
         this.physicsWorld.getCollisionObjectArray().forEach(body -> {
             Transform trans = body.getWorldTransform(new Transform());
+
+            Vector3f color;
+            if (body instanceof TypedRigidBody) {
+                color = ((TypedRigidBody) body).getBodyType().getColor();
+            } else {
+                color = new Vector3f(1, 0, 0); // red
+            }
+
             render(body, trans.getRotation(new Quat4f()), trans.origin, camPos, color);
         });
     }

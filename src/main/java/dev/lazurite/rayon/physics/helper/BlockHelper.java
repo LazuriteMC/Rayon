@@ -1,16 +1,10 @@
 package dev.lazurite.rayon.physics.helper;
 
-import com.bulletphysics.collision.broadphase.Dispatcher;
-import com.bulletphysics.collision.narrowphase.PersistentManifold;
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
-import com.bulletphysics.linearmath.DefaultMotionState;
-import com.bulletphysics.linearmath.Transform;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,13 +14,10 @@ import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 import java.util.*;
 
@@ -34,11 +25,13 @@ public class BlockHelper {
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final JsonArray blockProperties;
     private final Map<BlockPos, RigidBody> collisionBlocks;
+    private final List<BlockPos> toKeep;
 
     public BlockHelper(MinecraftDynamicsWorld dynamicsWorld)  {
         this.dynamicsWorld = dynamicsWorld;
         this.blockProperties = PropertyHelper.get("blocks");
         this.collisionBlocks = Maps.newHashMap();
+        this.toKeep = Lists.newArrayList();
     }
 
     public void load(EntityHelper entities) {
@@ -50,7 +43,6 @@ public class BlockHelper {
         Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
-        List<BlockPos> toKeepBlocks = Lists.newArrayList();
 
         blockList.forEach((blockPos, blockState) -> {
             float friction = 1.0f;
@@ -73,7 +65,6 @@ public class BlockHelper {
                     VoxelShape coll = blockState.getCollisionShape(blockView, blockPos);
 
                     if (!coll.isEmpty()) {
-                        /* Create the box shape for the block */
                         Box b = coll.getBoundingBox();
                         Vector3f box = new Vector3f(
                                 ((float) (b.maxX - b.minX) / 2.0F) + 0.005f,
@@ -81,33 +72,29 @@ public class BlockHelper {
                                 ((float) (b.maxZ - b.minZ) / 2.0F) + 0.005f);
                         CollisionShape shape = new BoxShape(box);
 
-                        /* Set the position of the rigid body to the block's position */
-                        Vector3f position = new Vector3f(blockPos.getX() + box.x, blockPos.getY() + box.y, blockPos.getZ() + box.z);
-                        DefaultMotionState motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(), position, friction)));
-
-                        /* Set up the rigid body's construction info and initialization */
-                        RigidBodyConstructionInfo ci = new RigidBodyConstructionInfo(0, motionState, shape, new Vector3f(0, 0, 0));
-                        RigidBody body = new RigidBody(ci);
-
-                        /* Add it to the necessary locations */
+                        RigidBody body = BodyHelper.create(blockPos, shape, friction);
                         collisionBlocks.put(blockPos, body);
                         this.dynamicsWorld.addRigidBody(body);
                     }
                 }
 
-                toKeepBlocks.add(blockPos);
+                toKeep.add(blockPos);
             }
         });
+    }
 
-        // TODO clean this up
+    public void purge() {
         List<BlockPos> toRemove = Lists.newArrayList();
+
         this.collisionBlocks.forEach((pos, body) -> {
-            if (!toKeepBlocks.contains(pos)) {
+            if (!toKeep.contains(pos)) {
                 dynamicsWorld.removeRigidBody(body);
                 toRemove.add(pos);
             }
         });
+
         toRemove.forEach(this.collisionBlocks::remove);
+        toKeep.clear();
     }
 
     public boolean contains(RigidBody body) {

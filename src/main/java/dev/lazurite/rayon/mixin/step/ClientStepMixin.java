@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.mixin.step;
 
-import dev.lazurite.rayon.physics.Rayon;
-import dev.lazurite.rayon.physics.entity.PhysicsEntityComponent;
+import dev.lazurite.rayon.physics.entity.DynamicEntityPhysics;
 import dev.lazurite.rayon.physics.util.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.client.MinecraftClient;
@@ -34,17 +33,19 @@ public class ClientStepMixin {
      */
     @Inject(at = @At("TAIL"), method = "renderWorld")
     public void renderWorld(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo info) {
-        /* Get the world component */
-        MinecraftDynamicsWorld dynamicsWorld = MinecraftDynamicsWorld.get(client.world);
+        if (!client.isPaused()) {
+            /* Get the world component */
+            MinecraftDynamicsWorld dynamicsWorld = MinecraftDynamicsWorld.get(client.world);
 
-        /* Get delta */
-        float delta = clock.get();
+            /* Get delta */
+            float delta = clock.get();
 
-        /* Step the client world */
-        MinecraftDynamicsWorld.get(client.world).step(delta);
+            /* Step the client world */
+            MinecraftDynamicsWorld.get(client.world).step(delta);
 
-        for (Entity entity : dynamicsWorld.getEntities()) {
-            PhysicsEntityComponent.get(entity).step(delta);
+            for (Entity entity : dynamicsWorld.getEntities()) {
+                DynamicEntityPhysics.get(entity).step(delta);
+            }
         }
     }
 }
