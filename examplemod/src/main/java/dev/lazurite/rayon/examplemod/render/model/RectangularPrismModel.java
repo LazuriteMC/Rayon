@@ -31,7 +31,7 @@ public class RectangularPrismModel extends EntityModel<RectangularPrismEntity> {
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         base = new ModelPart(this, 0, 0);
-        base.addCuboid(x, y, z, x / 2.0f, y / 2.0f, z / 2.0f);
+        base.addCuboid(0, 0, 0, x / 2.0f, y / 2.0f, z / 2.0f);
         base.render(matrices, vertexConsumer, light, overlay);
     }
 }

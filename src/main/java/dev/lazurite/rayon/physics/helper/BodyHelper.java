@@ -30,7 +30,7 @@ public class BodyHelper {
     public static TypedRigidBody create(Entity entity, @Nullable CollisionShape collisionShape, float mass) {
         /* Create a BoxShape if a shape isn't passed in. */
         if (collisionShape == null) {
-            collisionShape = getBoundingBoxShape(new Box(new BlockPos(1, 1, 1)));
+            collisionShape = getBoundingBoxShape(entity.getBoundingBox());
         }
 
         /* Calculate the inertia of the shape. */

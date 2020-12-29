@@ -1,12 +1,12 @@
 package dev.lazurite.rayon.mixin.step;
 
-import dev.lazurite.rayon.physics.entity.DynamicEntityPhysics;
-import dev.lazurite.rayon.physics.util.Delta;
+import dev.lazurite.rayon.physics.thread.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @author Ethan Johnson
  */
 @Mixin(GameRenderer.class)
+@Environment(EnvType.CLIENT)
 public class ClientStepMixin {
     @Unique private final Delta clock = new Delta();
     @Shadow @Final private MinecraftClient client;
@@ -40,12 +41,12 @@ public class ClientStepMixin {
             /* Get delta */
             float delta = clock.get();
 
-            /* Step the client world */
-            MinecraftDynamicsWorld.get(client.world).step(delta);
-
-            for (Entity entity : dynamicsWorld.getEntities()) {
-                DynamicEntityPhysics.get(entity).step(delta);
-            }
+//            /* Step the client world */
+//            MinecraftDynamicsWorld.get(client.world).step(delta);
+//
+//            for (Entity entity : dynamicsWorld.getEntities()) {
+//                DynamicEntityPhysics.get(entity).step(delta);
+//            }
         }
     }
 }

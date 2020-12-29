@@ -1,8 +1,7 @@
 package dev.lazurite.rayon.physics;
 
 import dev.lazurite.rayon.api.DynamicEntityRegistry;
-import dev.lazurite.rayon.physics.entity.DynamicEntityPhysics;
-import dev.lazurite.rayon.physics.entity.RigidBodyEntity;
+import dev.lazurite.rayon.physics.entity.DynamicPhysicsEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
@@ -17,7 +16,7 @@ public class Rayon {
 	public static final String MODID = "rayon";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
 
-	public static final ComponentKey<DynamicEntityPhysics> PHYSICS_ENTITY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "entity"), DynamicEntityPhysics.class);
+	public static final ComponentKey<DynamicPhysicsEntity> PHYSICS_ENTITY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "entity"), DynamicPhysicsEntity.class);
 	public static final ComponentKey<MinecraftDynamicsWorld> PHYSICS_WORLD = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "world"), MinecraftDynamicsWorld.class);
 
 	public void onInitServer() {
@@ -38,7 +37,7 @@ public class Rayon {
 
 	public void onInitEntityComponents(EntityComponentFactoryRegistry registry) {
 		DynamicEntityRegistry.get().forEach(
-				entity -> registry.registerFor(entity, PHYSICS_ENTITY, DynamicEntityPhysics::new)
+				entity -> registry.registerFor(entity, PHYSICS_ENTITY, DynamicPhysicsEntity::new)
 		);
 	}
 

@@ -11,6 +11,7 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.EntityHelper;
+import dev.lazurite.rayon.physics.thread.PhysicsThread;
 import dev.lazurite.rayon.physics.util.Constants;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -22,6 +23,7 @@ import javax.vecmath.Vector3f;
 import java.util.List;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3, AutoSyncedComponent {
+    private final PhysicsThread thread;
     private final BlockHelper blocks;
     private final EntityHelper entities;
     private final World world;
@@ -32,7 +34,10 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         setGravity(new Vector3f(0, Constants.GRAVITY, 0));
         this.blocks = new BlockHelper(this);
         this.entities = new EntityHelper(this);
+        this.thread = new PhysicsThread(this);
         this.world = world;
+
+        this.thread.start();
     }
 
     public static MinecraftDynamicsWorld create(World world) {

@@ -1,10 +1,11 @@
 package dev.lazurite.rayon.mixin.client;
 
-import dev.lazurite.rayon.physics.entity.DynamicEntityPhysics;
+import dev.lazurite.rayon.physics.entity.DynamicPhysicsEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,6 +20,15 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
     /**
+     * @param packet the game join packet
+     * @param info required by every mixin injection
+     */
+    @Inject(method = "onGameJoin", at = @At("TAIL"))
+    public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
+
+    }
+
+    /**
      * @param packet the packet containing the entity position info
      * @param info required by every mixin injection
      * @param entity the {@link Entity} on which the injection point was originally called
@@ -30,7 +40,7 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityPosition(EntityPositionS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (DynamicEntityPhysics.get(entity) != null) {
+        if (DynamicPhysicsEntity.get(entity) != null) {
             info.cancel();
         }
     }
@@ -47,7 +57,7 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityUpdate(EntityS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (DynamicEntityPhysics.get(entity) != null) {
+        if (DynamicPhysicsEntity.get(entity) != null) {
             info.cancel();
         }
     }

@@ -31,6 +31,14 @@ public abstract class RigidBodyEntity {
     }
 
     public void setPosition(Vector3f position) {
+//        Vector3f min = new Vector3f();
+//        Vector3f max = new Vector3f();
+//        body.getCollisionShape().getAabb(new Transform(), min, max);
+//
+//        Vector3f difference = new Vector3f();
+//        difference.sub(max, min);
+
+//        position.add(difference);
         Transform trans = body.getWorldTransform(new Transform());
         trans.origin.set(position);
         body.setWorldTransform(trans);

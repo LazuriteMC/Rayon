@@ -11,7 +11,8 @@
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
     "client.DebugRendererMixin",
-    "step.ClientStepMixin"
+    "step.ClientStepMixin",
+    "step.ClientStepMixinTest"
   ],
   "injectors": {
     "defaultRequire": 1

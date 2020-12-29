@@ -8,15 +8,14 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
-import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class DynamicEntityPhysics extends RigidBodyEntity implements ComponentV3, AutoSyncedComponent, CommonTickingComponent {
-    public DynamicEntityPhysics(@NotNull Entity entity) {
+public class DynamicPhysicsEntity extends RigidBodyEntity implements ComponentV3, AutoSyncedComponent, CommonTickingComponent {
+    public DynamicPhysicsEntity(@NotNull Entity entity) {
         super(entity);
     }
 
-    public static DynamicEntityPhysics get(Entity entity) {
+    public static DynamicPhysicsEntity get(Entity entity) {
         try {
             return Rayon.PHYSICS_ENTITY.get(entity);
         } catch (Exception e) {
@@ -26,7 +25,7 @@ public class DynamicEntityPhysics extends RigidBodyEntity implements ComponentV3
 
     @Override
     public void tick() {
-        Rayon.LOGGER.log(Level.INFO, getPosition());
+//        Rayon.LOGGER.log(Level.INFO, getPosition());
         entity.pos = VectorHelper.vector3fToVec3d(getPosition());
     }
 

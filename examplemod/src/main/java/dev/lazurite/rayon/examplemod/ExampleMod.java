@@ -37,7 +37,7 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
                 Registry.ENTITY_TYPE,
                 new Identifier(MODID, "rectangular_prism_entity"),
                 FabricEntityTypeBuilder.create(SpawnGroup.MISC, RectangularPrismEntity::new)
-                        .dimensions(EntityDimensions.changing(0.2f, 0.2f))
+                        .dimensions(EntityDimensions.changing(0.5f, 1.5f))
                         .trackedUpdateRate(3)
                         .trackRangeBlocks(80)
                         .forceTrackedVelocityUpdates(true)

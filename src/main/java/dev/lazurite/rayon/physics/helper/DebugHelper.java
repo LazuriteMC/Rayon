@@ -4,6 +4,7 @@ import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.lazurite.rayon.physics.util.BodyType;
 import dev.lazurite.rayon.physics.util.TypedRigidBody;
 import dev.lazurite.rayon.physics.world.DebuggableDynamicsWorld;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
@@ -26,7 +27,7 @@ public class DebugHelper extends IDebugDraw {
     }
 
     @Environment(EnvType.CLIENT)
-    public void renderWorld(double cameraX, double cameraY, double cameraZ) {
+    public void renderWorld(double cameraX, double cameraY, double cameraZ, boolean blocks) {
         Vector3f camPos = new Vector3f((float) cameraX, (float) cameraY, (float) cameraZ);
 
         this.physicsWorld.getCollisionObjectArray().forEach(body -> {
@@ -34,7 +35,12 @@ public class DebugHelper extends IDebugDraw {
 
             Vector3f color;
             if (body instanceof TypedRigidBody) {
-                color = ((TypedRigidBody) body).getBodyType().getColor();
+                BodyType type = ((TypedRigidBody) body).getBodyType();
+                color = type.getColor();
+
+                if (type.equals(BodyType.BLOCK) && !blocks) {
+                    return;
+                }
             } else {
                 color = new Vector3f(1, 0, 0); // red
             }
