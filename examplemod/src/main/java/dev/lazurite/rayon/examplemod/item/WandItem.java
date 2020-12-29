@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.examplemod.item;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.CowEntity;
+import dev.lazurite.rayon.examplemod.ExampleMod;
+import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -37,11 +37,9 @@ public class WandItem extends Item {
         HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 
         if (!world.isClient()) {
-            CowEntity cow = EntityType.COW.create(world);
-
-            cow.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-//            PhysicsWorld.getInstance().track(cow);
-            world.spawnEntity(cow);
+            RectangularPrismEntity rectangularPrism = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
+            rectangularPrism.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+            world.spawnEntity(rectangularPrism);
 
             return TypedActionResult.success(itemStack);
         }

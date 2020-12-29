@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.examplemod.mixin;
 
-import dev.lazurite.rayon.examplemod.ServerInitializer;
+import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import javax.vecmath.Vector3f;
 
 /**
  * Contains mixins mostly relating to {@link Entity} spawning, movement, and positioning.
@@ -42,11 +40,12 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void onEntitySpawn(EntitySpawnS2CPacket packet, CallbackInfo info, double x, double y, double z, EntityType<?> type) {
-        if (type == ServerInitializer.RECTANGULAR_PRISM_ENTITY) {
+        if (type == ExampleMod.RECTANGULAR_PRISM_ENTITY) {
             RectangularPrismEntity entity = new RectangularPrismEntity(type, world);
 
             int i = packet.getId();
-//            entity.updatePositionAndAngles(new Vector3f((float) x, (float) y, (float) z), (float)(packet.getYaw() * 360) / 256.0F, 0);
+            float yaw = ((float) packet.getYaw() * 360) / 256.0F;
+            entity.updatePositionAndAngles(x, y, z, yaw, 0);
             entity.setEntityId(i);
             entity.setUuid(packet.getUuid());
             this.world.addEntity(i, entity);

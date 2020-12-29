@@ -12,10 +12,13 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "dev.lazurite.rayon.examplemod.ServerInitializer"
+    "main:": [
+      "dev.lazurite.rayon.examplemod.ExampleMod"
     ]
   },
+  "mixins": [
+    "examplemod.mixins.json"
+  ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
