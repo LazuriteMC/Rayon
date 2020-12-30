@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin.step;
 
-import dev.lazurite.rayon.physics.entity.DynamicPhysicsEntity;
+import dev.lazurite.rayon.physics.entity.RigidBodyEntity;
 import dev.lazurite.rayon.physics.thread.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.entity.Entity;
@@ -32,7 +32,7 @@ public class ServerStepMixin {
 
         /* Step every entity */
         for (Entity entity : dynamicsWorld.getEntities()) {
-            DynamicPhysicsEntity.get(entity).step(delta);
+            RigidBodyEntity.get(entity).step(delta);
         }
     }
 }

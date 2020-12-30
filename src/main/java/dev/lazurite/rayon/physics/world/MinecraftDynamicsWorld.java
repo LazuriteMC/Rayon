@@ -34,10 +34,8 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         setGravity(new Vector3f(0, Constants.GRAVITY, 0));
         this.blocks = new BlockHelper(this);
         this.entities = new EntityHelper(this);
-        this.thread = new PhysicsThread(this);
+        this.thread = new PhysicsThread(this, 20);
         this.world = world;
-
-        this.thread.start();
     }
 
     public static MinecraftDynamicsWorld create(World world) {
@@ -61,6 +59,10 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
     public World getWorld() {
         return this.world;
+    }
+
+    public PhysicsThread getThread() {
+        return this.thread;
     }
 
     public List<Entity> getEntities() {

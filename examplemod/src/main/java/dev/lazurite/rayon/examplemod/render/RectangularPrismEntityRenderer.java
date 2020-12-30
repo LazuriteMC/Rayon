@@ -3,8 +3,9 @@ package dev.lazurite.rayon.examplemod.render;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
-import dev.lazurite.rayon.physics.entity.DynamicPhysicsEntity;
+import dev.lazurite.rayon.physics.entity.RigidBodyEntity;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
+import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
@@ -15,6 +16,8 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+
+import javax.vecmath.Quat4f;
 
 @Environment(EnvType.CLIENT)
 public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPrismEntity> {
@@ -30,10 +33,16 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
 
-        DynamicPhysicsEntity component = DynamicPhysicsEntity.get(rectangularPrism);
+        RigidBodyEntity component = RigidBodyEntity.get(rectangularPrism);
 
         if (component != null) {
-            matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(component.getOrientation()));
+//            Quat4f out = QuaternionHelper.slerp(component.getPrevOrientation(), component.getOrientation(), delta);
+            Quat4f out = new Quat4f();
+            out.interpolate(component.getPrevOrientation(), component.getOrientation(), delta);
+            matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(out));
+
+            MinecraftDynamicsWorld dynamicsWorld = MinecraftDynamicsWorld.get(rectangularPrism.getEntityWorld());
+            dynamicsWorld.stepSimulation(dynamicsWorld.getThread().getDelta());
         }
 
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(this.getTexture(rectangularPrism)));

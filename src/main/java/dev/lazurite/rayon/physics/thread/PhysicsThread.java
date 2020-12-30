@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.physics.thread;
 
-import dev.lazurite.rayon.physics.entity.DynamicPhysicsEntity;
+import dev.lazurite.rayon.physics.entity.RigidBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.entity.Entity;
 
@@ -12,19 +12,17 @@ public class PhysicsThread extends TimerTask {
     private final Delta clock;
     private final Timer timer;
 
-    public PhysicsThread(MinecraftDynamicsWorld world) {
+    public PhysicsThread(MinecraftDynamicsWorld world, int rate) {
         this.world = world;
         this.clock = new Delta();
         this.timer = new Timer();
-    }
 
-    public void start() {
         /*
          * 4 = 250 fps
          * 10 = 100 fps
          * 50 = 20 fps (minecraft ticks)
          */
-        timer.scheduleAtFixedRate(this, 0, 50);
+        timer.scheduleAtFixedRate(this, 0, 1000 / rate);
     }
 
     @Override
@@ -36,8 +34,16 @@ public class PhysicsThread extends TimerTask {
 
         /* Step every entity */
         for (Entity entity : world.getEntities()) {
-            DynamicPhysicsEntity.get(entity).step(delta);
+            RigidBodyEntity.get(entity).step(delta);
         }
+    }
+
+    public void stop() {
+        timer.cancel();
+    }
+
+    public float getDelta() {
+        return clock.getTimeMicroseconds() / 1000000F;
     }
 
     public MinecraftDynamicsWorld getWorld() {

@@ -2,6 +2,7 @@ package dev.lazurite.rayon.physics.helper;
 
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.physics.entity.DynamicPhysicsEntity;
+import dev.lazurite.rayon.physics.entity.RigidBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -18,7 +19,7 @@ public class EntityHelper {
 
     public void step(float delta) {
         for (Entity entity : getEntities()) {
-            DynamicPhysicsEntity physics = DynamicPhysicsEntity.get(entity);
+            RigidBodyEntity physics = RigidBodyEntity.get(entity);
 
             if (physics != null) {
                 if (!dynamicsWorld.getCollisionObjectArray().contains(physics.getRigidBody())) {
@@ -30,18 +31,18 @@ public class EntityHelper {
         }
     }
 
-    public List<Entity> getEntities() {
+    synchronized public List<Entity> getEntities() {
         List<Entity> out = Lists.newArrayList();
 
         if (dynamicsWorld.getWorld().isClient()) {
             ((ClientWorld) dynamicsWorld.getWorld()).getEntities().forEach(entity -> {
-                if (DynamicPhysicsEntity.get(entity) != null) {
+                if (RigidBodyEntity.get(entity) != null) {
                     out.add(entity);
                 }
             });
         } else {
             ((ServerWorld) dynamicsWorld.getWorld()).entitiesByUuid.values().forEach(entity -> {
-                if (DynamicPhysicsEntity.get(entity) != null) {
+                if (RigidBodyEntity.get(entity) != null) {
                     out.add(entity);
                 }
             });
