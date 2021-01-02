@@ -66,6 +66,10 @@ allprojects {
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 
+		// Fiber
+		modImplementation "me.zeroeightsix:fiber:${project.fiber_version}"
+		include "me.zeroeightsix:fiber:${project.fiber_version}"
+
 		// JBullet
 		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 		shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"

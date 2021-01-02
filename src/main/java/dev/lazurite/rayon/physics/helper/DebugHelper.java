@@ -4,8 +4,8 @@ import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.lazurite.rayon.physics.util.BodyType;
-import dev.lazurite.rayon.physics.util.TypedRigidBody;
+import dev.lazurite.rayon.physics.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.world.DebuggableDynamicsWorld;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
@@ -30,23 +30,20 @@ public class DebugHelper extends IDebugDraw {
     public void renderWorld(double cameraX, double cameraY, double cameraZ, boolean blocks) {
         Vector3f camPos = new Vector3f((float) cameraX, (float) cameraY, (float) cameraZ);
 
-        this.physicsWorld.getCollisionObjectArray().forEach(body -> {
+        for (CollisionObject body: physicsWorld.getCollisionObjectArray()) {
             Transform trans = body.getWorldTransform(new Transform());
 
             Vector3f color;
-            if (body instanceof TypedRigidBody) {
-                BodyType type = ((TypedRigidBody) body).getBodyType();
-                color = type.getColor();
-
-                if (type.equals(BodyType.BLOCK) && !blocks) {
-                    return;
-                }
-            } else {
+            if (body instanceof EntityRigidBody) {
                 color = new Vector3f(1, 0, 0); // red
+            } else if (body instanceof BlockRigidBody) {
+                color = new Vector3f(0, 0, 1); // blu
+            } else {
+                color = new Vector3f(1, 1, 1); // whit
             }
 
             render(body, trans.getRotation(new Quat4f()), trans.origin, camPos, color);
-        });
+        }
     }
 
     @Environment(EnvType.CLIENT)

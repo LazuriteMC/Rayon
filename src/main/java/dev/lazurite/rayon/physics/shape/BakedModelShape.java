@@ -11,6 +11,7 @@ import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.render.model.MultipartBakedModel;
 import net.minecraft.util.math.Direction;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
@@ -26,15 +27,7 @@ import java.util.function.Predicate;
  * @author Ethan Johnson
  */
 public class BakedModelShape extends CompoundShape {
-
-    /**
-     * Creates an empty {@link BakedModelShape}. This is if you have custom code
-     * which adds {@link BakedQuad} objects to this shape later on in the
-     * execution process.
-     */
-    public BakedModelShape() {
-
-    }
+    private final BakedModel bakedModel;
 
     /**
      * This constructor is meant to work with any {@link BakedModel} given
@@ -52,7 +45,9 @@ public class BakedModelShape extends CompoundShape {
      * @param bakedModel the block's baked model
      * @param blockState the block state object
      */
-    public BakedModelShape(BakedModel bakedModel, BlockState blockState) {
+    public BakedModelShape(BakedModel bakedModel, @Nullable BlockState blockState) {
+        this.bakedModel = bakedModel;
+
         if (bakedModel instanceof MultipartBakedModel) {
             MultipartBakedModel multi = (MultipartBakedModel) bakedModel;
 
@@ -98,8 +93,8 @@ public class BakedModelShape extends CompoundShape {
 
             Vector3f point = new Vector3f(x - 0.5f, y - 0.5f, z - 0.5f);
             points.add(point);
-        }
 
+        }
         /* Make a new hull shape and scale it down */
         ConvexHullShape hull = new ConvexHullShape(points);
         hull.setLocalScaling(new Vector3f(0.25f, 0.25f, 0.25f));
@@ -108,5 +103,13 @@ public class BakedModelShape extends CompoundShape {
         /* Add the shape as a child */
         Transform trans = new Transform(new Matrix4f(new Quat4f(0, 1, 0, 0), new Vector3f(), 1.0f));
         this.addChildShape(trans, hull);
+    }
+
+    /**
+     * Get the {@link BakedModel} associated with this shape.
+     * @return the {@link BakedModel} object
+     */
+    public BakedModel getBakedModel() {
+        return this.bakedModel;
     }
 }

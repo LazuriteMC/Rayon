@@ -3,9 +3,8 @@ package dev.lazurite.rayon.examplemod.render;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
-import dev.lazurite.rayon.physics.entity.RigidBodyEntity;
+import dev.lazurite.rayon.physics.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
-import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
@@ -33,16 +32,14 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
 
-        RigidBodyEntity component = RigidBodyEntity.get(rectangularPrism);
+        EntityRigidBody component = EntityRigidBody.get(rectangularPrism);
 
         if (component != null) {
-//            Quat4f out = QuaternionHelper.slerp(component.getPrevOrientation(), component.getOrientation(), delta);
             Quat4f out = new Quat4f();
-            out.interpolate(component.getPrevOrientation(), component.getOrientation(), delta);
+//            out = QuaternionHelper.slerp(component.getPrevOrientation(), component.getOrientation(), delta);
+//            out.interpolate(component.getPrevOrientation(), component.getOrientation(), delta);
+            out.set(component.getOrientation(new Quat4f()));
             matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(out));
-
-            MinecraftDynamicsWorld dynamicsWorld = MinecraftDynamicsWorld.get(rectangularPrism.getEntityWorld());
-            dynamicsWorld.stepSimulation(dynamicsWorld.getThread().getDelta());
         }
 
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(this.getTexture(rectangularPrism)));

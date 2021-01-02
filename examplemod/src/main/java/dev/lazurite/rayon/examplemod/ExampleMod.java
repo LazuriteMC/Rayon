@@ -1,9 +1,10 @@
 package dev.lazurite.rayon.examplemod;
 
-import dev.lazurite.rayon.api.DynamicEntityRegistry;
+import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import dev.lazurite.rayon.examplemod.render.RectangularPrismEntityRenderer;
+import dev.lazurite.rayon.api.shape.EntityBoundingBoxShape;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -15,7 +16,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +44,7 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
                         .build()
         );
 
-        DynamicEntityRegistry.register(RectangularPrismEntity.class);
+        DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, EntityBoundingBoxShape::new, 1.0f);
     }
 
     @Override

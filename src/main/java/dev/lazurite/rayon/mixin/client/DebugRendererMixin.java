@@ -17,7 +17,7 @@ public class DebugRendererMixin {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.options.debugEnabled) {
-            MinecraftDynamicsWorld.get(client.world).getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, false);
+            MinecraftDynamicsWorld.get(client.world).getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, true);
         }
     }
 }

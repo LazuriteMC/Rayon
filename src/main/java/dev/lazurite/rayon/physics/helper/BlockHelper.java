@@ -1,20 +1,19 @@
 package dev.lazurite.rayon.physics.helper;
 
 import com.bulletphysics.collision.shapes.BoxShape;
-import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.dynamics.RigidBody;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.lazurite.rayon.api.shape.EntityBoundingBoxShape;
+import dev.lazurite.rayon.physics.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.physics.util.Constants;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -24,21 +23,20 @@ import java.util.*;
 public class BlockHelper {
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final JsonArray blockProperties;
-    private final Map<BlockPos, RigidBody> collisionBlocks;
-    private final List<BlockPos> toKeep;
+    private final List<BlockRigidBody> toKeep;
 
     public BlockHelper(MinecraftDynamicsWorld dynamicsWorld)  {
         this.dynamicsWorld = dynamicsWorld;
         this.blockProperties = PropertyHelper.get("blocks");
-        this.collisionBlocks = Maps.newHashMap();
         this.toKeep = Lists.newArrayList();
     }
 
     public void load(EntityHelper entities) {
         entities.getEntities().forEach(this::load);
+        purge();
     }
 
-    public void load(Entity entity) {
+    private void load(Entity entity) {
         World world = dynamicsWorld.getWorld();
         Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
@@ -61,48 +59,38 @@ public class BlockHelper {
 
             /* Check if block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside() && !permeable) {
-                if (!this.collisionBlocks.containsKey(blockPos)) {
-                    VoxelShape coll = blockState.getCollisionShape(blockView, blockPos);
+                Box box = blockState.getCollisionShape(blockView, blockPos).getBoundingBox();
+                BoxShape shape = new BoxShape(new Vector3f(
+                        (float) (box.maxX - box.minX) / 2.0f,
+                        (float) (box.maxY - box.minY) / 2.0f,
+                        (float) (box.maxZ - box.minZ) / 2.0f));
+                BlockRigidBody body = BlockRigidBody.create(blockPos, shape, friction);
 
-                    if (!coll.isEmpty()) {
-                        Box b = coll.getBoundingBox();
-                        Vector3f box = new Vector3f(
-                                ((float) (b.maxX - b.minX) / 2.0F) + 0.005f,
-                                ((float) (b.maxY - b.minY) / 2.0F) + 0.005f,
-                                ((float) (b.maxZ - b.minZ) / 2.0F) + 0.005f);
-                        CollisionShape shape = new BoxShape(box);
-
-                        RigidBody body = BodyHelper.create(blockPos, shape, friction);
-                        collisionBlocks.put(blockPos, body);
-                        this.dynamicsWorld.addRigidBody(body);
-                    }
+                /* Check if the block isn't already in the dynamics world */
+                if (!dynamicsWorld.getCollisionObjectArray().contains(body)) {
+                    dynamicsWorld.addRigidBody(body);
                 }
 
-                toKeep.add(blockPos);
+                toKeep.add(body);
             }
         });
     }
 
     public void purge() {
-        List<BlockPos> toRemove = Lists.newArrayList();
+        List<BlockRigidBody> toRemove = Lists.newArrayList();
 
-        this.collisionBlocks.forEach((pos, body) -> {
-            if (!toKeep.contains(pos)) {
-                dynamicsWorld.removeRigidBody(body);
-                toRemove.add(pos);
+        dynamicsWorld.getCollisionObjectArray().forEach(body -> {
+            if (body instanceof BlockRigidBody) {
+                BlockRigidBody block = (BlockRigidBody) body;
+
+                if (!toKeep.contains(block)) {
+                    toRemove.add(block);
+                }
             }
         });
 
-        toRemove.forEach(this.collisionBlocks::remove);
+        toRemove.forEach(dynamicsWorld::removeRigidBody);
         toKeep.clear();
-    }
-
-    public boolean contains(RigidBody body) {
-        return this.collisionBlocks.containsValue(body);
-    }
-
-    public Collection<RigidBody> getRigidBodies() {
-        return this.collisionBlocks.values();
     }
 
     /*/**

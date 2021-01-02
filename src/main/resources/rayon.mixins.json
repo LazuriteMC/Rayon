@@ -4,15 +4,14 @@
   "package": "dev.lazurite.rayon.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "common.SummonCommandMixin",
     "common.EntityMixin",
-    "step.ServerStepMixin"
+    "common.SummonCommandMixin"
   ],
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
     "client.DebugRendererMixin",
-    "step.ClientStepMixin",
-    "step.ClientStepMixinTest"
+    "client.GameRendererMixin",
+    "client.MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1
