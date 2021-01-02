@@ -44,7 +44,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
     }
 
     public static MinecraftDynamicsWorld get(World world) {
-        return Rayon.PHYSICS_WORLD.get(world);
+        return Rayon.DYNAMICS_WORLD.get(world);
     }
 
     public void step() {

@@ -48,8 +48,9 @@
   "custom": {
     "modmenu:api": true,
     "cardinal-components": [
-      "rayon:entity",
-      "rayon:world"
+      "rayon:dynamic_body_entity",
+      "rayon:static_body_entity",
+      "rayon:dynamics_world"
     ]
   }
 }

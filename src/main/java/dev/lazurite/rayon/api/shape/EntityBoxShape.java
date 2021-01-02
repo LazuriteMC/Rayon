@@ -5,10 +5,10 @@ import net.minecraft.entity.Entity;
 
 import javax.vecmath.Vector3f;
 
-public class EntityBoundingBoxShape extends BoxShape implements EntityShape {
+public class EntityBoxShape extends BoxShape implements EntityShape {
     private final Entity entity;
 
-    public EntityBoundingBoxShape(Entity entity) {
+    public EntityBoxShape(Entity entity) {
         super(new Vector3f(
                 (float) (entity.getBoundingBox().maxX - entity.getBoundingBox().minX) / 2.0f,
                 (float) (entity.getBoundingBox().maxY - entity.getBoundingBox().minY) / 2.0f,

@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lazurite.rayon.api.shape.EntityBoundingBoxShape;
 import dev.lazurite.rayon.physics.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.physics.util.Constants;

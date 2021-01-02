@@ -40,7 +40,7 @@ public class DebuggableDynamicsWorld extends DiscreteDynamicsWorld {
 
     /**
      * @return the {@link DebugHelper} that is used for rendering debug output
-     * @see dev.lazurite.rayon.mixin.client.DebugRendererMixin
+     * @see dev.lazurite.rayon.physics.mixin.client.DebugRendererMixin
      */
     public DebugHelper getDebugHelper() {
         return this.debugHelper;

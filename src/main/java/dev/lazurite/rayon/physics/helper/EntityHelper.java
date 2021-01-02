@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.physics.helper;
 
 import com.google.common.collect.Lists;
+import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.client.world.ClientWorld;
@@ -18,7 +19,7 @@ public class EntityHelper {
 
     public void step(float delta) {
         for (Entity entity : getEntities()) {
-            EntityRigidBody physics = EntityRigidBody.get(entity);
+            EntityRigidBody physics = DynamicBodyEntity.get(entity);
 
             if (physics != null) {
                 if (!dynamicsWorld.getCollisionObjectArray().contains(physics)) {
@@ -35,13 +36,13 @@ public class EntityHelper {
 
         if (dynamicsWorld.getWorld().isClient()) {
             ((ClientWorld) dynamicsWorld.getWorld()).getEntities().forEach(entity -> {
-                if (EntityRigidBody.get(entity) != null) {
+                if (DynamicBodyEntity.get(entity) != null) {
                     out.add(entity);
                 }
             });
         } else {
             ((ServerWorld) dynamicsWorld.getWorld()).entitiesByUuid.values().forEach(entity -> {
-                if (EntityRigidBody.get(entity) != null) {
+                if (DynamicBodyEntity.get(entity) != null) {
                     out.add(entity);
                 }
             });

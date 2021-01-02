@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.mixin.client;
+package dev.lazurite.rayon.physics.mixin.client;
 
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.client.MinecraftClient;

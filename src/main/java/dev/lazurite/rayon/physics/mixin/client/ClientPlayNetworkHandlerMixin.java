@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.mixin.client;
+package dev.lazurite.rayon.physics.mixin.client;
 
-import dev.lazurite.rayon.physics.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -40,7 +40,7 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityPosition(EntityPositionS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (EntityRigidBody.get(entity) != null) {
+        if (DynamicBodyEntity.get(entity) != null) {
             info.cancel();
         }
     }
@@ -57,7 +57,7 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityUpdate(EntityS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (EntityRigidBody.get(entity) != null) {
+        if (DynamicBodyEntity.get(entity) != null) {
             info.cancel();
         }
     }
