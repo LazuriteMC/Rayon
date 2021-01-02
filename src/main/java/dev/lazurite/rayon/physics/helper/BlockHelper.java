@@ -7,9 +7,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lazurite.rayon.physics.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.config.Config;
 import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.physics.util.Constants;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ public class BlockHelper {
 
     private void load(Entity entity) {
         World world = dynamicsWorld.getWorld();
-        Box area = new Box(new BlockPos(entity.getPos())).expand(Constants.BLOCK_RADIUS);
+        Box area = new Box(new BlockPos(entity.getPos())).expand(Config.INSTANCE.getBlockDistance());
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
 

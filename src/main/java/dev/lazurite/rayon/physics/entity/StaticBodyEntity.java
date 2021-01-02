@@ -8,7 +8,6 @@ import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.api.shape.EntityBoxShape;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import dev.lazurite.rayon.physics.util.Constants;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -20,7 +19,6 @@ import net.minecraft.util.math.Vec3d;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
-import java.util.List;
 
 public class StaticBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;

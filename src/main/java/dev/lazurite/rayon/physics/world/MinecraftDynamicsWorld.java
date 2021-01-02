@@ -11,8 +11,8 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.EntityHelper;
+import dev.lazurite.rayon.physics.config.Config;
 import dev.lazurite.rayon.physics.util.thread.Delta;
-import dev.lazurite.rayon.physics.util.Constants;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
@@ -28,7 +28,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
     private MinecraftDynamicsWorld(World world, Dispatcher dispatcher, BroadphaseInterface broadphase, ConstraintSolver constraintSolver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, constraintSolver, collisionConfiguration);
 
-        setGravity(new Vector3f(0, Constants.GRAVITY, 0));
+        setGravity(new Vector3f(0, Config.INSTANCE.getGravity(), 0));
         this.blockHelper = new BlockHelper(this);
         this.entityHelper = new EntityHelper(this);
         this.clock = new Delta();

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.util.config;
+package dev.lazurite.rayon.physics.config;
 
 import dev.lazurite.rayon.physics.Rayon;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
@@ -70,5 +70,21 @@ public class Config {
             Rayon.LOGGER.error("Error saving Rayon config.");
             e.printStackTrace();
         }
+    }
+
+    public int getBlockDistance() {
+        return this.blockDistance;
+    }
+
+    public int getEntityDistance() {
+        return this.entityDistance;
+    }
+
+    public float getGravity() {
+        return this.gravity;
+    }
+
+    public float getAirDensity() {
+        return this.airDensity;
     }
 }
