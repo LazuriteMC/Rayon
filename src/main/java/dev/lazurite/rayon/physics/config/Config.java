@@ -8,7 +8,10 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.PacketByteBuf;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,6 +42,21 @@ public class Config {
         this.entityDistance = 5;
         this.gravity = -9.81f;
         this.airDensity = 1.2f;
+    }
+
+    public void send(PacketByteBuf buf) {
+        buf.writeInt(blockDistance);
+        buf.writeInt(entityDistance);
+        buf.writeFloat(gravity);
+        buf.writeFloat(airDensity);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void receive(PacketByteBuf buf) {
+        this.blockDistance = buf.readInt();
+        this.entityDistance = buf.readInt();
+        this.gravity = buf.readFloat();
+        this.airDensity = buf.readFloat();
     }
 
     public void load() {

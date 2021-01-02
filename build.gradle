@@ -26,7 +26,6 @@ subprojects {
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 		// Additional, Helpful mods
-		modImplementation "io.github.prospector:modmenu:1.14.6+build.31"
 		modImplementation "com.github.joaoh1:OkZoomer:4.0.0-alpha.4.1.16.1"
 	}
 }
@@ -54,11 +53,14 @@ allprojects {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
 		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 
-		// Fabric Loader + API
+		// Fabric Loader + Fabric API
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-		// Cardinal Components API
+		// Mod Menu
+		modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+
+		// Cardinal Components
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
@@ -72,7 +74,7 @@ allprojects {
 
 		// Cloth
 		modApi "me.shedaniel.cloth:config-2:${project.cloth_version}"
-		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
+//		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
 		// Fiber2Cloth
 		modApi "me.shedaniel.cloth:fiber2cloth:${project.fiber2cloth_version}"
