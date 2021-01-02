@@ -10,6 +10,7 @@ import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
+import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
@@ -21,8 +22,11 @@ import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+    private final MinecraftDynamicsWorld dynamicsWorld;
+
     private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info) {
         super(entity, info);
+        this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
     }
 
     public static <S extends EntityShape> DynamicBodyEntity create(Entity entity, EntityShapeFactory<S> shapeFactory, float mass) {
@@ -57,7 +61,9 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
 
     @Override
     public void step(float delta) {
-
+        if (!isInWorld()) {
+            dynamicsWorld.addRigidBody(this);
+        }
     }
 
     @Override
@@ -65,6 +71,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         Vector3f position = getCenterOfMassPosition(new Vector3f());
         entity.pos = VectorHelper.vector3fToVec3d(position);
         entity.updatePosition(position.x, position.y, position.z);
+    }
+
+    @Override
+    public void setPosition(Vector3f position) {
+        super.setPosition(position);
+        entity.pos = VectorHelper.vector3fToVec3d(position);
     }
 
     @Override

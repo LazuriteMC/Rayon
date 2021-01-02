@@ -10,7 +10,6 @@
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
     "client.DebugRendererMixin",
-    "client.GameRendererMixin",
     "client.MinecraftClientMixin"
   ],
   "injectors": {

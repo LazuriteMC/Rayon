@@ -5,13 +5,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.lazurite.rayon.physics.Rayon;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 import java.io.InputStreamReader;
 import java.util.Map;
 
-@Environment(EnvType.CLIENT)
 public class PropertyHelper {
     private static final Map<String, JsonObject> properties = Maps.newHashMap();
 

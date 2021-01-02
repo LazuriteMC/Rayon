@@ -3,6 +3,7 @@ package dev.lazurite.rayon.physics;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.entity.StaticBodyEntity;
+import dev.lazurite.rayon.physics.util.config.Config;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
@@ -23,6 +24,7 @@ public class Rayon {
 
 	public void onInitServer() {
 		LOGGER.info("Time to get physical!");
+		Config.INSTANCE.load();
 	}
 
 	public void onInitClient() {

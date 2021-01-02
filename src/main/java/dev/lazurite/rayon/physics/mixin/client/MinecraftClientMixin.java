@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.physics.mixin.client;
 
+import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.profiler.Profiler;
@@ -25,7 +26,7 @@ public class MinecraftClientMixin {
     private void render(boolean tick, CallbackInfo info) {
         if (this.world != null) {
             this.profiler.swap("physicsSimulation");
-//            MinecraftDynamicsWorld.get(this.world).step();
+            MinecraftDynamicsWorld.get(this.world).step();
         }
     }
 }

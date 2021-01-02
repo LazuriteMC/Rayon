@@ -20,8 +20,8 @@ import net.minecraft.world.World;
 import javax.vecmath.Vector3f;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {
-    private final BlockHelper blocks;
-    private final EntityHelper entities;
+    private final BlockHelper blockHelper;
+    private final EntityHelper entityHelper;
     private final Delta clock;
     private final World world;
 
@@ -29,8 +29,8 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         super(dispatcher, broadphase, constraintSolver, collisionConfiguration);
 
         setGravity(new Vector3f(0, Constants.GRAVITY, 0));
-        this.blocks = new BlockHelper(this);
-        this.entities = new EntityHelper(this);
+        this.blockHelper = new BlockHelper(this);
+        this.entityHelper = new EntityHelper(this);
         this.clock = new Delta();
         this.world = world;
     }
@@ -50,13 +50,17 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
     public void step() {
         float delta = this.clock.get();
 
-        blocks.load(entities);
-        entities.step(delta);
+        blockHelper.load(entityHelper);
+        entityHelper.step(delta);
         stepSimulation(delta, 5, delta/5.0f);
     }
 
     public World getWorld() {
         return this.world;
+    }
+
+    public EntityHelper getEntityHelper() {
+        return this.entityHelper;
     }
 
     @Override

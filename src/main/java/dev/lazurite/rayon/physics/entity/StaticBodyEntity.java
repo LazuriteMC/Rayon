@@ -8,6 +8,8 @@ import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.api.shape.EntityBoxShape;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
+import dev.lazurite.rayon.physics.util.Constants;
+import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
@@ -18,10 +20,14 @@ import net.minecraft.util.math.Vec3d;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
+import java.util.List;
 
 public class StaticBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
-    public StaticBodyEntity(Entity entity, RigidBodyConstructionInfo info) {
+    private final MinecraftDynamicsWorld dynamicsWorld;
+
+    private StaticBodyEntity(Entity entity, RigidBodyConstructionInfo info) {
         super(entity, info);
+        this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
     }
 
     public static StaticBodyEntity create(Entity entity) {
@@ -51,7 +57,9 @@ public class StaticBodyEntity extends EntityRigidBody implements ComponentV3, Co
 
     @Override
     public void step(float delta) {
-
+        if (!isInWorld()) {
+            dynamicsWorld.addRigidBody(this);
+        }
     }
 
     @Override

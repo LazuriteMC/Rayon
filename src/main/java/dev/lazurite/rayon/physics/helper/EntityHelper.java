@@ -19,15 +19,8 @@ public class EntityHelper {
 
     public void step(float delta) {
         for (Entity entity : getEntities()) {
-            EntityRigidBody physics = EntityRigidBody.get(entity);
-
-            /* Add the component to the dynamics world */
-            if (!dynamicsWorld.getCollisionObjectArray().contains(physics)) {
-                dynamicsWorld.addRigidBody(physics);
-            }
-
             /* Step the component */
-            physics.step(delta);
+            EntityRigidBody.get(entity).step(delta);
         }
     }
 
