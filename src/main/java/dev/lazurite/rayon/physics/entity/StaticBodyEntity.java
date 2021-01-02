@@ -13,6 +13,7 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
@@ -55,7 +56,7 @@ public class StaticBodyEntity extends EntityRigidBody implements ComponentV3, Co
 
     @Override
     public void tick() {
-
+        setPosition(VectorHelper.vec3dToVector3f(entity.getPos().add(new Vec3d(0, entity.getBoundingBox().getYLength() / 2.0, 0))));
     }
 
     @Override

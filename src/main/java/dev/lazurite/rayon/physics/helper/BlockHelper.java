@@ -7,12 +7,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lazurite.rayon.physics.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.physics.util.Constants;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -31,7 +33,7 @@ public class BlockHelper {
     }
 
     public void load(EntityHelper entities) {
-        entities.getEntities().forEach(this::load);
+        entities.getEntities(DynamicBodyEntity::get).forEach(this::load);
         purge();
     }
 
@@ -58,19 +60,23 @@ public class BlockHelper {
 
             /* Check if block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside() && !permeable) {
-                Box box = blockState.getCollisionShape(blockView, blockPos).getBoundingBox();
-                BoxShape shape = new BoxShape(new Vector3f(
-                        (float) (box.maxX - box.minX) / 2.0f,
-                        (float) (box.maxY - box.minY) / 2.0f,
-                        (float) (box.maxZ - box.minZ) / 2.0f));
-                BlockRigidBody body = BlockRigidBody.create(blockPos, shape, friction);
+                VoxelShape vox = blockState.getCollisionShape(blockView, blockPos);
 
-                /* Check if the block isn't already in the dynamics world */
-                if (!dynamicsWorld.getCollisionObjectArray().contains(body)) {
-                    dynamicsWorld.addRigidBody(body);
+                if (!vox.isEmpty()) {
+                    Box box = vox.getBoundingBox();
+                    BoxShape shape = new BoxShape(new Vector3f(
+                            (float) (box.maxX - box.minX) / 2.0f,
+                            (float) (box.maxY - box.minY) / 2.0f,
+                            (float) (box.maxZ - box.minZ) / 2.0f));
+                    BlockRigidBody body = BlockRigidBody.create(blockPos, shape, friction);
+
+                    /* Check if the block isn't already in the dynamics world */
+                    if (!dynamicsWorld.getCollisionObjectArray().contains(body)) {
+                        dynamicsWorld.addRigidBody(body);
+                    }
+
+                    toKeep.add(body);
                 }
-
-                toKeep.add(body);
             }
         });
     }

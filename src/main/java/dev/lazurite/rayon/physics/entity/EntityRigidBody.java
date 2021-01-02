@@ -2,7 +2,6 @@ package dev.lazurite.rayon.physics.entity;
 
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
-import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.Entity;
 
 import javax.vecmath.Quat4f;
@@ -16,6 +15,17 @@ public abstract class EntityRigidBody extends RigidBody {
         this.entity = entity;
     }
 
+    public static EntityRigidBody get(Entity entity) {
+        EntityRigidBody body = DynamicBodyEntity.get(entity);
+
+        if (body != null) {
+            return body;
+        }
+
+        body = StaticBodyEntity.get(entity);
+        return body;
+    }
+
     public abstract void step(float delta);
 
     public void setOrientation(Quat4f orientation) {
@@ -24,6 +34,5 @@ public abstract class EntityRigidBody extends RigidBody {
 
     public void setPosition(Vector3f position) {
         worldTransform.origin.set(position);
-        entity.pos = VectorHelper.vector3fToVec3d(position);
     }
 }
