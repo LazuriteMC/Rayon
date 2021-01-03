@@ -5,6 +5,7 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
+import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.shape.entity.EntityBoxShape;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
@@ -63,6 +64,7 @@ public class StaticBodyEntity extends EntityRigidBody implements ComponentV3, Co
     @Override
     public void tick() {
         setPosition(VectorHelper.vec3dToVector3f(entity.getPos().add(new Vec3d(0, entity.getBoundingBox().getYLength() / 2.0, 0))));
+        setOrientation(QuaternionHelper.rotateY(new Quat4f(0, 1, 0, 0), -entity.yaw));
     }
 
     @Override

@@ -18,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {
     private final BlockHelper blockHelper;
@@ -27,12 +28,12 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
     private MinecraftDynamicsWorld(World world, Dispatcher dispatcher, BroadphaseInterface broadphase, ConstraintSolver constraintSolver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, constraintSolver, collisionConfiguration);
-
-        setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
         this.blockHelper = new BlockHelper(this);
         this.entityHelper = new EntityHelper(this);
         this.clock = new Delta();
         this.world = world;
+
+        setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
     }
 
     public static MinecraftDynamicsWorld create(World world) {
@@ -49,6 +50,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
     public void step() {
         float delta = this.clock.get();
+        setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
 
         blockHelper.load(entityHelper);
         entityHelper.step(delta);

@@ -31,7 +31,7 @@ public class DebugHelper extends IDebugDraw {
     public void renderWorld(double cameraX, double cameraY, double cameraZ, boolean blocks) {
         Vector3f camPos = new Vector3f((float) cameraX, (float) cameraY, (float) cameraZ);
 
-        for (CollisionObject body: physicsWorld.getCollisionObjectArray()) {
+        for (CollisionObject body : physicsWorld.getCollisionObjectArray()) {
             Transform trans = body.getWorldTransform(new Transform());
 
             Vector3f color;
@@ -41,6 +41,10 @@ public class DebugHelper extends IDebugDraw {
                 color = new Vector3f(1.0f, 0.4f, 0);
             } else if (body instanceof BlockRigidBody) {
                 color = new Vector3f(0, 0, 1); // blu
+
+                if (!blocks) {
+                    continue;
+                }
             } else {
                 color = new Vector3f(1, 1, 1); // whit
             }

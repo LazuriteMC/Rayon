@@ -17,12 +17,13 @@ public class QuaternionHelper {
      * @param quat the {@link Quat4f} to perform the operation on
      * @param deg number of degrees to rotate by
      */
-    public static void rotateX(Quat4f quat, double deg) {
+    public static Quat4f rotateX(Quat4f quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
         Quat4f rot = new Quat4f();
         rot.x = (float) Math.sin(radHalfAngle);
         rot.w = (float) Math.cos(radHalfAngle);
         quat.mul(rot);
+        return quat;
     }
 
     /**
@@ -30,12 +31,13 @@ public class QuaternionHelper {
      * @param quat the {@link Quat4f} to perform the operation on
      * @param deg number of degrees to rotate by
      */
-    public static void rotateY(Quat4f quat, double deg) {
+    public static Quat4f rotateY(Quat4f quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
         Quat4f rot = new Quat4f();
         rot.y = (float) Math.sin(radHalfAngle);
         rot.w = (float) Math.cos(radHalfAngle);
         quat.mul(rot);
+        return quat;
     }
 
     /**
@@ -43,12 +45,13 @@ public class QuaternionHelper {
      * @param quat the {@link Quat4f} to perform the operation on
      * @param deg number of degrees to rotate by
      */
-    public static void rotateZ(Quat4f quat, double deg) {
+    public static Quat4f rotateZ(Quat4f quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
         Quat4f rot = new Quat4f();
         rot.z = (float) Math.sin(radHalfAngle);
         rot.w = (float) Math.cos(radHalfAngle);
         quat.mul(rot);
+        return quat;
     }
 
     /**

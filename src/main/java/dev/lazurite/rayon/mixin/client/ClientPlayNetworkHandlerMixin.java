@@ -1,6 +1,8 @@
 package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -16,18 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
  * Contains mixins mostly relating to physics
  * entities and game join operations.
  * @author Ethan Johnson
- */
+        */
+@Environment(EnvType.CLIENT)
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
-    /**
-     * @param packet the game join packet
-     * @param info required by every mixin injection
-     */
-    @Inject(method = "onGameJoin", at = @At("TAIL"))
-    public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
-
-    }
-
     /**
      * @param packet the packet containing the entity position info
      * @param info required by every mixin injection

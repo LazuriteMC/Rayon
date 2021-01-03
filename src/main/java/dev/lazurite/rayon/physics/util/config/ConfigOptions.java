@@ -30,6 +30,10 @@ public class ConfigOptions {
         (gameOptions, stepRate) -> Config.INSTANCE.stepRate = stepRate.intValue(),
         (gameOptions, option) -> {
             option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(new TranslatableText("config.rayon.option.step_rate.tooltip"), 200));
-            return option.getGenericLabel(new LiteralText(String.valueOf(Config.INSTANCE.stepRate)));
+            if (Config.INSTANCE.stepRate < 260) {
+                return option.getGenericLabel(new LiteralText(String.valueOf(Config.INSTANCE.stepRate)));
+            } else {
+                return option.getGenericLabel(new TranslatableText("config.rayon.option.step_rate.max"));
+            }
         });
 }
