@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.entity;
+package dev.lazurite.rayon.physics.rigidbody.entity;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
@@ -61,13 +61,15 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
 
     @Override
     public void step(float delta) {
-        if (!isInWorld()) {
-            dynamicsWorld.addRigidBody(this);
-        }
+
     }
 
     @Override
     public void tick() {
+        if (!isInWorld()) {
+            dynamicsWorld.addRigidBody(this);
+        }
+
         Vector3f position = getCenterOfMassPosition(new Vector3f());
         entity.pos = VectorHelper.vector3fToVec3d(position);
         entity.updatePosition(position.x, position.y, position.z);

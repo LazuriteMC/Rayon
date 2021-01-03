@@ -8,17 +8,22 @@ import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
+import com.google.common.collect.Lists;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.EntityHelper;
+import dev.lazurite.rayon.physics.rigidbody.SteppableBody;
+import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.util.config.Config;
 import dev.lazurite.rayon.physics.util.thread.Delta;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {
     private final BlockHelper blockHelper;
@@ -52,17 +57,32 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         float delta = this.clock.get();
         setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
 
-        blockHelper.load(entityHelper);
-        entityHelper.step(delta);
+        entityHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.entityDistance));
+        blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
+
+        getCollisionObjectArray().forEach(body -> {
+            if (body instanceof SteppableBody) {
+                ((SteppableBody) body).step(delta);
+            }
+        });
+
         stepSimulation(delta, 5, delta/5.0f);
+    }
+
+    public List<DynamicBodyEntity> getDynamicEntities() {
+        List<DynamicBodyEntity> out = Lists.newArrayList();
+
+        getCollisionObjectArray().forEach(body -> {
+            if (body instanceof DynamicBodyEntity) {
+                out.add((DynamicBodyEntity) body);
+            }
+        });
+
+        return out;
     }
 
     public World getWorld() {
         return this.world;
-    }
-
-    public EntityHelper getEntityHelper() {
-        return this.entityHelper;
     }
 
     @Override

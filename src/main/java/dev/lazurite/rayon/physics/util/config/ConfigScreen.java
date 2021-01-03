@@ -22,6 +22,7 @@ public class ConfigScreen extends Screen {
     private static final Option[] OPTIONS = new Option[] {
             ConfigOptions.GRAVITY,
             ConfigOptions.BLOCK_DISTANCE,
+            ConfigOptions.ENTITY_DISTANCE,
             ConfigOptions.STEP_RATE
     };
 

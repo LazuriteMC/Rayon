@@ -6,10 +6,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.lazurite.rayon.api.registry.PropertyRegistry;
-import dev.lazurite.rayon.physics.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.helper.math.VectorHelper;
+import dev.lazurite.rayon.physics.rigidbody.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import dev.lazurite.rayon.physics.util.config.Config;
-import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
@@ -19,6 +20,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
+import javax.vecmath.Vector3f;
 import java.util.*;
 
 public class BlockHelper {
@@ -32,14 +34,14 @@ public class BlockHelper {
         this.toKeep = Lists.newArrayList();
     }
 
-    public void load(EntityHelper entities) {
-        entities.getEntities(DynamicBodyEntity::get).forEach(this::load);
+    public void load(List<DynamicBodyEntity> dynamicBodyEntities, Box area) {
+        dynamicBodyEntities.forEach(body -> load(body, area.offset(VectorHelper.vector3fToVec3d(body.getCenterOfMassPosition(new Vector3f())))));
         purge();
     }
 
-    private void load(Entity entity) {
+    private void load(DynamicBodyEntity dynamicBodyEntity, Box area) {
         World world = dynamicsWorld.getWorld();
-        Box area = new Box(new BlockPos(entity.getPos())).expand(Config.INSTANCE.blockDistance);
+        Entity entity = dynamicBodyEntity.getEntity();
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
 

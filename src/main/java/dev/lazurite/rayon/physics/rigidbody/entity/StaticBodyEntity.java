@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.entity;
+package dev.lazurite.rayon.physics.rigidbody.entity;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
@@ -7,21 +7,16 @@ import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.shape.entity.EntityBoxShape;
-import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Vec3d;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-public class StaticBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+public class StaticBodyEntity extends EntityRigidBody {
     private final MinecraftDynamicsWorld dynamicsWorld;
 
     private StaticBodyEntity(Entity entity, RigidBodyConstructionInfo info) {
@@ -46,34 +41,9 @@ public class StaticBodyEntity extends EntityRigidBody implements ComponentV3, Co
         return physics;
     }
 
-    public static StaticBodyEntity get(Entity entity) {
-        try {
-            return Rayon.STATIC_BODY_ENTITY.get(entity);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     @Override
     public void step(float delta) {
-        if (!isInWorld()) {
-            dynamicsWorld.addRigidBody(this);
-        }
-    }
-
-    @Override
-    public void tick() {
         setPosition(VectorHelper.vec3dToVector3f(entity.getPos().add(new Vec3d(0, entity.getBoundingBox().getYLength() / 2.0, 0))));
         setOrientation(QuaternionHelper.rotateY(new Quat4f(0, 1, 0, 0), -entity.yaw));
-    }
-
-    @Override
-    public void readFromNbt(CompoundTag tag) {
-
-    }
-
-    @Override
-    public void writeToNbt(CompoundTag tag) {
-
     }
 }

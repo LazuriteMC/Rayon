@@ -16,13 +16,22 @@ public class ConfigOptions {
         });
 
     public static final DoubleOption BLOCK_DISTANCE = new DoubleOption(
-        "config.rayon.option.block_distance", 1, 5, 1.0F,
+        "config.rayon.option.block_distance", 2, 6, 1.0F,
         (gameOptions) -> (double) Config.INSTANCE.blockDistance,
         (gameOptions, blockDistance) -> Config.INSTANCE.blockDistance = blockDistance.intValue(),
         (gameOptions, option) -> {
             option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(new TranslatableText("config.rayon.option.block_distance.tooltip"), 200));
             return option.getGenericLabel(new LiteralText(String.valueOf(Config.INSTANCE.blockDistance)));
         });
+
+    public static final DoubleOption ENTITY_DISTANCE = new DoubleOption(
+            "config.rayon.option.entity_distance", 5, 25, 1.0F,
+            (gameOptions) -> (double) Config.INSTANCE.entityDistance,
+            (gameOptions, entityDistance) -> Config.INSTANCE.entityDistance = entityDistance.intValue(),
+            (gameOptions, option) -> {
+                option.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(new TranslatableText("config.rayon.option.entity_distance.tooltip"), 200));
+                return option.getGenericLabel(new LiteralText(String.valueOf(Config.INSTANCE.entityDistance)));
+            });
 
     public static final DoubleOption STEP_RATE = new DoubleOption(
         "config.rayon.option.step_rate", 20, 260, 10,

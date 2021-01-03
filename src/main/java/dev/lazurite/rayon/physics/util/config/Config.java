@@ -22,11 +22,11 @@ public class Config {
     public static final String CONFIG_NAME = "rayon.json";
 
     @Setting
-    @Setting.Constrain.Range(min = 1, max = 5)
+    @Setting.Constrain.Range(min = 2, max = 6)
     public int blockDistance;
 
     @Setting
-    @Setting.Constrain.Range(min = 1, max = 25)
+    @Setting.Constrain.Range(min = 5, max = 25)
     public int entityDistance;
 
     @Setting
