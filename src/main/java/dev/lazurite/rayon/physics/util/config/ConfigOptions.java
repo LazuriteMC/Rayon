@@ -25,7 +25,7 @@ public class ConfigOptions {
         });
 
     public static final DoubleOption STEP_RATE = new DoubleOption(
-        "config.rayon.option.step_rate", 20, 260, 1.0F,
+        "config.rayon.option.step_rate", 20, 260, 10,
         (gameOptions) -> (double) Config.INSTANCE.stepRate,
         (gameOptions, stepRate) -> Config.INSTANCE.stepRate = stepRate.intValue(),
         (gameOptions, option) -> {
