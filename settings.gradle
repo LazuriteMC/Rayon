@@ -9,7 +9,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'rayon'
+rootProject.name = 'Rayon'
 
 include "examplemod"
 project(":examplemod").projectDir = file("examplemod")

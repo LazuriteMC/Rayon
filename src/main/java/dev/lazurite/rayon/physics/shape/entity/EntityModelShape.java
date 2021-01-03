@@ -1,6 +1,7 @@
-package dev.lazurite.rayon.api.shape;
+package dev.lazurite.rayon.physics.shape.entity;
 
-import dev.lazurite.rayon.physics.util.shape.BakedModelShape;
+import dev.lazurite.rayon.api.shape.EntityShape;
+import dev.lazurite.rayon.physics.shape.BakedModelShape;
 import net.minecraft.entity.Entity;
 
 public class EntityModelShape extends BakedModelShape implements EntityShape {

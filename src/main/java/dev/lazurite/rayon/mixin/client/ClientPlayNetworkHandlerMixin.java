@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.mixin.client;
+package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

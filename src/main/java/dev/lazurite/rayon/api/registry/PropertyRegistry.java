@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.helper;
+package dev.lazurite.rayon.api.registry;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
@@ -9,19 +9,19 @@ import dev.lazurite.rayon.physics.Rayon;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-public class PropertyHelper {
+public class PropertyRegistry {
     private static final Map<String, JsonObject> properties = Maps.newHashMap();
 
     static {
-        PropertyHelper.add(Rayon.MODID, "assets/rayon/physics.properties.json");
+        PropertyRegistry.register(Rayon.MODID, "assets/rayon/rayon.properties.json");
     }
 
-    public static void add(String modid, String fileName) {
-        add(modid, new InputStreamReader(PropertyHelper.class.getResourceAsStream("/" + fileName)));
-    }
-
-    public static void add(String modid, InputStreamReader reader) {
+    public static void register(String modid, InputStreamReader reader) {
         properties.put(modid, (JsonObject) new JsonParser().parse(reader));
+    }
+
+    public static void register(String modid, String fileName) {
+        register(modid, new InputStreamReader(PropertyRegistry.class.getResourceAsStream("/" + fileName)));
     }
 
     public static JsonArray get(String listName) {

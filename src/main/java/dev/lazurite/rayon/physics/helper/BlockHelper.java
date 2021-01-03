@@ -1,13 +1,14 @@
 package dev.lazurite.rayon.physics.helper;
 
-import com.bulletphysics.collision.shapes.BoxShape;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.lazurite.rayon.api.registry.PropertyRegistry;
 import dev.lazurite.rayon.physics.block.BlockRigidBody;
-import dev.lazurite.rayon.physics.config.Config;
+import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
+import dev.lazurite.rayon.physics.util.config.Config;
 import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.block.*;
@@ -18,7 +19,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-import javax.vecmath.Vector3f;
 import java.util.*;
 
 public class BlockHelper {
@@ -28,7 +28,7 @@ public class BlockHelper {
 
     public BlockHelper(MinecraftDynamicsWorld dynamicsWorld)  {
         this.dynamicsWorld = dynamicsWorld;
-        this.blockProperties = PropertyHelper.get("blocks");
+        this.blockProperties = PropertyRegistry.get("blocks");
         this.toKeep = Lists.newArrayList();
     }
 
@@ -39,7 +39,7 @@ public class BlockHelper {
 
     private void load(Entity entity) {
         World world = dynamicsWorld.getWorld();
-        Box area = new Box(new BlockPos(entity.getPos())).expand(Config.INSTANCE.getBlockDistance());
+        Box area = new Box(new BlockPos(entity.getPos())).expand(Config.INSTANCE.blockDistance);
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
         BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
 
@@ -63,12 +63,7 @@ public class BlockHelper {
                 VoxelShape vox = blockState.getCollisionShape(blockView, blockPos);
 
                 if (!vox.isEmpty()) {
-                    Box box = vox.getBoundingBox();
-                    BoxShape shape = new BoxShape(new Vector3f(
-                            (float) (box.maxX - box.minX) / 2.0f,
-                            (float) (box.maxY - box.minY) / 2.0f,
-                            (float) (box.maxZ - box.minZ) / 2.0f));
-                    BlockRigidBody body = BlockRigidBody.create(blockPos, shape, friction);
+                    BlockRigidBody body = BlockRigidBody.create(blockPos, new BoundingBoxShape(vox.getBoundingBox()), friction);
 
                     /* Check if the block isn't already in the dynamics world */
                     if (!dynamicsWorld.getCollisionObjectArray().contains(body)) {

@@ -4,7 +4,7 @@ import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import dev.lazurite.rayon.examplemod.render.RectangularPrismEntityRenderer;
-import dev.lazurite.rayon.api.shape.EntityBoxShape;
+import dev.lazurite.rayon.physics.shape.entity.EntityBoxShape;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;

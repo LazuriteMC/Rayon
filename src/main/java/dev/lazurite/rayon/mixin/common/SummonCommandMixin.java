@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.mixin.common;
+package dev.lazurite.rayon.mixin.common;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.Entity;

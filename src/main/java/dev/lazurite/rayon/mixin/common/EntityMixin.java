@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.mixin.common;
+package dev.lazurite.rayon.mixin.common;
 
 import dev.lazurite.rayon.physics.entity.DynamicBodyEntity;
 import net.minecraft.entity.Entity;

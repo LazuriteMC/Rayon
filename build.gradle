@@ -72,14 +72,6 @@ allprojects {
 		modApi "me.zeroeightsix:fiber:${project.fiber_version}"
 		include "me.zeroeightsix:fiber:${project.fiber_version}"
 
-		// Cloth
-		modApi "me.shedaniel.cloth:config-2:${project.cloth_version}"
-//		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
-
-		// Fiber2Cloth
-		modApi "me.shedaniel.cloth:fiber2cloth:${project.fiber2cloth_version}"
-		include "me.shedaniel.cloth:fiber2cloth:${project.fiber2cloth_version}"
-
 		// JBullet
 		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
 		shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"

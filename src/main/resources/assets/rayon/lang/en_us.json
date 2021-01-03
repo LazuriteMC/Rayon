@@ -1,3 +1,9 @@
 {
-  "config.rayon.title": "Rayon Configuration"
+  "config.rayon.title": "Physics Settings",
+  "config.rayon.option.gravity": "Gravity",
+  "config.rayon.option.block_distance": "Block Distance",
+  "config.rayon.option.step_rate": "Step Rate",
+  "config.rayon.option.gravity.tooltip": "The amount of gravity used by the physics simulation.\nPerformance Impact: Low\nDefault: -9.81 m/s^2",
+  "config.rayon.option.block_distance.tooltip": "The maximum distance from a dynamic body entity where blocks are loaded.\nPerformance Impact: High\nDefault: 2 blocks",
+  "config.rayon.option.step_rate.tooltip": "The rate at which the simulation is stepped.\nPerformance Impact: High\nDefault: 60 steps/second"
 }

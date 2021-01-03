@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.config;
+package dev.lazurite.rayon.physics.util.config;
 
 import dev.lazurite.rayon.physics.Rayon;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
@@ -23,24 +23,29 @@ public class Config {
 
     @Setting
     @Setting.Constrain.Range(min = 1, max = 5)
-    private int blockDistance;
+    public int blockDistance;
 
     @Setting
     @Setting.Constrain.Range(min = 1, max = 25)
-    private int entityDistance;
+    public int entityDistance;
 
     @Setting
     @Setting.Constrain.Range(max = 0.0f)
-    private float gravity;
+    public float gravity;
+
+    @Setting(name = "tickRate")
+    @Setting.Constrain.Range(min = 20, max = 260, step = 1.0f)
+    public int stepRate;
 
     @Setting(name = "airDensity")
     @Setting.Constrain.Range(min = 0.0f)
-    private float airDensity;
+    public float airDensity;
 
     private Config() {
         this.blockDistance = 2;
         this.entityDistance = 5;
         this.gravity = -9.81f;
+        this.stepRate = 60;
         this.airDensity = 1.2f;
     }
 
@@ -48,6 +53,7 @@ public class Config {
         buf.writeInt(blockDistance);
         buf.writeInt(entityDistance);
         buf.writeFloat(gravity);
+        buf.writeInt(stepRate);
         buf.writeFloat(airDensity);
     }
 
@@ -56,6 +62,7 @@ public class Config {
         this.blockDistance = buf.readInt();
         this.entityDistance = buf.readInt();
         this.gravity = buf.readFloat();
+        this.stepRate = buf.readInt();
         this.airDensity = buf.readFloat();
     }
 
@@ -88,21 +95,5 @@ public class Config {
             Rayon.LOGGER.error("Error saving Rayon config.");
             e.printStackTrace();
         }
-    }
-
-    public int getBlockDistance() {
-        return this.blockDistance;
-    }
-
-    public int getEntityDistance() {
-        return this.entityDistance;
-    }
-
-    public float getGravity() {
-        return this.gravity;
-    }
-
-    public float getAirDensity() {
-        return this.airDensity;
     }
 }
