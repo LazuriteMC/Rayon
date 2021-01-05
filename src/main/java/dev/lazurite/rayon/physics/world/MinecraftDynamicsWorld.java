@@ -53,20 +53,24 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         return Rayon.DYNAMICS_WORLD.get(world);
     }
 
-    public void step() {
-        float delta = this.clock.get();
-        setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
+    public void step(boolean shouldStep) {
+        if (shouldStep) {
+            float delta = this.clock.get();
+            setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
 
-        entityHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.entityDistance));
-        blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
+            entityHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.entityDistance));
+            blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
 
-        getCollisionObjectArray().forEach(body -> {
-            if (body instanceof SteppableBody) {
-                ((SteppableBody) body).step(delta);
-            }
-        });
+            getCollisionObjectArray().forEach(body -> {
+                if (body instanceof SteppableBody) {
+                    ((SteppableBody) body).step(delta);
+                }
+            });
 
-        stepSimulation(delta, 5, delta/5.0f);
+            stepSimulation(delta, 5, delta / 5.0f);
+        } else {
+            this.clock.reset();
+        }
     }
 
     public List<DynamicBodyEntity> getDynamicEntities() {

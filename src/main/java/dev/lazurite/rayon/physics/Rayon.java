@@ -31,19 +31,33 @@ public class Rayon implements ModInitializer, EntityComponentInitializer, WorldC
 		Config.INSTANCE.load();
 	}
 
+	/**
+	 * Registers every entity defined by other mods during initialization in CCA.
+	 * @param registry the cardinal components entity registry
+	 * @see DynamicBodyEntity
+	 */
 	@Override
 	public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-		/* Every entity defined by mods during initialization has a dynamic body */
 		DynamicEntityRegistry.INSTANCE.get().forEach(entry ->
 				registry.registerFor(entry.getEntity(), DYNAMIC_BODY_ENTITY,
-						(entity) -> DynamicBodyEntity.create(entity, entry.getShapeFactory(), entry.getMass())));
+						(entity) -> DynamicBodyEntity.create(entity, entry.getShapeFactory(), entry.getMass(), entry.getDragCoefficient())));
 	}
 
+	/**
+	 * Registers the {@link MinecraftDynamicsWorld} component in CCA.
+	 * @param registry the cardinal components world registry
+	 * @see MinecraftDynamicsWorld
+	 */
 	@Override
 	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
 		registry.register(DYNAMICS_WORLD, MinecraftDynamicsWorld::create);
 	}
 
+	/**
+	 * Adds the config screen mod menu.
+	 * @return the {@link ConfigScreenFactory}
+	 * @see ConfigScreen
+	 */
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
 		return ConfigScreen::new;

@@ -27,7 +27,7 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     public RectangularPrismEntityRenderer(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
         this.shadowRadius = 0.2F;
-        this.model = new RectangularPrismModel(20, 15, 20);
+        this.model = new RectangularPrismModel(16, 16, 16);
     }
 
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -43,6 +43,7 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
             matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(out));
         }
 
+        matrixStack.translate(-0.25, -0.25, -0.25);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(this.getTexture(rectangularPrism)));
         model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStack.pop();
@@ -59,14 +60,4 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     public Identifier getTexture(RectangularPrismEntity rectangularPrism) {
         return texture;
     }
-
-//    @Override
-//    protected int getBlockLight(RectangularPrismEntity rectangularPrism, BlockPos blockPos) {
-//        return 15;
-//    }
-//
-//    @Override
-//    protected int method_27950(RectangularPrismEntity rectangularPrism, BlockPos blockPos) {
-//        return 15;
-//    }
 }

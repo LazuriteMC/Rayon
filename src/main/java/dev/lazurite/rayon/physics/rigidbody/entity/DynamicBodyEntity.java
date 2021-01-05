@@ -5,7 +5,6 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
-import dev.lazurite.rayon.api.shape.EntityShape;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
@@ -23,15 +22,17 @@ import javax.vecmath.Vector3f;
 
 public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
+    private float dragCoefficient;
 
-    private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info) {
+    private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
         super(entity, info);
+        this.dragCoefficient = dragCoefficient;
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
     }
 
-    public static <S extends EntityShape> DynamicBodyEntity create(Entity entity, EntityShapeFactory<S> shapeFactory, float mass) {
+    public static DynamicBodyEntity create(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient) {
         /* Get the entity's shape */
-        CollisionShape collisionShape = (CollisionShape) shapeFactory.create(entity);
+        CollisionShape collisionShape = shapeFactory.create(entity);
 
         /* Calculate the inertia of the shape. */
         Vector3f inertia = new Vector3f();
@@ -45,7 +46,7 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
 
         /* Create the Body based on the construction info. */
         RigidBodyConstructionInfo constructionInfo = new RigidBodyConstructionInfo(mass, motionState, collisionShape, inertia);
-        DynamicBodyEntity physics = new DynamicBodyEntity(entity, constructionInfo);
+        DynamicBodyEntity physics = new DynamicBodyEntity(entity, constructionInfo, dragCoefficient);
         physics.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
 
         return physics;
@@ -79,6 +80,14 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
     public void setPosition(Vector3f position) {
         super.setPosition(position);
         entity.pos = VectorHelper.vector3fToVec3d(position);
+    }
+
+    public void setDragCoefficient(float dragCoefficient) {
+        this.dragCoefficient = dragCoefficient;
+    }
+
+    public float getDragCoefficient() {
+        return this.dragCoefficient;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.examplemod.entity;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +27,12 @@ public class RectangularPrismEntity extends Entity {
     @Override
     protected void writeCustomDataToTag(CompoundTag tag) {
 
+    }
+
+    @Override
+    @Environment(EnvType.CLIENT)
+    public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
+        return true;
     }
 
     @Override

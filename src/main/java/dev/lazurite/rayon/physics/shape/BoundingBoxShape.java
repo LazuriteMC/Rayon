@@ -5,6 +5,12 @@ import net.minecraft.util.math.Box;
 
 import javax.vecmath.Vector3f;
 
+/**
+ * This class is basically just a wrapper for {@link BoxShape}. It's
+ * meant to provide an easy way to create a {@link BoxShape} using
+ * a bounding {@link Box} object.
+ * @see BoxShape
+ */
 public class BoundingBoxShape extends BoxShape {
     private final Box box;
 

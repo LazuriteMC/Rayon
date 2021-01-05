@@ -1,10 +1,10 @@
 package dev.lazurite.rayon.examplemod;
 
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
+import dev.lazurite.rayon.api.shape.provider.BoundingBoxShapeProvider;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import dev.lazurite.rayon.examplemod.render.RectangularPrismEntityRenderer;
-import dev.lazurite.rayon.physics.shape.entity.EntityBoxShape;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -37,14 +37,14 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
                 Registry.ENTITY_TYPE,
                 new Identifier(MODID, "rectangular_prism_entity"),
                 FabricEntityTypeBuilder.create(SpawnGroup.MISC, RectangularPrismEntity::new)
-                        .dimensions(EntityDimensions.changing(0.5f, 1.5f))
+                        .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
                         .trackedUpdateRate(3)
                         .trackRangeBlocks(80)
                         .forceTrackedVelocityUpdates(true)
                         .build()
         );
 
-        DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, EntityBoxShape::new, 1.0f);
+        DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, BoundingBoxShapeProvider::get, 1.0f, 0.1f);
     }
 
     @Override

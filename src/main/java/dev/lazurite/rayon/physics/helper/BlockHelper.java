@@ -5,11 +5,9 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.lazurite.rayon.api.registry.PropertyRegistry;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.rigidbody.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
-import dev.lazurite.rayon.physics.util.config.Config;
 import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.block.*;
@@ -25,12 +23,12 @@ import java.util.*;
 
 public class BlockHelper {
     private final MinecraftDynamicsWorld dynamicsWorld;
-    private final JsonArray blockProperties;
+//    private final JsonArray blockProperties;
     private final List<BlockRigidBody> toKeep;
 
     public BlockHelper(MinecraftDynamicsWorld dynamicsWorld)  {
         this.dynamicsWorld = dynamicsWorld;
-        this.blockProperties = PropertyRegistry.get("blocks");
+//        this.blockProperties = PropertyRegistry.get("blocks");
         this.toKeep = Lists.newArrayList();
     }
 
@@ -50,15 +48,15 @@ public class BlockHelper {
             boolean permeable = false;
 
             /* Get properties for this specific block */
-            for (JsonElement property : blockProperties) {
-                String currentBlock = blockState.getBlock().getTranslationKey();
-                String name = ((JsonObject) property).get("name").toString();
-
-                if (currentBlock.equals(name)) {
-                    friction = ((JsonObject) property).get("friction").getAsFloat();
-                    permeable = ((JsonObject) property).get("permeable").getAsBoolean();
-                }
-            }
+//            for (JsonElement property : blockProperties) {
+//                String currentBlock = blockState.getBlock().getTranslationKey();
+//                String name = ((JsonObject) property).get("name").toString();
+//
+//                if (currentBlock.equals(name)) {
+//                    friction = ((JsonObject) property).get("friction").getAsFloat();
+//                    permeable = ((JsonObject) property).get("permeable").getAsBoolean();
+//                }
+//            }
 
             /* Check if block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside() && !permeable) {
@@ -167,9 +165,28 @@ public class BlockHelper {
 
     public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
         Map<BlockPos, BlockState> map = Maps.newHashMap();
+
         for (int i = (int) area.minX; i < area.maxX; i++) {
             for (int j = (int) area.minY; j < area.maxY; j++) {
                 for (int k = (int) area.minZ; k < area.maxZ; k++) {
+                    BlockPos blockPos = new BlockPos(i, j, k);
+                    BlockState blockState = world.getWorldChunk(blockPos).getBlockState(blockPos);
+                    map.put(blockPos, blockState);
+                }
+            }
+        }
+
+        return map;
+    }
+
+    public static Map<BlockPos, BlockState> getRaycastList(DynamicBodyEntity entity, World world, Box area) {
+        Map<BlockPos, BlockState> map = Maps.newHashMap();
+
+        for (int i = (int) area.minX; i < area.maxX; i++) {
+            for (int j = (int) area.minY; j < area.maxY; j++) {
+                for (int k = (int) area.minZ; k < area.maxZ; k++) {
+                    entity.getLinearVelocity(new Vector3f());
+
                     BlockPos blockPos = new BlockPos(i, j, k);
                     BlockState blockState = world.getWorldChunk(blockPos).getBlockState(blockPos);
                     map.put(blockPos, blockState);

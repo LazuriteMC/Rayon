@@ -33,6 +33,8 @@ public class MinecraftClientMixin {
             )
     )
     private void render(boolean tick, CallbackInfo info) {
+        boolean shouldStep = !((MinecraftClient) (Object) this).isPaused();
+
         if (world != null) {
             profiler.swap("physicsSimulation");
 
@@ -40,14 +42,14 @@ public class MinecraftClientMixin {
                 float stepMillis = 1 / (float) Config.INSTANCE.stepRate;
 
                 if (delta > stepMillis) {
-                    MinecraftDynamicsWorld.get(world).step();
+                    MinecraftDynamicsWorld.get(world).step(shouldStep);
                     delta -= stepMillis;
                     clock.get();
                 } else {
                     delta += clock.get();
                 }
             } else {
-                MinecraftDynamicsWorld.get(world).step();
+                MinecraftDynamicsWorld.get(world).step(shouldStep);
             }
         }
     }

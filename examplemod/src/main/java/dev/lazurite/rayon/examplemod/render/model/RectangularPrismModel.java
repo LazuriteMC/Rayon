@@ -7,6 +7,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3i;
 
 @Environment(EnvType.CLIENT)
 public class RectangularPrismModel extends EntityModel<RectangularPrismEntity> {
@@ -19,8 +20,8 @@ public class RectangularPrismModel extends EntityModel<RectangularPrismEntity> {
         this.x = x;
         this.y = y;
         this.z = z;
-//        this.textureHeight = 16;
-//        this.textureWidth = 16;
+        base = new ModelPart(this, 0, 0);
+        base.addCuboid(0, 0, 0, x / 2.0f, y / 2.0f, z / 2.0f);
     }
 
     @Override
@@ -30,8 +31,10 @@ public class RectangularPrismModel extends EntityModel<RectangularPrismEntity> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        base = new ModelPart(this, 0, 0);
-        base.addCuboid(0, 0, 0, x / 2.0f, y / 2.0f, z / 2.0f);
         base.render(matrices, vertexConsumer, light, overlay);
+    }
+
+    public Vec3i getBounds() {
+        return new Vec3i(x, y, z);
     }
 }
