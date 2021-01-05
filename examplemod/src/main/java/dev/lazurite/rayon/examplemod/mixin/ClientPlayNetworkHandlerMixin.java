@@ -2,7 +2,7 @@ package dev.lazurite.rayon.examplemod.mixin;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;

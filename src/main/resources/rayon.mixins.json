@@ -4,14 +4,16 @@
   "package": "dev.lazurite.rayon.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "common.command.DynamicEntitySummon",
     "common.EntityMixin",
-    "common.SummonCommandMixin",
-    "common.WorldMixin"
+    "common.world.ServerDynamicsWorldStep",
+    "common.world.WorldClose"
   ],
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
-    "client.DebugRendererMixin",
-    "client.MinecraftClientMixin"
+    "client.render.DebugOutlineRenderer",
+    "client.render.DynamicEntityRenderer",
+    "client.world.ClientDynamicsWorldStep"
   ],
   "injectors": {
     "defaultRequire": 1

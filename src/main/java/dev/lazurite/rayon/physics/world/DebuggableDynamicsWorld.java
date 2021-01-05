@@ -8,6 +8,7 @@ import com.bulletphysics.collision.shapes.*;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.linearmath.Transform;
+import dev.lazurite.rayon.mixin.client.render.DebugOutlineRenderer;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.fabricmc.api.EnvType;
@@ -40,7 +41,7 @@ public class DebuggableDynamicsWorld extends DiscreteDynamicsWorld {
 
     /**
      * @return the {@link DebugHelper} that is used for rendering debug output
-     * @see dev.lazurite.rayon.mixin.client.DebugRendererMixin
+     * @see DebugOutlineRenderer
      */
     public DebugHelper getDebugHelper() {
         return this.debugHelper;

@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin.client;
 
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

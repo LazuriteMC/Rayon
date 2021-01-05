@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.mixin.common;
+package dev.lazurite.rayon.mixin.common.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.Entity;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
  * @author Ethan Johnson
  */
 @Mixin(SummonCommand.class)
-public class SummonCommandMixin {
+public class DynamicEntitySummon {
     /**
      * After the position is set for the summoned entity, this mixin checks to see if
      * the entity being summoned is a {@link PhysicsEntity} and sets it's {@link com.bulletphysics.dynamics.RigidBody}

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.rigidbody.entity;
+package dev.lazurite.rayon.physics.body.entity;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
@@ -22,12 +22,14 @@ import javax.vecmath.Vector3f;
 
 public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
+    private final Quat4f prevOrientation;
     private float dragCoefficient;
 
     private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
         super(entity, info);
         this.dragCoefficient = dragCoefficient;
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
+        this.prevOrientation = new Quat4f(0, 1, 0, 0);
     }
 
     public static DynamicBodyEntity create(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient) {
@@ -62,7 +64,7 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
 
     @Override
     public void step(float delta) {
-
+        prevOrientation.set(getOrientation(new Quat4f()));
     }
 
     @Override
@@ -82,8 +84,17 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         entity.pos = VectorHelper.vector3fToVec3d(position);
     }
 
+    public void setPrevOrientation(Quat4f prevOrientation) {
+        this.prevOrientation.set(prevOrientation);
+    }
+
     public void setDragCoefficient(float dragCoefficient) {
         this.dragCoefficient = dragCoefficient;
+    }
+
+    public Quat4f getPrevOrientation(Quat4f out) {
+        out.set(prevOrientation);
+        return out;
     }
 
     public float getDragCoefficient() {

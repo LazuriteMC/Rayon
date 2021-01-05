@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin.common;
 
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.util.math.Vec3d;

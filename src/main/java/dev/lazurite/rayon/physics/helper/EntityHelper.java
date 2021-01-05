@@ -2,8 +2,8 @@ package dev.lazurite.rayon.physics.helper;
 
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
-import dev.lazurite.rayon.physics.rigidbody.entity.StaticBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.StaticBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Box;

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.mixin.client;
+package dev.lazurite.rayon.mixin.client.render;
 
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.api.EnvType;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(DebugRenderer.class)
-public class DebugRendererMixin {
+public class DebugOutlineRenderer {
     @Inject(method = "render", at = @At("HEAD"))
     public void render(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo info) {
         MinecraftClient client = MinecraftClient.getInstance();

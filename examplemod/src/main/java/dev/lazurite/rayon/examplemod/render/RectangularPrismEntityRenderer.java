@@ -3,8 +3,8 @@ package dev.lazurite.rayon.examplemod.render;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
-import dev.lazurite.rayon.physics.rigidbody.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,11 +36,11 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
         EntityRigidBody component = DynamicBodyEntity.get(rectangularPrism);
 
         if (component != null) {
-            Quat4f out = new Quat4f();
+//            Quat4f out = new Quat4f();
 //            out = QuaternionHelper.slerp(component.getPrevOrientation(), component.getOrientation(), delta);
 //            out.interpolate(component.getPrevOrientation(), component.getOrientation(), delta);
-            out.set(component.getOrientation(new Quat4f()));
-            matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(out));
+//            out.set(component.getOrientation(new Quat4f()));
+//            matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(out));
         }
 
         matrixStack.translate(-0.25, -0.25, -0.25);

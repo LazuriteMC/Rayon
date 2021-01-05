@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.rigidbody;
+package dev.lazurite.rayon.physics.body;
 
 public interface SteppableBody {
     void step(float delta);

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.rigidbody.entity;
+package dev.lazurite.rayon.physics.body.entity;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;

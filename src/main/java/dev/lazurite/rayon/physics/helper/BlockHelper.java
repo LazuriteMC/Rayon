@@ -2,13 +2,10 @@ package dev.lazurite.rayon.physics.helper;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import dev.lazurite.rayon.physics.rigidbody.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;

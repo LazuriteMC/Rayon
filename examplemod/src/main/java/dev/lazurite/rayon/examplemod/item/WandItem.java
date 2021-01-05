@@ -2,7 +2,7 @@ package dev.lazurite.rayon.examplemod.item;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

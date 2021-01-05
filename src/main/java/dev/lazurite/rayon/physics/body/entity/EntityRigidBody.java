@@ -1,8 +1,8 @@
-package dev.lazurite.rayon.physics.rigidbody.entity;
+package dev.lazurite.rayon.physics.body.entity;
 
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
-import dev.lazurite.rayon.physics.rigidbody.SteppableBody;
+import dev.lazurite.rayon.physics.body.SteppableBody;
 import net.minecraft.entity.Entity;
 
 import javax.vecmath.Quat4f;

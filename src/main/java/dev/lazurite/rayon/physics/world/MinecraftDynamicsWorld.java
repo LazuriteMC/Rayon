@@ -12,8 +12,8 @@ import com.google.common.collect.Lists;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.helper.EntityHelper;
-import dev.lazurite.rayon.physics.rigidbody.SteppableBody;
-import dev.lazurite.rayon.physics.rigidbody.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.SteppableBody;
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.util.config.Config;
 import dev.lazurite.rayon.physics.util.thread.Delta;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {
     private final BlockHelper blockHelper;
@@ -53,8 +54,8 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         return Rayon.DYNAMICS_WORLD.get(world);
     }
 
-    public void step(boolean shouldStep) {
-        if (shouldStep) {
+    public void step(BooleanSupplier shouldStep) {
+        if (shouldStep.getAsBoolean()) {
             float delta = this.clock.get();
             setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
 
