@@ -9,7 +9,6 @@ import javax.vecmath.Vector3f;
 /**
  * A helper class for {@link Quat4f} which contains methods to perform
  * many different operations.
- * @author Ethan Johnson
  */
 public class QuaternionHelper {
     /**
@@ -109,6 +108,11 @@ public class QuaternionHelper {
         return q;
     }
 
+    /**
+     * Stores the given {@link Quat4f} into a new {@link CompoundTag}.
+     * @param quat the {@link Quat4f} to store
+     * @return the new {@link CompoundTag}
+     */
     public static CompoundTag toTag(Quat4f quat) {
         CompoundTag tag = new CompoundTag();
         tag.putFloat("x", quat.x);
@@ -118,6 +122,11 @@ public class QuaternionHelper {
         return tag;
     }
 
+    /**
+     * Retrieves a {@link Quat4f} from the given {@link CompoundTag}.
+     * @param tag the {@link CompoundTag} to retrieve the {@link Quat4f} from
+     * @return the new {@link Quat4f}
+     */
     public static Quat4f fromTag(CompoundTag tag) {
         return new Quat4f(
                 tag.getFloat("x"),

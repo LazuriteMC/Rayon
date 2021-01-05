@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import javax.vecmath.Vector3f;
+
 @Mixin(Entity.class)
 public class EntityMixin {
     @Unique private final Entity entity = (Entity) (Object) this;
@@ -19,11 +21,12 @@ public class EntityMixin {
 
     @Inject(method = "setPos", at = @At("HEAD"), cancellable = true)
     public void setPos(double x, double y, double z, CallbackInfo info) {
-//        DynamicEntityPhysics physics = DynamicEntityPhysics.get(entity);
+//        DynamicBodyEntity dynamicBody = DynamicBodyEntity.get(entity);
 //
-//        if (physics != null) {
-//            physics.setPosition(new Vector3f((float) x, (float) y, (float) z));
+//        if (dynamicBody != null) {
+//            dynamicBody.setPosition(new Vector3f((float) x, (float) y, (float) z));
 //        }
+
         if (DynamicBodyEntity.get(entity) != null) {
             info.cancel();
         }
@@ -38,9 +41,9 @@ public class EntityMixin {
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MovementType type, Vec3d movement, CallbackInfo info) {
-        if (DynamicBodyEntity.get(entity) != null) {
-            info.cancel();
-        }
+//        if (DynamicBodyEntity.get(entity) != null) {
+//            info.cancel();
+//        }
     }
 
     @Inject(method = "setVelocity(Lnet/minecraft/util/math/Vec3d;)V", at = @At("TAIL"))

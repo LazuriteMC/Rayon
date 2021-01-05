@@ -1,12 +1,14 @@
 package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,6 +35,13 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityPosition(EntityPositionS2CPacket packet, CallbackInfo info, Entity entity) {
+//        Vec3d pos = new Vec3d(packet.getX(), packet.getY(), packet.getZ());
+//        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get(entity);
+//
+//        if (dynamicEntity != null) {
+//            dynamicEntity.setPosition(VectorHelper.vec3dToVector3f(pos));
+//        }
+
         if (DynamicBodyEntity.get(entity) != null) {
             info.cancel();
         }
@@ -50,8 +59,8 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityUpdate(EntityS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (DynamicBodyEntity.get(entity) != null) {
-            info.cancel();
-        }
+//        if (DynamicBodyEntity.get(entity) != null) {
+//            info.cancel();
+//        }
     }
 }
