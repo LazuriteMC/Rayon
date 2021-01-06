@@ -16,6 +16,8 @@ import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
@@ -23,18 +25,21 @@ import javax.vecmath.Vector3f;
 
 public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
-    private final Quat4f prevOrientation;
-    private final Vector3f targetPosition;
     private final TickTimer timer;
     private float dragCoefficient;
+
+    private final Quat4f targetOrientation;
+    private final Vector3f targetPosition;
+    private final Vector3f targetLinearVelocity;
 
     private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
         super(entity, info);
         this.dragCoefficient = dragCoefficient;
         this.timer = new TickTimer(20);
+        this.targetOrientation = new Quat4f();
+        this.targetPosition = new Vector3f();
+        this.targetLinearVelocity = new Vector3f();
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
-        this.prevOrientation = new Quat4f(0, 1, 0, 0);
-        this.targetPosition = VectorHelper.vec3dToVector3f(entity.getPos());
     }
 
     public static DynamicBodyEntity create(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient) {
@@ -68,12 +73,13 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
     }
 
     @Override
-    public void step(float delta) {
-        prevOrientation.set(getOrientation(new Quat4f()));
-    }
-
-    @Override
     public void tick() {
+        if (dynamicsWorld.getWorld().isClient()) {
+            setPosition(targetPosition);
+            setLinearVelocity(targetLinearVelocity);
+            setOrientation(targetOrientation);
+        }
+
         if (!isInWorld()) {
             dynamicsWorld.addRigidBody(this);
         }
@@ -83,12 +89,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         }
 
         Vector3f position = getCenterOfMassPosition(new Vector3f());
-        entity.pos = VectorHelper.vector3fToVec3d(position);
+//        entity.pos = VectorHelper.vector3fToVec3d(position);
         entity.updatePosition(position.x, position.y, position.z);
 
-        if (timer.tick()) {
+//        if (timer.tick()) {
             Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
-        }
+//        }
     }
 
     @Override
@@ -101,8 +107,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         this.dragCoefficient = dragCoefficient;
     }
 
-    public Quat4f getPrevOrientation(Quat4f out) {
-        out.set(prevOrientation);
+    public float getDragCoefficient() {
+        return this.dragCoefficient;
+    }
+
+    public Quat4f getTargetOrientation(Quat4f out) {
+        out.set(targetOrientation);
         return out;
     }
 
@@ -111,8 +121,25 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         return out;
     }
 
-    public float getDragCoefficient() {
-        return this.dragCoefficient;
+    public Vector3f getTargetLinearVelocity(Vector3f out) {
+        out.set(targetLinearVelocity);
+        return out;
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        targetOrientation.set(QuaternionHelper.fromBuffer(buf));
+        targetPosition.set(VectorHelper.fromBuffer(buf));
+        targetLinearVelocity.set(VectorHelper.fromBuffer(buf));
+        setAngularVelocity(VectorHelper.fromBuffer(buf));
+    }
+
+    @Override
+    public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
+        QuaternionHelper.toBuffer(buf, getOrientation(new Quat4f()));
+        VectorHelper.toBuffer(buf, getCenterOfMassPosition(new Vector3f()));
+        VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
+        VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
     }
 
     @Override

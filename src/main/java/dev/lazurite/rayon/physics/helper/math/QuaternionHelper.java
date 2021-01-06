@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.physics.helper.math;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Quaternion;
 
 import javax.vecmath.Quat4f;
@@ -134,6 +135,21 @@ public class QuaternionHelper {
                 tag.getFloat("z"),
                 tag.getFloat("w")
         );
+    }
+
+    public static void toBuffer(PacketByteBuf buf, Quat4f quat4f) {
+        buf.writeFloat(quat4f.x);
+        buf.writeFloat(quat4f.y);
+        buf.writeFloat(quat4f.z);
+        buf.writeFloat(quat4f.w);
+    }
+
+    public static Quat4f fromBuffer(PacketByteBuf buf) {
+        return new Quat4f(
+                buf.readFloat(),
+                buf.readFloat(),
+                buf.readFloat(),
+                buf.readFloat());
     }
 
     /**

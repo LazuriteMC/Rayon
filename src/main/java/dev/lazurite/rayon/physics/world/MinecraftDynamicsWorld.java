@@ -59,8 +59,8 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
             float delta = this.clock.get();
             setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
 
-            entityHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.entityDistance));
             blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
+//            entityHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.entityDistance));
 
             getCollisionObjectArray().forEach(body -> {
                 if (body instanceof SteppableBody) {

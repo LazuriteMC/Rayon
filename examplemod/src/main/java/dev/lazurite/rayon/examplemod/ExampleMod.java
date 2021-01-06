@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ExampleMod implements ModInitializer, ClientModInitializer {
+public class ExampleMod implements ModInitializer {
     public static final String MODID = "examplemod";
     public static final Logger LOGGER = LogManager.getLogger("Rayon Example Mod");
 
@@ -45,10 +45,5 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
         );
 
         DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, BoundingBoxShapeProvider::get, 1.0f, 0.1f);
-    }
-
-    @Override
-    public void onInitializeClient() {
-        EntityRendererRegistry.INSTANCE.register(ExampleMod.RECTANGULAR_PRISM_ENTITY, (entityRenderDispatcher, context) -> new RectangularPrismEntityRenderer(entityRenderDispatcher));
     }
 }
