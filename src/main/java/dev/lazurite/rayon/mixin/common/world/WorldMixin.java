@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.io.IOException;
 
 @Mixin(World.class)
-public class WorldClose {
-    @Inject(method = "Lnet/minecraft/world/World;close()V", at = @At("HEAD"))
+public class WorldMixin {
+    @Inject(method = "close", at = @At("HEAD"))
     public void close(CallbackInfo info) throws IOException {
         MinecraftDynamicsWorld.get((World) (Object) this).destroy();
     }

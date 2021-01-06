@@ -14,12 +14,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-/**
- * This mixin allows physics entities to be spawned using the summon command.
- * @author Ethan Johnson
- */
 @Mixin(SummonCommand.class)
-public class DynamicEntitySummon {
+public class SummonCommandMixin {
     /**
      * After the position is set for the summoned entity, this mixin checks to see if
      * the entity being summoned is a {@link PhysicsEntity} and sets it's {@link com.bulletphysics.dynamics.RigidBody}

@@ -1,6 +1,5 @@
-package dev.lazurite.rayon.mixin.common;
+package dev.lazurite.rayon.mixin.common.entity;
 
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,7 +23,7 @@ public class EntityMixin {
             )
     )
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
-        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
+        dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity dynamicEntity = dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity.get((Entity) (Object) this);
 
         if (dynamicEntity != null) {
             dynamicEntity.applyCentralForce(new Vector3f((float) -d * 500, 0.0f, (float) -e * 500));
@@ -33,7 +32,7 @@ public class EntityMixin {
 
     @Inject(method = "collides()Z", at = @At("HEAD"), cancellable = true)
     public void collides(CallbackInfoReturnable<Boolean> info) {
-        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
+        dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity dynamicEntity = dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity.get((Entity) (Object) this);
 
         if (dynamicEntity != null) {
             info.setReturnValue(true);
@@ -42,19 +41,10 @@ public class EntityMixin {
 
     @Inject(method = "isPushable()Z", at = @At("HEAD"), cancellable = true)
     public void isPushable(CallbackInfoReturnable<Boolean> info) {
-        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
+        dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity dynamicEntity = dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity.get((Entity) (Object) this);
 
         if (dynamicEntity != null) {
             info.setReturnValue(true);
         }
     }
-
-//    @Inject(method = "isCollidable()Z", at = @At("HEAD"), cancellable = true)
-//    public void isCollidable(CallbackInfoReturnable<Boolean> info) {
-//        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
-//
-//        if (dynamicEntity != null) {
-//            info.setReturnValue(true);
-//        }
-//    }
 }

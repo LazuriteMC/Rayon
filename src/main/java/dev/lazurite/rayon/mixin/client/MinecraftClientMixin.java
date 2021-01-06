@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.mixin.client.world;
+package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.physics.util.config.Config;
 import dev.lazurite.rayon.physics.util.thread.Delta;
@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +19,7 @@ import java.util.function.BooleanSupplier;
 
 @Environment(EnvType.CLIENT)
 @Mixin(MinecraftClient.class)
-public abstract class ClientDynamicsWorldStep {
+public abstract class MinecraftClientMixin {
     @Unique private final Delta clock = new Delta();
     @Unique private float delta;
     @Shadow private ClientWorld world;

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(DebugRenderer.class)
-public class DebugOutlineRenderer {
+public class DebugRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
     public void render(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo info) {
         MinecraftClient client = MinecraftClient.getInstance();

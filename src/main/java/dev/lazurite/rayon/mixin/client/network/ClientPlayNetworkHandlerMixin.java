@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.mixin.client;
+package dev.lazurite.rayon.mixin.client.network;
 
 import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import net.fabricmc.api.EnvType;
@@ -13,11 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-/**
- * Contains mixins mostly relating to physics
- * entities and game join operations.
- * @author Ethan Johnson
- */
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {

@@ -25,7 +25,6 @@ import javax.vecmath.Vector3f;
 
 public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
-    private final TickTimer timer;
     private float dragCoefficient;
 
     private final Quat4f targetOrientation;
@@ -35,7 +34,7 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
     private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
         super(entity, info);
         this.dragCoefficient = dragCoefficient;
-        this.timer = new TickTimer(20);
+
         this.targetOrientation = new Quat4f();
         this.targetPosition = new Vector3f();
         this.targetLinearVelocity = new Vector3f();
@@ -84,17 +83,10 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
             dynamicsWorld.addRigidBody(this);
         }
 
-        if (!entity.getEntityWorld().isClient()) {
-            Rayon.LOGGER.info(entity.getPos());
-        }
-
         Vector3f position = getCenterOfMassPosition(new Vector3f());
-//        entity.pos = VectorHelper.vector3fToVec3d(position);
         entity.updatePosition(position.x, position.y, position.z);
 
-//        if (timer.tick()) {
-            Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
-//        }
+        Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
     }
 
     @Override

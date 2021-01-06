@@ -16,7 +16,7 @@ import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 @Mixin(EntityRenderDispatcher.class)
-public class DynamicEntityRenderer {
+public class EntityRendererMixin {
     @Inject(
             method = "render",
             at = @At(
