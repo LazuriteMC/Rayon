@@ -11,7 +11,6 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
-import dev.lazurite.rayon.physics.helper.EntityHelper;
 import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.util.config.Config;
@@ -28,14 +27,12 @@ import java.util.function.BooleanSupplier;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {
     private final BlockHelper blockHelper;
-    private final EntityHelper entityHelper;
     private final Delta clock;
     private final World world;
 
     private MinecraftDynamicsWorld(World world, Dispatcher dispatcher, BroadphaseInterface broadphase, ConstraintSolver constraintSolver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, broadphase, constraintSolver, collisionConfiguration);
         this.blockHelper = new BlockHelper(this);
-        this.entityHelper = new EntityHelper(this);
         this.clock = new Delta();
         this.world = world;
 
@@ -58,9 +55,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         if (shouldStep.getAsBoolean()) {
             float delta = this.clock.get();
             setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
-
             blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
-//            entityHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.entityDistance));
 
             getCollisionObjectArray().forEach(body -> {
                 if (body instanceof SteppableBody) {
