@@ -33,6 +33,7 @@ public abstract class EntityRigidBody extends RigidBody implements SteppableBody
 
     public void setPosition(Vector3f position) {
         worldTransform.origin.set(position);
+        entity.pos = VectorHelper.vector3fToVec3d(position);
     }
 
     public Vector3f getLinearAcceleration(Vector3f out) {

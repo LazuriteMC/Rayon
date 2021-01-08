@@ -9,6 +9,7 @@ import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.google.common.collect.Lists;
+import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.body.SteppableBody;
@@ -53,6 +54,9 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
     public void step(BooleanSupplier shouldStep) {
         if (shouldStep.getAsBoolean()) {
+            /* Run all start world step events */
+            DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this);
+
             float delta = this.clock.get();
             setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
             blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
@@ -64,6 +68,9 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
             });
 
             stepSimulation(delta, 5, delta / 5.0f);
+
+            /* Run all end world step events */
+            DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this);
         } else {
             this.clock.reset();
         }
@@ -79,10 +86,6 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         });
 
         return out;
-    }
-
-    public BlockHelper getBlocks() {
-        return this.blockHelper;
     }
 
     public World getWorld() {

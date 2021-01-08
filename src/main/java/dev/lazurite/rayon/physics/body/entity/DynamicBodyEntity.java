@@ -95,12 +95,6 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         entity.updatePosition(position.x, position.y, position.z);
     }
 
-    @Override
-    public void setPosition(Vector3f position) {
-        super.setPosition(position);
-        entity.pos = VectorHelper.vector3fToVec3d(position);
-    }
-
     public void setDragCoefficient(float dragCoefficient) {
         this.dragCoefficient = dragCoefficient;
     }
