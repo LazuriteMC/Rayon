@@ -21,11 +21,6 @@ public class EntityRenderDispatcherMixin {
     @Unique Quat4f slerp = new Quat4f();
     @Unique Vec3d offset;
 
-    @Inject(method = "render", at = @At("HEAD"))
-    public <E extends Entity> void renderFirst(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-//        DynamicBodyEntity dynamicBody = DynamicBodyEntity.get(entity);
-//
-//        if (dynamicBody != null) {
 //            Vector3f pos = VectorHelper.spline(
 //                    dynamicBody.getCenterOfMassPosition(new Vector3f()),
 //                    dynamicBody.getTargetPosition(new Vector3f()),
@@ -33,17 +28,6 @@ public class EntityRenderDispatcherMixin {
 //                    dynamicBody.getTargetLinearVelocity(new Vector3f()),
 //                    dynamicBody.getLinearAcceleration(new Vector3f()),
 //                    tickDelta);
-//
-//            Box bb = entity.getBoundingBox().shrink(entity.getX(), entity.getY(), entity.getZ());
-//
-//            x = pos.x + bb.getXLength();
-//            y = pos.y + bb.getYLength();
-//            z = pos.z + bb.getZLength();
-//            x = 0;
-//            y = 0;
-//            z = 0;
-//        }
-    }
 
     @Inject(
             method = "render",
@@ -57,9 +41,9 @@ public class EntityRenderDispatcherMixin {
         if (DynamicBodyEntity.is(entity)) {
             DynamicBodyEntity dynamicBody = DynamicBodyEntity.get(entity);
 
-            slerp.interpolate(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta);
-//            slerp.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta));
 //            slerp.set(dynamicBody.getOrientation(new Quat4f()));
+//            slerp.interpolate(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta);
+            slerp.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta));
             matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(slerp));
 
             Box box = entity.getBoundingBox().offset(entity.getPos().negate());

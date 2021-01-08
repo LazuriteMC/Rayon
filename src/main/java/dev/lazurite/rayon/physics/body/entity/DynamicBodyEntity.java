@@ -9,7 +9,6 @@ import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.physics.Rayon;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import dev.lazurite.rayon.physics.util.thread.TickTimer;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -30,6 +29,7 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
     private final Quat4f targetOrientation;
     private final Vector3f targetPosition;
     private final Vector3f targetLinearVelocity;
+    private final Vector3f targetAngularVelocity;
 
     private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
         super(entity, info);
@@ -38,6 +38,7 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         this.targetOrientation = new Quat4f();
         this.targetPosition = new Vector3f();
         this.targetLinearVelocity = new Vector3f();
+        this.targetAngularVelocity = new Vector3f();
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
     }
 
@@ -77,20 +78,21 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
 
     @Override
     public void tick() {
+        if (!isInWorld() && !entity.removed) {
+            dynamicsWorld.addRigidBody(this);
+        }
+
         if (dynamicsWorld.getWorld().isClient()) {
             setPosition(targetPosition);
             setLinearVelocity(targetLinearVelocity);
             setOrientation(targetOrientation);
-        }
-
-        if (!isInWorld()) {
-            dynamicsWorld.addRigidBody(this);
+            setAngularVelocity(targetAngularVelocity);
+        } else {
+            Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
         }
 
         Vector3f position = getCenterOfMassPosition(new Vector3f());
         entity.updatePosition(position.x, position.y, position.z);
-
-        Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
     }
 
     @Override
@@ -127,7 +129,8 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         targetOrientation.set(QuaternionHelper.fromBuffer(buf));
         targetPosition.set(VectorHelper.fromBuffer(buf));
         targetLinearVelocity.set(VectorHelper.fromBuffer(buf));
-        setAngularVelocity(VectorHelper.fromBuffer(buf));
+        targetAngularVelocity.set(VectorHelper.fromBuffer(buf));
+        setDragCoefficient(buf.readFloat());
     }
 
     @Override
@@ -136,6 +139,7 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         VectorHelper.toBuffer(buf, getCenterOfMassPosition(new Vector3f()));
         VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
         VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
+        buf.writeFloat(getDragCoefficient());
     }
 
     @Override
