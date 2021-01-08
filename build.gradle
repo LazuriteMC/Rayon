@@ -22,9 +22,6 @@ subprojects {
 	dependencies {
 		compile rootProject.sourceSets.main.output
 
-		// Fabric API
-		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
 		// Additional, Helpful mods
 		modImplementation "com.github.joaoh1:OkZoomer:4.0.0-alpha.4.1.16.1"
 	}

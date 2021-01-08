@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.mixin.common.entity;
 
+import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +25,7 @@ public class EntityMixin {
             )
     )
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
-        dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity dynamicEntity = dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity.get((Entity) (Object) this);
+        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
 
         if (dynamicEntity != null) {
             dynamicEntity.applyCentralForce(new Vector3f((float) -d * 500, 0.0f, (float) -e * 500));
@@ -32,7 +34,7 @@ public class EntityMixin {
 
     @Inject(method = "collides()Z", at = @At("HEAD"), cancellable = true)
     public void collides(CallbackInfoReturnable<Boolean> info) {
-        dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity dynamicEntity = dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity.get((Entity) (Object) this);
+        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
 
         if (dynamicEntity != null) {
             info.setReturnValue(true);
@@ -41,10 +43,19 @@ public class EntityMixin {
 
     @Inject(method = "isPushable()Z", at = @At("HEAD"), cancellable = true)
     public void isPushable(CallbackInfoReturnable<Boolean> info) {
-        dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity dynamicEntity = dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity.get((Entity) (Object) this);
+        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
 
         if (dynamicEntity != null) {
             info.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "remove()V", at = @At("HEAD"))
+    public void remove(CallbackInfo info) {
+        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
+
+        if (dynamicEntity != null) {
+            MinecraftDynamicsWorld.get(((Entity) (Object) this).getEntityWorld()).removeRigidBody(dynamicEntity);
         }
     }
 }

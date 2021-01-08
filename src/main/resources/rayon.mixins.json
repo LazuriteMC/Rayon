@@ -13,7 +13,7 @@
     "client.MinecraftClientMixin",
     "client.network.ClientPlayNetworkHandlerMixin",
     "client.render.DebugRendererMixin",
-    "client.render.EntityRendererMixin"
+    "client.render.EntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

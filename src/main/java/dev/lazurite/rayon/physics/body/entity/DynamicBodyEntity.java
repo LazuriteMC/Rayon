@@ -71,6 +71,10 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         }
     }
 
+    public static boolean is(Entity entity) {
+        return get(entity) != null;
+    }
+
     @Override
     public void tick() {
         if (dynamicsWorld.getWorld().isClient()) {
