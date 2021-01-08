@@ -81,6 +81,10 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         return out;
     }
 
+    public BlockHelper getBlocks() {
+        return this.blockHelper;
+    }
+
     public World getWorld() {
         return this.world;
     }
