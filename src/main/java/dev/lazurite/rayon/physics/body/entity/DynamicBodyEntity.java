@@ -2,13 +2,14 @@ package dev.lazurite.rayon.physics.body.entity;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.lazurite.rayon.api.event.DynamicBodyCollisionEvent;
+import dev.lazurite.rayon.api.event.DynamicBodyStepEvents;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.physics.Rayon;
+import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
@@ -20,17 +21,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
-import java.util.List;
+import java.util.function.BooleanSupplier;
 
-public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+public class DynamicBodyEntity extends EntityRigidBody implements SteppableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
     private float dragCoefficient;
 
+    private final Vector3f linearAcceleration;
     private final Quat4f targetOrientation;
     private final Vector3f targetPosition;
     private final Vector3f targetLinearVelocity;
@@ -40,10 +41,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         super(entity, info);
         this.dragCoefficient = dragCoefficient;
 
+        this.linearAcceleration = new Vector3f();
         this.targetOrientation = new Quat4f();
         this.targetPosition = new Vector3f();
         this.targetLinearVelocity = new Vector3f();
         this.targetAngularVelocity = new Vector3f();
+
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
     }
 
@@ -77,14 +80,37 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         }
     }
 
+    /**
+     * Checks whether or not the given entity has a {@link DynamicBodyEntity} component.
+     * @param entity the {@link Entity} to check
+     * @return whether or not the {@link Entity} has a component
+     */
     public static boolean is(Entity entity) {
         return get(entity) != null;
     }
 
+    /**
+     * Somewhat of a parallel to the traditional <b>tick</b>, this method is called every
+     * time the physics simulation advances another step. The physics simulation can, but
+     * doesn't always, run at Minecraft's traditional rate of 20 tps. The simulation can step
+     * up to the same rate as the renderer. So don't rely on this method being called at a
+     * constant rate, or any specific rate for that matter.
+     *
+     * Also, it's important to note that mainly just physics related calls should be included here.
+     * One example would be a call to {@link DynamicBodyEntity#applyCentralForce(Vector3f)} which
+     * is best to do every step instead of every tick. The reason is that all forces to rigid bodies
+     * are cleared after every step.
+     *
+     * You can gain access to this method by registering an event handler in {@link DynamicBodyStepEvents}.
+     * @param delta the amount of seconds since the last step
+     * @see MinecraftDynamicsWorld#step(BooleanSupplier) 
+     */
     @Override
     public void step(float delta) {
-        super.step(delta);
+        /* Invoke all registered start step events */
+        DynamicBodyStepEvents.START_ENTITY_STEP.invoker().onStartStep(this);
 
+        /* Invoke all collision events */
         dynamicsWorld.getTouching(this).forEach(body -> {
             if (body instanceof BlockRigidBody) {
                 DynamicBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision((BlockRigidBody) body);
@@ -92,6 +118,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
                 DynamicBodyCollisionEvent.ENTITY_COLLISION.invoker().onEntityCollision((EntityRigidBody) body);
             }
         });
+
+        /* Update linear acceleration */
+        linearAcceleration.set(VectorHelper.mul(VectorHelper.sub(targetLinearVelocity, getLinearVelocity(new Vector3f())), delta));
+
+        /* Invoke all registered end step events */
+        DynamicBodyStepEvents.END_ENTITY_STEP.invoker().onEndStep(this);
     }
 
     @Override
@@ -121,18 +153,13 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         return this.dragCoefficient;
     }
 
+    public Vector3f getLinearAcceleration(Vector3f out) {
+        out.set(linearAcceleration);
+        return out;
+    }
+
     public Quat4f getTargetOrientation(Quat4f out) {
         out.set(targetOrientation);
-        return out;
-    }
-
-    public Vector3f getTargetPosition(Vector3f out) {
-        out.set(targetPosition);
-        return out;
-    }
-
-    public Vector3f getTargetLinearVelocity(Vector3f out) {
-        out.set(targetLinearVelocity);
         return out;
     }
 
@@ -160,6 +187,7 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         setPosition(VectorHelper.fromTag(tag.getCompound("position")));
         setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
         setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
+        setDragCoefficient(tag.getFloat("drag_coefficient"));
     }
 
     @Override
@@ -168,5 +196,6 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
         tag.put("position", VectorHelper.toTag(getCenterOfMassPosition(new Vector3f())));
         tag.put("linear_velocity", VectorHelper.toTag(getLinearVelocity(new Vector3f())));
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
+        tag.putFloat("drag_coefficient", getDragCoefficient());
     }
 }

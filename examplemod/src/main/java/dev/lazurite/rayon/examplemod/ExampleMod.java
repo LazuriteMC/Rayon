@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.examplemod;
 
 import dev.lazurite.rayon.api.event.DynamicBodyCollisionEvent;
+import dev.lazurite.rayon.api.event.DynamicBodyStepEvents;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.api.shape.provider.BoundingBoxShapeProvider;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
@@ -17,6 +18,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.vecmath.Vector3f;
 
 public class ExampleMod implements ModInitializer {
     public static final String MODID = "examplemod";
@@ -51,6 +54,8 @@ public class ExampleMod implements ModInitializer {
             }
         });
 
-        DynamicBodyCollisionEvent.ENTITY_COLLISION.register((body) -> System.out.println("THERES AN ENTITY"));
+//        DynamicBodyStepEvents.START_ENTITY_STEP.register((dynamicEntity) -> {
+//            dynamicEntity.applyCentralForce(new Vector3f(50, 0, 0));
+//        });
     }
 }

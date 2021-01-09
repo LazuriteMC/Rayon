@@ -7,9 +7,9 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * Callbacks for when a {@link DynamicBodyEntity} on both the client and server
+ * Callbacks for when a {@link DynamicBodyEntity} on both the client and the server
  * collides with either another {@link EntityRigidBody} or a {@link BlockRigidBody}.
- * @see DynamicBodyEntity
+ * @see DynamicBodyEntity#step(float) 
  */
 public final class DynamicBodyCollisionEvent {
     public static final Event<BlockCollision> BLOCK_COLLISION = EventFactory.createArrayBacked(BlockCollision.class, (callbacks) -> (body) -> {
