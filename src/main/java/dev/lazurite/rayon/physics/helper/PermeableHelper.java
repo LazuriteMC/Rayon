@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.physics.helper;
 
-import dev.lazurite.rayon.physics.util.config.Config;
+import dev.lazurite.rayon.util.config.Config;
 
 import javax.vecmath.Vector3f;
 

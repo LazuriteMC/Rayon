@@ -8,6 +8,10 @@ import net.minecraft.entity.Entity;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+/**
+ * A basic {@link RigidBody} class representing an {@link Entity}.
+ * @see DynamicBodyEntity
+ */
 public abstract class EntityRigidBody extends RigidBody {
     protected final Entity entity;
 

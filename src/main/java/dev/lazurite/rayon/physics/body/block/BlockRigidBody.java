@@ -5,6 +5,7 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
+import dev.lazurite.rayon.physics.helper.BlockHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 
@@ -12,6 +13,10 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+/**
+ * A basic {@link RigidBody} class representing a block.
+ * @see BlockHelper
+ */
 public class BlockRigidBody extends RigidBody {
     private final BlockPos blockPos;
     private final BlockState blockState;

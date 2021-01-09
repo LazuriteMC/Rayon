@@ -11,17 +11,15 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
-import dev.lazurite.rayon.physics.Rayon;
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
-import dev.lazurite.rayon.physics.util.config.Config;
-import dev.lazurite.rayon.physics.util.thread.Delta;
+import dev.lazurite.rayon.util.config.Config;
+import dev.lazurite.rayon.util.thread.Delta;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
-import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -29,7 +27,6 @@ import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {

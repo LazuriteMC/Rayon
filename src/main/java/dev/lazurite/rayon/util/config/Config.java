@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.physics.util.config;
+package dev.lazurite.rayon.util.config;
 
-import dev.lazurite.rayon.physics.Rayon;
+import dev.lazurite.rayon.Rayon;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Setting;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Settings;
@@ -22,16 +22,11 @@ public class Config {
     public static final String CONFIG_NAME = "rayon.json";
 
     @Setting
+    public float gravity;
+
+    @Setting
     @Setting.Constrain.Range(min = 2, max = 6)
     public int blockDistance;
-
-    @Setting
-    @Setting.Constrain.Range(min = 5, max = 25)
-    public int entityDistance;
-
-    @Setting
-    @Setting.Constrain.Range(max = 0.0f)
-    public float gravity;
 
     @Setting(name = "tickRate")
     @Setting.Constrain.Range(min = 20, max = 260, step = 1.0f)
@@ -42,26 +37,23 @@ public class Config {
     public float airDensity;
 
     private Config() {
-        this.blockDistance = 2;
-        this.entityDistance = 5;
         this.gravity = -9.81f;
+        this.blockDistance = 2;
         this.stepRate = 60;
         this.airDensity = 1.2f;
     }
 
     public void send(PacketByteBuf buf) {
-        buf.writeInt(blockDistance);
-        buf.writeInt(entityDistance);
         buf.writeFloat(gravity);
+        buf.writeInt(blockDistance);
         buf.writeInt(stepRate);
         buf.writeFloat(airDensity);
     }
 
     @Environment(EnvType.CLIENT)
     public void receive(PacketByteBuf buf) {
-        this.blockDistance = buf.readInt();
-        this.entityDistance = buf.readInt();
         this.gravity = buf.readFloat();
+        this.blockDistance = buf.readInt();
         this.stepRate = buf.readInt();
         this.airDensity = buf.readFloat();
     }

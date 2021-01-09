@@ -21,8 +21,6 @@ subprojects {
 
 	dependencies {
 		compile rootProject.sourceSets.main.output
-
-		// Additional, Helpful mods
 		modImplementation "com.github.joaoh1:OkZoomer:4.0.0-alpha.4.1.16.1"
 	}
 }
@@ -68,6 +66,10 @@ allprojects {
 		// Fiber
 		modApi "me.zeroeightsix:fiber:${project.fiber_version}"
 		include "me.zeroeightsix:fiber:${project.fiber_version}"
+
+		// Cloth
+		modApi("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
 		// JBullet
 		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"

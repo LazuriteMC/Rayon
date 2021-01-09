@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.mixin.client;
 
-import dev.lazurite.rayon.physics.util.config.Config;
-import dev.lazurite.rayon.physics.util.thread.Delta;
+import dev.lazurite.rayon.util.config.Config;
+import dev.lazurite.rayon.util.thread.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

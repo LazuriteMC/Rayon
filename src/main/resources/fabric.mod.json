@@ -2,48 +2,35 @@
   "schemaVersion": 1,
   "id": "rayon",
   "version": "${version}",
-
   "name": "Rayon",
   "description": "A physics API for Fabric.",
-  "authors": [
-    "Lazurite Team"
-  ],
+  "authors": [ "Lazurite Team" ],
+
   "contact": {
-    "homepage": "",
-    "sources": "https://github.com/lazuritemc/rayon"
+    "website": "https://lazurite.dev",
+    "repo": "https://github.com/lazuritemc/rayon"
   },
 
   "license": "MIT",
   "icon": "assets/rayon/icon.png",
   "accessWidener": "rayon.accesswidener",
-
   "environment": "*",
+
   "entrypoints": {
-    "main": [
-      "dev.lazurite.rayon.physics.Rayon"
-    ],
-    "cardinal-components-entity": [
-      "dev.lazurite.rayon.physics.Rayon"
-    ],
-    "cardinal-components-world": [
-      "dev.lazurite.rayon.physics.Rayon"
-    ],
-    "modmenu": [
-      "dev.lazurite.rayon.physics.Rayon"
-    ]
+    "main": [ "dev.lazurite.rayon.Rayon" ],
+    "cardinal-components-entity": [ "dev.lazurite.rayon.Rayon" ],
+    "cardinal-components-world": [ "dev.lazurite.rayon.Rayon" ],
+    "modmenu": [ "dev.lazurite.rayon.Rayon" ]
   },
-  "mixins": [
-    "rayon.mixins.json"
-  ],
+  "mixins": [ "rayon.mixins.json" ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",
     "minecraft": "1.16.x"
   },
-  "suggests": {
-    "flamingo": "*"
-  },
+
+  "suggests": { "flamingo": "*" },
 
   "custom": {
     "modmenu:api": true,

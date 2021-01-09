@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.util.thread;
+package dev.lazurite.rayon.util.thread;
 
 /**
  * A simple class for keeping track of how many

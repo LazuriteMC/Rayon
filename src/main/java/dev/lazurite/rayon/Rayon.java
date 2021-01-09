@@ -1,9 +1,9 @@
-package dev.lazurite.rayon.physics;
+package dev.lazurite.rayon;
 
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
-import dev.lazurite.rayon.physics.util.config.ConfigScreen;
+import dev.lazurite.rayon.util.config.ConfigScreen;
 import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
-import dev.lazurite.rayon.physics.util.config.Config;
+import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
@@ -60,6 +60,6 @@ public class Rayon implements ModInitializer, EntityComponentInitializer, WorldC
 	 */
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return ConfigScreen::new;
+		return ConfigScreen::create;
 	}
 }

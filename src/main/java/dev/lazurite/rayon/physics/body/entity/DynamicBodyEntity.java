@@ -10,7 +10,7 @@ import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import dev.lazurite.rayon.api.event.DynamicBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.DynamicBodyStepEvents;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
-import dev.lazurite.rayon.physics.Rayon;
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;

@@ -10,7 +10,7 @@ import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.physics.util.config.Config;
+import dev.lazurite.rayon.util.config.Config;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;

@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin.common.world;
 
-import dev.lazurite.rayon.physics.util.thread.ClientState;
+import dev.lazurite.rayon.util.thread.ClientState;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
