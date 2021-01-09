@@ -16,7 +16,7 @@ import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.body.SteppableBody;
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.util.thread.Delta;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
@@ -79,12 +79,12 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         }
     }
 
-    public List<DynamicBodyEntity> getDynamicEntities() {
-        List<DynamicBodyEntity> out = Lists.newArrayList();
+    public List<EntityRigidBody> getDynamicEntities() {
+        List<EntityRigidBody> out = Lists.newArrayList();
 
         getCollisionObjectArray().forEach(body -> {
-            if (body instanceof DynamicBodyEntity) {
-                out.add((DynamicBodyEntity) body);
+            if (body instanceof EntityRigidBody) {
+                out.add((EntityRigidBody) body);
             }
         });
 
@@ -109,7 +109,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
     }
 
-    public List<RigidBody> getTouching(DynamicBodyEntity dynamicEntity) {
+    public List<RigidBody> getTouching(EntityRigidBody dynamicEntity) {
         List<RigidBody> bodies = Lists.newArrayList();
 
         for (int manifoldNum = 0; manifoldNum < getDispatcher().getNumManifolds(); ++manifoldNum) {

@@ -1,16 +1,16 @@
 package dev.lazurite.rayon.api.event;
 
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * Callbacks for when a {@link DynamicBodyEntity} on both the client and the
- * server calls their own {@link DynamicBodyEntity#step(float)} method.
+ * Callbacks for when a {@link EntityRigidBody} on both the client and the
+ * server calls their own {@link EntityRigidBody#step(float)} method.
  * There is one callback for the start of the loop and one for the end.
- * @see DynamicBodyEntity#step(float) 
+ * @see EntityRigidBody#step(float)
  */
-public final class DynamicBodyStepEvents {
+public final class EntityBodyStepEvents {
     public static final Event<StartEntityStep> START_ENTITY_STEP = EventFactory.createArrayBacked(StartEntityStep.class, (callbacks) -> (dynamicEntity) -> {
         for (StartEntityStep event : callbacks) {
             event.onStartStep(dynamicEntity);
@@ -23,16 +23,16 @@ public final class DynamicBodyStepEvents {
         }
     });
 
-    private DynamicBodyStepEvents() {
+    private EntityBodyStepEvents() {
     }
 
     @FunctionalInterface
     public interface StartEntityStep {
-        void onStartStep(DynamicBodyEntity dynamicEntity);
+        void onStartStep(EntityRigidBody dynamicEntity);
     }
 
     @FunctionalInterface
     public interface EndEntityStep {
-        void onEndStep(DynamicBodyEntity dynamicEntity);
+        void onEndStep(EntityRigidBody dynamicEntity);
     }
 }

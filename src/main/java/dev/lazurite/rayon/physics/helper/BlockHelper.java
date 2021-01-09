@@ -5,10 +5,10 @@ import com.bulletphysics.collision.narrowphase.PersistentManifold;
 import com.bulletphysics.dynamics.RigidBody;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.util.config.Config;
 import net.minecraft.block.*;
@@ -46,11 +46,11 @@ public class BlockHelper {
      * Load every block within a set distance from the given entities. Said
      * distance is defined earlier during execution and converted into a
      * {@link Box} area parameter.
-     * @param dynamicBodyEntities the {@link List} of {@link DynamicBodyEntity} objects
+     * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
      * @param area the {@link Box} area around the entities to search for blocks within
-     * @see BlockHelper#load(DynamicBodyEntity, Box) 
+     * @see BlockHelper#load(EntityRigidBody, Box)
      */
-    public void load(List<DynamicBodyEntity> dynamicBodyEntities, Box area) {
+    public void load(List<EntityRigidBody> dynamicBodyEntities, Box area) {
         dynamicBodyEntities.forEach(body -> load(body, area.offset(VectorHelper.vector3fToVec3d(body.getCenterOfMassPosition(new Vector3f())))));
         purge();
     }
@@ -59,11 +59,11 @@ public class BlockHelper {
      * Loads an individual entity's block area into the physics simulation. This
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
-     * @param dynamicBodyEntity the {@link DynamicBodyEntity} to load blocks around
+     * @param dynamicBodyEntity the {@link EntityRigidBody} to load blocks around
      * @param area the {@link Box} area around the entity to search for blocks within
      * @see BlockHelper#load(List, Box) 
      */
-    public void load(DynamicBodyEntity dynamicBodyEntity, Box area) {
+    public void load(EntityRigidBody dynamicBodyEntity, Box area) {
         World world = dynamicsWorld.getWorld();
         Entity entity = dynamicBodyEntity.getEntity();
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
@@ -130,7 +130,7 @@ public class BlockHelper {
      * @param world the {@link World} to retrieve block info from
      * @param area the {@link Box} area within the world to retrieve block info from
      * @return the {@link Map} of {@link BlockPos} and {@link BlockState} objects
-     * @see BlockHelper#load(DynamicBodyEntity, Box)
+     * @see BlockHelper#load(EntityRigidBody, Box)
      */
     public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
         Map<BlockPos, BlockState> map = Maps.newHashMap();
@@ -154,7 +154,7 @@ public class BlockHelper {
      * @param directions the {@link Direction}s to look for blocks in
      * @return a list of touching {@link Block}s
      */
-    public Map<BlockPos, BlockState> getTouchingBlocks(DynamicBodyEntity dynamicEntity, Direction... directions) {
+    public Map<BlockPos, BlockState> getTouchingBlocks(EntityRigidBody dynamicEntity, Direction... directions) {
         Dispatcher dispatcher = dynamicsWorld.getDispatcher();
         Map<BlockPos, BlockState> blocks = Maps.newHashMap();
         Entity entity = dynamicEntity.getEntity();

@@ -13,6 +13,8 @@
 
   "config.rayon.option.air_resistance_type": "Air Resistance Type",
   "config.rayon.option.air_resistance_type.tooltip": "The type of air resistance calculations to perform.\nPerformance Impact: Low",
+  "config.rayon.option.air_resistance_type.simple": "Simple",
+  "config.rayon.option.air_resistance_type.complex": "Complex",
 
   "config.rayon.option.air_density": "Air Density",
   "config.rayon.option.air_density.tooltip": "The amount of air density used by the air resistance simulation.\nPerformance Impact: Low",

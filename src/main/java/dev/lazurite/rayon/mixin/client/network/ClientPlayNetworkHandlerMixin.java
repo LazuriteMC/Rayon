@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin.client.network;
 
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
     /**
-     * Cancels the handling of {@link EntityPositionS2CPacket} for {@link DynamicBodyEntity} objects.
-     * @see DynamicBodyEntity
+     * Cancels the handling of {@link EntityPositionS2CPacket} for {@link EntityRigidBody} objects.
+     * @see EntityRigidBody
      */
     @Inject(
             method = "onEntityPosition(Lnet/minecraft/network/packet/s2c/play/EntityPositionS2CPacket;)V",
@@ -24,14 +24,14 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityPosition(EntityPositionS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (DynamicBodyEntity.get(entity) != null) {
+        if (EntityRigidBody.get(entity) != null) {
             info.cancel();
         }
     }
 
     /**
-     * Cancels the handling of {@link EntityS2CPacket} for {@link DynamicBodyEntity} objects.
-     * @see DynamicBodyEntity
+     * Cancels the handling of {@link EntityS2CPacket} for {@link EntityRigidBody} objects.
+     * @see EntityRigidBody
      */
     @Inject(
             method = "onEntityUpdate(Lnet/minecraft/network/packet/s2c/play/EntityS2CPacket;)V",
@@ -40,7 +40,7 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityUpdate(EntityS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (DynamicBodyEntity.get(entity) != null) {
+        if (EntityRigidBody.get(entity) != null) {
             info.cancel();
         }
     }

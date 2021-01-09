@@ -5,7 +5,7 @@ import com.bulletphysics.linearmath.IDebugDraw;
 import com.bulletphysics.linearmath.Transform;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.world.DebuggableDynamicsWorld;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
@@ -34,7 +34,7 @@ public class DebugHelper extends IDebugDraw {
             Transform trans = body.getWorldTransform(new Transform());
 
             Vector3f color;
-            if (body instanceof DynamicBodyEntity) {
+            if (body instanceof EntityRigidBody) {
                 color = new Vector3f(1.0f, 0.4f, 0); // orang
             } else if (body instanceof BlockRigidBody) {
                 color = new Vector3f(0, 0, 1); // blu

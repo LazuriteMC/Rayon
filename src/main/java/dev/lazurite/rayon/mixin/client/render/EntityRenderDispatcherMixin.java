@@ -1,12 +1,11 @@
 package dev.lazurite.rayon.mixin.client.render;
 
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -38,13 +37,14 @@ public class EntityRenderDispatcherMixin {
             )
     )
     public <E extends Entity> void preRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (DynamicBodyEntity.is(entity)) {
-            DynamicBodyEntity dynamicBody = DynamicBodyEntity.get(entity);
+        if (EntityRigidBody.is(entity)) {
+            EntityRigidBody dynamicBody = EntityRigidBody.get(entity);
 
 //            slerp.set(dynamicBody.getOrientation(new Quat4f()));
 //            slerp.interpolate(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta);
             slerp.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta));
-            matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(slerp));
+//            matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(slerp));
+            matrices.multiply(QuaternionHelper.quat4fToQuaternion(slerp));
 
             offset = dynamicBody.getOffset();
             matrices.translate(offset.x, offset.y, offset.z);
@@ -60,11 +60,12 @@ public class EntityRenderDispatcherMixin {
             )
     )
     public <E extends Entity> void postRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (DynamicBodyEntity.is(entity)) {
+        if (EntityRigidBody.is(entity)) {
             matrices.translate(-offset.x, -offset.y, -offset.z);
 
             slerp.conjugate();
-            matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(slerp));
+//            matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(slerp));
+            matrices.multiply(QuaternionHelper.quat4fToQuaternion(slerp));
         }
     }
 }

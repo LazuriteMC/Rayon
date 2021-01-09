@@ -46,6 +46,7 @@ public class ConfigScreen {
                 new TranslatableText("config.rayon.option.air_resistance_type"), AirHelper.Type.class, Config.INSTANCE.airResistanceType)
                 .setDefaultValue(AirHelper.Type.SIMPLE)
                 .setTooltip(new TranslatableText("config.rayon.option.air_resistance_type.tooltip"))
+                .setEnumNameProvider((value) -> new TranslatableText(((AirHelper.Type) value).getName()))
                 .setSaveConsumer(newValue -> Config.INSTANCE.airResistanceType = newValue)
                 .build());
 

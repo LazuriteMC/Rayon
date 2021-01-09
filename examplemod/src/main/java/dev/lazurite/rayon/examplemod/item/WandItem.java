@@ -2,7 +2,7 @@ package dev.lazurite.rayon.examplemod.item;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -41,7 +41,7 @@ public class WandItem extends Item {
 
         if (!world.isClient()) {
             RectangularPrismEntity rectangularPrism = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
-            DynamicBodyEntity.get(rectangularPrism).setPosition(VectorHelper.vec3dToVector3f(hitResult.getPos().add(new Vec3d(0, 1, 0))));
+            EntityRigidBody.get(rectangularPrism).setPosition(VectorHelper.vec3dToVector3f(hitResult.getPos().add(new Vec3d(0, 1, 0))));
             world.spawnEntity(rectangularPrism);
 
             return TypedActionResult.success(itemStack);

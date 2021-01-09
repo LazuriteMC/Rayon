@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.util.config.Config;
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
 import dev.lazurite.rayon.mixin.client.render.DebugRendererMixin;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Adds an additional F3 key combination (F3 + R). When pressed
- * once, it enables rendering of {@link DynamicBodyEntity} objects.
+ * once, it enables rendering of {@link EntityRigidBody} objects.
  * When it's pressed again, it also enabled rendering of
  * {@link BlockRigidBody} objects in a different color.
  * @see DebugHelper

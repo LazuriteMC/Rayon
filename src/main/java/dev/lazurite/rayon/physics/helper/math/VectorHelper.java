@@ -96,13 +96,7 @@ public class VectorHelper {
 
     /**
      * Based on the following article: http://archive.gamedev.net/archive/reference/articles/article914.html
-     * @param oldPos
-     * @param newPos
-     * @param oldVel
-     * @param newVel
-     * @param accel
-     * @param t
-     * @return
+     * @return a newly lerped {@link Vector3f}
      */
     public static Vector3f spline(Vector3f oldPos, Vector3f newPos, Vector3f oldVel, Vector3f newVel, Vector3f accel, float t) {
         Vector3f v0 = new Vector3f(oldPos);

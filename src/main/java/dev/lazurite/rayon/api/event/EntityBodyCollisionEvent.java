@@ -2,16 +2,15 @@ package dev.lazurite.rayon.api.event;
 
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * Callbacks for when a {@link DynamicBodyEntity} on both the client and the server
+ * Callbacks for when a {@link EntityRigidBody} on both the client and the server
  * collides with either another {@link EntityRigidBody} or a {@link BlockRigidBody}.
- * @see DynamicBodyEntity#step(float) 
+ * @see EntityRigidBody#step(float)
  */
-public final class DynamicBodyCollisionEvent {
+public final class EntityBodyCollisionEvent {
     public static final Event<BlockCollision> BLOCK_COLLISION = EventFactory.createArrayBacked(BlockCollision.class, (callbacks) -> (body) -> {
         for (BlockCollision event : callbacks) {
             event.onBlockCollision(body);
@@ -24,7 +23,7 @@ public final class DynamicBodyCollisionEvent {
         }
     });
 
-    private DynamicBodyCollisionEvent() {
+    private EntityBodyCollisionEvent() {
     }
 
     @FunctionalInterface

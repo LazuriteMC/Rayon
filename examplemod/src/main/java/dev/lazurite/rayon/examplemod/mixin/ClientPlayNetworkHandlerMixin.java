@@ -2,7 +2,7 @@ package dev.lazurite.rayon.examplemod.mixin;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
-import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
+import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -48,7 +48,7 @@ public class ClientPlayNetworkHandlerMixin {
 
             int i = packet.getId();
             float yaw = ((float) packet.getYaw() * 360) / 256.0F;
-            DynamicBodyEntity.get(entity).setPosition(new Vector3f((float) x, (float) y, (float) z));
+            EntityRigidBody.get(entity).setPosition(new Vector3f((float) x, (float) y, (float) z));
             entity.setEntityId(i);
             entity.setUuid(packet.getUuid());
             this.world.addEntity(i, entity);
