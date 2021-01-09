@@ -26,7 +26,7 @@ public abstract class EntityRigidBody extends RigidBody {
 
     public void setPosition(Vector3f position) {
         worldTransform.origin.set(position);
-        entity.pos = VectorHelper.vector3fToVec3d(position);
+        entity.setPos(position.x, position.y, position.z);
     }
 
     public Entity getEntity() {

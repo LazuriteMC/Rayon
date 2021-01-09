@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -40,7 +41,7 @@ public class WandItem extends Item {
 
         if (!world.isClient()) {
             RectangularPrismEntity rectangularPrism = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
-            DynamicBodyEntity.get(rectangularPrism).setPosition(VectorHelper.vec3dToVector3f(hitResult.getPos()));
+            DynamicBodyEntity.get(rectangularPrism).setPosition(VectorHelper.vec3dToVector3f(hitResult.getPos().add(new Vec3d(0, 1, 0))));
             world.spawnEntity(rectangularPrism);
 
             return TypedActionResult.success(itemStack);

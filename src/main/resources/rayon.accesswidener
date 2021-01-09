@@ -1,11 +1,4 @@
 accessWidener	v1	named
-accessible field net/minecraft/server/world/ServerWorld entitiesByUuid Ljava/util/Map;
-
-accessible field net/minecraft/entity/Entity pos Lnet/minecraft/util/math/Vec3d;
-
-accessible method net/minecraft/client/options/Option getGenericLabel (Lnet/minecraft/text/Text;)Lnet/minecraft/text/Text;
-accessible method net/minecraft/client/options/Option getPercentLabel (D)Lnet/minecraft/text/Text;
-
 accessible field net/minecraft/client/render/model/MultipartBakedModel components Ljava/util/List;
 accessible field net/minecraft/client/render/model/BasicBakedModel faceQuads Ljava/util/Map;
 accessible field net/minecraft/client/render/model/WeightedBakedModel models Ljava/util/List;

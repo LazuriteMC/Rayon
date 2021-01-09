@@ -17,9 +17,8 @@ import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin extends World {
-
-    /* Ughhhh */
-    protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, DimensionType dimensionType, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
+    /* sadge */
+    private ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, DimensionType dimensionType, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
         super(properties, registryRef, dimensionType, profiler, isClient, debugWorld, seed);
     }
 
@@ -32,16 +31,7 @@ public abstract class ServerWorldMixin extends World {
             )
     )
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo info) {
-        this.getProfiler().swap("physicsSimulation");
-
-        BooleanSupplier shouldStep = () -> {
-//            if (getServer() instanceof IntegratedServer) {
-//                return !ClientState.isPaused();
-//            } else {
-                return true;
-//            }
-        };
-
-        MinecraftDynamicsWorld.get(this).step(shouldStep);
+        getProfiler().swap("physicsSimulation");
+        MinecraftDynamicsWorld.get((ServerWorld) (Object) this).step(shouldKeepTicking);
     }
 }
