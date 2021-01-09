@@ -1,8 +1,6 @@
 package dev.lazurite.rayon.mixin.client.render;
 
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
@@ -12,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Environment(EnvType.CLIENT)
 @Mixin(DebugRenderer.class)
 public class DebugRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
@@ -20,7 +17,7 @@ public class DebugRendererMixin {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.options.debugEnabled) {
-            MinecraftDynamicsWorld.get(client.world).getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, true);
+            MinecraftDynamicsWorld.get(client.world).getDebugHelper().renderWorld(cameraX, cameraY, cameraZ, false);
         }
     }
 }

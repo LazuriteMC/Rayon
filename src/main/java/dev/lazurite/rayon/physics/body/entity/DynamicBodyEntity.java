@@ -158,8 +158,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements SteppableBody,
      */
     @Override
     public void tick() {
-        if (!isInWorld() && !entity.removed) {
-            dynamicsWorld.addRigidBody(this);
+        if (dynamicsWorld.getWorld().getChunkManager().shouldTickEntity(entity)) {
+            if (!isInWorld()) {
+                dynamicsWorld.addRigidBody(this);
+            }
+        } else {
+            dynamicsWorld.removeRigidBody(this);
         }
 
         if (dynamicsWorld.getWorld().isClient()) {

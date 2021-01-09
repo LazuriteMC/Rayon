@@ -3,8 +3,6 @@ package dev.lazurite.rayon.mixin.client;
 import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.util.thread.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
@@ -18,13 +16,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BooleanSupplier;
 
-@Environment(EnvType.CLIENT)
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
     @Unique private final Delta clock = new Delta();
     @Unique private float delta;
-    @Shadow private ClientWorld world;
+
     @Shadow private Profiler profiler;
+    @Shadow public ClientWorld world;
 
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("TAIL"))
     public void disconnect(Screen screen, CallbackInfo info) {
