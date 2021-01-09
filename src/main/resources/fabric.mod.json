@@ -4,11 +4,12 @@
   "version": "${version}",
   "name": "Rayon",
   "description": "A physics API for Fabric.",
-  "authors": [ "Lazurite Team" ],
+  "authors": [ "The Lazurite Team" ],
 
   "contact": {
-    "website": "https://lazurite.dev",
-    "repo": "https://github.com/lazuritemc/rayon"
+    "homepage": "https://lazurite.dev",
+    "sources": "https://github.com/lazuritemc/Rayon",
+    "issues": "https://github.com/LazuriteMC/Rayon/issues"
   },
 
   "license": "MIT",
