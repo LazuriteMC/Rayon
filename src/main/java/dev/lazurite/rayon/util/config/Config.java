@@ -24,6 +24,8 @@ public class Config {
     public static final String CONFIG_NAME = "rayon.json";
 
     public boolean isRemote = false;
+    public boolean debug = false;
+    public boolean debugBlocks = false;
 
     @Setting
     public float gravity;

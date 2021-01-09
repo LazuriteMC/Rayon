@@ -12,6 +12,7 @@
     "common.world.WorldMixin"
   ],
   "client": [
+    "client.KeyboardMixin",
     "client.MinecraftClientMixin",
     "client.network.ClientPlayNetworkHandlerMixin",
     "client.render.DebugRendererMixin",

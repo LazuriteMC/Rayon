@@ -3,10 +3,16 @@ package dev.lazurite.rayon.mixin.client;
 import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.util.thread.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.mixin.common.IntegratedServerMixin;
+import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
+import dev.lazurite.rayon.util.config.ConfigScreen;
+import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.profiler.Profiler;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,11 +30,26 @@ public abstract class MinecraftClientMixin {
     @Shadow private Profiler profiler;
     @Shadow public ClientWorld world;
 
+    /**
+     * Returns the {@link Config} instance's isRemote value to false. isRemote
+     * is used in order to construct the config screen.
+     * @param screen the screen to open on disconnect - not used here
+     * @param info required by every mixin injection
+     * @see Config
+     * @see ConfigScreen
+     */
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("TAIL"))
     public void disconnect(Screen screen, CallbackInfo info) {
         Config.INSTANCE.isRemote = false;
     }
 
+    /**
+     * Steps the client {@link MinecraftDynamicsWorld}. Also handles if the game is paused.
+     * @param tick whether or not the client should tick - not used here
+     * @param info required by every mixin injection
+     * @see IntegratedServerMixin
+     * @see ServerWorldMixin
+     */
     @Inject(
         method = "render(Z)V",
         at = @At(
@@ -42,6 +63,7 @@ public abstract class MinecraftClientMixin {
             profiler.swap("physicsSimulation");
             BooleanSupplier shouldStep = () -> !((MinecraftClient) (Object) this).isPaused();
 
+            /* Control the rate of execution... */
             if (Config.INSTANCE.stepRate < 260) {
                 float stepMillis = 1 / (float) Config.INSTANCE.stepRate;
 
@@ -52,6 +74,8 @@ public abstract class MinecraftClientMixin {
                 } else {
                     delta += clock.get();
                 }
+
+            /* ...or just go as fast as it can */
             } else {
                 MinecraftDynamicsWorld.get(world).step(shouldStep);
             }

@@ -179,8 +179,18 @@ public class DynamicBodyEntity extends EntityRigidBody implements SteppableBody,
         entity.updatePosition(position.x, position.y, position.z);
     }
 
+    public void setMass(float mass) {
+        Vector3f inertia = new Vector3f();
+        getCollisionShape().calculateLocalInertia(mass, inertia);
+        this.setMassProps(mass, inertia);
+    }
+
     public void setDragCoefficient(float dragCoefficient) {
         this.dragCoefficient = dragCoefficient;
+    }
+
+    public float getMass() {
+        return 1.0f / this.getInvMass();
     }
 
     public float getDragCoefficient() {

@@ -1,7 +1,8 @@
 {
+  "debug.rayon.on": "Rigid Body Hitboxes: shown",
+  "debug.rayon.off": "Rigid Body Hitboxes: hidden",
+
   "config.rayon.title": "Simulation Settings",
-  "config.rayon.category.local": "Local Simulation Settings",
-  "config.rayon.category.global": "Global Simulation Settings",
 
   "config.rayon.option.block_distance": "Block Distance",
   "config.rayon.option.block_distance.tooltip": "The maximum distance from a dynamic body entity where blocks are loaded.\nPerformance Impact: High",

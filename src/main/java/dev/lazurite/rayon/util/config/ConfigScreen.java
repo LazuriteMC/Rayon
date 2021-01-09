@@ -20,11 +20,10 @@ public class ConfigScreen {
                 .setTransparentBackground(true)
                 .setSavingRunnable(Config.INSTANCE::save);
 
-        ConfigCategory localSimulationSettings = builder.getOrCreateCategory(new TranslatableText("config.rayon.category.local"));
-        ConfigCategory globalSimulationSettings = builder.getOrCreateCategory(new TranslatableText("config.rayon.category.global"));
+        ConfigCategory category = builder.getOrCreateCategory(new LiteralText("")); // category name is ignored
 
         /* Block Distance */
-        localSimulationSettings.addEntry(builder.entryBuilder().startIntSlider(
+        category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.block_distance"),
                 Config.INSTANCE.blockDistance, 2, 6)
                 .setDefaultValue(2)
@@ -33,7 +32,7 @@ public class ConfigScreen {
                 .build());
 
         /* Client Step Rate */
-        localSimulationSettings.addEntry(builder.entryBuilder().startIntSlider(
+        category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.step_rate"),
                 Config.INSTANCE.stepRate, 20, 260)
                 .setDefaultValue(60)
@@ -43,33 +42,31 @@ public class ConfigScreen {
                 .build());
 
         /* Air Resistance Type */
-        localSimulationSettings.addEntry(builder.entryBuilder().startEnumSelector(
+        category.addEntry(builder.entryBuilder().startEnumSelector(
                 new TranslatableText("config.rayon.option.air_resistance_type"), AirHelper.Type.class, Config.INSTANCE.airResistanceType)
                 .setDefaultValue(AirHelper.Type.SIMPLE)
                 .setTooltip(new TranslatableText("config.rayon.option.air_resistance_type.tooltip"))
                 .setSaveConsumer(newValue -> Config.INSTANCE.airResistanceType = newValue)
                 .build());
 
-        /* Air Density */
-        globalSimulationSettings.addEntry(builder.entryBuilder().startFloatField(
-                new TranslatableText("config.rayon.option.air_density"), Config.INSTANCE.airDensity)
-                .setDefaultValue(1.2f)
-                .setTooltip(new TranslatableText("config.rayon.option.air_density.tooltip"))
-                .setSaveConsumer(newValue -> Config.INSTANCE.airDensity = newValue)
-                .build());
+        if (!Config.INSTANCE.isRemote) {
+            /* Air Density */
+            category.addEntry(builder.entryBuilder().startFloatField(
+                    new TranslatableText("config.rayon.option.air_density"), Config.INSTANCE.airDensity)
+                    .setDefaultValue(1.2f)
+                    .setTooltip(new TranslatableText("config.rayon.option.air_density.tooltip"))
+                    .setSaveConsumer(newValue -> Config.INSTANCE.airDensity = newValue)
+                    .build());
 
-        /* Gravity */
-        globalSimulationSettings.addEntry(builder.entryBuilder().startFloatField(
-                new TranslatableText("config.rayon.option.gravity"), Config.INSTANCE.gravity)
-                .setDefaultValue(-9.81f)
-                .setTooltip(new TranslatableText("config.rayon.option.gravity.tooltip"))
-                .setSaveConsumer(newValue -> Config.INSTANCE.gravity = newValue)
-                .build());
-
-        if (Config.INSTANCE.isRemote) {
-            builder.removeCategory(new TranslatableText("config.rayon.category.global"));
+            /* Gravity */
+            category.addEntry(builder.entryBuilder().startFloatField(
+                    new TranslatableText("config.rayon.option.gravity"), Config.INSTANCE.gravity)
+                    .setDefaultValue(-9.81f)
+                    .setTooltip(new TranslatableText("config.rayon.option.gravity.tooltip"))
+                    .setSaveConsumer(newValue -> Config.INSTANCE.gravity = newValue)
+                    .build());
         }
 
-        return builder.setFallbackCategory(localSimulationSettings).build();
+        return builder.setFallbackCategory(category).build();
     }
 }

@@ -22,6 +22,7 @@ import javax.vecmath.Vector3f;
  * A version of {@link DiscreteDynamicsWorld} which allows for
  * debug rendering. This wasn't previously possible since there
  * wasn't an implementation for it written into jBullet.
+ * @see DebugHelper
  */
 public class DebuggableDynamicsWorld extends DiscreteDynamicsWorld {
     private final DebugHelper debugHelper;
