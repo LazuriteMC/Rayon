@@ -6,6 +6,7 @@
   "mixins": [
     "common.command.SummonCommandMixin",
     "common.entity.EntityMixin",
+    "common.entity.player.PlayerManagerMixin",
     "common.world.ServerWorldMixin",
     "common.world.WorldMixin"
   ],

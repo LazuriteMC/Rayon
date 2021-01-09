@@ -1,8 +1,6 @@
 package dev.lazurite.rayon.mixin.common.world;
 
-import dev.lazurite.rayon.util.thread.ClientState;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
-import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
@@ -37,11 +35,11 @@ public abstract class ServerWorldMixin extends World {
         this.getProfiler().swap("physicsSimulation");
 
         BooleanSupplier shouldStep = () -> {
-            if (getServer() instanceof IntegratedServer) {
-                return !ClientState.isPaused();
-            } else {
+//            if (getServer() instanceof IntegratedServer) {
+//                return !ClientState.isPaused();
+//            } else {
                 return true;
-            }
+//            }
         };
 
         MinecraftDynamicsWorld.get(this).step(shouldStep);

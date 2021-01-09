@@ -1,6 +1,7 @@
 package dev.lazurite.rayon;
 
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
+import dev.lazurite.rayon.util.config.ConfigS2C;
 import dev.lazurite.rayon.util.config.ConfigScreen;
 import dev.lazurite.rayon.physics.body.entity.DynamicBodyEntity;
 import dev.lazurite.rayon.util.config.Config;
@@ -13,12 +14,13 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Rayon implements ModInitializer, EntityComponentInitializer, WorldComponentInitializer, ModMenuApi {
+public class Rayon implements ModInitializer, ClientModInitializer, EntityComponentInitializer, WorldComponentInitializer, ModMenuApi {
 	public static final String MODID = "rayon";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
 
@@ -29,6 +31,11 @@ public class Rayon implements ModInitializer, EntityComponentInitializer, WorldC
 	public void onInitialize() {
 		LOGGER.info("Time to get physical!");
 		Config.INSTANCE.load();
+	}
+
+	@Override
+	public void onInitializeClient() {
+		ConfigS2C.register();
 	}
 
 	/**

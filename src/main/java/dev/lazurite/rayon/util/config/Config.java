@@ -9,18 +9,21 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.network.PacketByteBuf;
 
 import java.io.IOException;
 import java.nio.file.Files;
 
+/**
+ * The POJO that hosts Rayon's Fiber config.
+ * @see ConfigScreen
+ */
 @Settings(onlyAnnotated = true)
 public class Config {
     public static final Config INSTANCE = new Config();
     public static final String CONFIG_NAME = "rayon.json";
+
+    public boolean isRemote = false;
 
     @Setting
     public float gravity;
@@ -46,23 +49,6 @@ public class Config {
         this.stepRate = 60;
         this.airDensity = 1.2f;
         this.airResistanceType = AirHelper.Type.SIMPLE;
-    }
-
-    public void send(PacketByteBuf buf) {
-        buf.writeFloat(gravity);
-        buf.writeInt(blockDistance);
-        buf.writeInt(stepRate);
-        buf.writeFloat(airDensity);
-        buf.writeEnumConstant(airResistanceType);
-    }
-
-    @Environment(EnvType.CLIENT)
-    public void receive(PacketByteBuf buf) {
-        this.gravity = buf.readFloat();
-        this.blockDistance = buf.readInt();
-        this.stepRate = buf.readInt();
-        this.airDensity = buf.readFloat();
-        this.airResistanceType = buf.readEnumConstant(AirHelper.Type.class);
     }
 
     public void load() {

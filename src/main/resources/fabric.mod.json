@@ -18,6 +18,7 @@
 
   "entrypoints": {
     "main": [ "dev.lazurite.rayon.Rayon" ],
+    "client": [ "dev.lazurite.rayon.Rayon" ],
     "cardinal-components-entity": [ "dev.lazurite.rayon.Rayon" ],
     "cardinal-components-world": [ "dev.lazurite.rayon.Rayon" ],
     "modmenu": [ "dev.lazurite.rayon.Rayon" ]

@@ -1,10 +1,21 @@
 {
-  "config.rayon.title": "Physics Settings",
-  "config.rayon.option.gravity": "Gravity",
+  "config.rayon.title": "Simulation Settings",
+  "config.rayon.category.local": "Local Simulation Settings",
+  "config.rayon.category.global": "Global Simulation Settings",
+
   "config.rayon.option.block_distance": "Block Distance",
+  "config.rayon.option.block_distance.tooltip": "The maximum distance from a dynamic body entity where blocks are loaded.\nPerformance Impact: High",
+
   "config.rayon.option.step_rate": "Step Rate",
-  "config.rayon.option.gravity.tooltip": "The amount of gravity used by the physics simulation.\nPerformance Impact: Low\nDefault: -9.81 m/s^2",
-  "config.rayon.option.block_distance.tooltip": "The maximum distance from a dynamic body entity where blocks are loaded.\nPerformance Impact: High\nDefault: 2 blocks",
-  "config.rayon.option.step_rate.tooltip": "The rate at which the simulation is stepped.\nPerformance Impact: High\nDefault: 60 steps/second",
-  "config.rayon.option.step_rate.max": "Unlimited"
+  "config.rayon.option.step_rate.tooltip": "The rate at which the simulation is stepped.\nPerformance Impact: Medium",
+  "config.rayon.option.step_rate.max": "Unlimited",
+
+  "config.rayon.option.air_resistance_type": "Air Resistance Type",
+  "config.rayon.option.air_resistance_type.tooltip": "The type of air resistance calculations to perform.\nPerformance Impact: Low",
+
+  "config.rayon.option.air_density": "Air Density",
+  "config.rayon.option.air_density.tooltip": "The amount of air density used by the air resistance simulation.\nPerformance Impact: Low",
+
+  "config.rayon.option.gravity": "Gravity",
+  "config.rayon.option.gravity.tooltip": "The amount of gravity used by the physics simulation.\nPerformance Impact: Low\nDefault: -9.81 m/s^2"
 }

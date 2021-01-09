@@ -6,6 +6,7 @@ import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,13 +26,18 @@ public abstract class MinecraftClientMixin {
     @Shadow private ClientWorld world;
     @Shadow private Profiler profiler;
 
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("TAIL"))
+    public void disconnect(Screen screen, CallbackInfo info) {
+        Config.INSTANCE.isRemote = false;
+    }
+
     @Inject(
-            method = "render(Z)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/GameRenderer;render(FJZ)V",
-                    shift = At.Shift.AFTER
-            )
+        method = "render(Z)V",
+        at = @At(
+                value = "INVOKE",
+                target = "Lnet/minecraft/client/render/GameRenderer;render(FJZ)V",
+                shift = At.Shift.AFTER
+        )
     )
     private void render(boolean tick, CallbackInfo info) {
         if (world != null) {
