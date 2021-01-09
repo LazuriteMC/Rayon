@@ -4,6 +4,8 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
@@ -27,6 +29,11 @@ public abstract class EntityRigidBody extends RigidBody {
     public void setPosition(Vector3f position) {
         worldTransform.origin.set(position);
         entity.setPos(position.x, position.y, position.z);
+    }
+
+    public Vec3d getOffset() {
+        Box box = entity.getBoundingBox().offset(entity.getPos().negate());
+        return box.getCenter().add(new Vec3d(-box.getXLength() / 2.0, -box.getYLength(), -box.getZLength() / 2.0));
     }
 
     public Entity getEntity() {

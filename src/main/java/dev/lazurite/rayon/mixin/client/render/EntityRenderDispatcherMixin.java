@@ -46,8 +46,7 @@ public class EntityRenderDispatcherMixin {
             slerp.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta));
             matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(slerp));
 
-            Box box = entity.getBoundingBox().offset(entity.getPos().negate());
-            offset = box.getCenter().add(new Vec3d(-box.getXLength() / 2.0, -box.getYLength(), -box.getZLength() / 2.0));
+            offset = dynamicBody.getOffset();
             matrices.translate(offset.x, offset.y, offset.z);
         }
     }

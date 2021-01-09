@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.mixin.common.world;
 
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.mixin.common.IntegratedServerMixin;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.RegistryKey;
@@ -15,6 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+/**
+ * This simply calls {@link MinecraftDynamicsWorld#step} each time the server ticks.
+ * @see MinecraftDynamicsWorld#step
+ * @see IntegratedServerMixin
+ */
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin extends World {
     /* sadge */

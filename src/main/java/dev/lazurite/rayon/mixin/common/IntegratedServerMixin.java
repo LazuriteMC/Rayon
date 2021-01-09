@@ -4,6 +4,8 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
+import dev.lazurite.rayon.mixin.client.MinecraftClientMixin;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
@@ -13,6 +15,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.server.dedicated.DedicatedServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +25,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.net.Proxy;
 import java.util.function.BooleanSupplier;
 
+/**
+ * If the game is paused, it's important to clear all delta time
+ * within {@link MinecraftDynamicsWorld}. Otherwise, dynamic entities
+ * tend to go flying or fall out of the world.<br><br>
+ *
+ * Since a normal {@link DedicatedServer} is unable to pause, but an
+ * {@link IntegratedServer} can, this mixin only affects the
+ * {@link IntegratedServer} class.<br><br>
+ *
+ * @see ServerWorldMixin
+ * @see MinecraftClientMixin
+ */
 @Mixin(IntegratedServer.class)
 public abstract class IntegratedServerMixin extends MinecraftServer {
     @Shadow private boolean paused;

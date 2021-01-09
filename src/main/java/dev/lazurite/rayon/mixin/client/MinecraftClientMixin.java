@@ -33,8 +33,6 @@ public abstract class MinecraftClientMixin {
     /**
      * Returns the {@link Config} instance's isRemote value to false. isRemote
      * is used in order to construct the config screen.
-     * @param screen the screen to open on disconnect - not used here
-     * @param info required by every mixin injection
      * @see Config
      * @see ConfigScreen
      */
@@ -45,8 +43,6 @@ public abstract class MinecraftClientMixin {
 
     /**
      * Steps the client {@link MinecraftDynamicsWorld}. Also handles if the game is paused.
-     * @param tick whether or not the client should tick - not used here
-     * @param info required by every mixin injection
      * @see IntegratedServerMixin
      * @see ServerWorldMixin
      */

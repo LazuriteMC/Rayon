@@ -14,9 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
     /**
-     * @param packet the packet containing the entity position info
-     * @param info required by every mixin injection
-     * @param entity the {@link Entity} on which the injection point was originally called
+     * Cancels the handling of {@link EntityPositionS2CPacket} for {@link DynamicBodyEntity} objects.
+     * @see DynamicBodyEntity
      */
     @Inject(
             method = "onEntityPosition(Lnet/minecraft/network/packet/s2c/play/EntityPositionS2CPacket;)V",
@@ -31,9 +30,8 @@ public class ClientPlayNetworkHandlerMixin {
     }
 
     /**
-     * @param packet the packet containing the entity update info
-     * @param info required by every mixin injection
-     * @param entity the {@link Entity} on which the injection point was originally called
+     * Cancels the handling of {@link EntityS2CPacket} for {@link DynamicBodyEntity} objects.
+     * @see DynamicBodyEntity
      */
     @Inject(
             method = "onEntityUpdate(Lnet/minecraft/network/packet/s2c/play/EntityS2CPacket;)V",

@@ -9,6 +9,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
 
+/**
+ * Whenever the world closes, the {@link MinecraftDynamicsWorld} should
+ * also be destroyed in order to clean up.
+ * @see MinecraftDynamicsWorld#destroy
+ */
 @Mixin(World.class)
 public class WorldMixin {
     @Inject(method = "close", at = @At("HEAD"))
