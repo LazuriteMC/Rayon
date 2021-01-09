@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.util.config;
 
 import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.physics.helper.AirHelper;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Setting;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Settings;
@@ -28,19 +29,23 @@ public class Config {
     @Setting.Constrain.Range(min = 2, max = 6)
     public int blockDistance;
 
-    @Setting(name = "tickRate")
+    @Setting
     @Setting.Constrain.Range(min = 20, max = 260, step = 1.0f)
     public int stepRate;
 
-    @Setting(name = "airDensity")
+    @Setting
     @Setting.Constrain.Range(min = 0.0f)
     public float airDensity;
+
+    @Setting
+    public AirHelper.Type airResistanceType;
 
     private Config() {
         this.gravity = -9.81f;
         this.blockDistance = 2;
         this.stepRate = 60;
         this.airDensity = 1.2f;
+        this.airResistanceType = AirHelper.Type.SIMPLE;
     }
 
     public void send(PacketByteBuf buf) {
@@ -48,6 +53,7 @@ public class Config {
         buf.writeInt(blockDistance);
         buf.writeInt(stepRate);
         buf.writeFloat(airDensity);
+        buf.writeEnumConstant(airResistanceType);
     }
 
     @Environment(EnvType.CLIENT)
@@ -56,6 +62,7 @@ public class Config {
         this.blockDistance = buf.readInt();
         this.stepRate = buf.readInt();
         this.airDensity = buf.readFloat();
+        this.airResistanceType = buf.readEnumConstant(AirHelper.Type.class);
     }
 
     public void load() {
