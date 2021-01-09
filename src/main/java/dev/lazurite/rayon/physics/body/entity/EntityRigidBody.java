@@ -96,12 +96,6 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         return physics;
     }
 
-    /**
-     * Get a {@link EntityRigidBody} component from the given {@link Entity}.
-     * If the entity doesn't have a component, then null is returned.
-     * @param entity the {@link Entity} to retrieve the component from
-     * @return the {@link EntityRigidBody} component
-     */
     public static EntityRigidBody get(Entity entity) {
         try {
             return Rayon.DYNAMIC_BODY_ENTITY.get(entity);
@@ -110,11 +104,6 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         }
     }
 
-    /**
-     * Checks whether or not the given entity has a {@link EntityRigidBody} component.
-     * @param entity the {@link Entity} to check
-     * @return whether or not the {@link Entity} has a component
-     */
     public static boolean is(Entity entity) {
         return get(entity) != null;
     }
@@ -244,6 +233,10 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
 
     public Entity getEntity() {
         return entity;
+    }
+
+    public MinecraftDynamicsWorld getDynamicsWorld() {
+        return dynamicsWorld;
     }
 
     @Override

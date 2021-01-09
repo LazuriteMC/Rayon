@@ -41,14 +41,17 @@ public class AirHelper {
      * @see AirHelper#getComplexForce
      */
     public static Vector3f getSimpleForce(EntityRigidBody entity) {
-        Vector3f velocity = entity.getLinearVelocity(new Vector3f());
-        float dragCoefficient = entity.getDragCoefficient();
-        float area = (float) Math.pow(entity.getBox().getAverageSideLength(), 2);
-        float k = (Config.INSTANCE.airDensity * dragCoefficient * area) / 2.0f;
+        return getForce(
+                entity.getLinearVelocity(new Vector3f()),
+                (float) Math.pow(entity.getBox().getAverageSideLength(), 2),
+                entity.getDragCoefficient()
+        );
+    }
 
+    public static Vector3f getForce(Vector3f velocity, float area, float dragCoefficient) {
+        float k = (Config.INSTANCE.airDensity * dragCoefficient * area) / 2.0f;
         Vector3f force = VectorHelper.mul(velocity, k);
         force.scale(-velocity.lengthSquared());
-
         return force;
     }
 }

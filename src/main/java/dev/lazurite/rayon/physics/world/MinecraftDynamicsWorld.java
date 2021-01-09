@@ -19,6 +19,8 @@ import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.util.thread.Delta;
+import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
+import dev.lazurite.rayon.mixin.client.MinecraftClientMixin;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
@@ -29,6 +31,24 @@ import javax.vecmath.Vector3f;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+/**
+ * Like {@link EntityRigidBody}, this is another integral class to Rayon. It is a {@link ComponentV3}
+ * which is attached to every {@link World} object in Minecraft. Therefore, every Minecraft
+ * world/dimension is capable of simulation rigid body dynamics.<br><br>
+ *
+ * World-level values are controlled here such as gravity and air density. This class also facilitates
+ * the loading of blocks into the world as {@link BlockRigidBody} objects.<br><br>
+ *
+ * The {@link MinecraftDynamicsWorld#step} method is called in two separate mixins: {@link MinecraftClientMixin}
+ * and {@link ServerWorldMixin}. {@link MinecraftClientMixin} allows for running the simulation at any rate
+ * from 20 steps/second to the frame rate of the game. {@link ServerWorldMixin}, however, is only capable of
+ * stepping at 20 steps/second on the server.<br><br>
+ *
+ * Additionally, there are world step events that can be utilized in {@link DynamicsWorldStepEvents}.
+ * @see EntityRigidBody
+ * @see ServerWorldMixin
+ * @see MinecraftClientMixin
+ */
 public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {
     private final BlockHelper blockHelper;
     private final Delta clock;
@@ -64,12 +84,14 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
             setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
             blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
 
+            /* Step each SteppableBody object */
             getCollisionObjectArray().forEach(body -> {
                 if (body instanceof SteppableBody) {
                     ((SteppableBody) body).step(delta);
                 }
             });
 
+            /* Step the DiscreteDynamicsWorld simulation */
             stepSimulation(delta, 5, delta / 5.0f);
 
             /* Run all end world step events */
