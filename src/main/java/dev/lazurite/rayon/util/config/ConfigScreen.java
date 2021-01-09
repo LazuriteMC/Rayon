@@ -9,7 +9,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
 /**
- * Simply returns a newly built config screen made using Cloth Config.
+ * Class for housing the method which returns a new config screen made using Cloth Config.
  * @see Rayon#getModConfigScreenFactory()
  */
 public class ConfigScreen {

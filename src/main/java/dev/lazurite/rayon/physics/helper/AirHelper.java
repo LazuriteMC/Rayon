@@ -3,11 +3,21 @@ package dev.lazurite.rayon.physics.helper;
 import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.util.config.Config;
+import dev.lazurite.rayon.util.config.ConfigScreen;
 
 import javax.vecmath.Vector3f;
 import java.util.function.Function;
 
 public class AirHelper {
+    /**
+     * The type of air resistance calculations to perform is
+     * controlled using this enumerator. The name {@link String} is used
+     * when presented on the {@link ConfigScreen}. The {@link Function}
+     * contains a reference to which method should be called during
+     * {@link EntityRigidBody#step}.
+     * @see EntityRigidBody#step
+     * @see ConfigScreen
+     */
     public enum Type {
         SIMPLE("config.rayon.option.air_resistance_type.simple", AirHelper::getSimpleForce),
         COMPLEX("config.rayon.option.air_resistance_type.complex", AirHelper::getComplexForce);
@@ -48,6 +58,14 @@ public class AirHelper {
         );
     }
 
+    /**
+     * Performs the basic calculations that are common to all air
+     * resistance calculation types. It uses a simple drag formula.
+     * @param velocity the velocity of the {@link EntityRigidBody}
+     * @param area the surface area of the {@link EntityRigidBody}
+     * @param dragCoefficient the drag coefficient of the {@link EntityRigidBody}
+     * @return the force vector of air resistance
+     */
     public static Vector3f getForce(Vector3f velocity, float area, float dragCoefficient) {
         float k = (Config.INSTANCE.airDensity * dragCoefficient * area) / 2.0f;
         Vector3f force = VectorHelper.mul(velocity, k);

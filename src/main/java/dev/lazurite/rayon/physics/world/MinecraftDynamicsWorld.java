@@ -18,7 +18,7 @@ import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.util.config.Config;
-import dev.lazurite.rayon.util.thread.Delta;
+import dev.lazurite.rayon.util.Delta;
 import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
 import dev.lazurite.rayon.mixin.client.MinecraftClientMixin;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;

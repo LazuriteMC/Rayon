@@ -1,18 +1,15 @@
 package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.util.config.Config;
-import dev.lazurite.rayon.util.thread.Delta;
+import dev.lazurite.rayon.util.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.mixin.common.IntegratedServerMixin;
 import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
 import dev.lazurite.rayon.util.config.ConfigScreen;
-import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.profiler.Profiler;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;

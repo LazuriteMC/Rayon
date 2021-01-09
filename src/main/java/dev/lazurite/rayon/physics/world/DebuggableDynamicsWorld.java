@@ -8,7 +8,6 @@ import com.bulletphysics.collision.shapes.*;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.linearmath.Transform;
-import dev.lazurite.rayon.mixin.client.render.DebugRendererMixin;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.fabricmc.api.EnvType;
@@ -27,23 +26,12 @@ import javax.vecmath.Vector3f;
 public class DebuggableDynamicsWorld extends DiscreteDynamicsWorld {
     private final DebugHelper debugHelper;
 
-    /**
-     * Constructor for the world, same as {@link DiscreteDynamicsWorld}.
-     * @param dispatcher
-     * @param pairCache
-     * @param constraintSolver
-     * @param collisionConfiguration
-     */
     public DebuggableDynamicsWorld(Dispatcher dispatcher, BroadphaseInterface pairCache, ConstraintSolver constraintSolver, CollisionConfiguration collisionConfiguration) {
         super(dispatcher, pairCache, constraintSolver, collisionConfiguration);
         this.debugHelper = new DebugHelper(this);
         setDebugDrawer(debugHelper);
     }
 
-    /**
-     * @return the {@link DebugHelper} that is used for rendering debug output
-     * @see DebugRendererMixin
-     */
     public DebugHelper getDebugHelper() {
         return this.debugHelper;
     }
