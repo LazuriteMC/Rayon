@@ -2,11 +2,14 @@ package dev.lazurite.rayon.physics.body.entity;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
+import dev.lazurite.rayon.api.event.DynamicBodyCollisionEvent;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.physics.Rayon;
+import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
@@ -17,10 +20,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
+import java.util.List;
 
 public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
@@ -74,6 +79,19 @@ public class DynamicBodyEntity extends EntityRigidBody implements ComponentV3, C
 
     public static boolean is(Entity entity) {
         return get(entity) != null;
+    }
+
+    @Override
+    public void step(float delta) {
+        super.step(delta);
+
+        dynamicsWorld.getTouching(this).forEach(body -> {
+            if (body instanceof BlockRigidBody) {
+                DynamicBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision((BlockRigidBody) body);
+            } else if (body instanceof EntityRigidBody) {
+                DynamicBodyCollisionEvent.ENTITY_COLLISION.invoker().onEntityCollision((EntityRigidBody) body);
+            }
+        });
     }
 
     @Override

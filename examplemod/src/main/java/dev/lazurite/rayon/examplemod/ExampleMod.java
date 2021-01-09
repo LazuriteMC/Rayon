@@ -1,11 +1,13 @@
 package dev.lazurite.rayon.examplemod;
 
+import dev.lazurite.rayon.api.event.DynamicBodyCollisionEvent;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.api.shape.provider.BoundingBoxShapeProvider;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -42,5 +44,13 @@ public class ExampleMod implements ModInitializer {
         );
 
         DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, BoundingBoxShapeProvider::get, 1.0f, 0.1f);
+
+        DynamicBodyCollisionEvent.BLOCK_COLLISION.register((body) -> {
+            if (body.getBlockState().getBlock().equals(Blocks.BRICKS)) {
+                System.out.println("TOUCHING BRICKS");
+            }
+        });
+
+        DynamicBodyCollisionEvent.ENTITY_COLLISION.register((body) -> System.out.println("THERES AN ENTITY"));
     }
 }

@@ -25,10 +25,8 @@ public class EntityMixin {
             )
     )
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
-        DynamicBodyEntity dynamicEntity = DynamicBodyEntity.get((Entity) (Object) this);
-
-        if (dynamicEntity != null) {
-            dynamicEntity.applyCentralForce(new Vector3f((float) -d * 500, 0.0f, (float) -e * 500));
+        if (DynamicBodyEntity.is((Entity) (Object) this) && !DynamicBodyEntity.is(entity)) {
+            DynamicBodyEntity.get((Entity) (Object) this).applyCentralForce(new Vector3f((float) -d * 500, 0.0f, (float) -e * 500));
         }
     }
 

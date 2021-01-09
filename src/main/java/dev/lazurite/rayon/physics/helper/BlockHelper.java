@@ -84,7 +84,7 @@ public class BlockHelper {
                 VoxelShape vox = blockState.getCollisionShape(blockView, blockPos);
 
                 if (!vox.isEmpty()) {
-                    BlockRigidBody body = BlockRigidBody.create(blockPos, new BoundingBoxShape(vox.getBoundingBox()), friction);
+                    BlockRigidBody body = BlockRigidBody.create(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction);
 
                     /* Check if the block isn't already in the dynamics world */
                     if (!dynamicsWorld.getCollisionObjectArray().contains(body)) {
@@ -148,73 +148,73 @@ public class BlockHelper {
         return map;
     }
 
-//    /**
-//     * Finds and returns a {@link Map} of {@link BlockPos} and {@link BlockState} objects
-//     * that the {@link Entity} is touching based on the provided {@link Direction}(s)
-//     * @param directions the {@link Direction}s to look for blocks in
-//     * @return a list of touching {@link Block}s
-//     */
-//    public Map<BlockPos, BlockState> getTouchingBlocks(DynamicBodyEntity dynamicEntity, Direction... directions) {
-//        Dispatcher dispatcher = dynamicsWorld.getDispatcher();
-//        Map<BlockPos, BlockState> blocks = Maps.newHashMap();
-//        Entity entity = dynamicEntity.getEntity();
-//
-//        for (int manifoldNum = 0; manifoldNum < dispatcher.getNumManifolds(); ++manifoldNum) {
-//            PersistentManifold manifold = dispatcher.getManifoldByIndexInternal(manifoldNum);
-//
-//            /* If both rigid bodies are blocks */
-//            if (manifold.getBody0() instanceof BlockRigidBody && manifold.getBody1() instanceof BlockRigidBody) {
-//                continue;
-//            }
-//
-//            for (int contactNum = 0; contactNum < manifold.getNumContacts(); ++contactNum) {
-//                if (manifold.getContactPoint(contactNum).getDistance() <= 0.0f) {
-//                    if (dynamicEntity.equals(manifold.getBody0()) || dynamicEntity.equals(manifold.getBody1())) {
-//                        Vector3f dynamicBodyPos = dynamicEntity.equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f());
-//                        Vector3f otherBodyPos = dynamicEntity.equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f());
-//                        BlockPos blockPos = new BlockPos(otherBodyPos.x, otherBodyPos.y, otherBodyPos.z);
-//
-//                        for (Direction direction : directions) {
-//                            switch (direction) {
-//                                case UP:
-//                                    if (dynamicBodyPos.y < otherBodyPos.y) {
-//                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-//                                    }
-//                                    break;
-//                                case DOWN:
-//                                    if (dynamicBodyPos.y > otherBodyPos.y) {
-//                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-//                                    }
-//                                    break;
-//                                case EAST:
-//                                    if (dynamicBodyPos.x < otherBodyPos.x) {
-//                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-//                                    }
-//                                    break;
-//                                case WEST:
-//                                    if (dynamicBodyPos.x > otherBodyPos.x) {
-//                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-//                                    }
-//                                    break;
-//                                case NORTH:
-//                                    if (dynamicBodyPos.z < otherBodyPos.z) {
-//                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-//                                    }
-//                                    break;
-//                                case SOUTH:
-//                                    if (dynamicBodyPos.z > otherBodyPos.z) {
-//                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-//                                    }
-//                                    break;
-//                                default:
-//                                    break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        return blocks;
-//    }
+    /**
+     * Finds and returns a {@link Map} of {@link BlockPos} and {@link BlockState} objects
+     * that the {@link Entity} is touching based on the provided {@link Direction}(s)
+     * @param directions the {@link Direction}s to look for blocks in
+     * @return a list of touching {@link Block}s
+     */
+    public Map<BlockPos, BlockState> getTouchingBlocks(DynamicBodyEntity dynamicEntity, Direction... directions) {
+        Dispatcher dispatcher = dynamicsWorld.getDispatcher();
+        Map<BlockPos, BlockState> blocks = Maps.newHashMap();
+        Entity entity = dynamicEntity.getEntity();
+
+        for (int manifoldNum = 0; manifoldNum < dispatcher.getNumManifolds(); ++manifoldNum) {
+            PersistentManifold manifold = dispatcher.getManifoldByIndexInternal(manifoldNum);
+
+            /* If both rigid bodies are blocks */
+            if (manifold.getBody0() instanceof BlockRigidBody && manifold.getBody1() instanceof BlockRigidBody) {
+                continue;
+            }
+
+            for (int contactNum = 0; contactNum < manifold.getNumContacts(); ++contactNum) {
+                if (manifold.getContactPoint(contactNum).getDistance() <= 0.0f) {
+                    if (dynamicEntity.equals(manifold.getBody0()) || dynamicEntity.equals(manifold.getBody1())) {
+                        Vector3f dynamicBodyPos = dynamicEntity.equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f());
+                        Vector3f otherBodyPos = dynamicEntity.equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f());
+                        BlockPos blockPos = new BlockPos(otherBodyPos.x, otherBodyPos.y, otherBodyPos.z);
+
+                        for (Direction direction : directions) {
+                            switch (direction) {
+                                case UP:
+                                    if (dynamicBodyPos.y < otherBodyPos.y) {
+                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
+                                    }
+                                    break;
+                                case DOWN:
+                                    if (dynamicBodyPos.y > otherBodyPos.y) {
+                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
+                                    }
+                                    break;
+                                case EAST:
+                                    if (dynamicBodyPos.x < otherBodyPos.x) {
+                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
+                                    }
+                                    break;
+                                case WEST:
+                                    if (dynamicBodyPos.x > otherBodyPos.x) {
+                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
+                                    }
+                                    break;
+                                case NORTH:
+                                    if (dynamicBodyPos.z < otherBodyPos.z) {
+                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
+                                    }
+                                    break;
+                                case SOUTH:
+                                    if (dynamicBodyPos.z > otherBodyPos.z) {
+                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return blocks;
+    }
 }
