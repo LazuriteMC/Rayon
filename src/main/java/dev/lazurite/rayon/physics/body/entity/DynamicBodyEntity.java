@@ -5,6 +5,8 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import dev.lazurite.rayon.api.event.DynamicBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.DynamicBodyStepEvents;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
@@ -14,6 +16,7 @@ import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
@@ -27,26 +30,41 @@ import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 import java.util.function.BooleanSupplier;
 
+/**
+ * {@link DynamicBodyEntity} is the mainsail of Rayon. It's currently the only component
+ * that you're able to register to an entity type using {@link DynamicEntityRegistry}. Not
+ * only is it a CCA component, but it also represents a jBullet {@link RigidBody}. In this way,
+ * it can be directly added toa jBullet {@link DiscreteDynamicsWorld}, or in this case, a
+ * {@link MinecraftDynamicsWorld}.<br><br>
+ *
+ * Additionally, {@link DynamicBodyEntity} implements several interfaces which allow for more
+ * functionality. {@link SteppableBody} allows the rigid body to be <i>stepped</i> during every
+ * step of the {@link MinecraftDynamicsWorld}. {@link CommonTickingComponent} allows this class
+ * to tick each time the provider ticks. {@link AutoSyncedComponent} is what is responsible for
+ * sending packets containing position, velocity, orientation, etc. from the server to the client.<br><br>
+ *
+ * From an API user's standpoint, the only time you'll need to interact with this class is to
+ * retrieve information from it (like position, velocity, orientation, etc). Otherwise, you can
+ * modify it's behavior by registering an event in {@link DynamicBodyCollisionEvent} or
+ * {@link DynamicBodyStepEvents}.<br><br>
+ *
+ * @see MinecraftDynamicsWorld
+ * @see DynamicBodyStepEvents
+ * @see DynamicBodyCollisionEvent
+ */
 public class DynamicBodyEntity extends EntityRigidBody implements SteppableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
     private float dragCoefficient;
 
-    private final Vector3f linearAcceleration;
-    private final Quat4f targetOrientation;
-    private final Vector3f targetPosition;
-    private final Vector3f targetLinearVelocity;
-    private final Vector3f targetAngularVelocity;
+    private final Quat4f targetOrientation = new Quat4f();
+    private final Vector3f linearAcceleration = new Vector3f();
+    private final Vector3f targetPosition = new Vector3f();
+    private final Vector3f targetLinearVelocity = new Vector3f();
+    private final Vector3f targetAngularVelocity = new Vector3f();
 
     private DynamicBodyEntity(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
         super(entity, info);
         this.dragCoefficient = dragCoefficient;
-
-        this.linearAcceleration = new Vector3f();
-        this.targetOrientation = new Quat4f();
-        this.targetPosition = new Vector3f();
-        this.targetLinearVelocity = new Vector3f();
-        this.targetAngularVelocity = new Vector3f();
-
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
     }
 
@@ -72,6 +90,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements SteppableBody,
         return physics;
     }
 
+    /**
+     * Get a {@link DynamicBodyEntity} component from the given {@link Entity}.
+     * If the entity doesn't have a component, then null is returned.
+     * @param entity the {@link Entity} to retrieve the component from
+     * @return the {@link DynamicBodyEntity} component
+     */
     public static DynamicBodyEntity get(Entity entity) {
         try {
             return Rayon.DYNAMIC_BODY_ENTITY.get(entity);
@@ -94,14 +118,14 @@ public class DynamicBodyEntity extends EntityRigidBody implements SteppableBody,
      * time the physics simulation advances another step. The physics simulation can, but
      * doesn't always, run at Minecraft's traditional rate of 20 tps. The simulation can step
      * up to the same rate as the renderer. So don't rely on this method being called at a
-     * constant rate, or any specific rate for that matter.
+     * constant rate, or any specific rate for that matter.<br><br>
      *
      * Also, it's important to note that mainly just physics related calls should be included here.
      * One example would be a call to {@link DynamicBodyEntity#applyCentralForce(Vector3f)} which
      * is best to do every step instead of every tick. The reason is that all forces to rigid bodies
-     * are cleared after every step.
+     * are cleared after every step.<br><br>
      *
-     * You can gain access to this method by registering an event handler in {@link DynamicBodyStepEvents}.
+     * You can gain access to this method by registering an event handler in {@link DynamicBodyStepEvents}.<br><br>
      * @param delta the amount of seconds since the last step
      * @see MinecraftDynamicsWorld#step(BooleanSupplier) 
      */
@@ -126,6 +150,12 @@ public class DynamicBodyEntity extends EntityRigidBody implements SteppableBody,
         DynamicBodyStepEvents.END_ENTITY_STEP.invoker().onEndStep(this);
     }
 
+    /**
+     * A traditional tick method, this is simply called each time the entity
+     * provider is ticked. It's responsible for doing a variety of things that
+     * either don't require being called every physics step or <i>shouldn't</i> be
+     * called every physics step.
+     */
     @Override
     public void tick() {
         if (!isInWorld() && !entity.removed) {
