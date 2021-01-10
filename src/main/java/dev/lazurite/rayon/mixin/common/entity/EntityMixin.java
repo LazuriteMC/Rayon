@@ -14,46 +14,55 @@ import javax.vecmath.Vector3f;
 
 @Mixin(Entity.class)
 public class EntityMixin {
+    /**
+     * This allows non-physics entities to interact with {@link EntityRigidBody}s.
+     */
     @Inject(
             method = "pushAwayFrom",
-            locals = LocalCapture.CAPTURE_FAILHARD,
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/Entity;addVelocity(DDD)V",
                     shift = At.Shift.AFTER,
                     ordinal = 1
-            )
+            ),
+            locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
         if (EntityRigidBody.is((Entity) (Object) this) && !EntityRigidBody.is(entity)) {
-            EntityRigidBody.get((Entity) (Object) this).applyCentralForce(new Vector3f((float) -d * 500, 0.0f, (float) -e * 500));
+            EntityRigidBody.get((Entity) (Object) this).applyCentralImpulse(new Vector3f((float) -d * 100, 0.0f, (float) -e * 100));
         }
     }
 
-    @Inject(method = "collides()Z", at = @At("HEAD"), cancellable = true)
+    /**
+     * This method makes sure that the default behavior for
+     * {@link EntityRigidBody}s is to be collidable.
+     */
+    @Inject(method = "collides", at = @At("HEAD"), cancellable = true)
     public void collides(CallbackInfoReturnable<Boolean> info) {
-        EntityRigidBody dynamicEntity = EntityRigidBody.get((Entity) (Object) this);
-
-        if (dynamicEntity != null) {
-            info.setReturnValue(true);
+        if (EntityRigidBody.is((Entity) (Object) this)) {
+            info.setReturnValue(false);
         }
     }
 
-    @Inject(method = "isPushable()Z", at = @At("HEAD"), cancellable = true)
+    /**
+     * This method makes sure that the default behavior for
+     * {@link EntityRigidBody}s is to be pushable.
+     */
+    @Inject(method = "isPushable", at = @At("HEAD"), cancellable = true)
     public void isPushable(CallbackInfoReturnable<Boolean> info) {
-        EntityRigidBody dynamicEntity = EntityRigidBody.get((Entity) (Object) this);
-
-        if (dynamicEntity != null) {
+        if (EntityRigidBody.is((Entity) (Object) this)) {
             info.setReturnValue(true);
         }
     }
 
-    @Inject(method = "remove()V", at = @At("HEAD"))
+    /**
+     * This method cleans up after the {@link MinecraftDynamicsWorld}
+     * by removing any any {@link EntityRigidBody}s that were removed.
+     */
+    @Inject(method = "remove", at = @At("HEAD"))
     public void remove(CallbackInfo info) {
-        EntityRigidBody dynamicEntity = EntityRigidBody.get((Entity) (Object) this);
-
-        if (dynamicEntity != null) {
-            MinecraftDynamicsWorld.get(((Entity) (Object) this).getEntityWorld()).removeRigidBody(dynamicEntity);
+        if (EntityRigidBody.is((Entity) (Object) this)) {
+            MinecraftDynamicsWorld.get(((Entity) (Object) this).getEntityWorld()).removeRigidBody(EntityRigidBody.get((Entity) (Object) this));
         }
     }
 }

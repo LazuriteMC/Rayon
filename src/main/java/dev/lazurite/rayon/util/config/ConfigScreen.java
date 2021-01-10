@@ -25,8 +25,8 @@ public class ConfigScreen {
         /* Block Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.block_distance"),
-                Config.INSTANCE.blockDistance, 2, 6)
-                .setDefaultValue(2)
+                Config.INSTANCE.blockDistance, 1, 5)
+                .setDefaultValue(1)
                 .setTooltip(new TranslatableText("config.rayon.option.block_distance.tooltip"))
                 .setSaveConsumer(newValue -> Config.INSTANCE.blockDistance = newValue)
                 .build());
@@ -35,7 +35,7 @@ public class ConfigScreen {
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.step_rate"),
                 Config.INSTANCE.stepRate, 20, 260)
-                .setDefaultValue(60)
+                .setDefaultValue(20)
                 .setTooltip(new TranslatableText("config.rayon.option.step_rate.tooltip"))
                 .setTextGetter((currValue) -> currValue == 260 ? new TranslatableText("config.rayon.option.step_rate.max") : new LiteralText(String.valueOf(currValue)))
                 .setSaveConsumer(newValue -> Config.INSTANCE.stepRate = newValue)

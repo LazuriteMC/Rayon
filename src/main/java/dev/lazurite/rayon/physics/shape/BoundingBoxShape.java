@@ -16,9 +16,9 @@ public class BoundingBoxShape extends BoxShape {
 
     public BoundingBoxShape(Box box) {
         super(new Vector3f(
-                (float) (box.maxX - box.minX) / 1.75f,
-                (float) (box.maxY - box.minY) / 1.75f,
-                (float) (box.maxZ - box.minZ) / 1.75f));
+                (float) box.getXLength() / 2.0f,
+                (float) box.getYLength() / 2.0f,
+                (float) box.getZLength() / 2.0f));
         this.box = box;
     }
 

@@ -31,7 +31,7 @@ public class Config {
     public float gravity;
 
     @Setting
-    @Setting.Constrain.Range(min = 2, max = 6)
+    @Setting.Constrain.Range(min = 1, max = 5)
     public int blockDistance;
 
     @Setting
@@ -47,8 +47,8 @@ public class Config {
 
     private Config() {
         this.gravity = -9.81f;
-        this.blockDistance = 2;
-        this.stepRate = 60;
+        this.blockDistance = 1;
+        this.stepRate = 20;
         this.airDensity = 1.2f;
         this.airResistanceType = AirHelper.Type.SIMPLE;
     }

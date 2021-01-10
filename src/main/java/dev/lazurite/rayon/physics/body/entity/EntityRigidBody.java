@@ -13,7 +13,6 @@ import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
-import dev.lazurite.rayon.physics.helper.AirHelper;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
@@ -27,7 +26,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
@@ -60,6 +58,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final Entity entity;
     private float dragCoefficient;
+    private boolean noclip;
 
     private final Quat4f targetOrientation = new Quat4f();
     private final Vector3f linearAcceleration = new Vector3f();
@@ -90,10 +89,10 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
 
         /* Create the Body based on the construction info. */
         RigidBodyConstructionInfo constructionInfo = new RigidBodyConstructionInfo(mass, motionState, collisionShape, inertia);
-        EntityRigidBody physics = new EntityRigidBody(entity, constructionInfo, dragCoefficient);
-        physics.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
+        EntityRigidBody body = new EntityRigidBody(entity, constructionInfo, dragCoefficient);
+        body.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
 
-        return physics;
+        return body;
     }
 
     public static EntityRigidBody get(Entity entity) {
@@ -109,7 +108,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
     }
 
     /**
-     * Somewhat of a parallel to the traditional <b>tick</b>, this method is called every
+     * Somewhat of a parallel to the traditional <i>tick</i>, this method is called every
      * time the physics simulation advances another step. The physics simulation can, but
      * doesn't always, run at Minecraft's traditional rate of 20 tps. The simulation can step
      * up to the same rate as the renderer. So don't rely on this method being called at a
@@ -174,7 +173,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         }
 
         Vector3f position = getCenterOfMassPosition(new Vector3f());
-        entity.updatePosition(position.x, position.y, position.z);
+        entity.updatePosition(position.x, position.y - entity.getBoundingBox().getYLength() / 2.0f, position.z);
 
         entity.yaw = QuaternionHelper.getYaw(getOrientation(new Quat4f()));
         entity.pitch = QuaternionHelper.getPitch(getOrientation(new Quat4f()));
@@ -199,6 +198,10 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         this.setMassProps(mass, inertia);
     }
 
+    public void setNoClip(boolean noclip) {
+        this.noclip = noclip;
+    }
+
     public Vector3f getLinearAcceleration(Vector3f out) {
         out.set(linearAcceleration);
         return out;
@@ -213,11 +216,6 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         return out;
     }
 
-    public Vec3d getOffset() {
-        Box box = entity.getBoundingBox().offset(entity.getPos().negate());
-        return box.getCenter().add(new Vec3d(-box.getXLength() / 2.0, -box.getYLength(), -box.getZLength() / 2.0));
-    }
-
     public Box getBox() {
         Vector3f min = new Vector3f();
         Vector3f max = new Vector3f();
@@ -229,6 +227,10 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
 
     public float getMass() {
         return 1.0f / this.getInvMass();
+    }
+
+    public boolean isNoClipEnabled() {
+        return this.noclip;
     }
 
     public Entity getEntity() {

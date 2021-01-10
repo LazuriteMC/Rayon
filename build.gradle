@@ -108,6 +108,7 @@ allprojects {
 
 	task relocateShadowJar(type: ConfigureShadowRelocation) {
 		target = tasks.shadowJar
+		prefix = "lazurite"
 	}
 
 	tasks.shadowJar.dependsOn tasks.relocateShadowJar

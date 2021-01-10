@@ -34,13 +34,13 @@ public class ExampleMod implements ModInitializer {
                 Registry.ENTITY_TYPE,
                 new Identifier(MODID, "rectangular_prism_entity"),
                 FabricEntityTypeBuilder.create(SpawnGroup.MISC, RectangularPrismEntity::new)
-                        .dimensions(EntityDimensions.fixed(0.9375f, 0.25f)) // (15/16 x 4/16)
+                        .dimensions(EntityDimensions.fixed(0.5f, 1.0f)) // (8/16 x 16/16)
                         .trackedUpdateRate(3)
                         .trackRangeBlocks(80)
                         .forceTrackedVelocityUpdates(true)
                         .build()
         );
 
-        DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, BoundingBoxShapeProvider::get, 1.0f, 0.1f);
+        DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, BoundingBoxShapeProvider::get, 1.0f, 0.05f);
     }
 }

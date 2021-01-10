@@ -38,7 +38,7 @@ public class SummonCommandMixin {
     private static void execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize, CallbackInfoReturnable<Integer> info, CompoundTag tag, ServerWorld world, Entity entity2) throws CommandSyntaxException {
         if (EntityRigidBody.is(entity2)) {
             EntityRigidBody dynamicEntity = EntityRigidBody.get(entity2);
-            dynamicEntity.setPosition(VectorHelper.vec3dToVector3f(pos.add(new Vec3d(0, -dynamicEntity.getOffset().y + 0.1, 0))));
+            dynamicEntity.setPosition(VectorHelper.vec3dToVector3f(pos.add(new Vec3d(0, -dynamicEntity.getEntity().getBoundingBox().getYLength() / 2.0 + 0.1, 0))));
             entity2.yaw = QuaternionHelper.getYaw(dynamicEntity.getOrientation(new Quat4f()));
         }
     }

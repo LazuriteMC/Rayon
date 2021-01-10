@@ -25,6 +25,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
@@ -82,7 +83,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
             float delta = this.clock.get();
             setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
-            blockHelper.load(getDynamicEntities(), new Box(new BlockPos(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
+            blockHelper.load(getDynamicEntities(), new Box(new Vec3d(-1, -1, -1), new Vec3d(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
 
             /* Step each SteppableBody object */
             getCollisionObjectArray().forEach(body -> {

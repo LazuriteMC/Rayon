@@ -53,7 +53,7 @@ public class AirHelper {
     public static Vector3f getSimpleForce(EntityRigidBody entity) {
         return getForce(
                 entity.getLinearVelocity(new Vector3f()),
-                (float) Math.pow(entity.getBox().getAverageSideLength(), 2),
+                (float) Math.pow(entity.getEntity().getBoundingBox().getAverageSideLength(), 2),
                 entity.getDragCoefficient()
         );
     }

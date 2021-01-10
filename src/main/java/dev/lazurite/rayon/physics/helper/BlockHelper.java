@@ -42,13 +42,16 @@ public class BlockHelper {
      * Load every block within a set distance from the given entities. Said
      * distance is defined earlier during execution and converted into a
      * {@link Box} area parameter.
-     *
      * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
-     * @param area                the {@link Box} area around the entities to search for blocks within
+     * @param area the {@link Box} area around the entities to search for blocks within
      * @see BlockHelper#load(EntityRigidBody, Box)
      */
     public void load(List<EntityRigidBody> dynamicBodyEntities, Box area) {
-        dynamicBodyEntities.forEach(body -> load(body, area.offset(VectorHelper.vector3fToVec3d(body.getCenterOfMassPosition(new Vector3f())))));
+        dynamicBodyEntities.forEach(body -> {
+            if (!body.isNoClipEnabled()) {
+                load(body, area.offset(VectorHelper.vector3fToVec3d(body.getCenterOfMassPosition(new Vector3f()))));
+            }
+        });
         purge();
     }
 
@@ -56,9 +59,8 @@ public class BlockHelper {
      * Loads an individual entity's block area into the physics simulation. This
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
-     *
      * @param dynamicBodyEntity the {@link EntityRigidBody} to load blocks around
-     * @param area              the {@link Box} area around the entity to search for blocks within
+     * @param area the {@link Box} area around the entity to search for blocks within
      * @see BlockHelper#load(List, Box)
      */
     public void load(EntityRigidBody dynamicBodyEntity, Box area) {
@@ -103,7 +105,6 @@ public class BlockHelper {
      * <b>Note:</b> This method should only be called after every entity
      * has been passed through the loading process. Otherwise, blocks will
      * be removed from the simulation prematurely and cause you a headache.
-     *
      * @see BlockHelper#load(List, Box)
      */
     public void purge() {
@@ -126,7 +127,6 @@ public class BlockHelper {
     /**
      * Simply returns a basic {@link Map} of {@link BlockPos} and {@link BlockState}
      * objects representing the blocks that make up the {@link Box} area parameter.
-     *
      * @param world the {@link World} to retrieve block info from
      * @param area  the {@link Box} area within the world to retrieve block info from
      * @return the {@link Map} of {@link BlockPos} and {@link BlockState} objects
