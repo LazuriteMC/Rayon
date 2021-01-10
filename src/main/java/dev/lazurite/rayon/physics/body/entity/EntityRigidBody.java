@@ -133,9 +133,9 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         /* Invoke all collision events */
         dynamicsWorld.getTouching(this).forEach(body -> {
             if (body instanceof BlockRigidBody) {
-                EntityBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision((BlockRigidBody) body);
+                EntityBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision(this, (BlockRigidBody) body);
             } else if (body instanceof EntityRigidBody) {
-                EntityBodyCollisionEvent.ENTITY_COLLISION.invoker().onEntityCollision((EntityRigidBody) body);
+                EntityBodyCollisionEvent.ENTITY_COLLISION.invoker().onEntityCollision(this, (EntityRigidBody) body);
             }
         });
 

@@ -12,15 +12,15 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * @see EntityRigidBody#step(float)
  */
 public final class EntityBodyCollisionEvent {
-    public static final Event<BlockCollision> BLOCK_COLLISION = EventFactory.createArrayBacked(BlockCollision.class, (callbacks) -> (body) -> {
+    public static final Event<BlockCollision> BLOCK_COLLISION = EventFactory.createArrayBacked(BlockCollision.class, (callbacks) -> (entityBody, blockBody) -> {
         for (BlockCollision event : callbacks) {
-            event.onBlockCollision(body);
+            event.onBlockCollision(entityBody, blockBody);
         }
     });
 
-    public static final Event<EntityCollision> ENTITY_COLLISION = EventFactory.createArrayBacked(EntityCollision.class, (callbacks) -> (body) -> {
+    public static final Event<EntityCollision> ENTITY_COLLISION = EventFactory.createArrayBacked(EntityCollision.class, (callbacks) -> (entityBody, otherEntityBody) -> {
         for (EntityCollision event : callbacks) {
-            event.onEntityCollision(body);
+            event.onEntityCollision(entityBody, otherEntityBody);
         }
     });
 
@@ -29,11 +29,11 @@ public final class EntityBodyCollisionEvent {
 
     @FunctionalInterface
     public interface BlockCollision {
-        void onBlockCollision(BlockRigidBody body);
+        void onBlockCollision(EntityRigidBody entityBody, BlockRigidBody blockBody);
     }
 
     @FunctionalInterface
     public interface EntityCollision {
-        void onEntityCollision(EntityRigidBody body);
+        void onEntityCollision(EntityRigidBody entityBody, EntityRigidBody otherEntityBody);
     }
 }
