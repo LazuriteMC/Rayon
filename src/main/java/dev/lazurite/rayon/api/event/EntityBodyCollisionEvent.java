@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 /**
  * Callbacks for when a {@link EntityRigidBody} on both the client and the server
  * collides with either another {@link EntityRigidBody} or a {@link BlockRigidBody}.
+ * @since 1.0.0
  * @see EntityRigidBody#step(float)
  */
 public final class EntityBodyCollisionEvent {

@@ -2,10 +2,17 @@ package dev.lazurite.rayon.api.registry;
 
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
+import dev.lazurite.rayon.Rayon;
 import net.minecraft.entity.Entity;
 
 import java.util.List;
 
+/**
+ * The registry used for registering custom entities as dynamic entities. Register
+ * using the {@link DynamicEntityRegistry#register} method.
+ * @since 1.0.0
+ * @see Rayon#registerEntityComponentFactories 
+ */
 public class DynamicEntityRegistry {
     public static final DynamicEntityRegistry INSTANCE = new DynamicEntityRegistry();
 
@@ -23,6 +30,11 @@ public class DynamicEntityRegistry {
         return Lists.newArrayList(entities);
     }
 
+    /**
+     * A container to house all the data for each registered entity.
+     * @param <E> the specific type of {@link Entity}
+     * @see DynamicEntityRegistry#register
+     */
     public static class Entry<E extends Entity> {
         private final Class<E> entity;
         private final EntityShapeFactory shapeFactory;

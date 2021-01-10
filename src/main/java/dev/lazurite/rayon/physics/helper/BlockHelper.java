@@ -1,8 +1,5 @@
 package dev.lazurite.rayon.physics.helper;
 
-import com.bulletphysics.collision.broadphase.Dispatcher;
-import com.bulletphysics.collision.narrowphase.PersistentManifold;
-import com.bulletphysics.dynamics.RigidBody;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
@@ -15,7 +12,6 @@ import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -37,7 +33,7 @@ public class BlockHelper {
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final List<BlockRigidBody> toKeep;
 
-    public BlockHelper(MinecraftDynamicsWorld dynamicsWorld)  {
+    public BlockHelper(MinecraftDynamicsWorld dynamicsWorld) {
         this.dynamicsWorld = dynamicsWorld;
         this.toKeep = Lists.newArrayList();
     }
@@ -46,8 +42,9 @@ public class BlockHelper {
      * Load every block within a set distance from the given entities. Said
      * distance is defined earlier during execution and converted into a
      * {@link Box} area parameter.
+     *
      * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
-     * @param area the {@link Box} area around the entities to search for blocks within
+     * @param area                the {@link Box} area around the entities to search for blocks within
      * @see BlockHelper#load(EntityRigidBody, Box)
      */
     public void load(List<EntityRigidBody> dynamicBodyEntities, Box area) {
@@ -59,9 +56,10 @@ public class BlockHelper {
      * Loads an individual entity's block area into the physics simulation. This
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
+     *
      * @param dynamicBodyEntity the {@link EntityRigidBody} to load blocks around
-     * @param area the {@link Box} area around the entity to search for blocks within
-     * @see BlockHelper#load(List, Box) 
+     * @param area              the {@link Box} area around the entity to search for blocks within
+     * @see BlockHelper#load(List, Box)
      */
     public void load(EntityRigidBody dynamicBodyEntity, Box area) {
         World world = dynamicsWorld.getWorld();
@@ -105,7 +103,8 @@ public class BlockHelper {
      * <b>Note:</b> This method should only be called after every entity
      * has been passed through the loading process. Otherwise, blocks will
      * be removed from the simulation prematurely and cause you a headache.
-     * @see BlockHelper#load(List, Box) 
+     *
+     * @see BlockHelper#load(List, Box)
      */
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
@@ -127,8 +126,9 @@ public class BlockHelper {
     /**
      * Simply returns a basic {@link Map} of {@link BlockPos} and {@link BlockState}
      * objects representing the blocks that make up the {@link Box} area parameter.
+     *
      * @param world the {@link World} to retrieve block info from
-     * @param area the {@link Box} area within the world to retrieve block info from
+     * @param area  the {@link Box} area within the world to retrieve block info from
      * @return the {@link Map} of {@link BlockPos} and {@link BlockState} objects
      * @see BlockHelper#load(EntityRigidBody, Box)
      */
@@ -146,75 +146,5 @@ public class BlockHelper {
         }
 
         return map;
-    }
-
-    /**
-     * Finds and returns a {@link Map} of {@link BlockPos} and {@link BlockState} objects
-     * that the {@link Entity} is touching based on the provided {@link Direction}(s)
-     * @param directions the {@link Direction}s to look for blocks in
-     * @return a list of touching {@link Block}s
-     */
-    public Map<BlockPos, BlockState> getTouchingBlocks(EntityRigidBody dynamicEntity, Direction... directions) {
-        Dispatcher dispatcher = dynamicsWorld.getDispatcher();
-        Map<BlockPos, BlockState> blocks = Maps.newHashMap();
-        Entity entity = dynamicEntity.getEntity();
-
-        for (int manifoldNum = 0; manifoldNum < dispatcher.getNumManifolds(); ++manifoldNum) {
-            PersistentManifold manifold = dispatcher.getManifoldByIndexInternal(manifoldNum);
-
-            /* If both rigid bodies are blocks */
-            if (manifold.getBody0() instanceof BlockRigidBody && manifold.getBody1() instanceof BlockRigidBody) {
-                continue;
-            }
-
-            for (int contactNum = 0; contactNum < manifold.getNumContacts(); ++contactNum) {
-                if (manifold.getContactPoint(contactNum).getDistance() <= 0.0f) {
-                    if (dynamicEntity.equals(manifold.getBody0()) || dynamicEntity.equals(manifold.getBody1())) {
-                        Vector3f dynamicBodyPos = dynamicEntity.equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f());
-                        Vector3f otherBodyPos = dynamicEntity.equals(manifold.getBody0()) ? ((RigidBody) manifold.getBody1()).getCenterOfMassPosition(new Vector3f()) : ((RigidBody) manifold.getBody0()).getCenterOfMassPosition(new Vector3f());
-                        BlockPos blockPos = new BlockPos(otherBodyPos.x, otherBodyPos.y, otherBodyPos.z);
-
-                        for (Direction direction : directions) {
-                            switch (direction) {
-                                case UP:
-                                    if (dynamicBodyPos.y < otherBodyPos.y) {
-                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-                                    }
-                                    break;
-                                case DOWN:
-                                    if (dynamicBodyPos.y > otherBodyPos.y) {
-                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-                                    }
-                                    break;
-                                case EAST:
-                                    if (dynamicBodyPos.x < otherBodyPos.x) {
-                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-                                    }
-                                    break;
-                                case WEST:
-                                    if (dynamicBodyPos.x > otherBodyPos.x) {
-                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-                                    }
-                                    break;
-                                case NORTH:
-                                    if (dynamicBodyPos.z < otherBodyPos.z) {
-                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-                                    }
-                                    break;
-                                case SOUTH:
-                                    if (dynamicBodyPos.z > otherBodyPos.z) {
-                                        blocks.put(blockPos, entity.world.getBlockState(blockPos));
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return blocks;
     }
 }
