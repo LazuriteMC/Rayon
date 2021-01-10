@@ -61,6 +61,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
     private boolean noclip;
 
     private final Quat4f targetOrientation = new Quat4f();
+    private final Quat4f previousOrientation = new Quat4f();
     private final Vector3f linearAcceleration = new Vector3f();
     private final Vector3f targetPosition = new Vector3f();
     private final Vector3f targetLinearVelocity = new Vector3f();
@@ -71,6 +72,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         this.entity = entity;
         this.dragCoefficient = dragCoefficient;
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
+        this.previousOrientation.set(getOrientation(new Quat4f()));
     }
 
     public static EntityRigidBody create(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient) {
@@ -163,6 +165,8 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
             dynamicsWorld.removeRigidBody(this);
         }
 
+        previousOrientation.set(getOrientation(new Quat4f()));
+
         if (dynamicsWorld.getWorld().isClient()) {
             setPosition(targetPosition);
             setLinearVelocity(targetLinearVelocity);
@@ -213,6 +217,11 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
 
     public Quat4f getTargetOrientation(Quat4f out) {
         out.set(targetOrientation);
+        return out;
+    }
+
+    public Quat4f getPreviousOrientation(Quat4f out) {
+        out.set(previousOrientation);
         return out;
     }
 
