@@ -5,11 +5,13 @@ import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.broadphase.Dispatcher;
 import com.bulletphysics.collision.dispatch.CollisionConfiguration;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.narrowphase.PersistentManifold;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
+import com.bulletphysics.util.ObjectArrayList;
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
 import dev.lazurite.rayon.Rayon;
@@ -29,6 +31,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -86,11 +89,13 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
             blockHelper.load(getDynamicEntities(), new Box(new Vec3d(-1, -1, -1), new Vec3d(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
 
             /* Step each SteppableBody object */
-            getCollisionObjectArray().forEach(body -> {
+            ObjectArrayList<CollisionObject> objects = new ObjectArrayList<>();
+            objects.addAll(getCollisionObjectArray());
+            for (CollisionObject body : objects) {
                 if (body instanceof SteppableBody) {
                     ((SteppableBody) body).step(delta);
                 }
-            });
+            }
 
             /* Step the DiscreteDynamicsWorld simulation */
             stepSimulation(delta, 5, delta / 5.0f);
