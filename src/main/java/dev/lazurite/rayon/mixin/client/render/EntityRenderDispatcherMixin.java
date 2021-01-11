@@ -39,7 +39,7 @@ public class EntityRenderDispatcherMixin {
         if (EntityRigidBody.is(entity)) {
             EntityRigidBody dynamicBody = EntityRigidBody.get(entity);
 
-            if (Config.INSTANCE.blockDistance == 260) {
+            if (Config.INSTANCE.getLocal().getStepRate() == 260) {
                 orientation.set(dynamicBody.getOrientation(new Quat4f()));
             } else {
                 orientation.set(QuaternionHelper.slerp(dynamicBody.getPreviousOrientation(new Quat4f()), dynamicBody.getOrientation(new Quat4f()), tickDelta));

@@ -67,7 +67,7 @@ public class AirHelper {
      * @return the force vector of air resistance
      */
     public static Vector3f getForce(Vector3f velocity, float area, float dragCoefficient) {
-        float k = (Config.INSTANCE.airDensity * dragCoefficient * area) / 2.0f;
+        float k = (Config.INSTANCE.getGlobal().getAirDensity() * dragCoefficient * area) / 2.0f;
         Vector3f force = VectorHelper.mul(velocity, k);
         force.scale(-velocity.lengthSquared());
         return force;

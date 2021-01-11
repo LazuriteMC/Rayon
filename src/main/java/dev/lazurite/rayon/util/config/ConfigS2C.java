@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.util.config;
 
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.helper.AirHelper;
+import dev.lazurite.rayon.util.config.settings.GlobalSettings;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -25,19 +25,11 @@ public class ConfigS2C {
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         boolean isRemote = buf.readBoolean();
-        float gravity = buf.readFloat();
-        int blockDistance = buf.readInt();
-        int stepRate = buf.readInt();
-        float airDensity = buf.readFloat();
-        AirHelper.Type airResistanceType = buf.readEnumConstant(AirHelper.Type.class);
+        GlobalSettings remoteGlobal = new GlobalSettings(buf.readFloat(), buf.readFloat());
 
         client.execute(() -> {
             Config.INSTANCE.isRemote = isRemote;
-            Config.INSTANCE.gravity = gravity;
-            Config.INSTANCE.blockDistance = blockDistance;
-            Config.INSTANCE.stepRate = stepRate;
-            Config.INSTANCE.airDensity = airDensity;
-            Config.INSTANCE.airResistanceType = airResistanceType;
+            Config.INSTANCE.setRemoteGlobal(remoteGlobal);
         });
     }
 
@@ -45,11 +37,8 @@ public class ConfigS2C {
         PacketByteBuf buf = PacketByteBufs.create();
 
         buf.writeBoolean(player.getServer().isRemote());
-        buf.writeFloat(config.gravity);
-        buf.writeInt(config.blockDistance);
-        buf.writeInt(config.stepRate);
-        buf.writeFloat(config.airDensity);
-        buf.writeEnumConstant(config.airResistanceType);
+        buf.writeFloat(config.getGlobal().getGravity());
+        buf.writeFloat(config.getGlobal().getAirDensity());
 
         ServerPlayNetworking.send(player, PACKET_ID, buf);
     }

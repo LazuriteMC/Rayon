@@ -13,11 +13,11 @@ import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.helper.AirHelper;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
-import dev.lazurite.rayon.util.config.Config;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
@@ -140,7 +140,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         });
 
         /* Apply air resistance */
-        applyCentralForce(Config.INSTANCE.airResistanceType.calculate(this));
+        applyCentralForce(AirHelper.getSimpleForce(this));
 
         /* Update linear acceleration */
         linearAcceleration.set(VectorHelper.mul(VectorHelper.sub(targetLinearVelocity, getLinearVelocity(new Vector3f())), delta));

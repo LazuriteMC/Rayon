@@ -25,13 +25,11 @@ import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
 import dev.lazurite.rayon.mixin.client.MinecraftClientMixin;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -64,7 +62,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
         this.clock = new Delta();
         this.world = world;
 
-        setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
+        setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
     }
 
     public static MinecraftDynamicsWorld create(World world) {
@@ -85,12 +83,13 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
             DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this);
 
             float delta = this.clock.get();
-            setGravity(new Vector3f(0, Config.INSTANCE.gravity, 0));
-            blockHelper.load(getDynamicEntities(), new Box(new Vec3d(-1, -1, -1), new Vec3d(0, 0, 0)).expand(Config.INSTANCE.blockDistance));
+            setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
+            blockHelper.load(getDynamicEntities(), new Box(new Vec3d(-1, -1, -1), new Vec3d(0, 0, 0)).expand(Config.INSTANCE.getLocal().getBlockDistance()));
 
             /* Step each SteppableBody object */
             ObjectArrayList<CollisionObject> objects = new ObjectArrayList<>();
             objects.addAll(getCollisionObjectArray());
+
             for (CollisionObject body : objects) {
                 if (body instanceof SteppableBody) {
                     ((SteppableBody) body).step(delta);

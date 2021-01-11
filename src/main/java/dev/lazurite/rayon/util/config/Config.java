@@ -1,10 +1,9 @@
 package dev.lazurite.rayon.util.config;
 
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.helper.AirHelper;
+import dev.lazurite.rayon.util.config.settings.GlobalSettings;
+import dev.lazurite.rayon.util.config.settings.LocalSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
-import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Setting;
-import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Settings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
@@ -15,11 +14,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- * The POJO that hosts Rayon's Fiber config.
+ * The class containing two POJOs that hosts Rayon's Fiber config.
  * @see ConfigScreen
  */
-@Settings(onlyAnnotated = true)
-public class Config {
+public final class Config {
     public static final Config INSTANCE = new Config();
     public static final String CONFIG_NAME = "rayon.json";
 
@@ -27,37 +25,33 @@ public class Config {
     public boolean debug = false;
     public boolean debugBlocks = false;
 
-    @Setting
-    public float gravity;
-
-    @Setting
-    @Setting.Constrain.Range(min = 1, max = 5)
-    public int blockDistance;
-
-    @Setting
-    @Setting.Constrain.Range(min = 20, max = 260, step = 1.0f)
-    public int stepRate;
-
-    @Setting
-    @Setting.Constrain.Range(min = 0.0f)
-    public float airDensity;
-
-    @Setting
-    public AirHelper.Type airResistanceType;
+    private final LocalSettings local = new LocalSettings(1, 20);
+    private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f);
+    private GlobalSettings remoteGlobal;
 
     private Config() {
-        this.gravity = -9.81f;
-        this.blockDistance = 1;
-        this.stepRate = 20;
-        this.airDensity = 1.2f;
-        this.airResistanceType = AirHelper.Type.SIMPLE;
+    }
+
+    public void setRemoteGlobal(GlobalSettings remoteGlobal) {
+        this.remoteGlobal = remoteGlobal;
+    }
+
+    public GlobalSettings getGlobal() {
+        return isRemote ? remoteGlobal : global;
+    }
+
+    public LocalSettings getLocal() {
+        return local;
     }
 
     public void load() {
         if (Files.exists(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_NAME))) {
             try {
                 FiberSerialization.deserialize(
-                        ConfigTree.builder().applyFromPojo(INSTANCE, AnnotatedSettings.builder().build()).build(),
+                        ConfigTree.builder()
+                                .applyFromPojo(getLocal(), AnnotatedSettings.builder().build())
+                                .applyFromPojo(getGlobal(), AnnotatedSettings.builder().build())
+                                .build(),
                         Files.newInputStream(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_NAME)),
                         new JanksonValueSerializer(false)
                 );
@@ -74,7 +68,10 @@ public class Config {
     public void save() {
         try {
             FiberSerialization.serialize(
-                    ConfigTree.builder().applyFromPojo(INSTANCE, AnnotatedSettings.builder().build()).build(),
+                    ConfigTree.builder()
+                            .applyFromPojo(getLocal(), AnnotatedSettings.builder().build())
+                            .applyFromPojo(getGlobal(), AnnotatedSettings.builder().build())
+                            .build(),
                     Files.newOutputStream(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_NAME)),
                     new JanksonValueSerializer(false)
             );

@@ -1,10 +1,11 @@
 package dev.lazurite.rayon.util.config;
 
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.helper.AirHelper;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
@@ -18,53 +19,57 @@ public class ConfigScreen {
                 .setParentScreen(parent)
                 .setTitle(new TranslatableText("config.rayon.title"))
                 .setTransparentBackground(true)
-                .setSavingRunnable(Config.INSTANCE::save);
+                .setSavingRunnable(() -> {
+                    Config.INSTANCE.save();
+
+                    MinecraftClient client = MinecraftClient.getInstance();
+                    IntegratedServer server = client.getServer();
+
+                    if (server != null) {
+                        server.getPlayerManager().getPlayerList().forEach(player -> {
+                            if (!player.getUuid().equals(client.player.getUuid())) {
+                                ConfigS2C.send(player, Config.INSTANCE);
+                            }
+                        });
+                    }
+                });
 
         ConfigCategory category = builder.getOrCreateCategory(new LiteralText("")); // category name is ignored
 
         /* Block Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.block_distance"),
-                Config.INSTANCE.blockDistance, 1, 5)
+                Config.INSTANCE.getLocal().getBlockDistance(), 1, 5)
                 .setDefaultValue(1)
                 .setTooltip(new TranslatableText("config.rayon.option.block_distance.tooltip"))
-                .setSaveConsumer(newValue -> Config.INSTANCE.blockDistance = newValue)
+                .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setBlockDistance(newValue))
                 .build());
 
         /* Client Step Rate */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.step_rate"),
-                Config.INSTANCE.stepRate, 20, 260)
+                Config.INSTANCE.getLocal().getStepRate(), 20, 260)
                 .setDefaultValue(20)
                 .setTooltip(new TranslatableText("config.rayon.option.step_rate.tooltip"))
                 .setTextGetter((currValue) -> currValue == 260 ? new TranslatableText("config.rayon.option.step_rate.max") : new LiteralText(String.valueOf(currValue)))
-                .setSaveConsumer(newValue -> Config.INSTANCE.stepRate = newValue)
-                .build());
-
-        /* Air Resistance Type */
-        category.addEntry(builder.entryBuilder().startEnumSelector(
-                new TranslatableText("config.rayon.option.air_resistance_type"), AirHelper.Type.class, Config.INSTANCE.airResistanceType)
-                .setDefaultValue(AirHelper.Type.SIMPLE)
-                .setTooltip(new TranslatableText("config.rayon.option.air_resistance_type.tooltip"))
-                .setEnumNameProvider((value) -> new TranslatableText(((AirHelper.Type) value).getName()))
-                .setSaveConsumer(newValue -> Config.INSTANCE.airResistanceType = newValue)
+                .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setStepRate(newValue))
                 .build());
 
         if (!Config.INSTANCE.isRemote) {
             /* Air Density */
             category.addEntry(builder.entryBuilder().startFloatField(
-                    new TranslatableText("config.rayon.option.air_density"), Config.INSTANCE.airDensity)
+                    new TranslatableText("config.rayon.option.air_density"), Config.INSTANCE.getGlobal().getAirDensity())
                     .setDefaultValue(1.2f)
                     .setTooltip(new TranslatableText("config.rayon.option.air_density.tooltip"))
-                    .setSaveConsumer(newValue -> Config.INSTANCE.airDensity = newValue)
+                    .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setAirDensity(newValue))
                     .build());
 
             /* Gravity */
             category.addEntry(builder.entryBuilder().startFloatField(
-                    new TranslatableText("config.rayon.option.gravity"), Config.INSTANCE.gravity)
+                    new TranslatableText("config.rayon.option.gravity"), Config.INSTANCE.getGlobal().getGravity())
                     .setDefaultValue(-9.81f)
                     .setTooltip(new TranslatableText("config.rayon.option.gravity.tooltip"))
-                    .setSaveConsumer(newValue -> Config.INSTANCE.gravity = newValue)
+                    .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setGravity(newValue))
                     .build());
         }
 
