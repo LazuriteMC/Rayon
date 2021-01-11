@@ -39,17 +39,15 @@ public class EntityRenderDispatcherMixin {
         if (EntityRigidBody.is(entity)) {
             EntityRigidBody dynamicBody = EntityRigidBody.get(entity);
 
-            if (Config.INSTANCE.getLocal().getStepRate() == 260) {
-                orientation.set(dynamicBody.getOrientation(new Quat4f()));
-            } else {
-                orientation.set(QuaternionHelper.slerp(dynamicBody.getPreviousOrientation(new Quat4f()), dynamicBody.getOrientation(new Quat4f()), tickDelta));
-            }
+//            orientation.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta));
+            orientation.set(QuaternionHelper.slerp(dynamicBody.getPrevOrientation(new Quat4f()), dynamicBody.getOrientation(new Quat4f()), tickDelta));
+//            orientation.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getPrevOrientation(new Quat4f()), tickDelta));
 
             matrices.translate(0, entity.getBoundingBox().getYLength() / 2.0, 0);
             matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(orientation));
             matrices.translate(0, -entity.getBoundingBox().getYLength() / 2.0, 0);
 
-            Box box = dynamicBody.getEntity().getBoundingBox();
+            Box box = dynamicBody.getBox();
             offset.set(new Vector3f((float) -box.getXLength() / 2.0f, 0, (float) -box.getZLength() / 2.0f));
             matrices.translate(offset.x, offset.y, offset.z);
         }

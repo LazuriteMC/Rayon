@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3i;
 
 @Environment(EnvType.CLIENT)
 public class RectangularPrismModel extends EntityModel<RectangularPrismEntity> {
-    private ModelPart base;
+    private final ModelPart base;
     private final int x;
     private final int y;
     private final int z;

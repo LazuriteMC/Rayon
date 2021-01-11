@@ -21,7 +21,6 @@ public final class Config {
     public static final Config INSTANCE = new Config();
     public static final String CONFIG_NAME = "rayon.json";
 
-    public boolean isRemote = false;
     public boolean debug = false;
     public boolean debugBlocks = false;
 
@@ -37,11 +36,15 @@ public final class Config {
     }
 
     public GlobalSettings getGlobal() {
-        return isRemote ? remoteGlobal : global;
+        return isRemote() ? remoteGlobal : global;
     }
 
     public LocalSettings getLocal() {
         return local;
+    }
+
+    public boolean isRemote() {
+        return this.remoteGlobal != null;
     }
 
     public void load() {

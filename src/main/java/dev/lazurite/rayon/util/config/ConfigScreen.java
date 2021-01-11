@@ -41,7 +41,9 @@ public class ConfigScreen {
                 new TranslatableText("config.rayon.option.block_distance"),
                 Config.INSTANCE.getLocal().getBlockDistance(), 1, 5)
                 .setDefaultValue(1)
-                .setTooltip(new TranslatableText("config.rayon.option.block_distance.tooltip"))
+                .setTooltip(
+                        new TranslatableText("config.rayon.option.block_distance.tooltip"),
+                        new TranslatableText("config.rayon.option.block_distance.tooltip.performance"))
                 .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setBlockDistance(newValue))
                 .build());
 
@@ -50,17 +52,21 @@ public class ConfigScreen {
                 new TranslatableText("config.rayon.option.step_rate"),
                 Config.INSTANCE.getLocal().getStepRate(), 20, 260)
                 .setDefaultValue(20)
-                .setTooltip(new TranslatableText("config.rayon.option.step_rate.tooltip"))
+                .setTooltip(
+                        new TranslatableText("config.rayon.option.step_rate.tooltip"),
+                        new TranslatableText("config.rayon.option.step_rate.tooltip.performance"))
                 .setTextGetter((currValue) -> currValue == 260 ? new TranslatableText("config.rayon.option.step_rate.max") : new LiteralText(String.valueOf(currValue)))
                 .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setStepRate(newValue))
                 .build());
 
-        if (!Config.INSTANCE.isRemote) {
+        if (!Config.INSTANCE.isRemote()) {
             /* Air Density */
             category.addEntry(builder.entryBuilder().startFloatField(
                     new TranslatableText("config.rayon.option.air_density"), Config.INSTANCE.getGlobal().getAirDensity())
                     .setDefaultValue(1.2f)
-                    .setTooltip(new TranslatableText("config.rayon.option.air_density.tooltip"))
+                    .setTooltip(
+                            new TranslatableText("config.rayon.option.air_density.tooltip"),
+                            new TranslatableText("config.rayon.option.air_density.tooltip.performance"))
                     .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setAirDensity(newValue))
                     .build());
 
@@ -68,7 +74,9 @@ public class ConfigScreen {
             category.addEntry(builder.entryBuilder().startFloatField(
                     new TranslatableText("config.rayon.option.gravity"), Config.INSTANCE.getGlobal().getGravity())
                     .setDefaultValue(-9.81f)
-                    .setTooltip(new TranslatableText("config.rayon.option.gravity.tooltip"))
+                    .setTooltip(
+                            new TranslatableText("config.rayon.option.gravity.tooltip"),
+                            new TranslatableText("config.rayon.option.gravity.tooltip.performance"))
                     .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setGravity(newValue))
                     .build());
         }

@@ -60,19 +60,16 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
     private float dragCoefficient;
     private boolean noclip;
 
-    private final Quat4f targetOrientation = new Quat4f();
-    private final Quat4f previousOrientation = new Quat4f();
+    private final Quat4f prevOrientation = new Quat4f();
     private final Vector3f linearAcceleration = new Vector3f();
-    private final Vector3f targetPosition = new Vector3f();
     private final Vector3f targetLinearVelocity = new Vector3f();
-    private final Vector3f targetAngularVelocity = new Vector3f();
 
     private EntityRigidBody(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
         super(info);
         this.entity = entity;
         this.dragCoefficient = dragCoefficient;
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
-        this.previousOrientation.set(getOrientation(new Quat4f()));
+        this.prevOrientation.set(getOrientation(new Quat4f()));
     }
 
     public static EntityRigidBody create(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient) {
@@ -139,6 +136,8 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
             }
         });
 
+        prevOrientation.set(getOrientation(new Quat4f()));
+
         /* Apply air resistance */
         applyCentralForce(AirHelper.getSimpleForce(this));
 
@@ -165,19 +164,12 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
             dynamicsWorld.removeRigidBody(this);
         }
 
-        previousOrientation.set(getOrientation(new Quat4f()));
-
-        if (dynamicsWorld.getWorld().isClient()) {
-            setPosition(targetPosition);
-            setLinearVelocity(targetLinearVelocity);
-            setOrientation(targetOrientation);
-            setAngularVelocity(targetAngularVelocity);
-        } else {
+        if (!dynamicsWorld.getWorld().isClient()) {
             Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
         }
 
         Vector3f position = getCenterOfMassPosition(new Vector3f());
-        entity.updatePosition(position.x, position.y - entity.getBoundingBox().getYLength() / 2.0f, position.z);
+        entity.updatePosition(position.x, position.y - getBox().getYLength() / 2.0f, position.z);
 
         entity.yaw = QuaternionHelper.getYaw(getOrientation(new Quat4f()));
         entity.pitch = QuaternionHelper.getPitch(getOrientation(new Quat4f()));
@@ -193,7 +185,6 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
 
     public void setPosition(Vector3f position) {
         worldTransform.origin.set(position);
-        entity.setPos(position.x, position.y, position.z);
     }
 
     public void setMass(float mass) {
@@ -215,13 +206,8 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         return this.dragCoefficient;
     }
 
-    public Quat4f getTargetOrientation(Quat4f out) {
-        out.set(targetOrientation);
-        return out;
-    }
-
-    public Quat4f getPreviousOrientation(Quat4f out) {
-        out.set(previousOrientation);
+    public Quat4f getPrevOrientation(Quat4f out) {
+        out.set(prevOrientation);
         return out;
     }
 
@@ -252,10 +238,10 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        targetOrientation.set(QuaternionHelper.fromBuffer(buf));
-        targetPosition.set(VectorHelper.fromBuffer(buf));
-        targetLinearVelocity.set(VectorHelper.fromBuffer(buf));
-        targetAngularVelocity.set(VectorHelper.fromBuffer(buf));
+        setOrientation(QuaternionHelper.fromBuffer(buf));
+        setPosition(VectorHelper.fromBuffer(buf));
+        setLinearVelocity(VectorHelper.fromBuffer(buf));
+        setAngularVelocity(VectorHelper.fromBuffer(buf));
         setDragCoefficient(buf.readFloat());
     }
 

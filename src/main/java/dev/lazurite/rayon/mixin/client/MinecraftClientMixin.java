@@ -35,7 +35,7 @@ public abstract class MinecraftClientMixin {
      */
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("TAIL"))
     public void disconnect(Screen screen, CallbackInfo info) {
-        Config.INSTANCE.isRemote = false;
+        Config.INSTANCE.setRemoteGlobal(null);
     }
 
     /**

@@ -2,6 +2,7 @@ package dev.lazurite.rayon.physics.helper.math;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 
 import javax.vecmath.Quat4f;
@@ -179,6 +180,8 @@ public class QuaternionHelper {
      */
     public static Quat4f slerp(Quat4f q1, Quat4f q2, float t) {
         Quat4f out = new Quat4f();
+        q1.normalize();
+        q2.normalize();
 
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             out.set(q1);
@@ -211,6 +214,44 @@ public class QuaternionHelper {
         out.z = (scale0 * q1.z) + (scale1 * q2.z);
         out.w = (scale0 * q1.w) + (scale1 * q2.w);
 
+        out.normalize();
+        return out;
+    }
+
+    public static Quat4f slerp2(Quat4f v0, Quat4f v1, float t) {
+        v0.normalize();
+        v1.normalize();
+        float dot = (v0.x * v1.x) + (v0.y * v1.y) + (v0.z * v1.z) + (v0.w * v1.w);
+
+        float DOT_THRESHOLD = 0.9995f;
+
+        if (dot > DOT_THRESHOLD) {
+            // If the inputs are too close for comfort, linearly interpolate
+            // and normalize the result.
+
+            Quat4f sub = new Quat4f();
+            sub.sub(v1, v0);
+            sub.scale(t);
+            Quat4f result = new Quat4f();
+            result.add(v0, sub);
+            result.normalize();
+            return result;
+        }
+
+        dot = MathHelper.clamp(dot, -1, 1);           // Robustness: Stay within domain of acos()
+        float theta_0 = (float) Math.acos(dot);  // theta_0 = angle between input vectors
+        float theta = theta_0*t;    // theta = angle between v0 and result
+
+        Quat4f v2 = new Quat4f();
+        Quat4f v01 = new Quat4f(v0);
+        v01.scale(dot);
+        v2.sub(v1, v01);
+        v2.normalize();              // { v0, v2 } is now an orthonormal basis
+
+        v0.scale((float) Math.cos(theta));
+        v2.scale((float) Math.sin(theta));
+        Quat4f out = new Quat4f();
+        out.add(v0, v2);
         return out;
     }
 }

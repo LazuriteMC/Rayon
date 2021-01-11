@@ -42,6 +42,7 @@ public class WandItem extends Item {
         if (!world.isClient()) {
             RectangularPrismEntity rectangularPrism = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
             EntityRigidBody.get(rectangularPrism).setPosition(VectorHelper.vec3dToVector3f(hitResult.getPos().add(new Vec3d(0, 1, 0))));
+            rectangularPrism.updatePosition(hitResult.getPos().x, hitResult.getPos().y + 1, hitResult.getPos().z);
             world.spawnEntity(rectangularPrism);
 
             return TypedActionResult.success(itemStack);
