@@ -30,6 +30,7 @@ import net.minecraft.util.math.Box;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
+import java.util.Locale;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -270,6 +271,11 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         tag.put("linear_velocity", VectorHelper.toTag(getLinearVelocity(new Vector3f())));
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
         tag.putFloat("drag_coefficient", getDragCoefficient());
+    }
+
+    @Override
+    public String toString() {
+        return String.format(Locale.ROOT, "%s[id=%d, shape='%s', mass=%f, drag=%f, pos=%s, vel=%s, accel=%s]", getClass().getSimpleName(), getEntity().getEntityId(), getCollisionShape().getClass().getSimpleName(), getMass(), getDragCoefficient(), getCenterOfMassPosition(new Vector3f()).toString(), getLinearVelocity(new Vector3f()).toString(), getLinearAcceleration(new Vector3f()));
     }
 
     @Override
