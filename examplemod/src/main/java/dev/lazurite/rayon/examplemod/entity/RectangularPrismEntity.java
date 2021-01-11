@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.examplemod.entity;
 
+import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -47,6 +48,6 @@ public class RectangularPrismEntity extends Entity {
 
     @Override
     public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
+        return new RayonSpawnS2CPacket(this);
     }
 }

@@ -3,6 +3,7 @@ package dev.lazurite.rayon.examplemod.item;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -14,26 +15,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
+import javax.vecmath.Quat4f;
+
 /**
  * This is just meant as a test item for physics entities.
  * @author Ethan Johnson
  */
 public class WandItem extends Item {
-    /**
-     * The default constructor.
-     * @param settings the item settings
-     */
     public WandItem(Settings settings) {
         super(settings);
     }
 
-    /**
-     * This method handles whenever a player right-clicks while holding this item.
-     * @param world the world the item is in
-     * @param user the player who right-clicked
-     * @param hand the hand of the player who right-clicked
-     * @return the action result (success, fail, etc.)
-     */
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
@@ -41,8 +33,13 @@ public class WandItem extends Item {
 
         if (!world.isClient()) {
             RectangularPrismEntity rectangularPrism = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
-            EntityRigidBody.get(rectangularPrism).setPosition(VectorHelper.vec3dToVector3f(hitResult.getPos().add(new Vec3d(0, 1, 0))));
-            rectangularPrism.updatePosition(hitResult.getPos().x, hitResult.getPos().y + 1, hitResult.getPos().z);
+
+            EntityRigidBody body = EntityRigidBody.get(rectangularPrism);
+            body.setPosition(VectorHelper.vec3dToVector3f(hitResult.getPos().add(new Vec3d(0, 1, 0))));
+
+            Vec3d direction = hitResult.getPos().normalize();
+            body.setLinearVelocity(VectorHelper.vec3dToVector3f(direction.multiply(20)));
+
             world.spawnEntity(rectangularPrism);
 
             return TypedActionResult.success(itemStack);

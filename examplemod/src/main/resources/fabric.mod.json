@@ -6,7 +6,7 @@
   "name": "Rayon Example Mod",
   "description": "Example mod for Rayon",
   "authors": [
-    "Lazurite Team"
+    "The Lazurite Team"
   ],
 
   "license": "MIT",
@@ -19,9 +19,6 @@
       "dev.lazurite.rayon.examplemod.ExampleModClient"
     ]
   },
-  "mixins": [
-    "examplemod.mixins.json"
-  ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
