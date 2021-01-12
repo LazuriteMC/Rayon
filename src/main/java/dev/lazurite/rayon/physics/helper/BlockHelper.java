@@ -41,15 +41,15 @@ public class BlockHelper {
      * distance is defined earlier during execution and converted into a
      * {@link Box} area parameter.
      * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
-     * @param area the {@link Box} area around the entities to search for blocks within
      * @see BlockHelper#load(Box)
      */
-    public void load(List<EntityRigidBody> dynamicBodyEntities, Box area) {
+    public void load(List<EntityRigidBody> dynamicBodyEntities) {
         dynamicBodyEntities.forEach(body -> {
             if (!body.isNoClipEnabled()) {
-                load(area.offset(VectorHelper.vector3fToVec3d(body.getCenterOfMassPosition(new Vector3f()))));
+                load(new Box(body.getEntity().getBlockPos()).expand(Config.INSTANCE.getLocal().getBlockDistance()));
             }
         });
+
         purge();
     }
 
@@ -58,7 +58,7 @@ public class BlockHelper {
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
      * @param area the {@link Box} area around the entity to search for blocks within
-     * @see BlockHelper#load(List, Box)
+     * @see BlockHelper#load(List)
      */
     public void load(Box area) {
         World world = dynamicsWorld.getWorld();
@@ -96,11 +96,11 @@ public class BlockHelper {
      * Prune out any unnecessary blocks from the world during each call
      * to {@link MinecraftDynamicsWorld#step}. The purpose is to prevent
      * any trailing or residual blocks from being left over from a
-     * previous {@link BlockHelper#load(List, Box)} call.
+     * previous {@link BlockHelper#load(List)} call.
      * <b>Note:</b> This method should only be called after every entity
      * has been passed through the loading process. Otherwise, blocks will
      * be removed from the simulation prematurely and cause you a headache.
-     * @see BlockHelper#load(List, Box)
+     * @see BlockHelper#load(List)
      */
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
