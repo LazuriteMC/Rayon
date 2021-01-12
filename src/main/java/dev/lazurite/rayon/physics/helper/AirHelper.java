@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.physics.helper;
 
-import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.util.config.ConfigScreen;

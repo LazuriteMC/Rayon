@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.util.config;
 
+import com.sun.tools.doclint.Env;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.util.config.settings.GlobalSettings;
 import dev.lazurite.rayon.util.config.settings.LocalSettings;
@@ -8,7 +9,10 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,8 +47,13 @@ public final class Config {
         return local;
     }
 
+    @Environment(EnvType.CLIENT)
     public boolean isRemote() {
-        return this.remoteGlobal != null;
+        if (MinecraftClient.getInstance().getServer() != null) {
+            return MinecraftClient.getInstance().getServer().isRemote() && remoteGlobal != null;
+        }
+
+        return false;
     }
 
     public void load() {

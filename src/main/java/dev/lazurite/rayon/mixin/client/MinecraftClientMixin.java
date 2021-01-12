@@ -5,9 +5,7 @@ import dev.lazurite.rayon.util.Delta;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.mixin.common.IntegratedServerMixin;
 import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
-import dev.lazurite.rayon.util.config.ConfigScreen;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,17 +24,6 @@ public abstract class MinecraftClientMixin {
 
     @Shadow private Profiler profiler;
     @Shadow public ClientWorld world;
-
-    /**
-     * Returns the {@link Config} instance's isRemote value to false. isRemote
-     * is used in order to construct the config screen.
-     * @see Config
-     * @see ConfigScreen
-     */
-    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("TAIL"))
-    public void disconnect(Screen screen, CallbackInfo info) {
-        Config.INSTANCE.setRemoteGlobal(null);
-    }
 
     /**
      * Steps the client {@link MinecraftDynamicsWorld}. Also handles if the game is paused.

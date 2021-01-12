@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.physics.body;
 
 import com.bulletphysics.dynamics.RigidBody;
-import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 
 /**

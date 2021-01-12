@@ -2,9 +2,9 @@ package dev.lazurite.rayon.physics.helper;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.util.config.Config;

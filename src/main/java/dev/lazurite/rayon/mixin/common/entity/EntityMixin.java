@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.mixin.common.entity;
 
-import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

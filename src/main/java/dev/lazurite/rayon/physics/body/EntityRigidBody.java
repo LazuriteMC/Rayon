@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.physics.body.entity;
+package dev.lazurite.rayon.physics.body;
 
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.shapes.CollisionShape;
@@ -11,13 +11,12 @@ import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.EntityBodyStepEvents;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.body.SteppableBody;
-import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.AirHelper;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
+import dev.lazurite.rayon.util.exception.RigidBodyException;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
@@ -30,6 +29,7 @@ import net.minecraft.util.math.Box;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
+import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
 
@@ -62,6 +62,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
     private boolean noclip;
 
     private final Quat4f prevOrientation = new Quat4f();
+    private final Quat4f tickOrientation = new Quat4f();
     private final Vector3f linearAcceleration = new Vector3f();
     private final Vector3f targetLinearVelocity = new Vector3f();
 
@@ -137,8 +138,6 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
             }
         });
 
-        prevOrientation.set(getOrientation(new Quat4f()));
-
         /* Apply air resistance */
         applyCentralForce(AirHelper.getSimpleForce(this));
 
@@ -168,6 +167,9 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         if (!dynamicsWorld.getWorld().isClient()) {
             Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
         }
+
+        prevOrientation.set(getTickOrientation(new Quat4f()));
+        tickOrientation.set(getOrientation(new Quat4f()));
 
         Vector3f position = getCenterOfMassPosition(new Vector3f());
         entity.updatePosition(position.x, position.y - getBox().getYLength() / 2.0f, position.z);
@@ -203,8 +205,9 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         return out;
     }
 
-    public float getDragCoefficient() {
-        return this.dragCoefficient;
+    public Quat4f getTickOrientation(Quat4f out) {
+        out.set(tickOrientation);
+        return out;
     }
 
     public Quat4f getPrevOrientation(Quat4f out) {
@@ -212,6 +215,26 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         return out;
     }
 
+//    Not working as intended
+//    public Vector3f getTotalForce(Vector3f out) {
+//        try {
+//            Field totalForce = RigidBody.class.getDeclaredField("totalForce");
+//            totalForce.setAccessible(true);
+//            out.set((Vector3f) totalForce.get(this));
+//        } catch (ClassCastException | IllegalAccessException | NoSuchFieldException e) {
+//            e.printStackTrace();
+//            throw new RigidBodyException("Cannot get total force from RigidBody.");
+//        }
+//
+//        return out;
+//    }
+
+    /**
+     * Instead of getting {@link Entity} bounding box, this gets
+     * the {@link CollisionShape} bounding box instead, in the same
+     * {@link Box} data type.
+     * @return the {@link CollisionShape} {@link Box}
+     */
     public Box getBox() {
         Vector3f min = new Vector3f();
         Vector3f max = new Vector3f();
@@ -223,6 +246,10 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
 
     public float getMass() {
         return 1.0f / this.getInvMass();
+    }
+
+    public float getDragCoefficient() {
+        return this.dragCoefficient;
     }
 
     public boolean isNoClipEnabled() {

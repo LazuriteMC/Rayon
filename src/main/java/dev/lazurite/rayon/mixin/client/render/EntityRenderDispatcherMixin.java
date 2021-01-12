@@ -1,8 +1,7 @@
 package dev.lazurite.rayon.mixin.client.render;
 
-import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
-import dev.lazurite.rayon.util.config.Config;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
@@ -39,14 +38,13 @@ public class EntityRenderDispatcherMixin {
         if (EntityRigidBody.is(entity)) {
             EntityRigidBody dynamicBody = EntityRigidBody.get(entity);
 
-//            orientation.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getTargetOrientation(new Quat4f()), tickDelta));
-            orientation.set(QuaternionHelper.slerp(dynamicBody.getPrevOrientation(new Quat4f()), dynamicBody.getOrientation(new Quat4f()), tickDelta));
-//            orientation.set(QuaternionHelper.slerp(dynamicBody.getOrientation(new Quat4f()), dynamicBody.getPrevOrientation(new Quat4f()), tickDelta));
-
+            /* Rotate the entity */
             matrices.translate(0, entity.getBoundingBox().getYLength() / 2.0, 0);
+            orientation.set(QuaternionHelper.slerp(dynamicBody.getPrevOrientation(new Quat4f()), dynamicBody.getTickOrientation(new Quat4f()), tickDelta));
             matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(orientation));
             matrices.translate(0, -entity.getBoundingBox().getYLength() / 2.0, 0);
 
+            /* Translate the entity towards the center */
             Box box = dynamicBody.getBox();
             offset.set(new Vector3f((float) -box.getXLength() / 2.0f, 0, (float) -box.getZLength() / 2.0f));
             matrices.translate(offset.x, offset.y, offset.z);

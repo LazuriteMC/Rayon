@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-
 /**
  * This mixin adds a call to {@link PlayerManager#onPlayerConnect}
  * which sends a packet containing the server's {@link Config} for

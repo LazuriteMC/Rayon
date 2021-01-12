@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.mixin.client;
 
 import dev.lazurite.rayon.util.config.Config;
-import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
-import dev.lazurite.rayon.physics.body.block.BlockRigidBody;
+import dev.lazurite.rayon.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.DebugHelper;
 import dev.lazurite.rayon.mixin.client.render.DebugRendererMixin;
 import net.minecraft.client.Keyboard;

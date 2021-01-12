@@ -1,9 +1,10 @@
 package dev.lazurite.rayon;
 
+import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.util.config.ConfigS2C;
 import dev.lazurite.rayon.util.config.ConfigScreen;
-import dev.lazurite.rayon.physics.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
@@ -35,6 +36,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 
 	@Override
 	public void onInitializeClient() {
+		RayonSpawnS2CPacket.register();
 		ConfigS2C.register();
 	}
 

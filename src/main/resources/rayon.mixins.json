@@ -4,7 +4,6 @@
   "package": "dev.lazurite.rayon.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "common.command.SummonCommandMixin",
     "common.entity.EntityMixin",
     "common.entity.player.PlayerManagerMixin",
     "common.IntegratedServerMixin",
