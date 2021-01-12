@@ -37,6 +37,8 @@ dependencies {
 
 More information can be found on [our wiki](https://docs.lazurite.dev/rayon/getting-started).
 
+![](https://media.discordapp.net/attachments/757870128367927326/798387194750042122/rayon-example.gif)
+
 ## Special Thanks
 Rayon wouldn't be possible without the following Fabric libraries:
 * [OnyxStudios/Cardinal-Components-API](https://github.com/OnyxStudios/Cardinal-Components-API)
