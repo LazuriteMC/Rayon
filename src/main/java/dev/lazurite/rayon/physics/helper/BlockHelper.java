@@ -3,7 +3,6 @@ package dev.lazurite.rayon.physics.helper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
@@ -14,7 +13,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
-import javax.vecmath.Vector3f;
 import java.util.*;
 
 /**
@@ -134,7 +132,7 @@ public class BlockHelper {
             for (int j = (int) area.minY; j < area.maxY; j++) {
                 for (int k = (int) area.minZ; k < area.maxZ; k++) {
                     BlockPos blockPos = new BlockPos(i, j, k);
-                    BlockState blockState = world.getBlockState(blockPos);
+                    BlockState blockState = world.getChunkManager().getChunk(blockPos.getX(), blockPos.getZ()).getBlockState(blockPos);
                     map.put(blockPos, blockState);
                 }
             }
