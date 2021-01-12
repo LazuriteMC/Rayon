@@ -28,6 +28,7 @@ import java.util.UUID;
  * as position, orientation, velocity, etc.<br><br>
  *
  * To use this, just call {@link RayonSpawnS2CPacket#get} within your {@link Entity#createSpawnPacket()} method.
+ * @since 1.0.0
  */
 public class RayonSpawnS2CPacket {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "rayon_spawn_s2c_packet");

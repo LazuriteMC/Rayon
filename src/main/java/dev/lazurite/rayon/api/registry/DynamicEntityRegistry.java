@@ -9,23 +9,49 @@ import java.util.List;
 
 /**
  * The registry used for registering custom entities as dynamic entities. Register
- * using the {@link DynamicEntityRegistry#register} method.
+ * using any one of the {@link DynamicEntityRegistry#register} methods.
  * @since 1.0.0
  * @see Rayon#registerEntityComponentFactories 
  */
-public class DynamicEntityRegistry {
+public final class DynamicEntityRegistry {
     public static final DynamicEntityRegistry INSTANCE = new DynamicEntityRegistry();
 
-    private final List<Entry<? extends Entity>> entities;
+    private final List<Entry<? extends Entity>> entities = Lists.newArrayList();
 
     private DynamicEntityRegistry() {
-        entities = Lists.newArrayList();
     }
 
+    /**
+     * Registers an entity with Rayon.
+     *
+     * @param entity the entity class to register
+     * @param shapeFactory used later on to give the entity a shape in the dynamics world
+     * @param mass the mass of the entity
+     * @param dragCoefficient the drag coefficient of the entity for air resistance simulation
+     * @param <E> the type of entity class to register
+     */
     public <E extends Entity> void register(Class<E> entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient) {
         entities.add(new Entry<>(entity, shapeFactory, mass, dragCoefficient));
     }
 
+    /**
+     * Register an entity Rayon. Drag coefficient defaults to 0.05
+     *
+     * @param entity the entity class to register
+     * @param shapeFactory used later on to give the entity a shape in the dynamics world
+     * @param mass the mass of the entity
+     * @param <E> the type of entity class to register
+     */
+    public <E extends Entity> void register(Class<E> entity, EntityShapeFactory shapeFactory, float mass) {
+        entities.add(new Entry<>(entity, shapeFactory, mass, 0.05f));
+    }
+
+    /**
+     * Gets the list of registered entities.
+     *
+     * @return a new list containing registered entities
+     * @see Rayon#registerEntityComponentFactories 
+     */
     public List<Entry<? extends Entity>> get() {
         return Lists.newArrayList(entities);
     }

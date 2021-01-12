@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * server calls their own {@link EntityRigidBody#step(float)} method.
  * There is one callback for the start of the loop and one for the end.
  * @since 1.0.0
- * @see EntityRigidBody#step(float)
+ * @see EntityRigidBody#step
  */
 public final class EntityBodyStepEvents {
     public static final Event<StartEntityStep> START_ENTITY_STEP = EventFactory.createArrayBacked(StartEntityStep.class, (callbacks) -> (dynamicEntity) -> {

@@ -5,7 +5,7 @@ import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import net.minecraft.entity.Entity;
 
 /**
- * A factory for passing new shape definitions.
+ * A factory for storing new shape definitions.
  * @since 1.0.0
  * @see DynamicEntityRegistry
  */

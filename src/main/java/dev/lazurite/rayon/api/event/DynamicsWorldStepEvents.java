@@ -11,7 +11,7 @@ import java.util.function.BooleanSupplier;
  * server calls the {@link MinecraftDynamicsWorld#step(BooleanSupplier)} method.
  * There is one callback for the start of the loop and one for the end.
  * @since 1.0.0
- * @see MinecraftDynamicsWorld#step(BooleanSupplier) 
+ * @see MinecraftDynamicsWorld#step
  */
 public final class DynamicsWorldStepEvents {
     public static final Event<StartWorldStep> START_WORLD_STEP = EventFactory.createArrayBacked(StartWorldStep.class, (callbacks) -> (dynamicsWorld) -> {
