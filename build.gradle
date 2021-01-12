@@ -108,7 +108,7 @@ allprojects {
 
 	task relocateShadowJar(type: ConfigureShadowRelocation) {
 		target = tasks.shadowJar
-		prefix = "lazurite"
+		prefix = "physics"
 	}
 
 	tasks.shadowJar.dependsOn tasks.relocateShadowJar
