@@ -11,6 +11,7 @@ import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -132,8 +133,11 @@ public class BlockHelper {
             for (int j = (int) area.minY; j < area.maxY; j++) {
                 for (int k = (int) area.minZ; k < area.maxZ; k++) {
                     BlockPos blockPos = new BlockPos(i, j, k);
-                    BlockState blockState = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4).getBlockState(blockPos);
-                    map.put(blockPos, blockState);
+                    BlockView chunk = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+
+                    if (chunk != null) {
+                        map.put(blockPos, chunk.getBlockState(blockPos));
+                    }
                 }
             }
         }
