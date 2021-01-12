@@ -21,6 +21,7 @@ subprojects {
 
 	dependencies {
 		compile rootProject.sourceSets.main.output
+		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 		modImplementation "com.github.joaoh1:OkZoomer:4.0.0-alpha.4.1.16.1"
 	}
 }
@@ -53,7 +54,8 @@ allprojects {
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 		// Mod Menu
-		modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+		modApi "io.github.prospector:modmenu:${project.modmenu_version}"
+		include "io.github.prospector:modmenu:${project.modmenu_version}"
 
 		// Cardinal Components
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
@@ -92,46 +94,46 @@ allprojects {
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
 	}
+}
 
-	task sourcesJar(type: Jar, dependsOn: classes) {
-		classifier = "sources"
-		from sourceSets.main.allSource
-	}
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = "sources"
+	from sourceSets.main.allSource
+}
 
-	shadowJar {
-		configurations = [project.configurations.shadow]
-	}
+shadowJar {
+	configurations = [project.configurations.shadow]
+}
 
-	jar {
-		from "LICENSE"
-	}
+task relocateShadowJar(type: ConfigureShadowRelocation) {
+	target = tasks.shadowJar
+	prefix = "physics"
+}
 
-	task relocateShadowJar(type: ConfigureShadowRelocation) {
-		target = tasks.shadowJar
-		prefix = "physics"
-	}
+tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
-	tasks.shadowJar.dependsOn tasks.relocateShadowJar
+jar {
+	from "LICENSE"
+}
 
-	remapJar {
-		dependsOn shadowJar
-		input.set shadowJar.archiveFile.get()
-	}
+remapJar {
+	dependsOn shadowJar
+	input.set shadowJar.archiveFile.get()
+}
 
-	publishing {
-		publications {
-			mavenJava(MavenPublication) {
-				artifact(remapJar) {
-					builtBy remapJar
-				}
-				artifact(sourcesJar) {
-					builtBy remapSourcesJar
-				}
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
 			}
 		}
+	}
 
-		repositories {
-			mavenLocal()
-		}
+	repositories {
+		mavenLocal()
 	}
 }
