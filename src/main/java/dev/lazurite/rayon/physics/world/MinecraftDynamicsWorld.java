@@ -84,7 +84,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
             float delta = this.clock.get();
             setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
-            blockHelper.load(getDynamicEntities(), new Box(new Vec3d(-1, -1, -1), new Vec3d(0, 0, 0)).expand(Config.INSTANCE.getLocal().getBlockDistance()));
+            blockHelper.load(getDynamicEntities());
 
             /* Step each SteppableBody object */
             ObjectArrayList<CollisionObject> objects = new ObjectArrayList<>();

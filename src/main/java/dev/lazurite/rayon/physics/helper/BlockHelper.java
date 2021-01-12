@@ -9,11 +9,9 @@ import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.util.config.Config;
 import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
@@ -43,15 +41,15 @@ public class BlockHelper {
      * distance is defined earlier during execution and converted into a
      * {@link Box} area parameter.
      * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
-     * @param area the {@link Box} area around the entities to search for blocks within
-     * @see BlockHelper#load(EntityRigidBody, Box)
+     * @see BlockHelper#load(Box)
      */
-    public void load(List<EntityRigidBody> dynamicBodyEntities, Box area) {
+    public void load(List<EntityRigidBody> dynamicBodyEntities) {
         dynamicBodyEntities.forEach(body -> {
             if (!body.isNoClipEnabled()) {
-                load(body, area.offset(VectorHelper.vector3fToVec3d(body.getCenterOfMassPosition(new Vector3f()))));
+                load(new Box(body.getEntity().getBlockPos()).expand(Config.INSTANCE.getLocal().getBlockDistance()));
             }
         });
+
         purge();
     }
 
@@ -59,15 +57,12 @@ public class BlockHelper {
      * Loads an individual entity's block area into the physics simulation. This
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
-     * @param dynamicBodyEntity the {@link EntityRigidBody} to load blocks around
      * @param area the {@link Box} area around the entity to search for blocks within
-     * @see BlockHelper#load(List, Box)
+     * @see BlockHelper#load(List)
      */
-    public void load(EntityRigidBody dynamicBodyEntity, Box area) {
+    public void load(Box area) {
         World world = dynamicsWorld.getWorld();
-        Entity entity = dynamicBodyEntity.getEntity();
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
-        BlockView blockView = world.getChunkManager().getChunk(entity.chunkX, entity.chunkZ);
 
         blockList.forEach((blockPos, blockState) -> {
             float friction = 1.5f;
@@ -81,7 +76,7 @@ public class BlockHelper {
 
             /* Check if block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside()) {
-                VoxelShape vox = blockState.getCollisionShape(blockView, blockPos);
+                VoxelShape vox = blockState.getCollisionShape(world, blockPos);
 
                 if (!vox.isEmpty()) {
                     BlockRigidBody body = BlockRigidBody.create(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction);
@@ -101,11 +96,11 @@ public class BlockHelper {
      * Prune out any unnecessary blocks from the world during each call
      * to {@link MinecraftDynamicsWorld#step}. The purpose is to prevent
      * any trailing or residual blocks from being left over from a
-     * previous {@link BlockHelper#load(List, Box)} call.
+     * previous {@link BlockHelper#load(List)} call.
      * <b>Note:</b> This method should only be called after every entity
      * has been passed through the loading process. Otherwise, blocks will
      * be removed from the simulation prematurely and cause you a headache.
-     * @see BlockHelper#load(List, Box)
+     * @see BlockHelper#load(List)
      */
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
@@ -130,7 +125,7 @@ public class BlockHelper {
      * @param world the {@link World} to retrieve block info from
      * @param area  the {@link Box} area within the world to retrieve block info from
      * @return the {@link Map} of {@link BlockPos} and {@link BlockState} objects
-     * @see BlockHelper#load(EntityRigidBody, Box)
+     * @see BlockHelper#load(Box)
      */
     public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
         Map<BlockPos, BlockState> map = Maps.newHashMap();

@@ -49,7 +49,7 @@ public class RayonSpawnS2CPacket {
             entity.setUuid(uuid);
 
             float x = position.x;
-            float y = position.y;
+            float y = position.y - (float) entity.getBoundingBox().getYLength() / 2.0f;
             float z = position.z;
             entity.updatePosition(x, y, z);
             entity.pitch = QuaternionHelper.getPitch(orientation);
