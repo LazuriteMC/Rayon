@@ -12,6 +12,14 @@ Rayon is a rigid body simulation for entities library designed to work with the 
 Rayon isn't a rewrite of Minecraft's physics. Rather, it runs alongside Minecraft's original physics
 and simulates the motion of custom entities using [JBullet](http://jbullet.advel.cz/).
 
+## Features
+* Register a custom entity to become a rigid body
+* Contains event callbacks such as block collision events for implementing custom behavior
+* Ability to add custom collision shapes
+* Server-Client compatibility (i.e. multiplayer support)
+* Customizable config settings to control simulation performance and preferences
+* Debugging tools (F3 + r)
+
 ## How do I use it in my mod?
 Add the following lines to your `build.gradle` where `VERSION` is the latest version.
 ```java
