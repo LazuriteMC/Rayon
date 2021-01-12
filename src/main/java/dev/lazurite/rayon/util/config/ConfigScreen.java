@@ -43,7 +43,7 @@ public class ConfigScreen {
                 .setDefaultValue(1)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.block_distance.tooltip"),
-                        new TranslatableText("config.rayon.option.block_distance.tooltip.performance"))
+                        new TranslatableText("config.rayon.option.performance.high"))
                 .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setBlockDistance(newValue))
                 .build());
 
@@ -54,7 +54,7 @@ public class ConfigScreen {
                 .setDefaultValue(20)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.step_rate.tooltip"),
-                        new TranslatableText("config.rayon.option.step_rate.tooltip.performance"))
+                        new TranslatableText("config.rayon.option.performance.medium"))
                 .setTextGetter((currValue) -> currValue == 260 ? new TranslatableText("config.rayon.option.step_rate.max") : new LiteralText(String.valueOf(currValue)))
                 .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setStepRate(newValue))
                 .build());
@@ -66,7 +66,7 @@ public class ConfigScreen {
                     .setDefaultValue(1.2f)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.air_density.tooltip"),
-                            new TranslatableText("config.rayon.option.air_density.tooltip.performance"))
+                            new TranslatableText("config.rayon.option.performance.low"))
                     .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setAirDensity(newValue))
                     .build());
 
@@ -76,8 +76,18 @@ public class ConfigScreen {
                     .setDefaultValue(-9.81f)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.gravity.tooltip"),
-                            new TranslatableText("config.rayon.option.gravity.tooltip.performance"))
+                            new TranslatableText("config.rayon.option.performance.low"))
                     .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setGravity(newValue))
+                    .build());
+
+            /* Air Resistance */
+            category.addEntry(builder.entryBuilder().startBooleanToggle(
+                    new TranslatableText("config.rayon.option.air_resistance_enabled"), Config.INSTANCE.getGlobal().isAirResistanceEnabled())
+                    .setDefaultValue(true)
+                    .setTooltip(
+                            new TranslatableText("config.rayon.option.air_resistance_enabled.tooltip"),
+                            new TranslatableText("config.rayon.option.performance.low"))
+                    .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setAirResistanceEnabled(newValue))
                     .build());
         }
 

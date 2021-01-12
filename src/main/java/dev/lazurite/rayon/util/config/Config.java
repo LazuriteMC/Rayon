@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.util.config;
 
-import com.sun.tools.doclint.Env;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.util.config.settings.GlobalSettings;
 import dev.lazurite.rayon.util.config.settings.LocalSettings;
@@ -29,7 +28,7 @@ public final class Config {
     public boolean debugBlocks = false;
 
     private final LocalSettings local = new LocalSettings(1, 20);
-    private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f);
+    private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f, true);
     private GlobalSettings remoteGlobal;
 
     private Config() {
