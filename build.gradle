@@ -54,7 +54,7 @@ allprojects {
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 		// Mod Menu
-		modApi "io.github.prospector:modmenu:${project.modmenu_version}"
+		modApi ("io.github.prospector:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
 		include "io.github.prospector:modmenu:${project.modmenu_version}"
 
 		// Cardinal Components
@@ -70,7 +70,7 @@ allprojects {
 		include "me.zeroeightsix:fiber:${project.fiber_version}"
 
 		// Cloth
-		modApi("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		modApi ("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
 		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
 		// JBullet
