@@ -51,7 +51,7 @@ public class ConfigScreen {
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.step_rate"),
                 Config.INSTANCE.getLocal().getStepRate(), 20, 260)
-                .setDefaultValue(20)
+                .setDefaultValue(260)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.step_rate.tooltip"),
                         new TranslatableText("config.rayon.option.performance.medium"))

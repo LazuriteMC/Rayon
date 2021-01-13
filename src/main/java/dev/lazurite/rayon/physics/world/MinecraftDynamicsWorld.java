@@ -79,10 +79,12 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
     public void step(BooleanSupplier shouldStep) {
         if (shouldStep.getAsBoolean()) {
-            /* Run all start world step events */
-            DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this);
-
+            /* Get delta time */
             float delta = this.clock.get();
+
+            /* Run all start world step events */
+            DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
+
             setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
             blockHelper.load(getDynamicEntities());
 
@@ -100,7 +102,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
             stepSimulation(delta, 5, delta / 5.0f);
 
             /* Run all end world step events */
-            DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this);
+            DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
         }

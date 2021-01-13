@@ -126,7 +126,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
     @Override
     public void step(float delta) {
         /* Invoke all registered start step events */
-        EntityBodyStepEvents.START_ENTITY_STEP.invoker().onStartStep(this);
+        EntityBodyStepEvents.START_ENTITY_STEP.invoker().onStartStep(this, delta);
 
         /* Invoke all collision events */
         dynamicsWorld.getTouching(this).forEach(body -> {
@@ -146,7 +146,7 @@ public class EntityRigidBody extends RigidBody implements SteppableBody, Compone
         linearAcceleration.set(VectorHelper.mul(VectorHelper.sub(targetLinearVelocity, getLinearVelocity(new Vector3f())), delta));
 
         /* Invoke all registered end step events */
-        EntityBodyStepEvents.END_ENTITY_STEP.invoker().onEndStep(this);
+        EntityBodyStepEvents.END_ENTITY_STEP.invoker().onEndStep(this, delta);
     }
 
     /**
