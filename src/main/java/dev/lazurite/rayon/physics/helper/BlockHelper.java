@@ -117,7 +117,6 @@ public class BlockHelper {
         toRemove.forEach(dynamicsWorld::removeRigidBody);
         toKeep.clear();
     }
-
     /**
      * Simply returns a basic {@link Map} of {@link BlockPos} and {@link BlockState}
      * objects representing the blocks that make up the {@link Box} area parameter.

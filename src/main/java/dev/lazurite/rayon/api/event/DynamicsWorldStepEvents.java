@@ -14,15 +14,15 @@ import java.util.function.BooleanSupplier;
  * @see MinecraftDynamicsWorld#step
  */
 public final class DynamicsWorldStepEvents {
-    public static final Event<StartWorldStep> START_WORLD_STEP = EventFactory.createArrayBacked(StartWorldStep.class, (callbacks) -> (dynamicsWorld) -> {
+    public static final Event<StartWorldStep> START_WORLD_STEP = EventFactory.createArrayBacked(StartWorldStep.class, (callbacks) -> (dynamicsWorld, delta) -> {
         for (StartWorldStep event : callbacks) {
-            event.onStartStep(dynamicsWorld);
+            event.onStartStep(dynamicsWorld, delta);
         }
     });
 
-    public static final Event<EndWorldStep> END_WORLD_STEP = EventFactory.createArrayBacked(EndWorldStep.class, (callbacks) -> (dynamicsWorld) -> {
+    public static final Event<EndWorldStep> END_WORLD_STEP = EventFactory.createArrayBacked(EndWorldStep.class, (callbacks) -> (dynamicsWorld, delta) -> {
         for (EndWorldStep event : callbacks) {
-            event.onEndStep(dynamicsWorld);
+            event.onEndStep(dynamicsWorld, delta);
         }
     });
 
@@ -31,11 +31,11 @@ public final class DynamicsWorldStepEvents {
 
     @FunctionalInterface
     public interface StartWorldStep {
-        void onStartStep(MinecraftDynamicsWorld dynamicsWorld);
+        void onStartStep(MinecraftDynamicsWorld dynamicsWorld, float delta);
     }
 
     @FunctionalInterface
     public interface EndWorldStep {
-        void onEndStep(MinecraftDynamicsWorld dynamicsWorld);
+        void onEndStep(MinecraftDynamicsWorld dynamicsWorld, float delta);
     }
 }
