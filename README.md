@@ -37,8 +37,6 @@ dependencies {
 
 More information can be found on [our wiki](https://docs.lazurite.dev/rayon/getting-started).
 
-![](https://media.discordapp.net/attachments/757870128367927326/798387194750042122/rayon-example.gif)
-
 ## Special Thanks
 Rayon wouldn't be possible without the following Fabric libraries:
 * [OnyxStudios/Cardinal-Components-API](https://github.com/OnyxStudios/Cardinal-Components-API)
@@ -47,4 +45,4 @@ Rayon wouldn't be possible without the following Fabric libraries:
 * [TerraformersMC/ModMenu](https://github.com/TerraformersMC/ModMenu)
 
 ## Community
-If you need help with Rayon or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P).
+If you need help with Rayon or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P). We also have a [trello board](https://trello.com/b/SNaD9BVr/rayon).
