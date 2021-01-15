@@ -2,6 +2,7 @@ package dev.lazurite.rayon;
 
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
+import dev.lazurite.rayon.util.NativeLoader;
 import dev.lazurite.rayon.util.config.ConfigS2C;
 import dev.lazurite.rayon.util.config.ConfigScreen;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
@@ -32,6 +33,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	public void onInitialize() {
 		LOGGER.info("Time to get physical!");
 		Config.INSTANCE.load();
+		NativeLoader loader = new NativeLoader();
 	}
 
 	@Override
