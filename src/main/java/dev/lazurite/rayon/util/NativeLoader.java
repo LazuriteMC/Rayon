@@ -8,6 +8,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * A class for loading native bullet bindings. It handles downloading the necessary libraries from
+ * online and storing them in the natives folder in the player's minecraft directory.
+ */
 public class NativeLoader {
     public enum OperatingSystem {
         WINDOWS("https://github.com/stephengold/Libbulletjme/releases/download/9.3.2/Windows64ReleaseSp_bulletjme.dll", "Windows64ReleaseSp_bulletjme.dll"),
@@ -34,22 +38,22 @@ public class NativeLoader {
         }
 
         getFromWeb();
-        NativeLibraryLoader.loadLibbulletjme(true, new File("native/"), "Release", "Sp");
+        NativeLibraryLoader.loadLibbulletjme(true, new File("natives/"), "Release", "Sp");
     }
 
     public void getFromWeb() {
         try {
-            File file = new File("native/" + os.file);
+            File file = new File("natives/" + os.file);
 
             if (!file.exists()) {
                 BufferedInputStream in = new BufferedInputStream(new URL(os.url).openStream());
-                File nativeDirectory = new File("native/");
+                File nativeDirectory = new File("natives/");
 
                 if (!nativeDirectory.exists()) {
                     nativeDirectory.mkdir();
                 }
 
-                FileOutputStream out = new FileOutputStream("native/" + os.file);
+                FileOutputStream out = new FileOutputStream("natives/" + os.file);
                 byte[] dataBuffer = new byte[1024];
                 int bytesRead;
 
