@@ -1,12 +1,8 @@
 package dev.lazurite.rayon.physics.body;
 
-import com.bulletphysics.collision.dispatch.CollisionObject;
-import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
-import com.bulletphysics.linearmath.DefaultMotionState;
-import com.bulletphysics.linearmath.Transform;
-import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
+import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.EntityBodyStepEvents;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
@@ -26,9 +22,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
 
@@ -54,14 +47,14 @@ import java.util.function.BooleanSupplier;
  * @see EntityBodyStepEvents
  * @see EntityBodyCollisionEvent
  */
-public class EntityRigidBody extends RigidBody implements SteppableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final Entity entity;
     private float dragCoefficient;
     private boolean noclip;
 
-    private final Quat4f prevOrientation = new Quat4f();
-    private final Quat4f tickOrientation = new Quat4f();
+    private final Quaternion prevOrientation = new Quaternion();
+    private final Quaternion tickOrientation = new Quaternion();
     private final Vector3f linearAcceleration = new Vector3f();
     private final Vector3f targetLinearVelocity = new Vector3f();
 

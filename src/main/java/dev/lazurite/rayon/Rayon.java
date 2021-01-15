@@ -33,7 +33,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	public void onInitialize() {
 		LOGGER.info("Time to get physical!");
 		Config.INSTANCE.load();
-		NativeLoader loader = new NativeLoader();
+		NativeLoader.load();
 	}
 
 	@Override

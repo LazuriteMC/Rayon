@@ -26,22 +26,21 @@ public class NativeLoader {
         }
     }
 
-    private OperatingSystem os;
+    public static void load() {
+        String name = System.getProperty("os.name");
+        OperatingSystem os;
 
-    public NativeLoader() {
-        String os = System.getProperty("os.name");
-
-        if (os.contains("Windows")) {
-            this.os = OperatingSystem.WINDOWS;
-        } else if (os.contains("Linux")) {
-            this.os = OperatingSystem.LINUX;
+        if (name.contains("Linux")) {
+            os = OperatingSystem.LINUX;
+        } else {
+            os = OperatingSystem.WINDOWS;
         }
 
-        getFromWeb();
+        getFromWeb(os);
         NativeLibraryLoader.loadLibbulletjme(true, new File("natives/"), "Release", "Sp");
     }
 
-    public void getFromWeb() {
+    public static void getFromWeb(OperatingSystem os) {
         try {
             File file = new File("natives/" + os.file);
 

@@ -74,11 +74,6 @@ allprojects {
 		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
 		// JBullet
-
-		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
-		shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"
-
-		// Libbulletjme
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 	}

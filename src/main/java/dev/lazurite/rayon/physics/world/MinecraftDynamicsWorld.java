@@ -1,35 +1,23 @@
 package dev.lazurite.rayon.physics.world;
 
-import com.bulletphysics.collision.broadphase.BroadphaseInterface;
-import com.bulletphysics.collision.broadphase.DbvtBroadphase;
-import com.bulletphysics.collision.broadphase.Dispatcher;
-import com.bulletphysics.collision.dispatch.CollisionConfiguration;
-import com.bulletphysics.collision.dispatch.CollisionDispatcher;
-import com.bulletphysics.collision.dispatch.CollisionObject;
-import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
-import com.bulletphysics.collision.narrowphase.PersistentManifold;
-import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
-import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
-import com.bulletphysics.util.ObjectArrayList;
 import com.google.common.collect.Lists;
+import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.physics.helper.BlockHelper;
 import dev.lazurite.rayon.physics.body.SteppableBody;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.util.Clock;
 import dev.lazurite.rayon.util.config.Config;
-import dev.lazurite.rayon.util.Delta;
 import dev.lazurite.rayon.mixin.common.world.ServerWorldMixin;
 import dev.lazurite.rayon.mixin.client.MinecraftClientMixin;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import javax.vecmath.Vector3f;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -51,26 +39,21 @@ import java.util.function.BooleanSupplier;
  * @see ServerWorldMixin
  * @see MinecraftClientMixin
  */
-public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements ComponentV3 {
+public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3 {
     private final BlockHelper blockHelper;
-    private final Delta clock;
+    private final Clock clock;
     private final World world;
 
-    private MinecraftDynamicsWorld(World world, Dispatcher dispatcher, BroadphaseInterface broadphase, ConstraintSolver constraintSolver, CollisionConfiguration collisionConfiguration) {
-        super(dispatcher, broadphase, constraintSolver, collisionConfiguration);
+    public MinecraftDynamicsWorld(World world, BroadphaseType broadphase) {
+        super(broadphase);
         this.blockHelper = new BlockHelper(this);
-        this.clock = new Delta();
+        this.clock = new Clock();
         this.world = world;
-
         setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
     }
 
-    public static MinecraftDynamicsWorld create(World world) {
-        BroadphaseInterface broadphase = new DbvtBroadphase();
-        CollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
-        CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
-        SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
-        return new MinecraftDynamicsWorld(world, dispatcher, broadphase, solver, collisionConfiguration);
+    public MinecraftDynamicsWorld(World world) {
+        this(world, BroadphaseType.DBVT);
     }
 
     public static MinecraftDynamicsWorld get(World world) {
@@ -88,18 +71,17 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
             setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
             blockHelper.load(getDynamicEntities());
 
+            // TODO might cause bugs
             /* Step each SteppableBody object */
-            ObjectArrayList<CollisionObject> objects = new ObjectArrayList<>();
-            objects.addAll(getCollisionObjectArray());
-
-            for (CollisionObject body : objects) {
+            for (PhysicsRigidBody body : getRigidBodyList()) {
                 if (body instanceof SteppableBody) {
                     ((SteppableBody) body).step(delta);
                 }
             }
 
             /* Step the DiscreteDynamicsWorld simulation */
-            stepSimulation(delta, 5, delta / 5.0f);
+//            stepSimulation(delta, 5, delta / 5.0f);
+            update(5);
 
             /* Run all end world step events */
             DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
@@ -111,7 +93,7 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
     public List<EntityRigidBody> getDynamicEntities() {
         List<EntityRigidBody> out = Lists.newArrayList();
 
-        getCollisionObjectArray().forEach(body -> {
+        getRigidBodyList().forEach(body -> {
             if (body instanceof EntityRigidBody) {
                 out.add((EntityRigidBody) body);
             }
@@ -138,8 +120,8 @@ public class MinecraftDynamicsWorld extends DebuggableDynamicsWorld implements C
 
     }
 
-    public List<RigidBody> getTouching(EntityRigidBody dynamicEntity) {
-        List<RigidBody> bodies = Lists.newArrayList();
+    public List<PhysicsRigidBody> getTouching(EntityRigidBody dynamicEntity) {
+        List<PhysicsRigidBody> bodies = Lists.newArrayList();
 
         for (int manifoldNum = 0; manifoldNum < getDispatcher().getNumManifolds(); ++manifoldNum) {
             PersistentManifold manifold = getDispatcher().getManifoldByIndexInternal(manifoldNum);
