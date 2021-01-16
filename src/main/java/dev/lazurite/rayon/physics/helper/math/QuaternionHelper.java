@@ -5,9 +5,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
-
 /**
  * A helper class for {@link Quat4f} which contains methods to perform
  * many different operations.

@@ -61,7 +61,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	 */
 	@Override
 	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-		registry.register(DYNAMICS_WORLD, MinecraftDynamicsWorld::create);
+		registry.register(DYNAMICS_WORLD, MinecraftDynamicsWorld::new);
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.physics.body;
 
+import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -58,8 +60,8 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     private final Vector3f linearAcceleration = new Vector3f();
     private final Vector3f targetLinearVelocity = new Vector3f();
 
-    private EntityRigidBody(Entity entity, RigidBodyConstructionInfo info, float dragCoefficient) {
-        super(info);
+    private EntityRigidBody(Entity entity, CollisionShape shape, float mass, float dragCoefficient) {
+        super(shape, mass);
         this.entity = entity;
         this.dragCoefficient = dragCoefficient;
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
@@ -176,20 +178,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.dragCoefficient = dragCoefficient;
     }
 
-    public void setOrientation(Quat4f orientation) {
-        worldTransform.setRotation(orientation);
-    }
-
-    public void setPosition(Vector3f position) {
-        worldTransform.origin.set(position);
-    }
-
-    public void setMass(float mass) {
-        Vector3f inertia = new Vector3f();
-        getCollisionShape().calculateLocalInertia(mass, inertia);
-        this.setMassProps(mass, inertia);
-    }
-
     public void setNoClip(boolean noclip) {
         this.noclip = noclip;
     }
@@ -199,12 +187,12 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         return out;
     }
 
-    public Quat4f getTickOrientation(Quat4f out) {
+    public Quaternion getTickOrientation(Quaternion out) {
         out.set(tickOrientation);
         return out;
     }
 
-    public Quat4f getPrevOrientation(Quat4f out) {
+    public Quaternion getPrevOrientation(Quaternion out) {
         out.set(prevOrientation);
         return out;
     }
@@ -222,25 +210,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 //
 //        return out;
 //    }
-
-    /**
-     * Instead of getting {@link Entity} bounding box, this gets
-     * the {@link CollisionShape} bounding box instead, in the same
-     * {@link Box} data type.
-     * @return the {@link CollisionShape} {@link Box}
-     */
-    public Box getBox() {
-        Vector3f min = new Vector3f();
-        Vector3f max = new Vector3f();
-        Transform transform = new Transform();
-        transform.setIdentity();
-        getCollisionShape().getAabb(transform, min, max);
-        return new Box(VectorHelper.vector3fToVec3d(min), VectorHelper.vector3fToVec3d(max));
-    }
-
-    public float getMass() {
-        return 1.0f / this.getInvMass();
-    }
 
     public float getDragCoefficient() {
         return this.dragCoefficient;
@@ -260,7 +229,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        setOrientation(QuaternionHelper.fromBuffer(buf));
+        setPhysicsRotation(QuaternionHelper.fromBuffer(buf));
         setPosition(VectorHelper.fromBuffer(buf));
         setLinearVelocity(VectorHelper.fromBuffer(buf));
         setAngularVelocity(VectorHelper.fromBuffer(buf));

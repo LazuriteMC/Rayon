@@ -81,7 +81,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3 
 
             /* Step the DiscreteDynamicsWorld simulation */
 //            stepSimulation(delta, 5, delta / 5.0f);
-            update(5);
+            update(delta, 5);
 
             /* Run all end world step events */
             DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
@@ -102,7 +102,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3 
         return out;
     }
 
-    public Delta getClock() {
+    public Clock getClock() {
         return this.clock;
     }
 
