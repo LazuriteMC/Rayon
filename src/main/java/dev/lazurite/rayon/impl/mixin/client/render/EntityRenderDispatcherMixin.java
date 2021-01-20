@@ -40,7 +40,7 @@ public class EntityRenderDispatcherMixin {
 
             /* Rotate the entity */
             matrices.translate(0, entity.getBoundingBox().getYLength() / 2.0, 0);
-            orientation.set(QuaternionHelper.slerp(dynamicBody.getPrevOrientation(new Quat4f()), dynamicBody.getTickOrientation(new Quat4f()), tickDelta));
+            orientation.set(QuaternionHelper.slerp(dynamicBody.getPrevRotation(new Quat4f()), dynamicBody.getTickRotation(new Quat4f()), tickDelta));
             matrices.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(orientation));
             matrices.translate(0, -entity.getBoundingBox().getYLength() / 2.0, 0);
 

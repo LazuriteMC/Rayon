@@ -1,11 +1,10 @@
 package dev.lazurite.rayon.impl.physics.helper;
 
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.impl.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.config.ConfigScreen;
 
-import javax.vecmath.Vector3f;
 import java.util.function.Function;
 
 public class AirHelper {
@@ -68,8 +67,9 @@ public class AirHelper {
      */
     public static Vector3f getForce(Vector3f velocity, float area, float dragCoefficient) {
         float k = (Config.INSTANCE.getGlobal().getAirDensity() * dragCoefficient * area) / 2.0f;
-        Vector3f force = VectorHelper.mul(velocity, k);
-        force.scale(-velocity.lengthSquared());
-        return force;
+        Vector3f force = new Vector3f();
+        force.set(velocity);
+        force.multLocal(k);
+        return force.multLocal(-velocity.lengthSquared());
     }
 }

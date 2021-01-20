@@ -1,12 +1,12 @@
 package dev.lazurite.rayon.impl.physics.body;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.EntityBodyStepEvents;
-import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.helper.AirHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
@@ -28,9 +28,8 @@ import java.util.function.BooleanSupplier;
 /**
  * {@link EntityRigidBody} is the mainsail of Rayon. It's currently the only component
  * that you're able to register to an entity type using {@link DynamicEntityRegistry}. Not
- * only is it a CCA component, but it also represents a jBullet {@link RigidBody}. In this way,
- * it can be directly added toa jBullet {@link DiscreteDynamicsWorld}, or in this case, a
- * {@link MinecraftDynamicsWorld}.<br><br>
+ * only is it a CCA component, but it also represents a bullet {@link PhysicsRigidBody}. In this way,
+ * it can be directly added to a {@link MinecraftDynamicsWorld}.<br><br>
  *
  * Additionally, {@link EntityRigidBody} implements several interfaces which allow for more
  * functionality. {@link SteppableBody} allows the rigid body to be <i>stepped</i> during every
@@ -55,37 +54,15 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     private final Quaternion prevOrientation = new Quaternion();
     private final Quaternion tickOrientation = new Quaternion();
-    private final Vector3f linearAcceleration = new Vector3f();
-    private final Vector3f targetLinearVelocity = new Vector3f();
 
     private EntityRigidBody(Entity entity, CollisionShape shape, float mass, float dragCoefficient) {
         super(shape, mass);
         this.entity = entity;
         this.dragCoefficient = dragCoefficient;
         this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
-        this.prevOrientation.set(getOrientation(new Quat4f()));
-    }
-
-    public static EntityRigidBody create(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient) {
-        /* Get the entity's shape */
-        CollisionShape collisionShape = shapeFactory.create(entity);
-
-        /* Calculate the inertia of the shape. */
-        Vector3f inertia = new Vector3f();
-        collisionShape.calculateLocalInertia(mass, inertia);
-
-        /* Get the position of the entity. */
-        Vector3f position = VectorHelper.vec3dToVector3f(entity.getPos());
-
-        /* Calculate the new motion state. */
-        DefaultMotionState motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(0, 1, 0, 0), position, 1.0f)));
-
-        /* Create the Body based on the construction info. */
-        RigidBodyConstructionInfo constructionInfo = new RigidBodyConstructionInfo(mass, motionState, collisionShape, inertia);
-        EntityRigidBody body = new EntityRigidBody(entity, constructionInfo, dragCoefficient);
-        body.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
-
-        return body;
+        this.prevOrientation.set(getPhysicsRotation(new Quaternion()));
+        this.dynamicsWorld.addCollisionObject(this);
+        this.setDeactivationTime(30);
     }
 
     public static EntityRigidBody get(Entity entity) {
@@ -121,22 +98,10 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         /* Invoke all registered start step events */
         EntityBodyStepEvents.START_ENTITY_STEP.invoker().onStartStep(this, delta);
 
-        /* Invoke all collision events */
-        dynamicsWorld.getTouching(this).forEach(body -> {
-            if (body instanceof BlockRigidBody) {
-                EntityBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision(this, (BlockRigidBody) body);
-            } else if (body instanceof EntityRigidBody) {
-                EntityBodyCollisionEvent.ENTITY_COLLISION.invoker().onEntityCollision(this, (EntityRigidBody) body);
-            }
-        });
-
         /* Apply air resistance */
         if (Config.INSTANCE.getGlobal().isAirResistanceEnabled()) {
             applyCentralForce(AirHelper.getSimpleForce(this));
         }
-
-        /* Update linear acceleration */
-        linearAcceleration.set(VectorHelper.mul(VectorHelper.sub(targetLinearVelocity, getLinearVelocity(new Vector3f())), delta));
 
         /* Invoke all registered end step events */
         EntityBodyStepEvents.END_ENTITY_STEP.invoker().onEndStep(this, delta);
@@ -150,26 +115,18 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
      */
     @Override
     public void tick() {
-        if (dynamicsWorld.getWorld().getChunkManager().shouldTickEntity(entity)) {
-            if (!isInWorld()) {
-                dynamicsWorld.addRigidBody(this);
-            }
-        } else if (isInWorld()) {
-            dynamicsWorld.removeRigidBody(this);
-        }
-
         if (!dynamicsWorld.getWorld().isClient()) {
             Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
         }
 
-        prevOrientation.set(getTickOrientation(new Quat4f()));
-        tickOrientation.set(getOrientation(new Quat4f()));
+        prevOrientation.set(getTickRotation(new Quaternion()));
+        tickOrientation.set(getPhysicsRotation(new Quaternion()));
 
-        Vector3f position = getCenterOfMassPosition(new Vector3f());
-        entity.updatePosition(position.x, position.y - getBox().getYLength() / 2.0f, position.z);
+        Vector3f position = getPhysicsLocation(new Vector3f());
+        entity.updatePosition(position.x, position.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, position.z);
 
-        entity.yaw = QuaternionHelper.getYaw(getOrientation(new Quat4f()));
-        entity.pitch = QuaternionHelper.getPitch(getOrientation(new Quat4f()));
+        entity.yaw = QuaternionHelper.getYaw(getTickRotation(new Quaternion()));
+        entity.pitch = QuaternionHelper.getPitch(getTickRotation(new Quaternion()));
     }
 
     public void setDragCoefficient(float dragCoefficient) {
@@ -180,34 +137,15 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.noclip = noclip;
     }
 
-    public Vector3f getLinearAcceleration(Vector3f out) {
-        out.set(linearAcceleration);
-        return out;
-    }
-
-    public Quaternion getTickOrientation(Quaternion out) {
+    public Quaternion getTickRotation(Quaternion out) {
         out.set(tickOrientation);
         return out;
     }
 
-    public Quaternion getPrevOrientation(Quaternion out) {
+    public Quaternion getPrevRotation(Quaternion out) {
         out.set(prevOrientation);
         return out;
     }
-
-//    Not working as intended
-//    public Vector3f getTotalForce(Vector3f out) {
-//        try {
-//            Field totalForce = RigidBody.class.getDeclaredField("totalForce");
-//            totalForce.setAccessible(true);
-//            out.set((Vector3f) totalForce.get(this));
-//        } catch (ClassCastException | IllegalAccessException | NoSuchFieldException e) {
-//            e.printStackTrace();
-//            throw new RigidBodyException("Cannot get total force from RigidBody.");
-//        }
-//
-//        return out;
-//    }
 
     public float getDragCoefficient() {
         return this.dragCoefficient;
@@ -254,7 +192,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     @Override
     public void writeToNbt(CompoundTag tag) {
-        tag.put("orientation", QuaternionHelper.toTag(getOrientation(new Quat4f())));
+        tag.put("orientation", QuaternionHelper.toTag(getPhysicsRotation(new Quaternion())));
         tag.put("position", VectorHelper.toTag(getPhysicsLocation(new Vector3f())));
         tag.put("linear_velocity", VectorHelper.toTag(getLinearVelocity(new Vector3f())));
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
@@ -263,7 +201,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     @Override
     public String toString() {
-        return String.format(Locale.ROOT, "%s[id=%d, shape='%s', mass=%f, drag=%f, pos=%s, vel=%s, accel=%s]", getClass().getSimpleName(), getEntity().getEntityId(), getCollisionShape().getClass().getSimpleName(), getMass(), getDragCoefficient(), getCenterOfMassPosition(new Vector3f()).toString(), getLinearVelocity(new Vector3f()).toString(), getLinearAcceleration(new Vector3f()));
+        return String.format(Locale.ROOT, "%s[id=%d, shape='%s', mass=%f, drag=%f, pos=%s, vel=%s]", getClass().getSimpleName(), getEntity().getEntityId(), getCollisionShape().getClass().getSimpleName(), getMass(), getDragCoefficient(), getPhysicsLocation(new Vector3f()).toString(), getLinearVelocity(new Vector3f()).toString());
     }
 
     @Override

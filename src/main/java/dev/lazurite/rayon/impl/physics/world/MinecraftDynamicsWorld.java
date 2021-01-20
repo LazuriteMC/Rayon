@@ -2,10 +2,13 @@ package dev.lazurite.rayon.impl.physics.world;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
 import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
 import dev.lazurite.rayon.impl.physics.body.SteppableBody;
@@ -39,7 +42,7 @@ import java.util.function.BooleanSupplier;
  * @see ServerWorldMixin
  * @see MinecraftClientMixin
  */
-public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3 {
+public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3, PhysicsCollisionListener {
     private final BlockHelper blockHelper;
     private final Clock clock;
     private final World world;
@@ -49,7 +52,8 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3 
         this.blockHelper = new BlockHelper(this);
         this.clock = new Clock();
         this.world = world;
-        setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
+        this.setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
+        this.addCollisionListener(this);
     }
 
     public MinecraftDynamicsWorld(World world) {
@@ -120,28 +124,14 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3 
 
     }
 
-    public List<PhysicsRigidBody> getTouching(EntityRigidBody dynamicEntity) {
-        List<PhysicsRigidBody> bodies = Lists.newArrayList();
-
-        for (int manifoldNum = 0; manifoldNum < getDispatcher().getNumManifolds(); ++manifoldNum) {
-            PersistentManifold manifold = getDispatcher().getManifoldByIndexInternal(manifoldNum);
-
-            /* If both rigid bodies are blocks */
-            if (manifold.getBody0() instanceof BlockRigidBody && manifold.getBody1() instanceof BlockRigidBody) {
-                continue;
-            }
-
-            for (int contactNum = 0; contactNum < manifold.getNumContacts(); ++contactNum) {
-                if (manifold.getContactPoint(contactNum).getDistance() <= 0.0f) {
-                    if (dynamicEntity.equals(manifold.getBody0()) && !bodies.contains((RigidBody) manifold.getBody1())) {
-                        bodies.add((RigidBody) manifold.getBody1());
-                    } else if (dynamicEntity.equals(manifold.getBody1()) && !bodies.contains((RigidBody) manifold.getBody0())) {
-                        bodies.add((RigidBody) manifold.getBody0());
-                    }
-                }
-            }
+    @Override
+    public void collision(PhysicsCollisionEvent event) {
+        if (event.getObjectA() instanceof EntityRigidBody && event.getObjectA() instanceof EntityRigidBody) {
+            EntityBodyCollisionEvent.ENTITY_COLLISION.invoker().onEntityCollision((EntityRigidBody) event.getObjectA(), (EntityRigidBody) event.getObjectB());
+        } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof EntityRigidBody) {
+            EntityBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision((EntityRigidBody) event.getObjectB(), (BlockRigidBody) event.getObjectA());
+        } else if (event.getObjectA() instanceof EntityRigidBody && event.getObjectB() instanceof BlockRigidBody) {
+            EntityBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision((EntityRigidBody) event.getObjectA(), (BlockRigidBody) event.getObjectB());
         }
-
-        return bodies;
     }
 }

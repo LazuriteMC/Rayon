@@ -1,17 +1,16 @@
 package dev.lazurite.rayon.impl.physics.body.shape;
 
-import com.bulletphysics.collision.shapes.BoxShape;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.math.Vector3f;
 import net.minecraft.util.math.Box;
 
-import javax.vecmath.Vector3f;
-
 /**
- * This class is basically just a wrapper for {@link BoxShape}. It's
- * meant to provide an easy way to create a {@link BoxShape} using
+ * This class is basically just a wrapper for {@link BoxCollisionShape}. It's
+ * meant to provide an easy way to create a {@link BoxCollisionShape} using
  * a bounding {@link Box} object.
- * @see BoxShape
+ * @see BoxCollisionShape
  */
-public class BoundingBoxShape extends BoxShape {
+public class BoundingBoxShape extends BoxCollisionShape {
     private final Box box;
 
     public BoundingBoxShape(Box box) {

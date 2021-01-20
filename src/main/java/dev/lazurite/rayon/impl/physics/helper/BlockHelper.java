@@ -78,11 +78,11 @@ public class BlockHelper {
                 VoxelShape vox = blockState.getCollisionShape(world, blockPos);
 
                 if (!vox.isEmpty()) {
-                    BlockRigidBody body = BlockRigidBody.create(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction);
+                    BlockRigidBody body = new BlockRigidBody(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction);
 
                     /* Check if the block isn't already in the dynamics world */
-                    if (!dynamicsWorld.getCollisionObjectArray().contains(body)) {
-                        dynamicsWorld.addRigidBody(body);
+                    if (!dynamicsWorld.getRigidBodyList().contains(body)) {
+                        dynamicsWorld.addCollisionObject(body);
                     }
 
                     toKeep.add(body);
@@ -104,7 +104,7 @@ public class BlockHelper {
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
 
-        dynamicsWorld.getCollisionObjectArray().forEach(body -> {
+        dynamicsWorld.getRigidBodyList().forEach(body -> {
             if (body instanceof BlockRigidBody) {
                 BlockRigidBody block = (BlockRigidBody) body;
 
@@ -114,7 +114,7 @@ public class BlockHelper {
             }
         });
 
-        toRemove.forEach(dynamicsWorld::removeRigidBody);
+        toRemove.forEach(dynamicsWorld::removeCollisionObject);
         toKeep.clear();
     }
     /**

@@ -1,10 +1,10 @@
 package dev.lazurite.rayon.impl.physics.body;
 
-import com.bulletphysics.dynamics.RigidBody;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 
 /**
- * All {@link RigidBody} objects that implement this become
+ * All {@link PhysicsRigidBody} objects that implement this become
  * steppable by {@link MinecraftDynamicsWorld}.
  * @see MinecraftDynamicsWorld
  * @see EntityRigidBody
