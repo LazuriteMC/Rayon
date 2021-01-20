@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.lazurite.rayon.mixin",
+  "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "common.entity.EntityMixin",

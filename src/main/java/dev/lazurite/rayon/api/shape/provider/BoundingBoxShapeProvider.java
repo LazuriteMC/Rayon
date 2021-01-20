@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.api.shape.provider;
 
-import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
+import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.shape.VoxelShape;
 

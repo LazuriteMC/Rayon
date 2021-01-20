@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.api.event;
 
-import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 

@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.api.event;
 
-import dev.lazurite.rayon.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 

@@ -1,10 +1,10 @@
 package dev.lazurite.rayon.api.packet;
 
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
-import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import dev.lazurite.rayon.util.exception.RayonSpawnException;
+import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.physics.helper.math.VectorHelper;
+import dev.lazurite.rayon.impl.util.exception.RayonSpawnException;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;

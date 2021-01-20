@@ -2,11 +2,11 @@ package dev.lazurite.rayon;
 
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
-import dev.lazurite.rayon.util.NativeLoader;
-import dev.lazurite.rayon.util.config.ConfigS2C;
-import dev.lazurite.rayon.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.util.config.Config;
-import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.impl.util.NativeLoader;
+import dev.lazurite.rayon.impl.util.config.ConfigS2C;
+import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.util.config.Config;
+import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
