@@ -1,5 +1,8 @@
 package dev.lazurite.rayon.api.packet;
 
+import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
@@ -18,8 +21,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
 import java.util.UUID;
 
 /**
@@ -38,7 +39,7 @@ public class RayonSpawnS2CPacket {
         int entityId = buf.readInt();
         UUID uuid = buf.readUuid();
 
-        Quat4f orientation = QuaternionHelper.fromBuffer(buf);
+        Quaternion orientation = QuaternionHelper.fromBuffer(buf);
         Vector3f position = VectorHelper.fromBuffer(buf);
         Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
         Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
@@ -55,13 +56,15 @@ public class RayonSpawnS2CPacket {
             entity.pitch = QuaternionHelper.getPitch(orientation);
             entity.yaw = QuaternionHelper.getYaw(orientation);
 
-            EntityRigidBody body = EntityRigidBody.get(entity);
-            body.setOrientation(orientation);
-            body.setPosition(position);
+            EntityRigidBody body = Rayon.DYNAMIC_BODY_ENTITY.get(entity);
+            body.setPhysicsRotation(orientation);
+            body.setPhysicsLocation(position);
             body.setLinearVelocity(linearVelocity);
             body.setAngularVelocity(angularVelocity);
 
-            client.world.addEntity(entityId, entity);
+            if (client.world != null) {
+                client.world.addEntity(entityId, entity);
+            }
         });
     }
 
@@ -71,19 +74,15 @@ public class RayonSpawnS2CPacket {
         }
 
         PacketByteBuf buf = PacketByteBufs.create();
-        EntityRigidBody body = EntityRigidBody.get(entity);
+        EntityRigidBody body = Rayon.DYNAMIC_BODY_ENTITY.get(entity);
 
         buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(entity.getType()));
         buf.writeInt(entity.getEntityId());
         buf.writeUuid(entity.getUuid());
+        body.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, body.boundingBox(new BoundingBox()).getYExtent() / 2.0, 0)));
 
-        /* If the user didn't set the position of the entity using EntityRigidBody#setPosition, then set it to the entity's position instead */
-        if (body.getCenterOfMassPosition(new Vector3f()).equals(new Vector3f(0, 0, 0))) {
-            body.setPosition(VectorHelper.vec3dToVector3f(entity.getPos().add(0, 1, 0)));
-        }
-
-        QuaternionHelper.toBuffer(buf, body.getOrientation(new Quat4f()));
-        VectorHelper.toBuffer(buf, body.getCenterOfMassPosition(new Vector3f()));
+        QuaternionHelper.toBuffer(buf, body.getPhysicsRotation(new Quaternion()));
+        VectorHelper.toBuffer(buf, body.getPhysicsLocation(new Vector3f()));
         VectorHelper.toBuffer(buf, body.getLinearVelocity(new Vector3f()));
         VectorHelper.toBuffer(buf, body.getAngularVelocity(new Vector3f()));
 

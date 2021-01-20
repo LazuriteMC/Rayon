@@ -65,16 +65,8 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.setDeactivationTime(30);
     }
 
-    public static EntityRigidBody get(Entity entity) {
-        try {
-            return Rayon.DYNAMIC_BODY_ENTITY.get(entity);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public static boolean is(Entity entity) {
-        return get(entity) != null;
+        return Rayon.DYNAMIC_BODY_ENTITY.maybeGet(entity).isPresent();
     }
 
     /**
