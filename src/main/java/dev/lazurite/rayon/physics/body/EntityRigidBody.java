@@ -230,7 +230,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
         setPhysicsRotation(QuaternionHelper.fromBuffer(buf));
-        setPosition(VectorHelper.fromBuffer(buf));
+        setPhysicsLocation(VectorHelper.fromBuffer(buf));
         setLinearVelocity(VectorHelper.fromBuffer(buf));
         setAngularVelocity(VectorHelper.fromBuffer(buf));
         setDragCoefficient(buf.readFloat());
@@ -238,8 +238,8 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        QuaternionHelper.toBuffer(buf, getOrientation(new Quat4f()));
-        VectorHelper.toBuffer(buf, getCenterOfMassPosition(new Vector3f()));
+        QuaternionHelper.toBuffer(buf, getPhysicsRotation(new Quaternion()));
+        VectorHelper.toBuffer(buf, getPhysicsLocation(new Vector3f()));
         VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
         VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
         buf.writeFloat(getDragCoefficient());
@@ -247,8 +247,8 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     @Override
     public void readFromNbt(CompoundTag tag) {
-        setOrientation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
-        setPosition(VectorHelper.fromTag(tag.getCompound("position")));
+        setPhysicsRotation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
+        setPhysicsLocation(VectorHelper.fromTag(tag.getCompound("position")));
         setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
         setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
         setDragCoefficient(tag.getFloat("drag_coefficient"));
@@ -257,7 +257,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     @Override
     public void writeToNbt(CompoundTag tag) {
         tag.put("orientation", QuaternionHelper.toTag(getOrientation(new Quat4f())));
-        tag.put("position", VectorHelper.toTag(getCenterOfMassPosition(new Vector3f())));
+        tag.put("position", VectorHelper.toTag(getPhysicsLocation(new Vector3f())));
         tag.put("linear_velocity", VectorHelper.toTag(getLinearVelocity(new Vector3f())));
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
         tag.putFloat("drag_coefficient", getDragCoefficient());

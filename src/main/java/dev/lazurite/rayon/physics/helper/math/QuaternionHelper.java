@@ -1,23 +1,23 @@
 package dev.lazurite.rayon.physics.helper.math;
 
+import com.jme3.math.Quaternion;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 
 /**
- * A helper class for {@link Quat4f} which contains methods to perform
+ * A helper class for {@link Quaternion} which contains methods to perform
  * many different operations.
  */
 public class QuaternionHelper {
     /**
-     * Rotate the given {@link Quat4f} by the given number of degrees on the X axis.
-     * @param quat the {@link Quat4f} to perform the operation on
+     * Rotate the given {@link Quaternion} by the given number of degrees on the X axis.
+     * @param quat the {@link Quaternion} to perform the operation on
      * @param deg number of degrees to rotate by
      */
-    public static Quat4f rotateX(Quat4f quat, double deg) {
+    public static Quaternion rotateX(Quaternion quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
-        Quat4f rot = new Quat4f();
+        Quaternion rot = new Quaternion();
         rot.x = (float) Math.sin(radHalfAngle);
         rot.w = (float) Math.cos(radHalfAngle);
         quat.mul(rot);
@@ -25,13 +25,13 @@ public class QuaternionHelper {
     }
 
     /**
-     * Rotate the given {@link Quat4f} by the given number of degrees on the Y axis.
-     * @param quat the {@link Quat4f} to perform the operation on
+     * Rotate the given {@link Quaternion} by the given number of degrees on the Y axis.
+     * @param quat the {@link Quaternion} to perform the operation on
      * @param deg number of degrees to rotate by
      */
-    public static Quat4f rotateY(Quat4f quat, double deg) {
+    public static Quaternion rotateY(Quaternion quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
-        Quat4f rot = new Quat4f();
+        Quaternion rot = new Quaternion();
         rot.y = (float) Math.sin(radHalfAngle);
         rot.w = (float) Math.cos(radHalfAngle);
         quat.mul(rot);
@@ -39,13 +39,13 @@ public class QuaternionHelper {
     }
 
     /**
-     * Rotate the given {@link Quat4f} by the given number of degrees on the Z axis.
-     * @param quat the {@link Quat4f} to perform the operation on
+     * Rotate the given {@link Quaternion} by the given number of degrees on the Z axis.
+     * @param quat the {@link Quaternion} to perform the operation on
      * @param deg number of degrees to rotate by
      */
-    public static Quat4f rotateZ(Quat4f quat, double deg) {
+    public static Quaternion rotateZ(Quaternion quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
-        Quat4f rot = new Quat4f();
+        Quaternion rot = new Quaternion();
         rot.z = (float) Math.sin(radHalfAngle);
         rot.w = (float) Math.cos(radHalfAngle);
         quat.mul(rot);
@@ -53,13 +53,13 @@ public class QuaternionHelper {
     }
 
     /**
-     * Converts the given {@link Quat4f} to a vector containing three axes of rotation in degrees.
+     * Converts the given {@link Quaternion} to a vector containing three axes of rotation in degrees.
      * The order is (roll, pitch, yaw).
-     * @param quat the {@link Quat4f} to extract the euler angles from
+     * @param quat the {@link Quaternion} to extract the euler angles from
      * @return a new vector containing three rotations in degrees
      */
-    public static Vector3f toEulerAngles(Quat4f quat) {
-        Quat4f q = new Quat4f();
+    public static Vector3f toEulerAngles(Quaternion quat) {
+        Quaternion q = new Quaternion();
         q.set(quat.z, quat.x, quat.y, quat.w);
 
         Vector3f angles = new Vector3f();
@@ -85,21 +85,21 @@ public class QuaternionHelper {
     }
 
     /**
-     * Converts a {@link Quat4f} to a {@link Quaternion}.
-     * @param quat the {@link Quat4f} to convert
+     * Converts a {@link Quaternion} to a {@link Quaternion}.
+     * @param quat the {@link Quaternion} to convert
      * @return the new {@link Quaternion}
      */
-    public static Quaternion quat4fToQuaternion(Quat4f quat) {
+    public static Quaternion QuaternionToQuaternion(Quaternion quat) {
         return new Quaternion(quat.x, quat.y, quat.z, quat.w);
     }
 
     /**
-     * Converts a {@link Quaternion} to a {@link Quat4f}.
+     * Converts a {@link Quaternion} to a {@link Quaternion}.
      * @param quat the {@link Quaternion} to convert
-     * @return the new {@link Quat4f}
+     * @return the new {@link Quaternion}
      */
-    public static Quat4f quaternionToQuat4f(Quaternion quat) {
-        Quat4f q = new Quat4f();
+    public static Quaternion quaternionToQuaternion(Quaternion quat) {
+        Quaternion q = new Quaternion();
         q.x = quat.getX();
         q.y = quat.getY();
         q.z = quat.getZ();
@@ -108,11 +108,11 @@ public class QuaternionHelper {
     }
 
     /**
-     * Stores the given {@link Quat4f} into a new {@link CompoundTag}.
-     * @param quat the {@link Quat4f} to store
+     * Stores the given {@link Quaternion} into a new {@link CompoundTag}.
+     * @param quat the {@link Quaternion} to store
      * @return the new {@link CompoundTag}
      */
-    public static CompoundTag toTag(Quat4f quat) {
+    public static CompoundTag toTag(Quaternion quat) {
         CompoundTag tag = new CompoundTag();
         tag.putFloat("x", quat.x);
         tag.putFloat("y", quat.y);
@@ -122,12 +122,12 @@ public class QuaternionHelper {
     }
 
     /**
-     * Retrieves a {@link Quat4f} from the given {@link CompoundTag}.
-     * @param tag the {@link CompoundTag} to retrieve the {@link Quat4f} from
-     * @return the new {@link Quat4f}
+     * Retrieves a {@link Quaternion} from the given {@link CompoundTag}.
+     * @param tag the {@link CompoundTag} to retrieve the {@link Quaternion} from
+     * @return the new {@link Quaternion}
      */
-    public static Quat4f fromTag(CompoundTag tag) {
-        return new Quat4f(
+    public static Quaternion fromTag(CompoundTag tag) {
+        return new Quaternion(
                 tag.getFloat("x"),
                 tag.getFloat("y"),
                 tag.getFloat("z"),
@@ -135,15 +135,15 @@ public class QuaternionHelper {
         );
     }
 
-    public static void toBuffer(PacketByteBuf buf, Quat4f quat4f) {
-        buf.writeFloat(quat4f.x);
-        buf.writeFloat(quat4f.y);
-        buf.writeFloat(quat4f.z);
-        buf.writeFloat(quat4f.w);
+    public static void toBuffer(PacketByteBuf buf, Quaternion Quaternion) {
+        buf.writeFloat(Quaternion.x);
+        buf.writeFloat(Quaternion.y);
+        buf.writeFloat(Quaternion.z);
+        buf.writeFloat(Quaternion.w);
     }
 
-    public static Quat4f fromBuffer(PacketByteBuf buf) {
-        return new Quat4f(
+    public static Quaternion fromBuffer(PacketByteBuf buf) {
+        return new Quaternion(
                 buf.readFloat(),
                 buf.readFloat(),
                 buf.readFloat(),
@@ -151,32 +151,32 @@ public class QuaternionHelper {
     }
 
     /**
-     * Gets the yaw rotation from the given {@link Quat4f}.
-     * @param quat the {@link Quat4f} to get the angle from
+     * Gets the yaw rotation from the given {@link Quaternion}.
+     * @param quat the {@link Quaternion} to get the angle from
      * @return the yaw angle
      */
-    public static float getYaw(Quat4f quat) {
+    public static float getYaw(Quaternion quat) {
         return -1 * (float) Math.toDegrees(QuaternionHelper.toEulerAngles(quat).z);
     }
 
     /**
-     * Gets the pitch rotation from the given {@link Quat4f}.
-     * @param quat the {@link Quat4f} to get the angle from
+     * Gets the pitch rotation from the given {@link Quaternion}.
+     * @param quat the {@link Quaternion} to get the angle from
      * @return the pitch angle
      */
-    public static float getPitch(Quat4f quat) {
+    public static float getPitch(Quaternion quat) {
         return (float) Math.toDegrees(QuaternionHelper.toEulerAngles(quat).y);
     }
 
     /**
      * Lerp, but for spherical stuffs (hence Slerp).
-     * @param q1 the first {@link Quat4f} to slerp
-     * @param q2 the second {@link Quat4f} to slerp
+     * @param q1 the first {@link Quaternion} to slerp
+     * @param q2 the second {@link Quaternion} to slerp
      * @param t the delta time
-     * @return the slerped {@link Quat4f}
+     * @return the slerped {@link Quaternion}
      */
-    public static Quat4f slerp(Quat4f q1, Quat4f q2, float t) {
-        Quat4f out = new Quat4f();
+    public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+        Quaternion out = new Quaternion();
         q1.normalize();
         q2.normalize();
 
@@ -215,7 +215,7 @@ public class QuaternionHelper {
         return out;
     }
 
-    public static Quat4f slerp2(Quat4f v0, Quat4f v1, float t) {
+    public static Quaternion slerp2(Quaternion v0, Quaternion v1, float t) {
         v0.normalize();
         v1.normalize();
         float dot = (v0.x * v1.x) + (v0.y * v1.y) + (v0.z * v1.z) + (v0.w * v1.w);
@@ -226,10 +226,10 @@ public class QuaternionHelper {
             // If the inputs are too close for comfort, linearly interpolate
             // and normalize the result.
 
-            Quat4f sub = new Quat4f();
+            Quaternion sub = new Quaternion();
             sub.sub(v1, v0);
             sub.scale(t);
-            Quat4f result = new Quat4f();
+            Quaternion result = new Quaternion();
             result.add(v0, sub);
             result.normalize();
             return result;
@@ -239,15 +239,15 @@ public class QuaternionHelper {
         float theta_0 = (float) Math.acos(dot);  // theta_0 = angle between input vectors
         float theta = theta_0*t;    // theta = angle between v0 and result
 
-        Quat4f v2 = new Quat4f();
-        Quat4f v01 = new Quat4f(v0);
+        Quaternion v2 = new Quaternion();
+        Quaternion v01 = new Quaternion(v0);
         v01.scale(dot);
         v2.sub(v1, v01);
         v2.normalize();              // { v0, v2 } is now an orthonormal basis
 
         v0.scale((float) Math.cos(theta));
         v2.scale((float) Math.sin(theta));
-        Quat4f out = new Quat4f();
+        Quaternion out = new Quaternion();
         out.add(v0, v2);
         return out;
     }
