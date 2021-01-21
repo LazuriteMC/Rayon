@@ -1,9 +1,19 @@
 package dev.lazurite.rayon.impl.builder;
 
 import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
+import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import net.minecraft.entity.Entity;
 
+/**
+ * The implementation of {@link RigidBodyBuilder}. Mainly just houses the
+ * rigid body information until it is compiled into a {@link RigidBodyEntry}
+ * object and passed to {@link RigidBodyRegistry}.
+ *
+ * @param <E> should be your {@link Entity} class
+ * @see RigidBodyRegistry
+ * @see RigidBodyBuilder
+ */
 public class RigidBodyBuilderImpl<E extends Entity> implements RigidBodyBuilder<E> {
     private final Class<E> entityClass;
     private final EntityShapeFactory shapeFactory;

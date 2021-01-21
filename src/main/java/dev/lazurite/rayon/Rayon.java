@@ -1,7 +1,8 @@
 package dev.lazurite.rayon;
 
+import com.google.common.collect.Lists;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
-import dev.lazurite.rayon.impl.builder.RigidBodyRegistryImpl;
+import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
@@ -15,13 +16,18 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
+
 public class Rayon implements ModInitializer, ClientModInitializer, EntityComponentInitializer, WorldComponentInitializer {
 	public static final String MODID = "rayon";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
+
+	public static final List<RigidBodyEntry<? extends Entity>> entries = Lists.newArrayList();
 
 	public static final ComponentKey<EntityRigidBody> DYNAMIC_BODY_ENTITY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "dynamic_body_entity"), EntityRigidBody.class);
 	public static final ComponentKey<MinecraftDynamicsWorld> DYNAMICS_WORLD = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "dynamics_world"), MinecraftDynamicsWorld.class);
@@ -45,15 +51,8 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	 */
 	@Override
 	public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-		RigidBodyRegistryImpl.INSTANCE.get().forEach(entry ->
-				registry.registerFor(entry.getEntity(), DYNAMIC_BODY_ENTITY,
-						(entity) -> new EntityRigidBody(
-								entity,
-								entry.getShapeFactory(),
-								entry.getMass(),
-								entry.getDragCoefficient(),
-								entry.getFriction(),
-								entry.getRestitution())));
+		entries.forEach(entry -> registry.registerFor(entry.getEntity(), DYNAMIC_BODY_ENTITY,
+			(entity) -> new EntityRigidBody(entity, entry.getShapeFactory(), entry.getMass(), entry.getDragCoefficient(), entry.getFriction(), entry.getRestitution())));
 	}
 
 	/**

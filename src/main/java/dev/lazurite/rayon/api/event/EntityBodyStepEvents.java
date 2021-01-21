@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * Callbacks for when a {@link EntityRigidBody} on both the client and the
  * server calls their own {@link EntityRigidBody#step(float)} method.
  * There is one callback for the start of the loop and one for the end.
+ *
  * @since 1.0.0
  * @see EntityRigidBody#step
  */

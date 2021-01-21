@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 
 /**
  * A factory for storing new shape definitions.
+ *
  * @since 1.0.0
  * @see RigidBodyRegistry
  */

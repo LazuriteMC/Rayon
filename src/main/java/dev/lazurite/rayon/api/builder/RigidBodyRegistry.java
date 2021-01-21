@@ -1,16 +1,19 @@
 package dev.lazurite.rayon.api.builder;
 
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
-import dev.lazurite.rayon.impl.builder.RigidBodyRegistryImpl;
 import net.minecraft.entity.Entity;
 
-import java.util.List;
-
+/**
+ * This where you can register your {@link RigidBodyEntry} after
+ * it's creation using the {@link RigidBodyBuilder}.
+ *
+ * @since 1.1.0
+ * @see Rayon#registerEntityComponentFactories
+ * @see RigidBodyBuilder
+ */
 public interface RigidBodyRegistry {
-    static RigidBodyRegistry getInstance() {
-        return RigidBodyRegistryImpl.INSTANCE;
+    static <E extends Entity> void register(RigidBodyEntry<E> entry) {
+        Rayon.entries.add(entry);
     }
-
-    <E extends Entity> void register(RigidBodyEntry<E> entry);
-    List<RigidBodyEntry<? extends Entity>> get();
 }

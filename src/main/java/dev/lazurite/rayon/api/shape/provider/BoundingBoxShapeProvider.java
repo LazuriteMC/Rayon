@@ -7,6 +7,7 @@ import net.minecraft.util.shape.VoxelShape;
 /**
  * A shape provider which contains methods that create
  * new {@link BoundingBoxShape}s.
+ *
  * @since 1.0.0
  * @see BoundingBoxShape
  */

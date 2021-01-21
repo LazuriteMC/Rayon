@@ -45,7 +45,7 @@ public class ExampleMod implements ModInitializer {
         );
 
         /* An example of using the builder and registering the built rigid body entry */
-        RigidBodyRegistry.getInstance().register(
+        RigidBodyRegistry.register(
                 RigidBodyBuilder.create(RectangularPrismEntity.class, BoundingBoxShapeProvider::get)
                     .setMass(2.0f)
                     .setDrag(0.05f)
