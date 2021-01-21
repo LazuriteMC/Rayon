@@ -4,6 +4,8 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
+import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.EntityBodyStepEvents;
 import dev.lazurite.rayon.Rayon;
@@ -12,7 +14,6 @@ import dev.lazurite.rayon.impl.physics.helper.AirHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.impl.builder.RigidBodyRegistryImpl;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -26,10 +27,10 @@ import java.util.Locale;
 import java.util.function.BooleanSupplier;
 
 /**
- * {@link EntityRigidBody} is the mainsail of Rayon. It's currently the only component
- * that you're able to register to an entity type using {@link RigidBodyRegistryImpl}. Not
- * only is it a CCA component, but it also represents a bullet {@link PhysicsRigidBody}. In this way,
- * it can be directly added to a {@link MinecraftDynamicsWorld}.<br><br>
+ * {@link EntityRigidBody} is the mainsail of Rayon. It's currently the only component that you're
+ * able to register to an entity type using {@link RigidBodyBuilder} and {@link RigidBodyRegistry}.
+ * Not only is it a CCA component, but it also represents a bullet {@link PhysicsRigidBody}. In
+ * this way it can be directly added to a {@link MinecraftDynamicsWorld}.<br><br>
  *
  * Additionally, {@link EntityRigidBody} implements several interfaces which allow for more
  * functionality. {@link SteppableBody} allows the rigid body to be <i>stepped</i> during every
@@ -60,14 +61,14 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.dragCoefficient = dragCoefficient;
         this.setFriction(friction);
         this.setRestitution(restitution);
-        this.dynamicsWorld = Rayon.DYNAMICS_WORLD.get(entity.getEntityWorld());
+        this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevOrientation.set(getPhysicsRotation(new Quaternion()));
         this.setDeactivationTime(30);
         this.dynamicsWorld.addCollisionObject(this);
     }
 
     public static boolean is(Entity entity) {
-        return Rayon.DYNAMIC_BODY_ENTITY.maybeGet(entity).isPresent();
+        return Rayon.RIGID_BODY.maybeGet(entity).isPresent();
     }
 
     /**
@@ -109,7 +110,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     @Override
     public void tick() {
         if (!dynamicsWorld.getWorld().isClient()) {
-            Rayon.DYNAMIC_BODY_ENTITY.sync(entity);
+            Rayon.RIGID_BODY.sync(entity);
         }
 
         prevOrientation.set(getTickRotation(new Quaternion()));

@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.mixin.common;
 
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.impl.mixin.common.world.ServerWorldMixin;
 import dev.lazurite.rayon.impl.mixin.client.MinecraftClientMixin;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -32,7 +32,7 @@ public abstract class IntegratedServerMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo info) {
         if (paused) {
-            ((IntegratedServer) (Object) this).getWorlds().forEach(world -> MinecraftDynamicsWorld.get(world).getClock().reset());
+            ((IntegratedServer) (Object) this).getWorlds().forEach(world -> Rayon.WORLD.get(world).getClock().reset());
         }
     }
 }

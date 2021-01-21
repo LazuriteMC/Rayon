@@ -1,5 +1,7 @@
-package dev.lazurite.rayon.impl.mixin.common.entity;
+package dev.lazurite.rayon.impl.mixin.common;
 
+import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import net.minecraft.entity.Entity;
@@ -10,10 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import javax.vecmath.Vector3f;
-
 @Mixin(Entity.class)
-public class EntityMixin {
+public abstract class EntityMixin {
     /**
      * This allows non-physics entities to interact with {@link EntityRigidBody}s.
      */
@@ -29,7 +29,7 @@ public class EntityMixin {
     )
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
         if (EntityRigidBody.is((Entity) (Object) this) && !EntityRigidBody.is(entity)) {
-            EntityRigidBody.get((Entity) (Object) this).applyCentralImpulse(new Vector3f((float) -d * 100, 0.0f, (float) -e * 100));
+            Rayon.RIGID_BODY.get((Entity) (Object) this).applyCentralImpulse(new Vector3f((float) -d * 100, 0.0f, (float) -e * 100));
         }
     }
 
@@ -57,12 +57,13 @@ public class EntityMixin {
 
     /**
      * This method cleans up after the {@link MinecraftDynamicsWorld}
-     * by removing any any {@link EntityRigidBody}s that were removed.
+     * by removing any {@link EntityRigidBody}s that had their own
+     * {@link Entity} removed from the world.
      */
     @Inject(method = "remove", at = @At("HEAD"))
     public void remove(CallbackInfo info) {
         if (EntityRigidBody.is((Entity) (Object) this)) {
-            MinecraftDynamicsWorld.get(((Entity) (Object) this).getEntityWorld()).removeRigidBody(EntityRigidBody.get((Entity) (Object) this));
+            Rayon.WORLD.get(((Entity) (Object) this).getEntityWorld()).removeCollisionObject(Rayon.RIGID_BODY.get((Entity) (Object) this));
         }
     }
 }

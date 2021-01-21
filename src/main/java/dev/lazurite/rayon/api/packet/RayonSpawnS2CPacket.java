@@ -56,7 +56,7 @@ public class RayonSpawnS2CPacket {
             entity.pitch = QuaternionHelper.getPitch(orientation);
             entity.yaw = QuaternionHelper.getYaw(orientation);
 
-            EntityRigidBody body = Rayon.DYNAMIC_BODY_ENTITY.get(entity);
+            EntityRigidBody body = Rayon.RIGID_BODY.get(entity);
             body.setPhysicsRotation(orientation);
             body.setPhysicsLocation(position);
             body.setLinearVelocity(linearVelocity);
@@ -74,7 +74,7 @@ public class RayonSpawnS2CPacket {
         }
 
         PacketByteBuf buf = PacketByteBufs.create();
-        EntityRigidBody body = Rayon.DYNAMIC_BODY_ENTITY.get(entity);
+        EntityRigidBody body = Rayon.RIGID_BODY.get(entity);
 
         buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(entity.getType()));
         buf.writeInt(entity.getEntityId());

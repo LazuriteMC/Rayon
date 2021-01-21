@@ -14,7 +14,7 @@ import dev.lazurite.rayon.impl.physics.body.SteppableBody;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.mixin.common.world.ServerWorldMixin;
+import dev.lazurite.rayon.impl.mixin.common.ServerWorldMixin;
 import dev.lazurite.rayon.impl.mixin.client.MinecraftClientMixin;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;

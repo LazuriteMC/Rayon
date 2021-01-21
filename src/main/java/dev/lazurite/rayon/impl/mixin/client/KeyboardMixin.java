@@ -3,8 +3,6 @@ package dev.lazurite.rayon.impl.mixin.client;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.physics.helper.DebugHelper;
-import dev.lazurite.rayon.impl.mixin.client.render.DebugRendererMixin;
 import net.minecraft.client.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * once, it enables rendering of {@link EntityRigidBody} objects.
  * When it's pressed again, it also enabled rendering of
  * {@link BlockRigidBody} objects in a different color.
- * @see DebugHelper
  * @see DebugRendererMixin
  */
 @Mixin(Keyboard.class)

@@ -1,7 +1,7 @@
-package dev.lazurite.rayon.impl.mixin.common.world;
+package dev.lazurite.rayon.impl.mixin.common;
 
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.impl.mixin.common.IntegratedServerMixin;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,6 +28,6 @@ public abstract class ServerWorldMixin {
     )
     public void tick(BooleanSupplier shouldKeepTicking, CallbackInfo info) {
         ((World) (Object) this).getProfiler().swap("physicsSimulation");
-        MinecraftDynamicsWorld.get((ServerWorld) (Object) this).step(shouldKeepTicking);
+        Rayon.WORLD.get((ServerWorld) (Object) this).step(shouldKeepTicking);
     }
 }

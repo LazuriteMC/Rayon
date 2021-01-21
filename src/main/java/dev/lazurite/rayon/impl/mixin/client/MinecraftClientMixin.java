@@ -1,10 +1,11 @@
 package dev.lazurite.rayon.impl.mixin.client;
 
+import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.impl.physics.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.util.Delta;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.mixin.common.IntegratedServerMixin;
-import dev.lazurite.rayon.impl.mixin.common.world.ServerWorldMixin;
+import dev.lazurite.rayon.impl.mixin.common.ServerWorldMixin;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.profiler.Profiler;
@@ -19,7 +20,7 @@ import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
-    @Unique private final Delta clock = new Delta();
+    @Unique private final Clock clock = new Clock();
     @Unique private float delta;
 
     @Shadow private Profiler profiler;
@@ -48,7 +49,7 @@ public abstract class MinecraftClientMixin {
                 float stepMillis = 1 / (float) Config.INSTANCE.getLocal().getStepRate();
 
                 if (delta > stepMillis) {
-                    MinecraftDynamicsWorld.get(world).step(shouldStep);
+                    Rayon.WORLD.get(world).step(shouldStep);
                     delta -= stepMillis;
                     clock.get();
                 } else {
@@ -57,7 +58,7 @@ public abstract class MinecraftClientMixin {
 
             /* ...or just go as fast as it can */
             } else {
-                MinecraftDynamicsWorld.get(world).step(shouldStep);
+                Rayon.WORLD.get(world).step(shouldStep);
             }
         }
     }

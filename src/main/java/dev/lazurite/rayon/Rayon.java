@@ -29,8 +29,8 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 
 	public static final List<RigidBodyEntry<? extends Entity>> entries = Lists.newArrayList();
 
-	public static final ComponentKey<EntityRigidBody> DYNAMIC_BODY_ENTITY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "dynamic_body_entity"), EntityRigidBody.class);
-	public static final ComponentKey<MinecraftDynamicsWorld> DYNAMICS_WORLD = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "dynamics_world"), MinecraftDynamicsWorld.class);
+	public static final ComponentKey<EntityRigidBody> RIGID_BODY = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "rigid_body"), EntityRigidBody.class);
+	public static final ComponentKey<MinecraftDynamicsWorld> WORLD = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "world"), MinecraftDynamicsWorld.class);
 
 	@Override
 	public void onInitialize() {
@@ -51,7 +51,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	 */
 	@Override
 	public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-		entries.forEach(entry -> registry.registerFor(entry.getEntity(), DYNAMIC_BODY_ENTITY,
+		entries.forEach(entry -> registry.registerFor(entry.getEntity(), RIGID_BODY,
 			(entity) -> new EntityRigidBody(entity, entry.getShapeFactory(), entry.getMass(), entry.getDragCoefficient(), entry.getFriction(), entry.getRestitution())));
 	}
 
@@ -62,6 +62,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	 */
 	@Override
 	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-		registry.register(DYNAMICS_WORLD, MinecraftDynamicsWorld::new);
+		registry.register(WORLD, MinecraftDynamicsWorld::new);
 	}
 }
