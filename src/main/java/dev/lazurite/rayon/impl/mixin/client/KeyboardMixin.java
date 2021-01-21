@@ -24,14 +24,14 @@ public abstract class KeyboardMixin {
     @Inject(method = "processF3", at = @At("HEAD"), cancellable = true)
     private void processF3(int key, CallbackInfoReturnable<Boolean> info) {
         if (key == 82) { // 'r' key
-            if (Config.INSTANCE.debug && Config.INSTANCE.debugBlocks) {
-                Config.INSTANCE.debug = false;
-                Config.INSTANCE.debugBlocks = false;
+            if (Config.getInstance().debug && Config.getInstance().debugBlocks) {
+                Config.getInstance().debug = false;
+                Config.getInstance().debugBlocks = false;
                 debugWarn("debug.rayon.off");
-            } else if (Config.INSTANCE.debug) {
-                Config.INSTANCE.debugBlocks = true;
+            } else if (Config.getInstance().debug) {
+                Config.getInstance().debugBlocks = true;
             } else {
-                Config.INSTANCE.debug = true;
+                Config.getInstance().debug = true;
                 debugWarn("debug.rayon.on");
             }
 

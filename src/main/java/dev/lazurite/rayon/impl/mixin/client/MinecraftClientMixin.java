@@ -45,8 +45,8 @@ public abstract class MinecraftClientMixin {
             BooleanSupplier shouldStep = () -> !((MinecraftClient) (Object) this).isPaused();
 
             /* Control the rate of execution... */
-            if (Config.INSTANCE.getLocal().getStepRate() < 260) {
-                float stepMillis = 1 / (float) Config.INSTANCE.getLocal().getStepRate();
+            if (Config.getInstance().getLocal().getStepRate() < 260) {
+                float stepMillis = 1 / (float) Config.getInstance().getLocal().getStepRate();
 
                 if (delta > stepMillis) {
                     Rayon.WORLD.get(world).step(shouldStep);

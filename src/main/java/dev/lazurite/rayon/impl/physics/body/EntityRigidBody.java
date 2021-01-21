@@ -47,7 +47,7 @@ import java.util.function.BooleanSupplier;
  * @see EntityBodyStepEvents
  * @see EntityBodyCollisionEvent
  */
-public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+public class EntityRigidBody extends PhysicsRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final Quaternion prevOrientation = new Quaternion();
     private final Quaternion tickOrientation = new Quaternion();
     private final MinecraftDynamicsWorld dynamicsWorld;
@@ -63,7 +63,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevOrientation.set(getPhysicsRotation(new Quaternion()));
-        this.setDeactivationTime(30);
+//        this.setDeactivationTime(30);
         this.dynamicsWorld.addCollisionObject(this);
     }
 
@@ -87,13 +87,12 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
      * @param delta the amount of seconds since the last step
      * @see MinecraftDynamicsWorld#step(BooleanSupplier) 
      */
-    @Override
     public void step(float delta) {
         /* Invoke all registered start step events */
         EntityBodyStepEvents.START_ENTITY_STEP.invoker().onStartStep(this, delta);
 
         /* Apply air resistance */
-        if (Config.INSTANCE.getGlobal().isAirResistanceEnabled()) {
+        if (Config.getInstance().getGlobal().isAirResistanceEnabled()) {
             applyCentralForce(AirHelper.getSimpleForce(this));
         }
 

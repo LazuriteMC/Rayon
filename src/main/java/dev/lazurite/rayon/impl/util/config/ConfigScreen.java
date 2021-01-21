@@ -19,7 +19,7 @@ public class ConfigScreen {
                 .setTitle(new TranslatableText("config.rayon.title"))
                 .setTransparentBackground(true)
                 .setSavingRunnable(() -> {
-                    Config.INSTANCE.save();
+                    Config.getInstance().save();
 
                     MinecraftClient client = MinecraftClient.getInstance();
                     IntegratedServer server = client.getServer();
@@ -27,7 +27,7 @@ public class ConfigScreen {
                     if (server != null) {
                         server.getPlayerManager().getPlayerList().forEach(player -> {
                             if (!player.getUuid().equals(client.player.getUuid())) {
-                                ConfigS2C.send(player, Config.INSTANCE);
+                                ConfigS2C.send(player, Config.getInstance());
                             }
                         });
                     }
@@ -38,55 +38,55 @@ public class ConfigScreen {
         /* Block Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.block_distance"),
-                Config.INSTANCE.getLocal().getBlockDistance(), 1, 5)
+                Config.getInstance().getLocal().getBlockDistance(), 1, 5)
                 .setDefaultValue(1)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.block_distance.tooltip"),
                         new TranslatableText("config.rayon.option.performance.high"))
-                .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setBlockDistance(newValue))
+                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setBlockDistance(newValue))
                 .build());
 
         /* Client Step Rate */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.step_rate"),
-                Config.INSTANCE.getLocal().getStepRate(), 20, 260)
+                Config.getInstance().getLocal().getStepRate(), 20, 260)
                 .setDefaultValue(260)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.step_rate.tooltip"),
                         new TranslatableText("config.rayon.option.performance.medium"))
                 .setTextGetter((currValue) -> currValue == 260 ? new TranslatableText("config.rayon.option.step_rate.max") : new LiteralText(String.valueOf(currValue)))
-                .setSaveConsumer(newValue -> Config.INSTANCE.getLocal().setStepRate(newValue))
+                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setStepRate(newValue))
                 .build());
 
-        if (!Config.INSTANCE.isRemote()) {
+        if (!Config.getInstance().isRemote()) {
             /* Air Density */
             category.addEntry(builder.entryBuilder().startFloatField(
-                    new TranslatableText("config.rayon.option.air_density"), Config.INSTANCE.getGlobal().getAirDensity())
+                    new TranslatableText("config.rayon.option.air_density"), Config.getInstance().getGlobal().getAirDensity())
                     .setDefaultValue(1.2f)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.air_density.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
-                    .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setAirDensity(newValue))
+                    .setSaveConsumer(newValue -> Config.getInstance().getGlobal().setAirDensity(newValue))
                     .build());
 
             /* Gravity */
             category.addEntry(builder.entryBuilder().startFloatField(
-                    new TranslatableText("config.rayon.option.gravity"), Config.INSTANCE.getGlobal().getGravity())
+                    new TranslatableText("config.rayon.option.gravity"), Config.getInstance().getGlobal().getGravity())
                     .setDefaultValue(-9.81f)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.gravity.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
-                    .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setGravity(newValue))
+                    .setSaveConsumer(newValue -> Config.getInstance().getGlobal().setGravity(newValue))
                     .build());
 
             /* Air Resistance */
             category.addEntry(builder.entryBuilder().startBooleanToggle(
-                    new TranslatableText("config.rayon.option.air_resistance_enabled"), Config.INSTANCE.getGlobal().isAirResistanceEnabled())
+                    new TranslatableText("config.rayon.option.air_resistance_enabled"), Config.getInstance().getGlobal().isAirResistanceEnabled())
                     .setDefaultValue(true)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.air_resistance_enabled.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
-                    .setSaveConsumer(newValue -> Config.INSTANCE.getGlobal().setAirResistanceEnabled(newValue))
+                    .setSaveConsumer(newValue -> Config.getInstance().getGlobal().setAirResistanceEnabled(newValue))
                     .build());
         }
 

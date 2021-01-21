@@ -30,6 +30,6 @@ public class PlayerManagerMixin {
             )
     )
     public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
-        ConfigS2C.send(player, Config.INSTANCE);
+        ConfigS2C.send(player, Config.getInstance());
     }
 }

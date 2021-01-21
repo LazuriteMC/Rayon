@@ -30,7 +30,7 @@ public class ConfigS2C {
                 buf.readBoolean()
         );
 
-        client.execute(() -> Config.INSTANCE.setRemoteGlobal(remoteGlobal));
+        client.execute(() -> Config.getInstance().setRemoteGlobal(remoteGlobal));
     }
 
     public static void send(ServerPlayerEntity player, Config config) {

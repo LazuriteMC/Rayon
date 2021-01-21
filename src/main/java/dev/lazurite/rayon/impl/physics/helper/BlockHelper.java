@@ -45,7 +45,7 @@ public class BlockHelper {
     public void load(List<EntityRigidBody> dynamicBodyEntities) {
         dynamicBodyEntities.forEach(body -> {
             if (!body.isNoClipEnabled()) {
-                load(new Box(body.getEntity().getBlockPos()).expand(Config.INSTANCE.getLocal().getBlockDistance()));
+                load(new Box(body.getEntity().getBlockPos()).expand(Config.getInstance().getLocal().getBlockDistance()));
             }
         });
 

@@ -8,7 +8,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -21,28 +26,44 @@ public class DebugRendererMixin {
     public void render(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo info) {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        if (Config.INSTANCE.debug) {
+        if (Config.getInstance().debug) {
             Rayon.WORLD.get(client.world).getRigidBodyList().forEach(body -> {
-                RenderSystem.disableTexture();
-                RenderSystem.depthMask(false);
-                RenderSystem.lineWidth(1.0F);
-
-                FloatBuffer buffer = DebugShapeFactory.debugVertices(body.getCollisionShape(), 0);
-                float[] array = buffer.array();
-
-                for (int i = 0; i < array.length; i += 3) {
-                    vertexConsumers.getBuffer(RenderLayer.LINES).vertex(array[i], array[i+1], array[i+2]);
-                }
-
+//                RenderSystem.disableTexture();
+//                RenderSystem.depthMask(false);
+//                RenderSystem.lineWidth(1.0F);
+//
+//                FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0);
+//                VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.LINES);
+//
+//                int vbo = GL15.glGenBuffers();
+//                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+//                GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+//                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+//
+//                int vao = genVAO();
+//                GL30.glBindVertexArray(vao);
+//                GL30.glDrawElements(GL11.GL_TRIANGLES, 3, GL11.GL_UNSIGNED_BYTE, 0);
+//
+//                GL30.glBindVertexArray(0);
+//
 //                BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-//                bufferBuilder.begin(GL11.GL_LINE_STRIP, VertexFormats.POSITION_COLOR);
-//                bufferBuilder.vertex(from.x, from.y, from.z).color(color.x, color.y, color.z, 0.5F).next();
-//                bufferBuilder.vertex(to.x, to.y, to.z).color(color.x, color.y, color.z, 0.5F).next();
-//                Tessellator.getInstance().draw();
-
-                RenderSystem.depthMask(true);
-                RenderSystem.enableTexture();
+//                while (buffer.remaining() > 3) {
+//                    consumer.vertex(buffer.get(), buffer.get(), buffer.get());
+//                    bufferBuilder.begin(GL11.GL_LINE_STRIP, VertexFormats.POSITION_COLOR);
+//                    bufferBuilder.vertex(buffer.get(), buffer.get(), buffer.get()).color(255, 255, 0, 0.5F).next();
+//                    Tessellator.getInstance().draw();
+//                }
+//
+//                RenderSystem.depthMask(true);
+//                RenderSystem.enableTexture();
             });
         }
+    }
+
+    @Unique
+    private static int genVAO() {
+        int vao = GL30.glGenVertexArrays();
+        GL30.glBindVertexArray(vao);
+        return vao;
     }
 }

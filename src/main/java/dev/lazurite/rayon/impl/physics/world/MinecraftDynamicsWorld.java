@@ -10,7 +10,6 @@ import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
-import dev.lazurite.rayon.impl.physics.body.SteppableBody;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
@@ -51,8 +50,9 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         this.blockHelper = new BlockHelper(this);
         this.clock = new Clock();
         this.world = world;
-        this.setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
+        this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
+        this.setAccuracy(1f / 20f);
     }
 
     public MinecraftDynamicsWorld(World world) {
@@ -67,19 +67,22 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             /* Run all start world step events */
             DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
 
-            setGravity(new Vector3f(0, Config.INSTANCE.getGlobal().getGravity(), 0));
-            blockHelper.load(getDynamicEntities());
+            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+            blockHelper.load(getEntityRigidBodies());
 
-            // TODO might cause bugs
-            /* Step each SteppableBody object */
+            /* Step each EntityRigidBody */
             for (PhysicsRigidBody body : getRigidBodyList()) {
-                if (body instanceof SteppableBody) {
-                    ((SteppableBody) body).step(delta);
+                if (body instanceof EntityRigidBody) {
+                    ((EntityRigidBody) body).step(delta);
                 }
             }
 
-            /* Step the DiscreteDynamicsWorld simulation */
-            update(delta, 5);
+//            if (world.isClient()) {
+//                setAccuracy(1f / (float) Config.getInstance().getLocal().getStepRate());
+//            }
+
+            /* Step the simulation */
+            update(delta, 0);
 
             /* Run all end world step events */
             DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
@@ -88,7 +91,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         }
     }
 
-    public List<EntityRigidBody> getDynamicEntities() {
+    public List<EntityRigidBody> getEntityRigidBodies() {
         List<EntityRigidBody> out = Lists.newArrayList();
 
         getRigidBodyList().forEach(body -> {

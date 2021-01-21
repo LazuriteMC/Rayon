@@ -16,11 +16,11 @@ public class BlockRigidBody extends PhysicsRigidBody {
     private final BlockState blockState;
 
     public BlockRigidBody(BlockPos blockPos, BlockState blockState, CollisionShape shape, float friction) {
-        super(shape);
+        super(shape, PhysicsRigidBody.massForStatic);
         this.blockPos = blockPos;
         this.blockState = blockState;
-        setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
-        setFriction(friction);
+        this.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
+        this.setFriction(friction);
     }
 
     public BlockPos getBlockPos() {

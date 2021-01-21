@@ -34,7 +34,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 
 	@Override
 	public void onInitialize() {
-		Config.INSTANCE.load();
+		Config.getInstance().load();
 		NativeLoader.load();
 	}
 

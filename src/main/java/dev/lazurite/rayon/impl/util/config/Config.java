@@ -20,7 +20,7 @@ import java.nio.file.Files;
  * @see ConfigScreen
  */
 public final class Config {
-    public static final Config INSTANCE = new Config();
+    private static final Config instance = new Config();
     public static final String CONFIG_NAME = "rayon.json";
 
     public boolean debug = false;
@@ -31,6 +31,10 @@ public final class Config {
     private GlobalSettings remoteGlobal;
 
     private Config() {
+    }
+
+    public static Config getInstance() {
+        return instance;
     }
 
     public void setRemoteGlobal(GlobalSettings remoteGlobal) {
