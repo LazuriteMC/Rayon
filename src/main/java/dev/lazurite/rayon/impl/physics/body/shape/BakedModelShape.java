@@ -1,9 +1,11 @@
 package dev.lazurite.rayon.impl.physics.body.shape;
 
-import com.bulletphysics.collision.shapes.CompoundShape;
-import com.bulletphysics.collision.shapes.ConvexHullShape;
-import com.bulletphysics.linearmath.Transform;
-import com.bulletphysics.util.ObjectArrayList;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
+import com.jme3.bullet.collision.shapes.HullCollisionShape;
+import com.jme3.math.Transform;
+import com.jme3.math.Vector3f;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
@@ -13,20 +15,16 @@ import net.minecraft.util.math.Direction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
 import java.util.Random;
 import java.util.function.Predicate;
 
 /**
  * This class is designed to be a link between Minecraft's {@link BakedModel} objects and
- * JBullet's {@link com.bulletphysics.collision.shapes.CollisionShape} objects. The
- * idea is that each {@link BakedQuad} taken from a {@link BakedModel} object can be added to
- * this class as a "hull plate" to form a three dimensional shape.
- * @author Ethan Johnson
+ * Bullet's {@link CollisionShape} objects. The idea is that each {@link BakedQuad} taken
+ * from a {@link BakedModel} object can be added to this class a "hull plate" to form a
+ * three dimensional concave shape.
  */
-public class BakedModelShape extends CompoundShape {
+public class BakedModelShape extends CompoundCollisionShape {
     private final BakedModel bakedModel;
 
     /**
@@ -74,7 +72,7 @@ public class BakedModelShape extends CompoundShape {
     }
 
     /**
-     * Converts a {@link BakedQuad} object into a {@link ConvexHullShape}
+     * Converts a {@link BakedQuad} object into a {@link HullCollisionShape}
      * which is then added as a child shape. This way, you can build a
      * shape out of "hull plates".
      * @param quad the baked quad
@@ -96,13 +94,13 @@ public class BakedModelShape extends CompoundShape {
 
         }
         /* Make a new hull shape and scale it down */
-        ConvexHullShape hull = new ConvexHullShape(points);
-        hull.setLocalScaling(new Vector3f(0.25f, 0.25f, 0.25f));
+        HullCollisionShape hull = new HullCollisionShape(points);
+        hull.setScale(0.25f);
         hull.setMargin(0.04f);
 
         /* Add the shape as a child */
-        Transform trans = new Transform(new Matrix4f(new Quat4f(0, 1, 0, 0), new Vector3f(), 1.0f));
-        this.addChildShape(trans, hull);
+        Transform trans = new Transform();
+        this.addChildShape(hull, trans);
     }
 
     /**

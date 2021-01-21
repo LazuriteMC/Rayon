@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.impl.util.config;
 
-import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.util.config.settings.GlobalSettings;
 import dev.lazurite.rayon.impl.util.config.settings.LocalSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
@@ -67,11 +66,9 @@ public final class Config {
                         new JanksonValueSerializer(false)
                 );
             } catch (IOException | FiberException e) {
-                Rayon.LOGGER.error("Error loading Rayon config.");
                 e.printStackTrace();
             }
         } else {
-            Rayon.LOGGER.info("Creating Rayon config.");
             this.save();
         }
     }
@@ -87,7 +84,6 @@ public final class Config {
                     new JanksonValueSerializer(false)
             );
         } catch (IOException e) {
-            Rayon.LOGGER.error("Error saving Rayon config.");
             e.printStackTrace();
         }
     }

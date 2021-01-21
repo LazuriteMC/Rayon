@@ -24,7 +24,7 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityPosition(EntityPositionS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (EntityRigidBody.get(entity) != null) {
+        if (EntityRigidBody.is(entity)) {
             info.cancel();
         }
     }
@@ -40,7 +40,7 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void onEntityUpdate(EntityS2CPacket packet, CallbackInfo info, Entity entity) {
-        if (EntityRigidBody.get(entity) != null) {
+        if (EntityRigidBody.is(entity)) {
             info.cancel();
         }
     }

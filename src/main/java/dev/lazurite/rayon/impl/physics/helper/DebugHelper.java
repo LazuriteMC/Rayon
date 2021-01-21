@@ -1,11 +1,15 @@
 package dev.lazurite.rayon.impl.physics.helper;
 
+import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.world.DebuggableDynamicsWorld;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
@@ -15,18 +19,18 @@ import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 public class DebugHelper extends IDebugDraw {
-    private final DebuggableDynamicsWorld physicsWorld;
+    private final MinecraftDynamicsWorld dynamicsWorld;
 
-    public DebugHelper(DebuggableDynamicsWorld physicsWorld) {
-        this.physicsWorld = physicsWorld;
+    public DebugHelper(MinecraftDynamicsWorld physicsWorld) {
+        this.dynamicsWorld = physicsWorld;
     }
 
     @Environment(EnvType.CLIENT)
     public void renderWorld(double cameraX, double cameraY, double cameraZ, boolean blocks) {
         Vector3f camPos = new Vector3f((float) cameraX, (float) cameraY, (float) cameraZ);
 
-        for (CollisionObject body : physicsWorld.getCollisionObjectArray()) {
-            Transform trans = body.getWorldTransform(new Transform());
+        for (PhysicsRigidBody body : dynamicsWorld.getRigidBodyList()) {
+            Transform trans = body.getTransform(new Transform());
 
             Vector3f color;
             if (body instanceof EntityRigidBody) {
@@ -38,24 +42,24 @@ public class DebugHelper extends IDebugDraw {
                 color = new Vector3f(1, 1, 1); // whit
             }
 
-            render(body, trans.getRotation(new Quat4f()), trans.origin, camPos, color);
+            render(body, trans.getRotation(), trans.getTranslation(), camPos, color);
         }
     }
 
     @Environment(EnvType.CLIENT)
-    public void render(CollisionObject body, Quat4f orientation, Vector3f pos, Vector3f cameraPos, Vector3f color) {
+    public void render(PhysicsRigidBody body, Quaternion orientation, Vector3f pos, Vector3f cameraPos, Vector3f color) {
         RenderSystem.pushMatrix();
 
         // Get the distance between the camera and the physics object
-        pos.sub(cameraPos);
+        pos.subtract(cameraPos);
         RenderSystem.translatef(pos.x, pos.y, pos.z);
 
         // Rotate the physics object render by it's orientation
-        Matrix4f newMat = new Matrix4f(QuaternionHelper.quat4fToQuaternion(orientation));
+        Matrix4f newMat = new Matrix4f(QuaternionHelper.bulletToMinecraft(orientation));
         RenderSystem.multMatrix(newMat);
 
         // Actually draw now
-        physicsWorld.debugDrawObject(new Transform(), body.getCollisionShape(), color);
+        dynamicsWorld.debugDrawObject(new Transform(), body.getCollisionShape(), color);
 
         RenderSystem.popMatrix();
     }

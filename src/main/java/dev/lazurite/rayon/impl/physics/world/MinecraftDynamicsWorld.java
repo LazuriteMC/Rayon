@@ -7,7 +7,6 @@ import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
-import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
@@ -60,10 +59,6 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         this(world, BroadphaseType.DBVT);
     }
 
-    public static MinecraftDynamicsWorld get(World world) {
-        return Rayon.DYNAMICS_WORLD.get(world);
-    }
-
     public void step(BooleanSupplier shouldStep) {
         if (shouldStep.getAsBoolean()) {
             /* Get delta time */
@@ -84,7 +79,6 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             }
 
             /* Step the DiscreteDynamicsWorld simulation */
-//            stepSimulation(delta, 5, delta / 5.0f);
             update(delta, 5);
 
             /* Run all end world step events */

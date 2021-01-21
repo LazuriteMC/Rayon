@@ -1,7 +1,8 @@
 package dev.lazurite.rayon.examplemod;
 
+import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
+import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
-import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.api.shape.provider.BoundingBoxShapeProvider;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
@@ -43,8 +44,14 @@ public class ExampleMod implements ModInitializer {
                         .build()
         );
 
-        /* An example of a registration call */
-        DynamicEntityRegistry.INSTANCE.register(RectangularPrismEntity.class, BoundingBoxShapeProvider::get, 1.0f, 0.05f);
+        /* An example of using the builder and registering the built rigid body entry */
+        RigidBodyRegistry.getInstance().register(
+                RigidBodyBuilder.create(RectangularPrismEntity.class, BoundingBoxShapeProvider::get)
+                    .setMass(2.0f)
+                    .setDrag(0.05f)
+                    .setFriction(0.5f)
+                    .setRestitution(0.75f)
+                    .build());
 
         /* An example of a block collision event */
         EntityBodyCollisionEvent.BLOCK_COLLISION.register((entityBody, blockBody) -> {

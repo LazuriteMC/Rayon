@@ -1,7 +1,7 @@
 package dev.lazurite.rayon;
 
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
-import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
+import dev.lazurite.rayon.impl.builder.RigidBodyRegistryImpl;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
@@ -28,7 +28,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Time to get physical!");
 		Config.INSTANCE.load();
 		NativeLoader.load();
 	}
@@ -46,9 +45,15 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	 */
 	@Override
 	public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-		DynamicEntityRegistry.INSTANCE.get().forEach(entry ->
+		RigidBodyRegistryImpl.INSTANCE.get().forEach(entry ->
 				registry.registerFor(entry.getEntity(), DYNAMIC_BODY_ENTITY,
-						(entity) -> EntityRigidBody.create(entity, entry.getShapeFactory(), entry.getMass(), entry.getDragCoefficient())));
+						(entity) -> new EntityRigidBody(
+								entity,
+								entry.getShapeFactory(),
+								entry.getMass(),
+								entry.getDragCoefficient(),
+								entry.getFriction(),
+								entry.getRestitution())));
 	}
 
 	/**

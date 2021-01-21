@@ -1,18 +1,18 @@
 package dev.lazurite.rayon.impl.physics.body;
 
 import com.jme3.bounding.BoundingBox;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.EntityBodyStepEvents;
 import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.impl.physics.helper.AirHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
+import dev.lazurite.rayon.impl.builder.RigidBodyRegistryImpl;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -27,7 +27,7 @@ import java.util.function.BooleanSupplier;
 
 /**
  * {@link EntityRigidBody} is the mainsail of Rayon. It's currently the only component
- * that you're able to register to an entity type using {@link DynamicEntityRegistry}. Not
+ * that you're able to register to an entity type using {@link RigidBodyRegistryImpl}. Not
  * only is it a CCA component, but it also represents a bullet {@link PhysicsRigidBody}. In this way,
  * it can be directly added to a {@link MinecraftDynamicsWorld}.<br><br>
  *
@@ -47,22 +47,23 @@ import java.util.function.BooleanSupplier;
  * @see EntityBodyCollisionEvent
  */
 public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+    private final Quaternion prevOrientation = new Quaternion();
+    private final Quaternion tickOrientation = new Quaternion();
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final Entity entity;
     private float dragCoefficient;
     private boolean noclip;
 
-    private final Quaternion prevOrientation = new Quaternion();
-    private final Quaternion tickOrientation = new Quaternion();
-
-    private EntityRigidBody(Entity entity, CollisionShape shape, float mass, float dragCoefficient) {
-        super(shape, mass);
+    public EntityRigidBody(Entity entity, EntityShapeFactory shape, float mass, float dragCoefficient, float friction, float restitution) {
+        super(shape.create(entity), mass);
         this.entity = entity;
         this.dragCoefficient = dragCoefficient;
-        this.dynamicsWorld = MinecraftDynamicsWorld.get(entity.getEntityWorld());
+        this.setFriction(friction);
+        this.setRestitution(restitution);
+        this.dynamicsWorld = Rayon.DYNAMICS_WORLD.get(entity.getEntityWorld());
         this.prevOrientation.set(getPhysicsRotation(new Quaternion()));
-        this.dynamicsWorld.addCollisionObject(this);
         this.setDeactivationTime(30);
+        this.dynamicsWorld.addCollisionObject(this);
     }
 
     public static boolean is(Entity entity) {
