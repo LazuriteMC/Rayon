@@ -33,7 +33,11 @@ public class ConfigScreen {
                     }
                 });
 
-        ConfigCategory category = builder.getOrCreateCategory(new LiteralText("")); // category name is ignored
+        return builder.setFallbackCategory(getPhysicsSettings(builder)).build();
+    }
+
+    public static ConfigCategory getPhysicsSettings(ConfigBuilder builder) {
+        ConfigCategory category = builder.getOrCreateCategory(new TranslatableText("config.rayon.title"));
 
         /* Block Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
@@ -90,6 +94,6 @@ public class ConfigScreen {
                     .build());
         }
 
-        return builder.setFallbackCategory(category).build();
+        return category;
     }
 }

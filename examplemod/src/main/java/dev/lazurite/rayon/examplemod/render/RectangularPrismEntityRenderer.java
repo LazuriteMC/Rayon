@@ -36,13 +36,14 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
         EntityRigidBody body = Rayon.RIGID_BODY.get(rectangularPrism);
         BoundingBox box = body.boundingBox(new BoundingBox());
 
+        matrixStack.translate(0, box.getYExtent() / 2.0, 0);
         matrixStack.multiply(QuaternionHelper.bulletToMinecraft(QuaternionHelper.slerp(
                 body.getPrevRotation(new Quaternion()),
                 body.getTickRotation(new Quaternion()),
                 delta
         )));
-
-        matrixStack.translate(-box.getXExtent() / 2.0, -box.getYExtent() / 2.0, -box.getZExtent() / 2.0);
+        matrixStack.translate(0, -box.getYExtent() / 2.0, 0);
+        matrixStack.translate(-box.getXExtent() / 2.0, 0, -box.getZExtent() / 2.0);
 
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(this.getTexture(rectangularPrism)));
         model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
