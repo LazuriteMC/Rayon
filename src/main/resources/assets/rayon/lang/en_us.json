@@ -2,7 +2,7 @@
   "debug.rayon.on": "Rigid Body Hitboxes: shown",
   "debug.rayon.off": "Rigid Body Hitboxes: hidden",
 
-  "config.rayon.title": "Simulation Settings",
+  "config.rayon.title": "Phyiscs Simulation Settings",
 
   "config.rayon.option.block_distance": "Block Distance",
   "config.rayon.option.block_distance.tooltip": "The distance from an entity at which blocks are loaded.",

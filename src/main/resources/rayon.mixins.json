@@ -14,8 +14,7 @@
     "client.KeyboardMixin",
     "client.MinecraftClientMixin",
     "client.network.ClientPlayNetworkHandlerMixin",
-    "client.render.DebugRendererMixin",
-    "client.render.EntityRenderDispatcherMixin"
+    "client.render.DebugRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
