@@ -46,10 +46,12 @@ public final class Config {
         return local;
     }
 
-    @Environment(EnvType.CLIENT)
     public boolean isRemote() {
-        if (MinecraftClient.getInstance().getServer() != null) {
-            return MinecraftClient.getInstance().getServer().isRemote() && remoteGlobal != null;
+        try {
+            if (MinecraftClient.getInstance().getServer() != null) {
+                return MinecraftClient.getInstance().getServer().isRemote() && remoteGlobal != null;
+            }
+        } catch (Exception ignored) {
         }
 
         return false;
