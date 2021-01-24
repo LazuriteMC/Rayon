@@ -2,7 +2,6 @@ package dev.lazurite.rayon;
 
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.util.PacketCallbacks;
-import dev.lazurite.rayon.util.config.ConfigScreen;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.util.config.Config;
 import dev.lazurite.rayon.physics.world.MinecraftDynamicsWorld;
@@ -12,15 +11,13 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
-import io.github.prospector.modmenu.api.ConfigScreenFactory;
-import io.github.prospector.modmenu.api.ModMenuApi;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Rayon implements ModInitializer, ClientModInitializer, EntityComponentInitializer, WorldComponentInitializer, ModMenuApi {
+public class Rayon implements ModInitializer, ClientModInitializer, EntityComponentInitializer, WorldComponentInitializer {
 	public static final String MODID = "rayon";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
 
@@ -58,15 +55,5 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	@Override
 	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
 		registry.register(DYNAMICS_WORLD, MinecraftDynamicsWorld::create);
-	}
-
-	/**
-	 * Adds the config screen mod menu.
-	 * @return the {@link ConfigScreenFactory}
-	 * @see ConfigScreen
-	 */
-	@Override
-	public ConfigScreenFactory<?> getModConfigScreenFactory() {
-		return ConfigScreen::create;
 	}
 }
