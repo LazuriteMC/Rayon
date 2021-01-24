@@ -1,8 +1,7 @@
 package dev.lazurite.rayon;
 
-import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
-import dev.lazurite.rayon.util.config.ConfigS2C;
+import dev.lazurite.rayon.util.PacketCallbacks;
 import dev.lazurite.rayon.util.config.ConfigScreen;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.util.config.Config;
@@ -36,8 +35,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 
 	@Override
 	public void onInitializeClient() {
-		RayonSpawnS2CPacket.register();
-		ConfigS2C.register();
+		PacketCallbacks.register();
 	}
 
 	/**
