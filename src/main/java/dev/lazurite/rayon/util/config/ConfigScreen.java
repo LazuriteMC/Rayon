@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.util.config;
 
-import dev.lazurite.rayon.Rayon;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import net.minecraft.client.MinecraftClient;
@@ -11,7 +10,7 @@ import net.minecraft.text.TranslatableText;
 
 /**
  * Class for housing the method which returns a new config screen made using Cloth Config.
- * @see Rayon#getModConfigScreenFactory()
+ * @see ModMenuEntry#getModConfigScreenFactory()
  */
 public class ConfigScreen {
     public static Screen create(Screen parent) {
@@ -55,7 +54,7 @@ public class ConfigScreen {
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.step_rate"),
                 Config.INSTANCE.getLocal().getStepRate(), 20, 260)
-                .setDefaultValue(260)
+                .setDefaultValue(20)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.step_rate.tooltip"),
                         new TranslatableText("config.rayon.option.performance.medium"))

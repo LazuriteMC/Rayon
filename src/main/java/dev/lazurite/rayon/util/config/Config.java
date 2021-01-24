@@ -27,7 +27,7 @@ public final class Config {
     public boolean debug = false;
     public boolean debugBlocks = false;
 
-    private final LocalSettings local = new LocalSettings(1, 260);
+    private final LocalSettings local = new LocalSettings(1, 20);
     private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f, true);
     private GlobalSettings remoteGlobal;
 
