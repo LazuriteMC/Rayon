@@ -1,13 +1,8 @@
 package dev.lazurite.rayon.util.config;
 
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.util.config.settings.GlobalSettings;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -23,25 +18,11 @@ import net.minecraft.util.Identifier;
 public class ConfigS2C {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "config_s2c");
 
-    public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        GlobalSettings remoteGlobal = new GlobalSettings(
-                buf.readFloat(),
-                buf.readFloat(),
-                buf.readBoolean()
-        );
-
-        client.execute(() -> Config.INSTANCE.setRemoteGlobal(remoteGlobal));
-    }
-
     public static void send(ServerPlayerEntity player, Config config) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeFloat(config.getGlobal().getGravity());
         buf.writeFloat(config.getGlobal().getAirDensity());
         buf.writeBoolean(config.getGlobal().isAirResistanceEnabled());
         ServerPlayNetworking.send(player, PACKET_ID, buf);
-    }
-
-    public static void register() {
-        ClientPlayNetworking.registerGlobalReceiver(PACKET_ID, ConfigS2C::accept);
     }
 }
