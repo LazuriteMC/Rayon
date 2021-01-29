@@ -3,6 +3,7 @@ package dev.lazurite.rayon.impl.physics.body;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
  * A basic {@link PhysicsRigidBody} class representing a block.
  * @see BlockHelper
  */
-public class BlockRigidBody extends PhysicsRigidBody {
+public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     private final BlockPos blockPos;
     private final BlockState blockState;
 
@@ -29,6 +30,16 @@ public class BlockRigidBody extends PhysicsRigidBody {
 
     public BlockState getBlockState() {
         return this.blockState;
+    }
+
+    @Override
+    public Vector3f getOutlineColor() {
+        return new Vector3f(1, 0, 1);
+    }
+
+    @Override
+    public int getDebugLayer() {
+        return 1;
     }
 
     @Override

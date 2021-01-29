@@ -9,6 +9,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
 import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
+import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.thread.Clock;
@@ -72,7 +73,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
 
             /* Step each EntityRigidBody */
             for (PhysicsRigidBody body : getRigidBodyList()) {
-                if (body instanceof EntityRigidBody) {
+                if (body instanceof SteppableBody) {
                     ((EntityRigidBody) body).step(delta);
                 }
             }

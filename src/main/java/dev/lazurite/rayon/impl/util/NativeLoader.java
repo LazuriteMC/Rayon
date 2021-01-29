@@ -14,8 +14,8 @@ import java.net.URL;
  */
 public class NativeLoader {
     public enum OperatingSystem {
-        WINDOWS("https://github.com/stephengold/Libbulletjme/releases/download/9.3.2/Windows64ReleaseSp_bulletjme.dll", "Windows64ReleaseSp_bulletjme.dll"),
-        LINUX("https://github.com/stephengold/Libbulletjme/releases/download/9.3.2/Linux64ReleaseSp_libbulletjme.so", "Linux64ReleaseSp_libbulletjme.so");
+        WINDOWS("https://github.com/stephengold/Libbulletjme/releases/download/10.0.0/Windows64ReleaseSp_bulletjme.dll", "Windows64ReleaseSp_bulletjme.dll"),
+        LINUX("https://github.com/stephengold/Libbulletjme/releases/download/10.0.0/Linux64ReleaseSp_libbulletjme.so", "Linux64ReleaseSp_libbulletjme.so");
 
         final String url;
         final String file;

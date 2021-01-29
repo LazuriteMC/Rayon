@@ -24,7 +24,7 @@ public final class Config {
     public static final String CONFIG_NAME = "rayon.json";
 
     public boolean debug = false;
-    public boolean debugBlocks = false;
+    public int debugLayer = 0;
 
     private final LocalSettings local = new LocalSettings(1, 260);
     private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f, true);

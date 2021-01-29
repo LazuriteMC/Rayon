@@ -10,6 +10,8 @@ import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
 import dev.lazurite.rayon.api.event.EntityBodyStepEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
+import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
+import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.physics.helper.AirHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.VectorHelper;
@@ -47,7 +49,7 @@ import java.util.function.BooleanSupplier;
  * @see EntityBodyStepEvents
  * @see EntityBodyCollisionEvent
  */
-public class EntityRigidBody extends PhysicsRigidBody implements ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final Quaternion prevOrientation = new Quaternion();
     private final Quaternion tickOrientation = new Quaternion();
     private final MinecraftDynamicsWorld dynamicsWorld;
@@ -85,8 +87,10 @@ public class EntityRigidBody extends PhysicsRigidBody implements ComponentV3, Co
      *
      * You can gain access to this method by registering an event handler in {@link EntityBodyStepEvents}.<br><br>
      * @param delta the amount of seconds since the last step
-     * @see MinecraftDynamicsWorld#step(BooleanSupplier) 
+     * @see MinecraftDynamicsWorld#step(BooleanSupplier)
+     * @see SteppableBody
      */
+    @Override
     public void step(float delta) {
         /* Invoke all registered start step events */
         EntityBodyStepEvents.START_ENTITY_STEP.invoker().onStartStep(this, delta);
