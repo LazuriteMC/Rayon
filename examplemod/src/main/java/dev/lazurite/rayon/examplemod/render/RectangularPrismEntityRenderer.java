@@ -18,6 +18,7 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 
 @Environment(EnvType.CLIENT)
 public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPrismEntity> {
@@ -34,20 +35,16 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
         matrixStack.push();
 
         EntityRigidBody body = Rayon.RIGID_BODY.get(rectangularPrism);
-        BoundingBox box = body.boundingBox(new BoundingBox());
+        Box box = rectangularPrism.getBoundingBox();
 
-        matrixStack.translate(0, box.getYExtent() / 2.0, 0);
-        matrixStack.multiply(QuaternionHelper.bulletToMinecraft(QuaternionHelper.slerp(
-                body.getPrevRotation(new Quaternion()),
-                body.getTickRotation(new Quaternion()),
-                delta
-        )));
-        matrixStack.translate(0, -box.getYExtent() / 2.0, 0);
-        matrixStack.translate(-box.getXExtent() / 2.0, 0, -box.getZExtent() / 2.0);
+        matrixStack.translate(0, body.boundingBox(new BoundingBox()).getYExtent() / 2.0, 0);
+        matrixStack.multiply(QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new Quaternion(), delta)));
+        matrixStack.translate(-box.getXLength() / 2.0, -box.getYLength() / 2.0, -box.getZLength() / 2.0);
 
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(this.getTexture(rectangularPrism)));
         model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStack.pop();
+
         super.render(rectangularPrism, yaw, delta, matrixStack, vertexConsumerProvider, i);
     }
 

@@ -50,8 +50,8 @@ import java.util.function.BooleanSupplier;
  * @see EntityBodyCollisionEvent
  */
 public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
-    private final Quaternion prevOrientation = new Quaternion();
-    private final Quaternion tickOrientation = new Quaternion();
+    private final Quaternion prevRotation = new Quaternion();
+    private final Quaternion tickRotation = new Quaternion();
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final Entity entity;
     private float dragCoefficient;
@@ -64,7 +64,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.setFriction(friction);
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
-        this.prevOrientation.set(getPhysicsRotation(new Quaternion()));
+        this.prevRotation.set(getPhysicsRotation(new Quaternion()));
 //        this.setDeactivationTime(30);
         this.dynamicsWorld.addCollisionObject(this);
     }
@@ -116,14 +116,14 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
             Rayon.RIGID_BODY.sync(entity);
         }
 
-        prevOrientation.set(getTickRotation(new Quaternion()));
-        tickOrientation.set(getPhysicsRotation(new Quaternion()));
+        prevRotation.set(tickRotation);
+        tickRotation.set(getPhysicsRotation(new Quaternion()));
 
         Vector3f position = getPhysicsLocation(new Vector3f());
         entity.updatePosition(position.x, position.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, position.z);
 
-        entity.yaw = QuaternionHelper.getYaw(getTickRotation(new Quaternion()));
-        entity.pitch = QuaternionHelper.getPitch(getTickRotation(new Quaternion()));
+        entity.yaw = QuaternionHelper.getYaw(tickRotation);
+        entity.pitch = QuaternionHelper.getPitch(tickRotation);
     }
 
     public void setDragCoefficient(float dragCoefficient) {
@@ -134,22 +134,17 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.noclip = noclip;
     }
 
-    public Quaternion getTickRotation(Quaternion out) {
-        out.set(tickOrientation);
-        return out;
-    }
-
-    public Quaternion getPrevRotation(Quaternion out) {
-        out.set(prevOrientation);
-        return out;
-    }
-
     public float getDragCoefficient() {
         return this.dragCoefficient;
     }
 
     public boolean isNoClipEnabled() {
         return this.noclip;
+    }
+
+    public Quaternion getPhysicsRotation(Quaternion quaternion, float delta) {
+        quaternion.set(QuaternionHelper.slerp(prevRotation, tickRotation, delta));
+        return quaternion;
     }
 
     public Entity getEntity() {
