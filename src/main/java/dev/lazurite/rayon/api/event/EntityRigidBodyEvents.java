@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * Callbacks for {@link EntityRigidBody}. Includes events for loading,
  * unloading, start of step, end of step, and collisions.
  *
- * @since 1.0.0
+ * @since 1.1.0
  * @see EntityRigidBody#step
  * @see MinecraftDynamicsWorld#collision
  */

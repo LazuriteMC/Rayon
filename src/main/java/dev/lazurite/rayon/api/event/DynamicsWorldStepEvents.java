@@ -8,32 +8,41 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * Callbacks for when the {@link MinecraftDynamicsWorld} on both the client and the
  * server calls the {@link MinecraftDynamicsWorld#step} method.
  *
- * @since 1.0.0
+ * @since 1.1.0
  * @see MinecraftDynamicsWorld#step
  */
 public final class DynamicsWorldStepEvents {
-    public static final Event<StartWorldStep> START_WORLD_STEP = EventFactory.createArrayBacked(StartWorldStep.class, (callbacks) -> (dynamicsWorld, delta) -> {
+    public static final Event<StartWorldStep> START_WORLD_STEP = EventFactory.createArrayBacked(StartWorldStep.class, (callbacks) -> (world, delta) -> {
         for (StartWorldStep event : callbacks) {
-            event.onStartStep(dynamicsWorld, delta);
+            event.onStartStep(world, delta);
         }
     });
 
-    public static final Event<EndWorldStep> END_WORLD_STEP = EventFactory.createArrayBacked(EndWorldStep.class, (callbacks) -> (dynamicsWorld, delta) -> {
+    public static final Event<EndWorldStep> END_WORLD_STEP = EventFactory.createArrayBacked(EndWorldStep.class, (callbacks) -> (world, delta) -> {
         for (EndWorldStep event : callbacks) {
-            event.onEndStep(dynamicsWorld, delta);
+            event.onEndStep(world, delta);
         }
     });
 
-    private DynamicsWorldStepEvents() {
-    }
+    public static final Event<WorldLoad> WORLD_LOAD = EventFactory.createArrayBacked(WorldLoad.class, (callbacks) -> (world) -> {
+        for (WorldLoad event : callbacks) {
+            event.onLoad(world);
+        }
+    });
+
+    private DynamicsWorldStepEvents() { }
 
     @FunctionalInterface
     public interface StartWorldStep {
-        void onStartStep(MinecraftDynamicsWorld dynamicsWorld, float delta);
+        void onStartStep(MinecraftDynamicsWorld world, float delta);
     }
 
     @FunctionalInterface
     public interface EndWorldStep {
-        void onEndStep(MinecraftDynamicsWorld dynamicsWorld, float delta);
+        void onEndStep(MinecraftDynamicsWorld world, float delta);
+    }
+
+    public interface WorldLoad {
+        void onLoad(MinecraftDynamicsWorld world);
     }
 }

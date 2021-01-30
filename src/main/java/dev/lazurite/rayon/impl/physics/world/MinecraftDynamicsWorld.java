@@ -54,6 +54,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         this.world = world;
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
+        DynamicsWorldStepEvents.WORLD_LOAD.invoker().onLoad(this);
     }
 
     public MinecraftDynamicsWorld(World world) {
