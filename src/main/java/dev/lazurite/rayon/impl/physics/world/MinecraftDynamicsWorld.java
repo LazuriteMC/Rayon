@@ -53,7 +53,6 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         this.world = world;
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
-        this.setAccuracy(1f / 20f);
     }
 
     public MinecraftDynamicsWorld(World world) {
@@ -78,12 +77,10 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
                 }
             }
 
-//            if (world.isClient()) {
-//                setAccuracy(1f / (float) Config.getInstance().getLocal().getStepRate());
-//            }
-
             /* Step the simulation */
-            update(delta, 0);
+            int maxSubSteps = Config.getInstance().getLocal().getMaxSubSteps();
+            setAccuracy(delta / (float) maxSubSteps);
+            update(delta, maxSubSteps);
 
             /* Run all end world step events */
             DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);

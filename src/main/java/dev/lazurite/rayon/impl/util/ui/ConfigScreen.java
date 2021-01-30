@@ -1,5 +1,7 @@
-package dev.lazurite.rayon.impl.util.config;
+package dev.lazurite.rayon.impl.util.ui;
 
+import dev.lazurite.rayon.impl.util.config.Config;
+import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import net.minecraft.client.MinecraftClient;
@@ -60,6 +62,17 @@ public class ConfigScreen {
                         new TranslatableText("config.rayon.option.performance.medium"))
                 .setTextGetter((currValue) -> currValue == 260 ? new TranslatableText("config.rayon.option.step_rate.max") : new LiteralText(String.valueOf(currValue)))
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setStepRate(newValue))
+                .build());
+
+        /* Simulation Max Sub Steps */
+        category.addEntry(builder.entryBuilder().startIntSlider(
+                new TranslatableText("config.rayon.option.max_sub_steps"),
+                Config.getInstance().getLocal().getMaxSubSteps(), 5, 10)
+                .setDefaultValue(5)
+                .setTooltip(
+                        new TranslatableText("config.rayon.option.max_sub_steps.tooltip"),
+                        new TranslatableText("config.rayon.option.performance.low"))
+                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setMaxSubSteps(newValue))
                 .build());
 
         if (!Config.getInstance().isRemote()) {

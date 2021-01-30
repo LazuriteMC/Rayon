@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util.config;
+package dev.lazurite.rayon.impl.util.ui;
 
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;

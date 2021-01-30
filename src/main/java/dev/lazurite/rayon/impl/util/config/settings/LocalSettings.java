@@ -13,9 +13,14 @@ public class LocalSettings {
     @Setting.Constrain.Range(min = 20, max = 260, step = 1.0f)
     private int stepRate;
 
-    public LocalSettings(int blockDistance, int stepRate) {
+    @Setting
+    @Setting.Constrain.Range(min = 5, max = 10, step = 1.0f)
+    private int maxSubSteps;
+
+    public LocalSettings(int blockDistance, int stepRate, int maxSubSteps) {
         this.blockDistance = blockDistance;
         this.stepRate = stepRate;
+        this.maxSubSteps = maxSubSteps;
     }
 
     public void setBlockDistance(int blockDistance) {
@@ -26,11 +31,19 @@ public class LocalSettings {
         this.stepRate = stepRate;
     }
 
+    public void setMaxSubSteps(int maxSubSteps) {
+        this.maxSubSteps = maxSubSteps;
+    }
+
     public int getBlockDistance() {
         return this.blockDistance;
     }
 
     public int getStepRate() {
         return this.stepRate;
+    }
+
+    public int getMaxSubSteps() {
+        return this.maxSubSteps;
     }
 }

@@ -3,7 +3,7 @@ package dev.lazurite.rayon.impl.physics.helper;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.util.config.ConfigScreen;
+import dev.lazurite.rayon.impl.util.ui.ConfigScreen;
 
 import java.util.function.Function;
 

@@ -66,7 +66,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
-//        this.setDeactivationTime(30);
+        this.setDeactivationTime(30);
         this.dynamicsWorld.addCollisionObject(this);
     }
 

@@ -2,6 +2,7 @@ package dev.lazurite.rayon.impl.util.config;
 
 import dev.lazurite.rayon.impl.util.config.settings.GlobalSettings;
 import dev.lazurite.rayon.impl.util.config.settings.LocalSettings;
+import dev.lazurite.rayon.impl.util.ui.ConfigScreen;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
@@ -23,7 +24,7 @@ public final class Config {
     private static final Config instance = new Config();
     public static final String CONFIG_NAME = "rayon.json";
 
-    private final LocalSettings local = new LocalSettings(1, 260);
+    private final LocalSettings local = new LocalSettings(1, 260, 5);
     private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f, true);
     private GlobalSettings remoteGlobal;
 

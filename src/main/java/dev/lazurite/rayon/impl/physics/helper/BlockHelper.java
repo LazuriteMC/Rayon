@@ -78,7 +78,7 @@ public class BlockHelper {
                 VoxelShape vox = blockState.getCollisionShape(world, blockPos);
 
                 if (!vox.isEmpty()) {
-                    BlockRigidBody body = new BlockRigidBody(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction);
+                    BlockRigidBody body = new BlockRigidBody(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction, 0.25f);
 
                     /* Check if the block isn't already in the dynamics world */
                     if (!dynamicsWorld.getRigidBodyList().contains(body)) {

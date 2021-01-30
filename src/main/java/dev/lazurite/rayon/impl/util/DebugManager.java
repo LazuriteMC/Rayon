@@ -8,6 +8,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -19,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 
+@Environment(EnvType.CLIENT)
 public final class DebugManager {
     private static final DebugManager instance = new DebugManager();
 

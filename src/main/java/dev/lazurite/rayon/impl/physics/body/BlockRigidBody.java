@@ -17,12 +17,13 @@ public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     private final BlockPos blockPos;
     private final BlockState blockState;
 
-    public BlockRigidBody(BlockPos blockPos, BlockState blockState, CollisionShape shape, float friction) {
+    public BlockRigidBody(BlockPos blockPos, BlockState blockState, CollisionShape shape, float friction, float restitution) {
         super(shape, PhysicsRigidBody.massForStatic);
         this.blockPos = blockPos;
         this.blockState = blockState;
         this.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
         this.setFriction(friction);
+        this.setRestitution(restitution);
     }
 
     public BlockPos getBlockPos() {
