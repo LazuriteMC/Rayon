@@ -2,7 +2,7 @@ package dev.lazurite.rayon.examplemod;
 
 import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
-import dev.lazurite.rayon.api.event.server.EntityBodyCollisionEvent;
+import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.api.shape.provider.BoundingBoxShapeProvider;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
@@ -54,7 +54,7 @@ public class ExampleMod implements ModInitializer {
                     .build());
 
         /* An example of a block collision event */
-        EntityBodyCollisionEvent.BLOCK_COLLISION.register((entityBody, blockBody) -> {
+        EntityRigidBodyEvents.BLOCK_COLLISION.register((entityBody, blockBody) -> {
             if (blockBody.getBlockState().getBlock().equals(Blocks.BRICKS)) {
                 LOGGER.info("Touching bricks!!");
                 entityBody.getEntity().kill();

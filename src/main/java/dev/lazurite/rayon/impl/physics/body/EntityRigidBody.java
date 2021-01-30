@@ -9,6 +9,7 @@ import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
+import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.physics.helper.AirHelper;
@@ -24,6 +25,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
@@ -47,7 +49,7 @@ import java.util.function.BooleanSupplier;
  * @see MinecraftDynamicsWorld
  * @see EntityRigidBodyEvents
  */
-public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, BlockLoadingBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final Quaternion prevRotation = new Quaternion();
     private final Quaternion tickRotation = new Quaternion();
     private final MinecraftDynamicsWorld dynamicsWorld;
@@ -63,7 +65,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
-        this.setDeactivationTime(30);
+        this.setDeactivationTime(3);
         this.dynamicsWorld.addCollisionObject(this);
     }
 
@@ -124,16 +126,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         entity.pitch = QuaternionHelper.getPitch(tickRotation);
     }
 
-    @Override
-    public Vector3f getOutlineColor() {
-        return new Vector3f(1.0f, 0.6f, 0);
-    }
-
-    @Override
-    public DebugManager.DebugLayer getDebugLayer() {
-        return DebugManager.DebugLayer.ENTITY;
-    }
-
     public void setDragCoefficient(float dragCoefficient) {
         this.dragCoefficient = dragCoefficient;
     }
@@ -143,11 +135,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     }
 
     public float getDragCoefficient() {
-        return this.dragCoefficient;
-    }
-
-    public boolean isNoClipEnabled() {
-        return this.noclip;
+        return dragCoefficient;
     }
 
     public Quaternion getPhysicsRotation(Quaternion quaternion, float delta) {
@@ -159,8 +147,29 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         return entity;
     }
 
+    @Override
+    public Vector3f getOutlineColor() {
+        return new Vector3f(1.0f, 0.6f, 0);
+    }
+
+    @Override
+    public DebugManager.DebugLayer getDebugLayer() {
+        return DebugManager.DebugLayer.ENTITY;
+    }
+
+    @Override
     public MinecraftDynamicsWorld getDynamicsWorld() {
         return dynamicsWorld;
+    }
+
+    @Override
+    public boolean isNoClipEnabled() {
+        return noclip;
+    }
+
+    @Override
+    public BlockPos getBlockPos() {
+        return getEntity().getBlockPos();
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
+import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
@@ -27,25 +28,25 @@ import java.util.*;
  * @see Config
  */
 public class BlockHelper {
+    private final List<BlockRigidBody> toKeep = Lists.newArrayList();
     private final MinecraftDynamicsWorld dynamicsWorld;
-    private final List<BlockRigidBody> toKeep;
 
     public BlockHelper(MinecraftDynamicsWorld dynamicsWorld) {
         this.dynamicsWorld = dynamicsWorld;
-        this.toKeep = Lists.newArrayList();
     }
 
     /**
-     * Load every block within a set distance from the given entities. Said
-     * distance is defined earlier during execution and converted into a
-     * {@link Box} area parameter.
+     * Load every block within a set distance from the given entities. The distance is defined
+     * earlier during execution and converted into a {@link Box} area parameter.
      * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
      * @see BlockHelper#load(Box)
      */
-    public void load(List<EntityRigidBody> dynamicBodyEntities) {
+    public void load(List<BlockLoadingBody> dynamicBodyEntities) {
+        int blockDistance = Config.getInstance().getLocal().getBlockDistance();
+
         dynamicBodyEntities.forEach(body -> {
             if (!body.isNoClipEnabled()) {
-                load(new Box(body.getEntity().getBlockPos()).expand(Config.getInstance().getLocal().getBlockDistance()));
+                load(new Box(body.getBlockPos()).expand(blockDistance));
             }
         });
 

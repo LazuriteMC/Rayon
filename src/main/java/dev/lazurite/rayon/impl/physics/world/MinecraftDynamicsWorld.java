@@ -10,6 +10,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
+import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
@@ -49,9 +50,9 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
 
     public MinecraftDynamicsWorld(World world, BroadphaseType broadphase) {
         super(broadphase);
-        this.blockHelper = new BlockHelper(this);
-        this.clock = new Clock();
         this.world = world;
+        this.clock = new Clock();
+        this.blockHelper = new BlockHelper(this);
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
         DynamicsWorldStepEvents.WORLD_LOAD.invoker().onLoad(this);
@@ -69,10 +70,13 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             /* Run all start world step events */
             DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
 
+            /* Set the gravity according to the config */
             setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
-            blockHelper.load(getEntityRigidBodies());
 
-            /* Step each EntityRigidBody */
+            /* Load blocks around all BlockLoadingBodies */
+            blockHelper.load(getBlockLoadingBodies());
+
+            /* Step each SteppableBody */
             for (PhysicsRigidBody body : getRigidBodyList()) {
                 if (body instanceof SteppableBody) {
                     ((EntityRigidBody) body).step(delta);
@@ -91,12 +95,12 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         }
     }
 
-    public List<EntityRigidBody> getEntityRigidBodies() {
-        List<EntityRigidBody> out = Lists.newArrayList();
+    public List<BlockLoadingBody> getBlockLoadingBodies() {
+        List<BlockLoadingBody> out = Lists.newArrayList();
 
         getRigidBodyList().forEach(body -> {
-            if (body instanceof EntityRigidBody) {
-                out.add((EntityRigidBody) body);
+            if (body instanceof BlockLoadingBody) {
+                out.add((BlockLoadingBody) body);
             }
         });
 

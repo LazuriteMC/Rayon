@@ -95,7 +95,6 @@ public final class DebugManager {
 
     public enum DebugLayer {
         ENTITY,
-        BLOCK,
-        OTHER
+        BLOCK
     }
 }
