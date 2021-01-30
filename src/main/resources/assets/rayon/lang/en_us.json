@@ -1,5 +1,7 @@
 {
-  "debug.rayon.on": "Rigid Body Hitboxes: shown",
+  "debug.rayon.entity": "Rigid Body Hitboxes: entities",
+  "debug.rayon.block": "Rigid Body Hitboxes: entities + blocks",
+  "debug.rayon.other": "Rigid Body Hitboxes: all",
   "debug.rayon.off": "Rigid Body Hitboxes: hidden",
 
   "config.rayon.title": "Phyiscs Simulation Settings",

@@ -16,6 +16,7 @@ import dev.lazurite.rayon.impl.physics.helper.AirHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.impl.util.DebugManager;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -124,6 +125,16 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
         entity.yaw = QuaternionHelper.getYaw(tickRotation);
         entity.pitch = QuaternionHelper.getPitch(tickRotation);
+    }
+
+    @Override
+    public Vector3f getOutlineColor() {
+        return new Vector3f(1.0f, 0.6f, 0);
+    }
+
+    @Override
+    public DebugManager.DebugLayer getDebugLayer() {
+        return DebugManager.DebugLayer.ENTITY;
     }
 
     public void setDragCoefficient(float dragCoefficient) {

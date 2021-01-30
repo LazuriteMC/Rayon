@@ -5,6 +5,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
+import dev.lazurite.rayon.impl.util.DebugManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 
@@ -38,8 +39,8 @@ public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     }
 
     @Override
-    public int getDebugLayer() {
-        return 1;
+    public DebugManager.DebugLayer getDebugLayer() {
+        return DebugManager.DebugLayer.BLOCK;
     }
 
     @Override
