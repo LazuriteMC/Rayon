@@ -4,10 +4,11 @@ import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
-import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
+import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
@@ -120,13 +121,33 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     }
 
     @Override
+    public void addCollisionObject(PhysicsCollisionObject collisionObject) {
+        if (collisionObject instanceof EntityRigidBody) {
+            EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad((EntityRigidBody) collisionObject, this);
+        }
+
+        super.addCollisionObject(collisionObject);
+    }
+
+    @Override
+    public void removeCollisionObject(PhysicsCollisionObject collisionObject) {
+        if (collisionObject instanceof EntityRigidBody) {
+            EntityRigidBodyEvents.ENTITY_BODY_UNLOAD.invoker().onUnload((EntityRigidBody) collisionObject, this);
+        }
+
+        super.removeCollisionObject(collisionObject);
+    }
+
+    @Override
     public void collision(PhysicsCollisionEvent event) {
+        System.out.println("SCREAM");
+
         if (event.getObjectA() instanceof EntityRigidBody && event.getObjectA() instanceof EntityRigidBody) {
-            EntityBodyCollisionEvent.ENTITY_COLLISION.invoker().onEntityCollision((EntityRigidBody) event.getObjectA(), (EntityRigidBody) event.getObjectB());
+            EntityRigidBodyEvents.ENTITY_COLLISION.invoker().onEntityCollision((EntityRigidBody) event.getObjectA(), (EntityRigidBody) event.getObjectB());
         } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof EntityRigidBody) {
-            EntityBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision((EntityRigidBody) event.getObjectB(), (BlockRigidBody) event.getObjectA());
+            EntityRigidBodyEvents.BLOCK_COLLISION.invoker().onBlockCollision((EntityRigidBody) event.getObjectB(), (BlockRigidBody) event.getObjectA());
         } else if (event.getObjectA() instanceof EntityRigidBody && event.getObjectB() instanceof BlockRigidBody) {
-            EntityBodyCollisionEvent.BLOCK_COLLISION.invoker().onBlockCollision((EntityRigidBody) event.getObjectA(), (BlockRigidBody) event.getObjectB());
+            EntityRigidBodyEvents.BLOCK_COLLISION.invoker().onBlockCollision((EntityRigidBody) event.getObjectA(), (BlockRigidBody) event.getObjectB());
         }
     }
 }

@@ -6,8 +6,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
-import dev.lazurite.rayon.api.event.EntityBodyCollisionEvent;
-import dev.lazurite.rayon.api.event.EntityBodyStepEvents;
+import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
@@ -43,12 +42,10 @@ import java.util.function.BooleanSupplier;
  *
  * From an API user's standpoint, the only time you'll need to interact with this class is to
  * retrieve information from it (like position, velocity, orientation, etc). Otherwise, you can
- * modify it's behavior by registering an event in {@link EntityBodyCollisionEvent} or
- * {@link EntityBodyStepEvents}.<br><br>
+ * modify it's behavior by registering an event in {@link EntityRigidBodyEvents}.<br><br>
  *
  * @see MinecraftDynamicsWorld
- * @see EntityBodyStepEvents
- * @see EntityBodyCollisionEvent
+ * @see EntityRigidBodyEvents
  */
 public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final Quaternion prevRotation = new Quaternion();
@@ -86,7 +83,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
      * is best to do every step instead of every tick. The reason is that all forces to rigid bodies
      * are cleared after every step.<br><br>
      *
-     * You can gain access to this method by registering an event handler in {@link EntityBodyStepEvents}.<br><br>
+     * You can gain access to this method by registering an event handler in {@link EntityRigidBodyEvents}.<br><br>
      * @param delta the amount of seconds since the last step
      * @see MinecraftDynamicsWorld#step(BooleanSupplier)
      * @see SteppableBody
@@ -94,7 +91,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     @Override
     public void step(float delta) {
         /* Invoke all registered start step events */
-        EntityBodyStepEvents.START_ENTITY_STEP.invoker().onStartStep(this, delta);
+        EntityRigidBodyEvents.START_ENTITY_BODY_STEP.invoker().onStartStep(this, delta);
 
         /* Apply air resistance */
         if (Config.getInstance().getGlobal().isAirResistanceEnabled()) {
@@ -102,7 +99,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         }
 
         /* Invoke all registered end step events */
-        EntityBodyStepEvents.END_ENTITY_STEP.invoker().onEndStep(this, delta);
+        EntityRigidBodyEvents.END_ENTITY_BODY_STEP.invoker().onEndStep(this, delta);
     }
 
     /**

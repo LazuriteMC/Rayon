@@ -4,12 +4,9 @@ import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
-import java.util.function.BooleanSupplier;
-
 /**
  * Callbacks for when the {@link MinecraftDynamicsWorld} on both the client and the
- * server calls the {@link MinecraftDynamicsWorld#step(BooleanSupplier)} method.
- * There is one callback for the start of the loop and one for the end.
+ * server calls the {@link MinecraftDynamicsWorld#step} method.
  *
  * @since 1.0.0
  * @see MinecraftDynamicsWorld#step
