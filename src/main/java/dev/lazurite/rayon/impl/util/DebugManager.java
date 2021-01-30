@@ -15,6 +15,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
@@ -94,7 +95,17 @@ public final class DebugManager {
     }
 
     public enum DebugLayer {
-        ENTITY,
-        BLOCK
+        ENTITY("debug.rayon.entity"),
+        BLOCK("debug.rayon.block");
+
+        private final String translation;
+
+        DebugLayer(String translation) {
+            this.translation = translation;
+        }
+
+        public String getTranslation() {
+            return this.translation;
+        }
     }
 }

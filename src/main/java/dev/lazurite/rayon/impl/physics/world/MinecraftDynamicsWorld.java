@@ -70,6 +70,9 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             /* Run all start world step events */
             DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
 
+            /* Trigger any collision events */
+            distributeEvents();
+
             /* Set the gravity according to the config */
             setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
 
@@ -145,9 +148,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
 
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        System.out.println("SCREAM");
-
-        if (event.getObjectA() instanceof EntityRigidBody && event.getObjectA() instanceof EntityRigidBody) {
+        if (event.getObjectA() instanceof EntityRigidBody && event.getObjectB() instanceof EntityRigidBody) {
             EntityRigidBodyEvents.ENTITY_COLLISION.invoker().onEntityCollision((EntityRigidBody) event.getObjectA(), (EntityRigidBody) event.getObjectB());
         } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof EntityRigidBody) {
             EntityRigidBodyEvents.BLOCK_COLLISION.invoker().onBlockCollision((EntityRigidBody) event.getObjectB(), (BlockRigidBody) event.getObjectA());

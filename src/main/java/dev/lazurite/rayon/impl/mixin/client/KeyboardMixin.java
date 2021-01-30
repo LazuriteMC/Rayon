@@ -27,17 +27,7 @@ public abstract class KeyboardMixin {
             DebugManager.DebugLayer layer = DebugManager.getInstance().nextLayer();
 
             if (DebugManager.getInstance().isEnabled()) {
-                switch (layer) {
-                    case ENTITY:
-                        debugWarn("debug.rayon.entity");
-                        break;
-                    case BLOCK:
-                        debugWarn("debug.rayon.block");
-                        break;
-                    case OTHER:
-                        debugWarn("debug.rayon.other");
-                        break;
-                }
+                debugWarn(layer.getTranslation());
             } else {
                 debugWarn("debug.rayon.off");
             }

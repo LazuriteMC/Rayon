@@ -55,9 +55,11 @@ public class ExampleMod implements ModInitializer {
 
         /* An example of a block collision event */
         EntityRigidBodyEvents.BLOCK_COLLISION.register((entityBody, blockBody) -> {
-            if (blockBody.getBlockState().getBlock().equals(Blocks.BRICKS)) {
-                LOGGER.info("Touching bricks!!");
-                entityBody.getEntity().kill();
+            if (!entityBody.getDynamicsWorld().getWorld().isClient()) {
+                if (blockBody.getBlockState().getBlock().equals(Blocks.BRICKS)) {
+                    LOGGER.info("Touching bricks!!");
+                    entityBody.getEntity().kill();
+                }
             }
         });
     }
