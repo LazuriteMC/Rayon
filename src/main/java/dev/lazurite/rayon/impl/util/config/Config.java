@@ -9,9 +9,7 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,13 +45,8 @@ public final class Config {
         return local;
     }
 
-    @Environment(EnvType.CLIENT)
     public boolean isRemote() {
-        if (MinecraftClient.getInstance().getServer() != null) {
-            return MinecraftClient.getInstance().getServer().isRemote() && remoteGlobal != null;
-        }
-
-        return false;
+        return FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT) && remoteGlobal != null;
     }
 
     public void load() {

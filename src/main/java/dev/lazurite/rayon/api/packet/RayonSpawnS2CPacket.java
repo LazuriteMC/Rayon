@@ -8,7 +8,6 @@ import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.exception.RayonSpawnException;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -56,7 +55,7 @@ public class RayonSpawnS2CPacket {
             entity.pitch = QuaternionHelper.getPitch(orientation);
             entity.yaw = QuaternionHelper.getYaw(orientation);
 
-            EntityRigidBody body = Rayon.RIGID_BODY.get(entity);
+            EntityRigidBody body = Rayon.ENTITY.get(entity);
             body.setPhysicsRotation(orientation);
             body.setPhysicsLocation(position);
             body.setLinearVelocity(linearVelocity);
@@ -68,13 +67,13 @@ public class RayonSpawnS2CPacket {
         });
     }
 
-    public static Packet<?> get(Entity entity) {
+    public static Packet<?> get (Entity entity) {
         if (!EntityRigidBody.is(entity)) {
             throw new RayonSpawnException("The given entity is not registered.");
         }
 
         PacketByteBuf buf = PacketByteBufs.create();
-        EntityRigidBody body = Rayon.RIGID_BODY.get(entity);
+        EntityRigidBody body = Rayon.ENTITY.get(entity);
 
         buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(entity.getType()));
         buf.writeInt(entity.getEntityId());
@@ -87,9 +86,5 @@ public class RayonSpawnS2CPacket {
         VectorHelper.toBuffer(buf, body.getAngularVelocity(new Vector3f()));
 
         return ServerPlayNetworking.createS2CPacket(PACKET_ID, buf);
-    }
-
-    public static void register() {
-        ClientPlayNetworking.registerGlobalReceiver(PACKET_ID, RayonSpawnS2CPacket::accept);
     }
 }

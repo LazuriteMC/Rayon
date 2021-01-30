@@ -29,7 +29,7 @@ public abstract class EntityMixin {
     )
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
         if (EntityRigidBody.is((Entity) (Object) this) && !EntityRigidBody.is(entity)) {
-            Rayon.RIGID_BODY.get((Entity) (Object) this).applyCentralImpulse(new Vector3f((float) -d * 100, 0.0f, (float) -e * 100));
+            Rayon.ENTITY.get((Entity) (Object) this).applyCentralImpulse(new Vector3f((float) -d * 100, 0.0f, (float) -e * 100));
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class EntityMixin {
     @Inject(method = "remove", at = @At("HEAD"))
     public void remove(CallbackInfo info) {
         if (EntityRigidBody.is((Entity) (Object) this)) {
-            Rayon.WORLD.get(((Entity) (Object) this).getEntityWorld()).removeCollisionObject(Rayon.RIGID_BODY.get((Entity) (Object) this));
+            Rayon.WORLD.get(((Entity) (Object) this).getEntityWorld()).removeCollisionObject(Rayon.ENTITY.get((Entity) (Object) this));
         }
     }
 }

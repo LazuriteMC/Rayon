@@ -70,7 +70,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     }
 
     public static boolean is(Entity entity) {
-        return Rayon.RIGID_BODY.maybeGet(entity).isPresent();
+        return Rayon.ENTITY.maybeGet(entity).isPresent();
     }
 
     /**
@@ -113,7 +113,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     @Override
     public void tick() {
         if (!dynamicsWorld.getWorld().isClient()) {
-            Rayon.RIGID_BODY.sync(entity);
+            Rayon.ENTITY.sync(entity);
         }
 
         prevRotation.set(tickRotation);

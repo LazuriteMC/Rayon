@@ -2,7 +2,6 @@ package dev.lazurite.rayon.impl.util.config;
 
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.util.config.settings.GlobalSettings;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -39,9 +38,5 @@ public class ConfigS2C {
         buf.writeFloat(config.getGlobal().getAirDensity());
         buf.writeBoolean(config.getGlobal().isAirResistanceEnabled());
         ServerPlayNetworking.send(player, PACKET_ID, buf);
-    }
-
-    public static void register() {
-        ClientPlayNetworking.registerGlobalReceiver(PACKET_ID, ConfigS2C::accept);
     }
 }

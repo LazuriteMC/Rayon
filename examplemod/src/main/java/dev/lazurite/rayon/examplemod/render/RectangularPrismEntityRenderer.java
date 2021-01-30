@@ -34,7 +34,7 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
 
-        EntityRigidBody body = Rayon.RIGID_BODY.get(rectangularPrism);
+        EntityRigidBody body = Rayon.ENTITY.get(rectangularPrism);
         Box box = rectangularPrism.getBoundingBox();
 
         matrixStack.translate(0, body.boundingBox(new BoundingBox()).getYExtent() / 2.0, 0);
