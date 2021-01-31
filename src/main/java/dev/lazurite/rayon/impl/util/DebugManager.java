@@ -67,7 +67,7 @@ public final class DebugManager {
                         RenderSystem.depthMask(false);
                         RenderSystem.lineWidth(1.0F);
 
-                        FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), DebugShapeFactory.lowResolution).rewind();
+                        FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0).rewind();
                         BufferBuilder builder = Tessellator.getInstance().getBuffer();
                         builder.begin(GL11.GL_LINE_LOOP, VertexFormats.POSITION_COLOR);
 

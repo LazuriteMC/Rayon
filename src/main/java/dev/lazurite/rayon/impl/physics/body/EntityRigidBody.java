@@ -9,9 +9,11 @@ import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
+import dev.lazurite.rayon.impl.physics.body.shape.CompoundQuadShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
+import dev.lazurite.rayon.impl.transporter.Disassembler;
 import dev.lazurite.rayon.impl.util.helper.AirHelper;
 import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
@@ -65,7 +67,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
-        this.setDeactivationTime(3);
         this.dynamicsWorld.addCollisionObject(this);
     }
 
@@ -179,6 +180,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         setLinearVelocity(VectorHelper.fromBuffer(buf));
         setAngularVelocity(VectorHelper.fromBuffer(buf));
         setDragCoefficient(buf.readFloat());
+        setMass(buf.readFloat());
     }
 
     @Override
@@ -188,6 +190,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
         VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
         buf.writeFloat(getDragCoefficient());
+        buf.writeFloat(getMass());
     }
 
     @Override
@@ -197,6 +200,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
         setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
         setDragCoefficient(tag.getFloat("drag_coefficient"));
+        setMass(tag.getFloat("mass"));
     }
 
     @Override
@@ -206,6 +210,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         tag.put("linear_velocity", VectorHelper.toTag(getLinearVelocity(new Vector3f())));
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
         tag.putFloat("drag_coefficient", getDragCoefficient());
+        tag.putFloat("mass", getMass());
     }
 
     @Override

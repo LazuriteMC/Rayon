@@ -63,7 +63,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     }
 
     public void step(BooleanSupplier shouldStep) {
-        if (shouldStep.getAsBoolean()) {
+        if (shouldStep.getAsBoolean() && !isEmpty()) {
             /* Get delta time */
             float delta = this.clock.get();
 

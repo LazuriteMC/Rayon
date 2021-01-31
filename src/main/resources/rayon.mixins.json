@@ -10,10 +10,11 @@
     "common.ServerWorldMixin"
   ],
   "client": [
-    "client.KeyboardMixin",
-    "client.MinecraftClientMixin",
     "client.ClientPlayNetworkHandlerMixin",
-    "client.DebugRendererMixin"
+    "client.DebugRendererMixin",
+    "client.ItemRendererAccess",
+    "client.KeyboardMixin",
+    "client.MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1

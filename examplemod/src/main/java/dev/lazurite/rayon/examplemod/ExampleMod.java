@@ -6,16 +6,22 @@ import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import dev.lazurite.rayon.examplemod.render.RectangularPrismEntityRenderer;
+import dev.lazurite.rayon.impl.physics.body.shape.CompoundQuadShape;
+import dev.lazurite.rayon.impl.transporter.Disassembler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -68,6 +74,10 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
                     entityBody.getEntity().kill();
                 }
             }
+        });
+
+        EntityRigidBodyEvents.ENTITY_BODY_LOAD.register((body, world) -> {
+            body.setCollisionShape(new CompoundQuadShape(Disassembler.getItemPattern(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(new ItemStack(Items.DIAMOND), null, null))));
         });
     }
 }

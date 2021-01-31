@@ -28,6 +28,14 @@ public class VectorHelper {
         return new Vec3d(vector3f.x, vector3f.y, vector3f.z);
     }
 
+    public static net.minecraft.client.util.math.Vector3f bulletToMinecraft(Vector3f vector3f) {
+        return new net.minecraft.client.util.math.Vector3f(vector3f.x, vector3f.y, vector3f.z);
+    }
+
+    public static Vector3f minecraftToBullet(net.minecraft.client.util.math.Vector3f vector3f) {
+        return new Vector3f(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+    }
+
     /**
      * Converts the given {@link Vector3f} into a new {@link CompoundTag}.
      * @param vector3f the {@link Vector3f} to convert

@@ -2,6 +2,7 @@ package dev.lazurite.rayon;
 
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
+import dev.lazurite.rayon.impl.transporter.PatternC2S;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.RayonSpawnHandler;
@@ -17,6 +18,7 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +39,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	public void onInitialize() {
 		Config.getInstance().load();
 		NativeLoader.load();
+		ServerPlayNetworking.registerGlobalReceiver(PatternC2S.PACKET_ID, PatternC2S::accept);
 	}
 
 	@Override
