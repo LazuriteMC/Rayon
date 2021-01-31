@@ -2,6 +2,8 @@ package dev.lazurite.rayon.impl.util.ui;
 
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;
+import io.github.prospector.modmenu.api.ConfigScreenFactory;
+import io.github.prospector.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import net.minecraft.client.MinecraftClient;
@@ -11,10 +13,10 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
 /**
- * Class for housing the method which returns a new config screen made using Cloth Config.
- * @see ModMenuEntry#getModConfigScreenFactory()
+ * Handles creation of the config screen and also
+ * the process of opening it within mod menu.
  */
-public class ConfigScreen {
+public class ConfigScreen implements ModMenuApi {
     public static Screen create(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
@@ -108,5 +110,14 @@ public class ConfigScreen {
         }
 
         return category;
+    }
+
+    /**
+     * Adds the config screen to mod menu.
+     * @return the {@link ConfigScreenFactory}
+     */
+    @Override
+    public ConfigScreenFactory<?> getModConfigScreenFactory() {
+        return ConfigScreen::create;
     }
 }

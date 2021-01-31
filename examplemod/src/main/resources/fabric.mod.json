@@ -12,12 +12,8 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "dev.lazurite.rayon.examplemod.ExampleMod"
-    ],
-    "client": [
-      "dev.lazurite.rayon.examplemod.ExampleModClient"
-    ]
+    "main": [ "dev.lazurite.rayon.examplemod.ExampleMod" ],
+    "client": [ "dev.lazurite.rayon.examplemod.ExampleMod" ]
   },
 
   "depends": {

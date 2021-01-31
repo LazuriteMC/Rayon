@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.util.RayonSpawnHandler;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.impl.util.PacketCallbacks;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
@@ -41,7 +41,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 
 	@Override
 	public void onInitializeClient() {
-		PacketCallbacks.register();
+		RayonSpawnHandler.register();
 		ClientPlayNetworking.registerGlobalReceiver(ConfigS2C.PACKET_ID, ConfigS2C::accept);
 	}
 

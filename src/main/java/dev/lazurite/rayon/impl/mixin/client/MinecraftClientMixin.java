@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.mixin.client;
 
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.impl.physics.thread.Clock;
+import dev.lazurite.rayon.impl.util.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.mixin.common.IntegratedServerMixin;

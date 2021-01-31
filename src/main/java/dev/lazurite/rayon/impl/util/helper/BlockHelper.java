@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.physics.helper;
+package dev.lazurite.rayon.impl.util.helper;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

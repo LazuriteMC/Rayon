@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.physics.helper;
+package dev.lazurite.rayon.impl.util.helper;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;

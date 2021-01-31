@@ -4,7 +4,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.physics.helper.BlockHelper;
+import dev.lazurite.rayon.impl.util.helper.BlockHelper;
 import dev.lazurite.rayon.impl.util.DebugManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;

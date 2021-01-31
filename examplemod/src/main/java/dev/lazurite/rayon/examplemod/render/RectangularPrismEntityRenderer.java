@@ -7,7 +7,7 @@ import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.impl.physics.helper.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;

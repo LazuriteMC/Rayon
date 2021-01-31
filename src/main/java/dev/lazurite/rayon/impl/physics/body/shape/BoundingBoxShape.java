@@ -2,6 +2,7 @@ package dev.lazurite.rayon.impl.physics.body.shape;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.math.Vector3f;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
 
 /**
@@ -19,6 +20,10 @@ public class BoundingBoxShape extends BoxCollisionShape {
                 (float) box.getYLength() / 2.0f,
                 (float) box.getZLength() / 2.0f));
         this.box = box;
+    }
+
+    public BoundingBoxShape(Entity entity) {
+        this(entity.getBoundingBox());
     }
 
     public Box getBox() {

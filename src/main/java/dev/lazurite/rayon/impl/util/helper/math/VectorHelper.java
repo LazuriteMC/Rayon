@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.physics.helper.math;
+package dev.lazurite.rayon.impl.util.helper.math;
 
 import com.jme3.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;

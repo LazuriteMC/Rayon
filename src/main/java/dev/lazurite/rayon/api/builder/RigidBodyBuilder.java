@@ -1,8 +1,7 @@
 package dev.lazurite.rayon.api.builder;
 
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
-import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
+import dev.lazurite.rayon.api.shape.EntityShapeFactory;
 import dev.lazurite.rayon.impl.builder.RigidBodyBuilderImpl;
 import net.minecraft.entity.Entity;
 
@@ -19,13 +18,14 @@ public interface RigidBodyBuilder<E extends Entity> {
      * Call this first to start creating your {@link RigidBodyEntry}.
      *
      * @param entityClass the class of your {@link Entity}
-     * @param shapeFactory the {@link EntityShapeFactory} for creating a {@link CollisionShape}
      * @param <E> should be your {@link Entity} class
      * @return a new {@link RigidBodyBuilder} object which can be further configured before calling {@link RigidBodyBuilder#build}
      */
-    static <E extends Entity> RigidBodyBuilderImpl<E> create(Class<E> entityClass, EntityShapeFactory shapeFactory) {
-        return new RigidBodyBuilderImpl<>(entityClass, shapeFactory);
+    static <E extends Entity> RigidBodyBuilderImpl<E> create(Class<E> entityClass) {
+        return new RigidBodyBuilderImpl<>(entityClass);
     }
+
+    RigidBodyBuilder<E> setShape(EntityShapeFactory factory);
 
     RigidBodyBuilder<E> setMass(float mass);
 

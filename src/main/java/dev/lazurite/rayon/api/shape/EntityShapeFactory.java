@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.api.shape.factory;
+package dev.lazurite.rayon.api.shape;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;

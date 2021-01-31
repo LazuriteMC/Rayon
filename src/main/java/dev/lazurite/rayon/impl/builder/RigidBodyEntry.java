@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.builder;
 
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
-import dev.lazurite.rayon.api.shape.factory.EntityShapeFactory;
+import dev.lazurite.rayon.api.shape.EntityShapeFactory;
 import net.minecraft.entity.Entity;
 
 /**
