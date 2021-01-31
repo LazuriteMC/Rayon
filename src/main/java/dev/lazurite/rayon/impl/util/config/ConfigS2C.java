@@ -23,13 +23,17 @@ public class ConfigS2C {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "config_s2c");
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        GlobalSettings remoteGlobal = new GlobalSettings(
-                buf.readFloat(),
-                buf.readFloat(),
-                buf.readBoolean()
-        );
+        if (client.getServer() != null) {
+            if (client.getServer().isRemote()) {
+                GlobalSettings remoteGlobal = new GlobalSettings(
+                        buf.readFloat(),
+                        buf.readFloat(),
+                        buf.readBoolean()
+                );
 
-        client.execute(() -> Config.getInstance().setRemoteGlobal(remoteGlobal));
+                client.execute(() -> Config.getInstance().setRemoteGlobal(remoteGlobal));
+            }
+        }
     }
 
     public static void send(ServerPlayerEntity player, Config config) {

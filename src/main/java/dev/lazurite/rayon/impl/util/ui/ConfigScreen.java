@@ -6,6 +6,8 @@ import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -16,6 +18,7 @@ import net.minecraft.text.TranslatableText;
  * Handles creation of the config screen and also
  * the process of opening it within mod menu.
  */
+@Environment(EnvType.CLIENT)
 public class ConfigScreen implements ModMenuApi {
     public static Screen create(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
@@ -30,7 +33,7 @@ public class ConfigScreen implements ModMenuApi {
 
                     if (server != null) {
                         server.getPlayerManager().getPlayerList().forEach(player -> {
-                            if (!player.getUuid().equals(client.player.getUuid())) {
+                            if (!player.equals(client.player)) {
                                 ConfigS2C.send(player, Config.getInstance());
                             }
                         });
