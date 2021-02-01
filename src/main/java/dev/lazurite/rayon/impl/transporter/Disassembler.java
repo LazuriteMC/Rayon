@@ -36,6 +36,7 @@ public interface Disassembler {
         Pattern pattern = new Pattern();
         MinecraftClient.getInstance().getItemRenderer()
                 .renderItem(itemStack, ModelTransformation.Mode.GROUND, 0, 0, new MatrixStack(), pattern.asProvider());
+        pattern.getQuads().remove(pattern.getQuads().get(5));
         return pattern;
     }
 

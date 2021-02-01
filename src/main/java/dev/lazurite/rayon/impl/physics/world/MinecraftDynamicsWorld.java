@@ -87,9 +87,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             }
 
             /* Step the simulation */
-            int maxSubSteps = Config.getInstance().getLocal().getMaxSubSteps();
-            setAccuracy(delta / (float) maxSubSteps);
-            update(delta, maxSubSteps);
+            update(delta, Config.getInstance().getLocal().getMaxSubSteps());
 
             /* Run all end world step events */
             DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);

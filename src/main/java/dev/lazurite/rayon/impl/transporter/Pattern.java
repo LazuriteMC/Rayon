@@ -56,7 +56,7 @@ public class Pattern implements VertexConsumer {
     }
 
     public List<Quad> getQuads() {
-       return Lists.newArrayList(quads);
+       return this.quads;
     }
 
     public Provider asProvider() {
@@ -77,14 +77,51 @@ public class Pattern implements VertexConsumer {
     }
 
     public static class Quad {
-        private final List<Vector3f> points;
+        private final Vector3f p1;
+        private final Vector3f p2;
+        private final Vector3f p3;
+        private final Vector3f p4;
 
         public Quad(List<Vector3f> points) {
-            this.points = Lists.newArrayList(points);
+            this(points.get(0), points.get(1), points.get(2), points.get(3));
+        }
+
+        public Quad(Vector3f p1, Vector3f p2, Vector3f p3, Vector3f p4) {
+            this.p1 = p1;
+            this.p2 = p2;
+            this.p3 = p3;
+            this.p4 = p4;
         }
 
         public List<Vector3f> getPoints() {
-            return Lists.newArrayList(points);
+            return Lists.newArrayList(p1, p2, p3, p4);
+        }
+
+        public Vector3f getCenterPoint() {
+            float x = (p1.getX() + p2.getX() + p3.getX() + p4.getX()) / 4.0f;
+            float y = (p1.getY() + p2.getY() + p3.getY() + p4.getY()) / 4.0f;
+            float z = (p1.getZ() + p2.getZ() + p3.getZ() + p4.getZ()) / 4.0f;
+            return new Vector3f(x, y, z);
+        }
+
+        public float distanceFrom(Quad quad) {
+            Vector3f p1 = this.getCenterPoint();
+            Vector3f p2 = quad.getCenterPoint();
+
+            return (float) Math.sqrt(
+                Math.pow(p1.getX() - p2.getX(), 2) +
+                Math.pow(p1.getY() - p2.getY(), 2) +
+                Math.pow(p1.getZ() - p2.getZ(), 2)
+            );
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Quad) {
+                return getCenterPoint().equals(((Quad) obj).getCenterPoint());
+            }
+
+            return false;
         }
     }
 }

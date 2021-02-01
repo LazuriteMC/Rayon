@@ -1,5 +1,10 @@
 package dev.lazurite.rayon.examplemod;
 
+import com.google.common.collect.Lists;
+import com.jme3.bullet.collision.shapes.Box2dShape;
+import com.jme3.bullet.collision.shapes.HullCollisionShape;
+import com.jme3.bullet.collision.shapes.SimplexCollisionShape;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
@@ -26,6 +31,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
 
 public class ExampleMod implements ModInitializer, ClientModInitializer {
     public static final String MODID = "examplemod";
@@ -77,7 +84,18 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
         });
 
         EntityRigidBodyEvents.ENTITY_BODY_LOAD.register((body, world) -> {
-            body.setCollisionShape(new CompoundQuadShape(Disassembler.getItemPattern(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(new ItemStack(Items.DIAMOND), null, null))));
+//            body.setCollisionShape(new CompoundQuadShape(Disassembler.getItemPattern(new ItemStack(Items.DIAMOND))));
+
+            // THONK
+            body.setCollisionShape(new HullCollisionShape(Lists.newArrayList(
+                    new Vector3f(0, 1, 0.01f),
+                    new Vector3f(1, 1, 0.01f),
+                    new Vector3f(1, 0, 0.01f),
+                    new Vector3f(0, 0, 0.01f)
+            )));
+//            body.setCollisionShape(new Box2dShape(1, 2));
+
+//            body.setCollisionShape(new SimplexCollisionShape(new Vector3f(0, 0, 0), new Vector3f(1, 0, 0)));
         });
     }
 }
