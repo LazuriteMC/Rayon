@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.impl.transporter;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -14,11 +16,15 @@ public final class PatternBuffer extends HashMap<Identifier, Pattern> {
     }
 
     @Override
-    public Pattern put(Identifier key, Pattern value) {
-        if (!containsKey(key)) {
-            return super.put(key, value);
+    public Pattern put(Identifier identifier, Pattern pattern) {
+        if (!containsKey(identifier)) {
+            if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT)) {
+                PatternC2S.send(identifier, pattern);
+            }
+
+            return super.put(identifier, pattern);
         }
 
-        return value;
+        return pattern;
     }
 }

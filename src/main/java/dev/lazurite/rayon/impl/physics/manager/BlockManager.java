@@ -88,7 +88,7 @@ public class BlockManager {
 
                     if (world.isClient()) {
                         if (!blockState.isFullCube(world, blockPos)) {
-                            Pattern pattern = Disassembler.BlockPattern.getPattern(blockState, world);
+                            Pattern pattern = Disassembler.getPattern(blockState, world);
                             body.setCollisionShape(new PatternShape(pattern));
                             PatternC2S.send(body.getIdentifier(), pattern);
                         }

@@ -10,9 +10,8 @@
     "common.ServerWorldMixin"
   ],
   "client": [
-    "client.network.ClientPlayNetworkHandlerMixin",
-    "client.render.DebugRendererMixin",
-    "client.render.ItemRendererAccess",
+    "client.ClientPlayNetworkHandlerMixin",
+    "client.DebugRendererMixin",
     "client.KeyboardMixin",
     "client.MinecraftClientMixin"
   ],

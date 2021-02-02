@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.impl.mixin.client;
 
-import dev.lazurite.rayon.impl.mixin.client.render.DebugRendererMixin;
 import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
