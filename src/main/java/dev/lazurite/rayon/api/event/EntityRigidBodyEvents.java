@@ -7,8 +7,15 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
- * Callbacks for {@link EntityRigidBody}. Includes events for loading,
- * unloading, start of step, end of step, and collisions.
+ * Callbacks for {@link EntityRigidBody}. Includes:
+ * <ul>
+ *     <li>{@link EntityRigidBodyEvents#START_ENTITY_BODY_STEP}: Before each {@link EntityRigidBody#step}.</li>
+ *     <li>{@link EntityRigidBodyEvents#END_ENTITY_BODY_STEP}: After each {@link EntityRigidBody#step}.</li>
+ *     <li>{@link EntityRigidBodyEvents#ENTITY_BODY_LOAD}: Just before being added to the {@link MinecraftDynamicsWorld}.</li>
+ *     <li>{@link EntityRigidBodyEvents#ENTITY_BODY_UNLOAD}: Just after being removed from the {@link MinecraftDynamicsWorld}.</li>
+ *     <li>{@link EntityRigidBodyEvents#BLOCK_COLLISION}: Whenever contact is made between a {@link EntityRigidBody} and a {@link BlockRigidBody}.</li>
+ *     <li>{@link EntityRigidBodyEvents#ENTITY_COLLISION}: Whenever contact is made between two {@link EntityRigidBody}s.</li>
+ * </ul>
  *
  * @since 1.1.0
  * @see EntityRigidBody#step

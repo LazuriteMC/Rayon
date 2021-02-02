@@ -1,17 +1,24 @@
 package dev.lazurite.rayon.api.event;
 
+import com.jme3.bullet.PhysicsSpace;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.world.World;
 
 /**
- * Callbacks for when the {@link MinecraftDynamicsWorld} on both the client and the
- * server calls the {@link MinecraftDynamicsWorld#step} method.
+ * Callbacks for events within {@link MinecraftDynamicsWorld}. Includes:
+ * <ul>
+ *     <li>{@link DynamicsWorldEvents#START_WORLD_STEP}: Before each {@link MinecraftDynamicsWorld#step}.</li>
+ *     <li>{@link DynamicsWorldEvents#END_WORLD_STEP}: After each {@link MinecraftDynamicsWorld#step}.</li>
+ *     <li>{@link DynamicsWorldEvents#WORLD_LOAD}: After {@link MinecraftDynamicsWorld#MinecraftDynamicsWorld(World, PhysicsSpace.BroadphaseType)}.</li>
+ * </ul>
  *
  * @since 1.1.0
  * @see MinecraftDynamicsWorld#step
+ * @see MinecraftDynamicsWorld#MinecraftDynamicsWorld(World, PhysicsSpace.BroadphaseType) 
  */
-public final class DynamicsWorldStepEvents {
+public final class DynamicsWorldEvents {
     public static final Event<StartWorldStep> START_WORLD_STEP = EventFactory.createArrayBacked(StartWorldStep.class, (callbacks) -> (world, delta) -> {
         for (StartWorldStep event : callbacks) {
             event.onStartStep(world, delta);
@@ -30,7 +37,7 @@ public final class DynamicsWorldStepEvents {
         }
     });
 
-    private DynamicsWorldStepEvents() { }
+    private DynamicsWorldEvents() { }
 
     @FunctionalInterface
     public interface StartWorldStep {

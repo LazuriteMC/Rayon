@@ -7,7 +7,7 @@ import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.api.event.DynamicsWorldStepEvents;
+import dev.lazurite.rayon.api.event.DynamicsWorldEvents;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
@@ -38,7 +38,7 @@ import java.util.function.BooleanSupplier;
  * from 20 steps/second to the frame rate of the game. {@link ServerWorldMixin}, however, is only capable of
  * stepping at 20 steps/second on the server.<br><br>
  *
- * Additionally, there are world step events that can be utilized in {@link DynamicsWorldStepEvents}.
+ * Additionally, there are world step events that can be utilized in {@link DynamicsWorldEvents}.
  * @see EntityRigidBody
  * @see ServerWorldMixin
  * @see MinecraftClientMixin
@@ -55,42 +55,49 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         this.blockManager = new BlockManager(this);
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
-        DynamicsWorldStepEvents.WORLD_LOAD.invoker().onLoad(this);
+        DynamicsWorldEvents.WORLD_LOAD.invoker().onLoad(this);
     }
 
     public MinecraftDynamicsWorld(World world) {
         this(world, BroadphaseType.DBVT);
     }
 
+    /**
+     * This method performs the following steps:
+     * <ul>
+     *     <li>Triggers all {@link DynamicsWorldEvents#START_WORLD_STEP} events.</li>
+     *     <li>Triggers all collision events.</li>
+     *     <li>Sets gravity to the value stored in {@link Config}.</li>
+     *     <li>Loads blocks into the simulation using {@link BlockManager}.</li>
+     *     <li>Steps each {@link EntityRigidBody}s in the world.</li>
+     *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
+     *     <li>Triggers all {@link DynamicsWorldEvents#END_WORLD_STEP} events.</li>
+     * </ul>
+     *
+     * Additionally, none of the above steps execute when either the world is empty
+     * (no {@link PhysicsRigidBody}s) or when the {@link BooleanSupplier} shouldStep
+     * returns false.<br>
+     *
+     * @see DynamicsWorldEvents
+     * @see EntityRigidBodyEvents
+     * @param shouldStep whether or not the simulation should step
+     */
     public void step(BooleanSupplier shouldStep) {
         if (shouldStep.getAsBoolean() && !isEmpty()) {
-            /* Get delta time */
             float delta = this.clock.get();
-
-            /* Run all start world step events */
-            DynamicsWorldStepEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
-
-            /* Trigger any collision events */
+            DynamicsWorldEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
             distributeEvents();
-
-            /* Set the gravity according to the config */
             setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+            getBlockManager().load(getBlockLoadingBodies());
 
-            /* Load blocks around all BlockLoadingBodies */
-            blockManager.load(getBlockLoadingBodies());
-
-            /* Step each SteppableBody */
             for (PhysicsRigidBody body : getRigidBodyList()) {
                 if (body instanceof SteppableBody) {
                     ((EntityRigidBody) body).step(delta);
                 }
             }
 
-            /* Step the simulation */
             update(delta, Config.getInstance().getLocal().getMaxSubSteps());
-
-            /* Run all end world step events */
-            DynamicsWorldStepEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
+            DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
         }
