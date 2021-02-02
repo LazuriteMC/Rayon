@@ -12,7 +12,7 @@ import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
-import dev.lazurite.rayon.impl.util.helper.BlockHelper;
+import dev.lazurite.rayon.impl.physics.manager.BlockManager;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
@@ -44,7 +44,7 @@ import java.util.function.BooleanSupplier;
  * @see MinecraftClientMixin
  */
 public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3, PhysicsCollisionListener {
-    private final BlockHelper blockHelper;
+    private final BlockManager blockManager;
     private final Clock clock;
     private final World world;
 
@@ -52,7 +52,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         super(broadphase);
         this.world = world;
         this.clock = new Clock();
-        this.blockHelper = new BlockHelper(this);
+        this.blockManager = new BlockManager(this);
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
         DynamicsWorldStepEvents.WORLD_LOAD.invoker().onLoad(this);
@@ -77,7 +77,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
 
             /* Load blocks around all BlockLoadingBodies */
-            blockHelper.load(getBlockLoadingBodies());
+            blockManager.load(getBlockLoadingBodies());
 
             /* Step each SteppableBody */
             for (PhysicsRigidBody body : getRigidBodyList()) {
@@ -94,6 +94,10 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         } else {
             this.clock.reset();
         }
+    }
+
+    public BlockManager getBlockManager() {
+        return this.blockManager;
     }
 
     public List<BlockLoadingBody> getBlockLoadingBodies() {

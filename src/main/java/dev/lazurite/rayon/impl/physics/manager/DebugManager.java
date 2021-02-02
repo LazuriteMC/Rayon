@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util;
+package dev.lazurite.rayon.impl.physics.manager;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.bullet.util.DebugShapeFactory;

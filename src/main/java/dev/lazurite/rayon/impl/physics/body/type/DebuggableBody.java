@@ -2,7 +2,7 @@ package dev.lazurite.rayon.impl.physics.body.type;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.util.DebugManager;
+import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 
 /**
  * Any {@link PhysicsRigidBody} with this assigned will show up

@@ -18,7 +18,7 @@ public class PatternC2S {
     public static void accept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         Pattern pattern = new Pattern(PatternType.ITEM);
 
-        int bodyId = buf.readInt();
+        Identifier identifier = buf.readIdentifier();
         int size = buf.readInt();
 
         for (int i = 0; i < size; i++) {
@@ -27,14 +27,16 @@ public class PatternC2S {
             }
         }
 
-        server.execute(() -> PatternBuffer.getInstance().put(bodyId, pattern));
+        server.execute(() -> {
+            PatternBuffer.getInstance().put(identifier, pattern);
+        });
     }
 
-    public static void send(int bodyId, Pattern pattern) {
+    public static void send(Identifier identifier, Pattern pattern) {
         PacketByteBuf buf = PacketByteBufs.create();
         List<Pattern.Quad> quads = pattern.getQuads();
 
-        buf.writeInt(bodyId);
+        buf.writeIdentifier(identifier);
         buf.writeInt(quads.size());
 
         for (Pattern.Quad quad : quads) {

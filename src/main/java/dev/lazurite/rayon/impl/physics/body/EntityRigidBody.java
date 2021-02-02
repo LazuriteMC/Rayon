@@ -11,14 +11,13 @@ import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.physics.body.type.IdentifiableBody;
+import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
-import dev.lazurite.rayon.impl.transporter.PatternBuffer;
 import dev.lazurite.rayon.impl.util.helper.AirHelper;
 import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.impl.util.DebugManager;
+import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -27,10 +26,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 
 import java.util.Locale;
-import java.util.Random;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -53,7 +53,7 @@ import java.util.function.BooleanSupplier;
  * @see EntityRigidBodyEvents
  */
 public class EntityRigidBody extends PhysicsRigidBody implements
-        IdentifiableBody, SteppableBody, BlockLoadingBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+        IdentifierBody, SteppableBody, BlockLoadingBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
 
     private final Quaternion prevRotation = new Quaternion();
     private final Quaternion tickRotation = new Quaternion();
@@ -61,7 +61,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
     private final Entity entity;
     private float dragCoefficient;
     private boolean noclip;
-    private int id;
 
     public EntityRigidBody(Entity entity, EntityShapeFactory shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(shape.create(entity), mass);
@@ -72,11 +71,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
         this.dynamicsWorld.addCollisionObject(this);
-
-        if (!getEntity().getEntityWorld().isClient()) {
-            Random random = new Random();
-            setId(random.nextInt());
-        }
     }
 
     public static boolean is(Entity entity) {
@@ -124,7 +118,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
     public void tick() {
         if (!dynamicsWorld.getWorld().isClient()) {
             Rayon.ENTITY.sync(entity);
-            System.out.println("BUFFER???: " + PatternBuffer.getInstance().size());
         }
 
         prevRotation.set(tickRotation);
@@ -184,13 +177,8 @@ public class EntityRigidBody extends PhysicsRigidBody implements
     }
 
     @Override
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public int getId() {
-        return id;
+    public Identifier getIdentifier() {
+        return Registry.ENTITY_TYPE.getId(getEntity().getType());
     }
 
     @Override
@@ -201,7 +189,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         setAngularVelocity(VectorHelper.fromBuffer(buf));
         setDragCoefficient(buf.readFloat());
         setMass(buf.readFloat());
-        setId(buf.readInt());
     }
 
     @Override
@@ -212,7 +199,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
         buf.writeFloat(getDragCoefficient());
         buf.writeFloat(getMass());
-        buf.writeInt(getId());
     }
 
     @Override
@@ -223,7 +209,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
         setDragCoefficient(tag.getFloat("drag_coefficient"));
         setMass(tag.getFloat("mass"));
-        setId(tag.getInt("id"));
     }
 
     @Override
@@ -234,7 +219,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
         tag.putFloat("drag_coefficient", getDragCoefficient());
         tag.putFloat("mass", getMass());
-        tag.putInt("id", getId());
     }
 
     @Override

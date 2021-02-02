@@ -1,12 +1,17 @@
-package dev.lazurite.rayon.impl.util.helper;
+package dev.lazurite.rayon.impl.physics.manager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
+import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
+import dev.lazurite.rayon.impl.transporter.Disassembler;
+import dev.lazurite.rayon.impl.transporter.Pattern;
+import dev.lazurite.rayon.impl.transporter.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.PatternC2S;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
@@ -27,11 +32,11 @@ import java.util.*;
  * @see MinecraftDynamicsWorld
  * @see Config
  */
-public class BlockHelper {
+public class BlockManager {
     private final List<BlockRigidBody> toKeep = Lists.newArrayList();
     private final MinecraftDynamicsWorld dynamicsWorld;
 
-    public BlockHelper(MinecraftDynamicsWorld dynamicsWorld) {
+    public BlockManager(MinecraftDynamicsWorld dynamicsWorld) {
         this.dynamicsWorld = dynamicsWorld;
     }
 
@@ -39,7 +44,7 @@ public class BlockHelper {
      * Load every block within a set distance from the given entities. The distance is defined
      * earlier during execution and converted into a {@link Box} area parameter.
      * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
-     * @see BlockHelper#load(Box)
+     * @see BlockManager#load(Box)
      */
     public void load(List<BlockLoadingBody> dynamicBodyEntities) {
         int blockDistance = Config.getInstance().getLocal().getBlockDistance();
@@ -58,7 +63,7 @@ public class BlockHelper {
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
      * @param area the {@link Box} area around the entity to search for blocks within
-     * @see BlockHelper#load(List)
+     * @see BlockManager#load(List)
      */
     public void load(Box area) {
         World world = dynamicsWorld.getWorld();
@@ -81,6 +86,20 @@ public class BlockHelper {
                 if (!vox.isEmpty()) {
                     BlockRigidBody body = new BlockRigidBody(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction, 0.25f);
 
+                    if (world.isClient()) {
+                        if (!blockState.isFullCube(world, blockPos)) {
+                            Pattern pattern = Disassembler.BlockPattern.getPattern(blockState, world);
+                            body.setCollisionShape(new PatternShape(pattern));
+                            PatternC2S.send(body.getIdentifier(), pattern);
+                        }
+                    } else {
+                        Pattern pattern = PatternBuffer.getInstance().get(body.getIdentifier());
+
+                        if (pattern != null) {
+                            body.setCollisionShape(new PatternShape(pattern));
+                        }
+                    }
+
                     /* Check if the block isn't already in the dynamics world */
                     if (!dynamicsWorld.getRigidBodyList().contains(body)) {
                         dynamicsWorld.addCollisionObject(body);
@@ -96,11 +115,11 @@ public class BlockHelper {
      * Prune out any unnecessary blocks from the world during each call
      * to {@link MinecraftDynamicsWorld#step}. The purpose is to prevent
      * any trailing or residual blocks from being left over from a
-     * previous {@link BlockHelper#load(List)} call.
+     * previous {@link BlockManager#load(List)} call.
      * <b>Note:</b> This method should only be called after every entity
      * has been passed through the loading process. Otherwise, blocks will
      * be removed from the simulation prematurely and cause you a headache.
-     * @see BlockHelper#load(List)
+     * @see BlockManager#load(List)
      */
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
@@ -124,7 +143,7 @@ public class BlockHelper {
      * @param world the {@link World} to retrieve block info from
      * @param area  the {@link Box} area within the world to retrieve block info from
      * @return the {@link Map} of {@link BlockPos} and {@link BlockState} objects
-     * @see BlockHelper#load(Box)
+     * @see BlockManager#load(Box)
      */
     public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
         Map<BlockPos, BlockState> map = Maps.newHashMap();

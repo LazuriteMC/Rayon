@@ -46,7 +46,6 @@ public interface Disassembler {
             Pattern pattern = new Pattern(PatternType.ITEM);
             ((ItemRendererAccess) MinecraftClient.getInstance().getItemRenderer())
                     .invokeRenderBakedItemModel(model, new ItemStack(Items.AIR), 0, 0, new MatrixStack(), pattern);
-
             return pattern;
         }
     }
@@ -54,8 +53,12 @@ public interface Disassembler {
     interface BlockPattern {
         static Pattern getPattern(BlockState blockState, World world) {
             Pattern pattern = new Pattern(PatternType.BLOCK);
+            MatrixStack matrixStack = new MatrixStack();
+            matrixStack.push();
+            matrixStack.translate(-0.5, -0.5, -0.5);
             MinecraftClient.getInstance().getBlockRenderManager()
-                    .renderBlock(blockState, new BlockPos(0, 0, 0), world, new MatrixStack(), pattern, false, new Random());
+                    .renderBlock(blockState, new BlockPos(0, 0, 0), world, matrixStack, pattern, false, new Random());
+            matrixStack.pop();
             return pattern;
         }
     }

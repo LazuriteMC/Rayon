@@ -4,20 +4,21 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.physics.body.type.IdentifiableBody;
-import dev.lazurite.rayon.impl.util.helper.BlockHelper;
-import dev.lazurite.rayon.impl.util.DebugManager;
+import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
+import dev.lazurite.rayon.impl.physics.manager.BlockManager;
+import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 
 /**
  * A basic {@link PhysicsRigidBody} class representing a block.
- * @see BlockHelper
+ * @see BlockManager
  */
-public class BlockRigidBody extends PhysicsRigidBody implements IdentifiableBody, DebuggableBody {
+public class BlockRigidBody extends PhysicsRigidBody implements IdentifierBody, DebuggableBody {
     private final BlockPos blockPos;
     private final BlockState blockState;
-    private int id;
 
     public BlockRigidBody(BlockPos blockPos, BlockState blockState, CollisionShape shape, float friction, float restitution) {
         super(shape, PhysicsRigidBody.massForStatic);
@@ -47,13 +48,8 @@ public class BlockRigidBody extends PhysicsRigidBody implements IdentifiableBody
     }
 
     @Override
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public int getId() {
-        return id;
+    public Identifier getIdentifier() {
+        return Registry.BLOCK.getId(blockState.getBlock());
     }
 
     @Override

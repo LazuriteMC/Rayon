@@ -24,7 +24,6 @@ public class RayonSpawnHandler {
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         EntityType<?> entityType = Registry.ENTITY_TYPE.get(buf.readVarInt());
         int entityId = buf.readInt();
-        int bodyId = buf.readInt();
         UUID uuid = buf.readUuid();
 
         Quaternion orientation = QuaternionHelper.fromBuffer(buf);
@@ -49,10 +48,9 @@ public class RayonSpawnHandler {
             body.setPhysicsLocation(position);
             body.setLinearVelocity(linearVelocity);
             body.setAngularVelocity(angularVelocity);
-            body.setId(bodyId);
 
             client.world.addEntity(entityId, entity);
-            PatternC2S.send(bodyId, Disassembler.EntityPattern.getPattern(entity));
+            PatternC2S.send(body.getIdentifier(), Disassembler.EntityPattern.getPattern(entity));
         });
     }
 
