@@ -6,20 +6,24 @@ import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.transporter.Pattern;
+import dev.lazurite.rayon.impl.transporter.PatternType;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
 
 import java.util.List;
 
-public class CompoundQuadShape extends CompoundCollisionShape {
-    public CompoundQuadShape(Pattern pattern) {
+public class PatternShape extends CompoundCollisionShape {
+    public PatternShape(Pattern pattern) {
+        int i = 0;
+
         for (Pattern.Quad quad : pattern.getQuads()) {
+            if (pattern.getType().equals(PatternType.ITEM) && i < 3) {
+                ++i;
+                continue;
+            }
+
             List<Vector3f> points = Lists.newArrayList();
             quad.getPoints().forEach(vector -> points.add(VectorHelper.minecraftToBullet(vector)));
-            addQuad(points);
+            addChildShape(new HullCollisionShape(points), new Transform());
         }
-    }
-
-    public void addQuad(List<Vector3f> points) {
-        addChildShape(new HullCollisionShape(points), new Transform());
     }
 }

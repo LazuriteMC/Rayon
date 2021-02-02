@@ -11,6 +11,11 @@ import java.util.List;
 public class Pattern implements VertexConsumer {
     private final List<Quad> quads = Lists.newArrayList();
     private final List<Vector3f> points = Lists.newArrayList();
+    private final PatternType type;
+
+    public Pattern(PatternType type) {
+        this.type = type;
+    }
 
     @Override
     public VertexConsumer vertex(double x, double y, double z) {
@@ -55,8 +60,18 @@ public class Pattern implements VertexConsumer {
         return this.quads.isEmpty();
     }
 
+    public PatternType getType() {
+        return this.type;
+    }
+
     public List<Quad> getQuads() {
        return this.quads;
+    }
+
+    public List<Vector3f> getPoints() {
+        List<Vector3f> points = Lists.newArrayList();
+        quads.forEach(quad -> points.addAll(quad.getPoints()));
+        return points;
     }
 
     public Provider asProvider() {

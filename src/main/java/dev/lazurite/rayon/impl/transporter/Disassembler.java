@@ -19,38 +19,44 @@ import java.util.Random;
 
 @Environment(EnvType.CLIENT)
 public interface Disassembler {
-    static Pattern getEntityPattern(Entity entity) {
-        Pattern pattern = new Pattern();
-        MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
-                .render(entity, 0, 0, new MatrixStack(), pattern.asProvider(), 0);
-        return pattern;
+    interface EntityPattern {
+        static Pattern getPattern(Entity entity) {
+            Pattern pattern = new Pattern(PatternType.ENTITY);
+            MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
+                    .render(entity, 0, 0, new MatrixStack(), pattern.asProvider(), 0);
+            return pattern;
+        }
+
+        static Pattern getPattern(EntityModel<?> model) {
+            Pattern pattern = new Pattern(PatternType.ENTITY);
+            model.render(new MatrixStack(), pattern, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f);
+            return pattern;
+        }
     }
 
-    static Pattern getEntityPattern(EntityModel<?> model) {
-        Pattern pattern = new Pattern();
-        model.render(new MatrixStack(), pattern, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f);
-        return pattern;
+    interface ItemPattern {
+        static Pattern getPattern(ItemStack itemStack) {
+            Pattern pattern = new Pattern(PatternType.ITEM);
+            MinecraftClient.getInstance().getItemRenderer()
+                    .renderItem(itemStack, ModelTransformation.Mode.GROUND, 0, 0, new MatrixStack(), pattern.asProvider());
+            return pattern;
+        }
+
+        static Pattern getPattern(BakedModel model) {
+            Pattern pattern = new Pattern(PatternType.ITEM);
+            ((ItemRendererAccess) MinecraftClient.getInstance().getItemRenderer())
+                    .invokeRenderBakedItemModel(model, new ItemStack(Items.AIR), 0, 0, new MatrixStack(), pattern);
+
+            return pattern;
+        }
     }
 
-    static Pattern getItemPattern(ItemStack itemStack) {
-        Pattern pattern = new Pattern();
-        MinecraftClient.getInstance().getItemRenderer()
-                .renderItem(itemStack, ModelTransformation.Mode.GROUND, 0, 0, new MatrixStack(), pattern.asProvider());
-        pattern.getQuads().remove(pattern.getQuads().get(5));
-        return pattern;
-    }
-
-    static Pattern getItemPattern(BakedModel model) {
-        Pattern pattern = new Pattern();
-        ((ItemRendererAccess) MinecraftClient.getInstance().getItemRenderer())
-                .invokeRenderBakedItemModel(model, new ItemStack(Items.AIR), 0, 0, new MatrixStack(), pattern);
-        return pattern;
-    }
-
-    static Pattern getBlockPattern(BlockState blockState, World world) {
-        Pattern pattern = new Pattern();
-        MinecraftClient.getInstance().getBlockRenderManager()
-                .renderBlock(blockState, new BlockPos(0, 0, 0), world, new MatrixStack(), pattern, false, new Random());
-        return pattern;
+    interface BlockPattern {
+        static Pattern getPattern(BlockState blockState, World world) {
+            Pattern pattern = new Pattern(PatternType.BLOCK);
+            MinecraftClient.getInstance().getBlockRenderManager()
+                    .renderBlock(blockState, new BlockPos(0, 0, 0), world, new MatrixStack(), pattern, false, new Random());
+            return pattern;
+        }
     }
 }
