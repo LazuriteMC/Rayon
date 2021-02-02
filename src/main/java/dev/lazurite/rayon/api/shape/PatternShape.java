@@ -5,8 +5,8 @@ import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.transporter.Disassembler;
 import dev.lazurite.rayon.impl.transporter.Pattern;
+import dev.lazurite.rayon.impl.transporter.disassembler.EntityDisassembler;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class PatternShape extends CompoundCollisionShape {
     public static EntityShapeFactory getFactory() {
         return (entity) -> {
             if (entity.getEntityWorld().isClient()) {
-                return new PatternShape(Disassembler.EntityPattern.getPattern(entity));
+                return new PatternShape(EntityDisassembler.getPattern(entity));
             } else {
                 /* Just use a bounding box shape until the vertex data is received. */
                 return new BoundingBoxShape(entity.getBoundingBox());
