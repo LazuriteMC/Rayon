@@ -16,11 +16,13 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.render.entity.model.CowEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -84,7 +86,7 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
 
         EntityRigidBodyEvents.ENTITY_BODY_LOAD.register((body, world) -> {
 //            body.setCollisionShape(new PatternShape(Disassembler.ItemPattern.getPattern(new ItemStack(Items.DIAMOND))));
-            body.setCollisionShape(new PatternShape(Disassembler.EntityPattern.getPattern(new PlayerEntityModel<PlayerEntity>(1.0f, true))));
+//            body.setCollisionShape(new PatternShape(Disassembler.EntityPattern.getPattern(new CowEntityModel<CowEntity>())));
 
 //            List<Vector3f> points = Disassembler.getItemPattern(new ItemStack(Items.DIAMOND)).getPoints();
 //            List<com.jme3.math.Vector3f> points2 = Lists.newArrayList();

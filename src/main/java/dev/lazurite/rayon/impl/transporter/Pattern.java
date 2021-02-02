@@ -68,12 +68,6 @@ public class Pattern implements VertexConsumer {
        return this.quads;
     }
 
-    public List<Vector3f> getPoints() {
-        List<Vector3f> points = Lists.newArrayList();
-        quads.forEach(quad -> points.addAll(quad.getPoints()));
-        return points;
-    }
-
     public Provider asProvider() {
         return new Provider(this);
     }
@@ -117,17 +111,6 @@ public class Pattern implements VertexConsumer {
             float y = (p1.getY() + p2.getY() + p3.getY() + p4.getY()) / 4.0f;
             float z = (p1.getZ() + p2.getZ() + p3.getZ() + p4.getZ()) / 4.0f;
             return new Vector3f(x, y, z);
-        }
-
-        public float distanceFrom(Quad quad) {
-            Vector3f p1 = this.getCenterPoint();
-            Vector3f p2 = quad.getCenterPoint();
-
-            return (float) Math.sqrt(
-                Math.pow(p1.getX() - p2.getX(), 2) +
-                Math.pow(p1.getY() - p2.getY(), 2) +
-                Math.pow(p1.getZ() - p2.getZ(), 2)
-            );
         }
 
         @Override

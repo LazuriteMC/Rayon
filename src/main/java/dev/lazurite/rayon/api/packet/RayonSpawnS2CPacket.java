@@ -37,6 +37,7 @@ public class RayonSpawnS2CPacket {
 
         buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(entity.getType()));
         buf.writeInt(entity.getEntityId());
+        buf.writeInt(body.getId());
         buf.writeUuid(entity.getUuid());
         body.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, body.boundingBox(new BoundingBox()).getYExtent() / 2.0, 0)));
 

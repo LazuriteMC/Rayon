@@ -5,6 +5,8 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.transporter.Disassembler;
+import dev.lazurite.rayon.impl.transporter.PatternC2S;
 import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -22,6 +24,7 @@ public class RayonSpawnHandler {
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         EntityType<?> entityType = Registry.ENTITY_TYPE.get(buf.readVarInt());
         int entityId = buf.readInt();
+        int bodyId = buf.readInt();
         UUID uuid = buf.readUuid();
 
         Quaternion orientation = QuaternionHelper.fromBuffer(buf);
@@ -46,8 +49,10 @@ public class RayonSpawnHandler {
             body.setPhysicsLocation(position);
             body.setLinearVelocity(linearVelocity);
             body.setAngularVelocity(angularVelocity);
+            body.setId(bodyId);
 
             client.world.addEntity(entityId, entity);
+            PatternC2S.send(bodyId, Disassembler.EntityPattern.getPattern(entity));
         });
     }
 
