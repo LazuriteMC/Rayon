@@ -72,13 +72,13 @@ public final class DebugManager {
 
                             FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0).rewind();
                             BufferBuilder builder = Tessellator.getInstance().getBuffer();
-                            builder.begin(GL11.GL_LINE_LOOP, VertexFormats.POSITION_COLOR);
-
                             float alpha = ((DebuggableBody) body).getOutlineAlpha();
                             Vector3f color = ((DebuggableBody) body).getOutlineColor();
 
                             Vector3f position = body.getPhysicsLocation(new Vector3f())
                                     .subtract(new Vector3f((float) camera.getPos().x, (float) camera.getPos().y, (float) camera.getPos().z));
+
+                            builder.begin(Config.getInstance().getLocal().getDebugDrawMode().getMode(), VertexFormats.POSITION_COLOR);
                             RenderSystem.translatef(position.x, position.y, position.z);
                             RenderSystem.multMatrix(new Matrix4f(QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new Quaternion()))));
 
@@ -98,13 +98,34 @@ public final class DebugManager {
     }
 
     public enum DebugLayer {
-        ENTITY("debug.rayon.entity"),
-        BLOCK("debug.rayon.block");
+        ENTITY("debug.rayon.layer.entity"),
+        BLOCK("debug.rayon.layer.block");
 
         private final String translation;
 
         DebugLayer(String translation) {
             this.translation = translation;
+        }
+
+        public String getTranslation() {
+            return this.translation;
+        }
+    }
+
+    public enum DrawMode {
+        LINES("debug.rayon.draw.lines", GL11.GL_LINE_LOOP),
+        TRIANGLES("debug.rayon.draw.triangles", GL11.GL_TRIANGLES);
+
+        private final String translation;
+        private final int mode;
+
+        DrawMode(String translation, int mode) {
+            this.translation = translation;
+            this.mode = mode;
+        }
+
+        public int getMode() {
+            return this.mode;
         }
 
         public String getTranslation() {

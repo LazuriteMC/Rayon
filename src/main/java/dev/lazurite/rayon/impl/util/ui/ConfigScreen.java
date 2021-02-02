@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.impl.util.ui;
 
+import dev.lazurite.rayon.impl.util.DebugManager;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
@@ -83,12 +84,25 @@ public class ConfigScreen implements ModMenuApi {
         /* Debug Render Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.debug_distance"),
-                Config.getInstance().getLocal().getDebugDistance(), 2, 64)
+                Config.getInstance().getLocal().getDebugDistance(), 3, 32)
                 .setDefaultValue(10)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.debug_distance.tooltip"),
                         new TranslatableText("config.rayon.option.performance.high"))
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setDebugDistance(newValue))
+                .build());
+
+        /* Debug Draw Mode */
+        category.addEntry(builder.entryBuilder().startEnumSelector(
+                new TranslatableText("config.rayon.option.debug_draw_mode"),
+                DebugManager.DrawMode.class,
+                Config.getInstance().getLocal().getDebugDrawMode())
+                .setDefaultValue(DebugManager.DrawMode.LINES)
+                .setTooltip(
+                        new TranslatableText("config.rayon.option.debug_draw_mode.tooltip"),
+                        new TranslatableText("config.rayon.option.performance.low"))
+                .setEnumNameProvider((value) -> new TranslatableText(((DebugManager.DrawMode) value).getTranslation()))
+                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setDebugDrawMode(newValue))
                 .build());
 
         if (!Config.getInstance().isRemote()) {

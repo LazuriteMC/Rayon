@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.impl.util.config.settings;
 
+import dev.lazurite.rayon.impl.util.DebugManager;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Setting;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Settings;
 
@@ -18,14 +19,18 @@ public class LocalSettings {
     private int maxSubSteps;
 
     @Setting
-    @Setting.Constrain.Range(min = 2, max = 64, step = 1.0f)
+    @Setting.Constrain.Range(min = 3, max = 32, step = 1.0f)
     private int debugDistance;
 
-    public LocalSettings(int blockDistance, int stepRate, int maxSubSteps, int debugDistance) {
+    @Setting
+    private DebugManager.DrawMode debugDrawMode;
+
+    public LocalSettings(int blockDistance, int stepRate, int maxSubSteps, int debugDistance, DebugManager.DrawMode debugDrawMode) {
         this.blockDistance = blockDistance;
         this.stepRate = stepRate;
         this.maxSubSteps = maxSubSteps;
         this.debugDistance = debugDistance;
+        this.debugDrawMode = debugDrawMode;
     }
 
     public void setBlockDistance(int blockDistance) {
@@ -44,6 +49,10 @@ public class LocalSettings {
         this.debugDistance = debugDistance;
     }
 
+    public void setDebugDrawMode(DebugManager.DrawMode debugDrawMode) {
+        this.debugDrawMode = debugDrawMode;
+    }
+
     public int getBlockDistance() {
         return this.blockDistance;
     }
@@ -58,5 +67,9 @@ public class LocalSettings {
 
     public int getDebugDistance() {
         return this.debugDistance;
+    }
+
+    public DebugManager.DrawMode getDebugDrawMode() {
+        return this.debugDrawMode;
     }
 }
