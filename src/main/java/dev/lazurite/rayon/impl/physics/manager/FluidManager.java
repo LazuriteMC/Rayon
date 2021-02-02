@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util.helper;
+package dev.lazurite.rayon.impl.physics.manager;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
@@ -7,7 +7,7 @@ import dev.lazurite.rayon.impl.util.ui.ConfigScreen;
 
 import java.util.function.Function;
 
-public class AirHelper {
+public class FluidManager {
     /**
      * The type of air resistance calculations to perform is
      * controlled using this enumerator. The name {@link String} is used
@@ -18,8 +18,8 @@ public class AirHelper {
      * @see ConfigScreen
      */
     public enum Type {
-        SIMPLE("config.rayon.option.air_resistance_type.simple", AirHelper::getSimpleForce),
-        COMPLEX("config.rayon.option.air_resistance_type.complex", AirHelper::getComplexForce);
+        SIMPLE("config.rayon.option.air_resistance_type.simple", FluidManager::getSimpleForce),
+        COMPLEX("config.rayon.option.air_resistance_type.complex", FluidManager::getComplexForce);
 
         final String name;
         final Function<EntityRigidBody, Vector3f> forceCalculation;
@@ -47,7 +47,7 @@ public class AirHelper {
      * area from the {@link EntityRigidBody} object's AABB so it <i>should</i> slightly be faster.
      * @return a {@link Vector3f} containing the direction and amount of force (in newtons)
      * @see EntityRigidBody
-     * @see AirHelper#getComplexForce
+     * @see FluidManager#getComplexForce
      */
     public static Vector3f getSimpleForce(EntityRigidBody entity) {
         return getForce(

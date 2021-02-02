@@ -58,6 +58,17 @@ public class ConfigScreen implements ModMenuApi {
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setBlockDistance(newValue))
                 .build());
 
+        /* Load Distance */
+        category.addEntry(builder.entryBuilder().startIntSlider(
+                new TranslatableText("config.rayon.option.load_distance"),
+                Config.getInstance().getLocal().getLoadDistance(), 2, 16)
+                .setDefaultValue(8)
+                .setTooltip(
+                        new TranslatableText("config.rayon.option.load_distance.tooltip"),
+                        new TranslatableText("config.rayon.option.performance.medium"))
+                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setLoadDistance(newValue))
+                .build());
+
         /* Client Step Rate */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.step_rate"),
@@ -84,7 +95,7 @@ public class ConfigScreen implements ModMenuApi {
         /* Debug Render Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.debug_distance"),
-                Config.getInstance().getLocal().getDebugDistance(), 3, 32)
+                Config.getInstance().getLocal().getDebugDistance(), 3, 16)
                 .setDefaultValue(10)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.debug_distance.tooltip"),

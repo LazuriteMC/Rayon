@@ -7,7 +7,7 @@ import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.transporter.Disassembler;
 import dev.lazurite.rayon.impl.transporter.Pattern;
-import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
+import dev.lazurite.rayon.impl.util.math.VectorHelper;
 
 import java.util.List;
 

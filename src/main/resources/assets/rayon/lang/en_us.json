@@ -9,7 +9,10 @@
   "config.rayon.title": "Physics Simulation Settings",
 
   "config.rayon.option.block_distance": "Block Distance",
-  "config.rayon.option.block_distance.tooltip": "The distance from an entity at which blocks are loaded.",
+  "config.rayon.option.block_distance.tooltip": "The maximum distance (in blocks) from an entity at which blocks are loaded.",
+
+  "config.rayon.option.load_distance": "Load Distance",
+  "config.rayon.option.load_distance.tooltip": "The maximum distance (in chunks) at which rigid body entities are loaded into the physics world.",
 
   "config.rayon.option.step_rate": "Step Rate",
   "config.rayon.option.step_rate.tooltip": "The rate at which the simulation is stepped.",
@@ -19,7 +22,7 @@
   "config.rayon.option.max_sub_steps.tooltip": "The maximum amount of sub-steps taken during one simulation step.",
 
   "config.rayon.option.debug_distance": "Debug Render Distance",
-  "config.rayon.option.debug_distance.tooltip": "The maximum distance away from the player that debug outlines will be rendered.",
+  "config.rayon.option.debug_distance.tooltip": "The maximum distance (in blocks) from the player that debug outlines will be rendered.",
 
   "config.rayon.option.debug_draw_mode": "Debug Draw Mode",
   "config.rayon.option.debug_draw_mode.tooltip": "The mode in which to draw debugging shapes to the screen",

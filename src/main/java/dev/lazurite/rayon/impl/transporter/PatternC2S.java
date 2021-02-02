@@ -16,7 +16,7 @@ public class PatternC2S {
     public static final Identifier PACKET_ID = new Identifier("transporter", "pattern_c2s");
 
     public static void accept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        Pattern pattern = new Pattern(PatternType.ITEM);
+        Pattern pattern = new Pattern();
 
         Identifier identifier = buf.readIdentifier();
         int size = buf.readInt();
@@ -27,9 +27,7 @@ public class PatternC2S {
             }
         }
 
-        server.execute(() -> {
-            PatternBuffer.getInstance().put(identifier, pattern);
-        });
+        server.execute(() -> PatternBuffer.getInstance().put(identifier, pattern));
     }
 
     public static void send(Identifier identifier, Pattern pattern) {

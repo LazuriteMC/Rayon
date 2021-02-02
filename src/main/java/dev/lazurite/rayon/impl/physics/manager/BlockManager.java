@@ -43,13 +43,13 @@ public class BlockManager {
     /**
      * Load every block within a set distance from the given entities. The distance is defined
      * earlier during execution and converted into a {@link Box} area parameter.
-     * @param dynamicBodyEntities the {@link List} of {@link EntityRigidBody} objects
+     * @param blockLoadingBodies the {@link List} of {@link EntityRigidBody} objects
      * @see BlockManager#load(Box)
      */
-    public void load(List<BlockLoadingBody> dynamicBodyEntities) {
+    public void load(List<BlockLoadingBody> blockLoadingBodies) {
         int blockDistance = Config.getInstance().getLocal().getBlockDistance();
 
-        dynamicBodyEntities.forEach(body -> {
+        blockLoadingBodies.forEach(body -> {
             if (!body.isNoClipEnabled()) {
                 load(new Box(body.getBlockPos()).expand(blockDistance));
             }

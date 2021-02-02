@@ -18,8 +18,11 @@ import dev.lazurite.rayon.impl.util.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.mixin.common.ServerWorldMixin;
 import dev.lazurite.rayon.impl.mixin.client.MinecraftClientMixin;
+import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -66,17 +69,18 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
      * This method performs the following steps:
      * <ul>
      *     <li>Triggers all {@link DynamicsWorldEvents#START_WORLD_STEP} events.</li>
-     *     <li>Triggers all collision events.</li>
-     *     <li>Sets gravity to the value stored in {@link Config}.</li>
      *     <li>Loads blocks into the simulation using {@link BlockManager}.</li>
      *     <li>Steps each {@link EntityRigidBody}s in the world.</li>
+     *     <li>Sets gravity to the value stored in {@link Config}.</li>
+     *     <li>Triggers all collision events.</li>
      *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
+     *     <li>Removes any distant {@link PhysicsRigidBody}s.</li>
      *     <li>Triggers all {@link DynamicsWorldEvents#END_WORLD_STEP} events.</li>
      * </ul>
      *
      * Additionally, none of the above steps execute when either the world is empty
      * (no {@link PhysicsRigidBody}s) or when the {@link BooleanSupplier} shouldStep
-     * returns false.<br>
+     * returns false.<br><br>
      *
      * @see DynamicsWorldEvents
      * @see EntityRigidBodyEvents
@@ -86,11 +90,20 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         if (shouldStep.getAsBoolean() && !isEmpty()) {
             float delta = this.clock.get();
             DynamicsWorldEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
-            distributeEvents();
-            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+
             getBlockManager().load(getRigidBodiesByClass(BlockLoadingBody.class));
-            getRigidBodiesByClass(SteppableBody.class).forEach((body) -> body.step(delta));
+            getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta));
+            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+            distributeEvents();
+
             update(delta, Config.getInstance().getLocal().getMaxSubSteps());
+
+            for (PhysicsRigidBody body : getRigidBodyList()) {
+                if (!isBodyNearPlayer(body) && body.isInWorld()) {
+                    removeCollisionObject(body);
+                }
+            }
+
             DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
@@ -113,6 +126,20 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         return out;
     }
 
+    public boolean isBodyNearPlayer(PhysicsRigidBody body) {
+        Vec3d pos = VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f()));
+        int loadDistance = Config.getInstance().getLocal().getLoadDistance() * 16;
+
+        for (PlayerEntity player : getWorld().getPlayers()) {
+            if (player.getPos().distanceTo(pos) < loadDistance) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     public Clock getClock() {
         return this.clock;
     }
@@ -134,10 +161,13 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     @Override
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
-            ((EntityRigidBody) collisionObject).onLoad(this);
+            if (isBodyNearPlayer((EntityRigidBody) collisionObject)) {
+                ((EntityRigidBody) collisionObject).onLoad(this);
+                super.addCollisionObject(collisionObject);
+            }
+        } else {
+            super.addCollisionObject(collisionObject);
         }
-
-        super.addCollisionObject(collisionObject);
     }
 
     @Override

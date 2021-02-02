@@ -18,9 +18,9 @@ import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.transporter.Pattern;
 import dev.lazurite.rayon.impl.transporter.PatternBuffer;
-import dev.lazurite.rayon.impl.util.helper.AirHelper;
-import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
-import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
+import dev.lazurite.rayon.impl.physics.manager.FluidManager;
+import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 import dev.lazurite.rayon.impl.util.config.Config;
@@ -107,8 +107,10 @@ public class EntityRigidBody extends PhysicsRigidBody implements
 
         /* Apply air resistance */
         if (Config.getInstance().getGlobal().isAirResistanceEnabled()) {
-            applyCentralForce(AirHelper.getSimpleForce(this));
+            applyCentralForce(FluidManager.getSimpleForce(this));
         }
+
+        System.out.println("IM ALIVE!!!!!!!!!!");
 
         /* Invoke all registered end step events */
         EntityRigidBodyEvents.END_ENTITY_BODY_STEP.invoker().onEndStep(this, delta);
