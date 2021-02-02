@@ -80,6 +80,17 @@ public class ConfigScreen implements ModMenuApi {
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setMaxSubSteps(newValue))
                 .build());
 
+        /* Debug Render Distance */
+        category.addEntry(builder.entryBuilder().startIntSlider(
+                new TranslatableText("config.rayon.option.debug_distance"),
+                Config.getInstance().getLocal().getDebugDistance(), 2, 64)
+                .setDefaultValue(10)
+                .setTooltip(
+                        new TranslatableText("config.rayon.option.debug_distance.tooltip"),
+                        new TranslatableText("config.rayon.option.performance.high"))
+                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setDebugDistance(newValue))
+                .build());
+
         if (!Config.getInstance().isRemote()) {
             /* Air Density */
             category.addEntry(builder.entryBuilder().startFloatField(
