@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.impl.util;
 
 import com.jme3.system.NativeLibraryLoader;
+import dev.lazurite.rayon.Rayon;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -11,11 +12,13 @@ import java.net.URL;
 /**
  * A class for loading native bullet bindings. It handles downloading the necessary libraries from
  * online and storing them in the natives folder in the player's minecraft directory.
+ * @see Rayon#onInitialize()
  */
 public class NativeLoader {
     public enum OperatingSystem {
         WINDOWS("https://github.com/stephengold/Libbulletjme/releases/download/10.0.0/Windows64ReleaseSp_bulletjme.dll", "Windows64ReleaseSp_bulletjme.dll"),
         LINUX("https://github.com/stephengold/Libbulletjme/releases/download/10.0.0/Linux64ReleaseSp_libbulletjme.so", "Linux64ReleaseSp_libbulletjme.so");
+        // TODO Mac OS
 
         final String url;
         final String file;

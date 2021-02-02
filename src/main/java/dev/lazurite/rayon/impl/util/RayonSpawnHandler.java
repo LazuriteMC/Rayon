@@ -3,10 +3,9 @@ package dev.lazurite.rayon.impl.util;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.impl.transporter.Disassembler;
-import dev.lazurite.rayon.impl.transporter.PatternC2S;
 import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -50,11 +49,22 @@ public class RayonSpawnHandler {
             body.setAngularVelocity(angularVelocity);
 
             client.world.addEntity(entityId, entity);
-            PatternC2S.send(body.getIdentifier(), Disassembler.EntityPattern.getPattern(entity));
         });
     }
 
     public static void register() {
         ClientPlayNetworking.registerGlobalReceiver(RayonSpawnS2CPacket.PACKET_ID, RayonSpawnHandler::accept);
+    }
+
+    /**
+     * A custom runtime exception thrown when the user attempts
+     * to spawn an entity that isn't registered in {@link RigidBodyRegistry}.
+     * @see RayonSpawnS2CPacket
+     * @see RigidBodyRegistry
+     */
+    public static class RayonSpawnException extends RuntimeException {
+        public RayonSpawnException(String message) {
+            super(message);
+        }
     }
 }

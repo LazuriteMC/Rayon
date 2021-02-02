@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.common;
+package dev.lazurite.rayon.impl.mixin.common.entity;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.Rayon;

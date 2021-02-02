@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.impl.physics.body;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -8,11 +9,15 @@ import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.api.shape.BoundingBoxShape;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
+import dev.lazurite.rayon.api.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
+import dev.lazurite.rayon.impl.transporter.Pattern;
+import dev.lazurite.rayon.impl.transporter.PatternBuffer;
 import dev.lazurite.rayon.impl.util.helper.AirHelper;
 import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
@@ -58,19 +63,20 @@ public class EntityRigidBody extends PhysicsRigidBody implements
     private final Quaternion prevRotation = new Quaternion();
     private final Quaternion tickRotation = new Quaternion();
     private final MinecraftDynamicsWorld dynamicsWorld;
+    private final EntityShapeFactory shapeFactory;
     private final Entity entity;
     private float dragCoefficient;
     private boolean noclip;
 
-    public EntityRigidBody(Entity entity, EntityShapeFactory shape, float mass, float dragCoefficient, float friction, float restitution) {
-        super(shape.create(entity), mass);
+    public EntityRigidBody(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient, float friction, float restitution) {
+        super(new BoundingBoxShape(entity.getBoundingBox()), mass);
         this.entity = entity;
+        this.shapeFactory = shapeFactory;
         this.dragCoefficient = dragCoefficient;
         this.setFriction(friction);
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
-        this.dynamicsWorld.addCollisionObject(this);
     }
 
     public static boolean is(Entity entity) {
@@ -116,8 +122,25 @@ public class EntityRigidBody extends PhysicsRigidBody implements
      */
     @Override
     public void tick() {
-        if (!dynamicsWorld.getWorld().isClient()) {
+        if (!getDynamicsWorld().getWorld().isClient()) {
             Rayon.ENTITY.sync(entity);
+            Pattern pattern = PatternBuffer.getInstance().get(getIdentifier());
+
+            if (pattern != null) {
+                CollisionShape shape = getCollisionShape();
+
+                if (shape instanceof PatternShape) {
+                    if (!((PatternShape) shape).getPattern().equals(pattern)) {
+                        setCollisionShape(new PatternShape(pattern));
+                    }
+                } else {
+                    setCollisionShape(new PatternShape(pattern));
+                }
+            }
+        }
+
+        if (!isInWorld()) {
+            getDynamicsWorld().addCollisionObject(this);
         }
 
         prevRotation.set(tickRotation);
@@ -128,6 +151,15 @@ public class EntityRigidBody extends PhysicsRigidBody implements
 
         entity.yaw = QuaternionHelper.getYaw(tickRotation);
         entity.pitch = QuaternionHelper.getPitch(tickRotation);
+    }
+
+    public void onLoad(MinecraftDynamicsWorld world) {
+        setCollisionShape(shapeFactory.create(getEntity()));
+        EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad(this, world);
+    }
+
+    public void onUnload(MinecraftDynamicsWorld world) {
+        EntityRigidBodyEvents.ENTITY_BODY_UNLOAD.invoker().onUnload(this, world);
     }
 
     public void setDragCoefficient(float dragCoefficient) {

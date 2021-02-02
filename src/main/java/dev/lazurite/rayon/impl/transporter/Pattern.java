@@ -72,6 +72,23 @@ public class Pattern implements VertexConsumer {
         return new Provider(this);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Pattern) {
+            for (Quad quad1 : getQuads()) {
+                for (Quad quad2 : ((Pattern) obj).getQuads()) {
+                    if (!quad1.equals(quad2)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     public static class Provider implements VertexConsumerProvider {
         private final Pattern pattern;
 

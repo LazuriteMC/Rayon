@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.impl.transporter;
 
-import dev.lazurite.rayon.impl.mixin.client.ItemRendererAccess;
+import dev.lazurite.rayon.impl.mixin.client.render.ItemRendererAccess;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -24,6 +25,7 @@ public interface Disassembler {
             Pattern pattern = new Pattern(PatternType.ENTITY);
             MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
                     .render(entity, 0, 0, new MatrixStack(), pattern.asProvider(), 0);
+            PatternC2S.send(Registry.ENTITY_TYPE.getId(entity.getType()), pattern);
             return pattern;
         }
 

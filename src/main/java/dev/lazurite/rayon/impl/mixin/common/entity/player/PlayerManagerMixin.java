@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.common;
+package dev.lazurite.rayon.impl.mixin.common.entity.player;
 
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;

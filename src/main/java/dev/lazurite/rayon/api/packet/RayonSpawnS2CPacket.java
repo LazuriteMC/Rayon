@@ -5,9 +5,9 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.util.RayonSpawnHandler;
 import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.helper.math.VectorHelper;
-import dev.lazurite.rayon.impl.util.exception.RayonSpawnException;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -29,7 +29,7 @@ public class RayonSpawnS2CPacket {
 
     public static Packet<?> get (Entity entity) {
         if (!EntityRigidBody.is(entity)) {
-            throw new RayonSpawnException(entity.getEntityName() + " is not registered!");
+            throw new RayonSpawnHandler.RayonSpawnException(entity.getEntityName() + " is not registered!");
         }
 
         PacketByteBuf buf = PacketByteBufs.create();

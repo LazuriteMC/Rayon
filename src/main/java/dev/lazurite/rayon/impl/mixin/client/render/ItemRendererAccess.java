@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.client;
+package dev.lazurite.rayon.impl.mixin.client.render;
 
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.item.ItemRenderer;

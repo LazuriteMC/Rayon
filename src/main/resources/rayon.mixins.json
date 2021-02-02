@@ -4,15 +4,15 @@
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "common.EntityMixin",
-    "common.PlayerManagerMixin",
+    "common.entity.EntityMixin",
+    "common.entity.player.PlayerManagerMixin",
     "common.IntegratedServerMixin",
     "common.ServerWorldMixin"
   ],
   "client": [
-    "client.ClientPlayNetworkHandlerMixin",
-    "client.DebugRendererMixin",
-    "client.ItemRendererAccess",
+    "client.network.ClientPlayNetworkHandlerMixin",
+    "client.render.DebugRendererMixin",
+    "client.render.ItemRendererAccess",
     "client.KeyboardMixin",
     "client.MinecraftClientMixin"
   ],

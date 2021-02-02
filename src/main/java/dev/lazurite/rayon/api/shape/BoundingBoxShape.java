@@ -1,14 +1,15 @@
-package dev.lazurite.rayon.impl.physics.body.shape;
+package dev.lazurite.rayon.api.shape;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.math.Vector3f;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
 
 /**
  * This class is basically just a wrapper for {@link BoxCollisionShape}. It's
  * meant to provide an easy way to create a {@link BoxCollisionShape} using
- * a bounding {@link Box} object.
+ * a bounding {@link Box} object.<br>
+ *
+ * @since 1.1.0
  * @see BoxCollisionShape
  */
 public class BoundingBoxShape extends BoxCollisionShape {
@@ -22,11 +23,11 @@ public class BoundingBoxShape extends BoxCollisionShape {
         this.box = box;
     }
 
-    public BoundingBoxShape(Entity entity) {
-        this(entity.getBoundingBox());
-    }
-
     public Box getBox() {
         return this.box;
+    }
+
+    public static EntityShapeFactory getFactory() {
+        return (entity) -> new BoundingBoxShape(entity.getBoundingBox());
     }
 }

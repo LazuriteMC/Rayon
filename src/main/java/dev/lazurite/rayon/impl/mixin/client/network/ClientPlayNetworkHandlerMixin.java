@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.client;
+package dev.lazurite.rayon.impl.mixin.client.network;
 
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

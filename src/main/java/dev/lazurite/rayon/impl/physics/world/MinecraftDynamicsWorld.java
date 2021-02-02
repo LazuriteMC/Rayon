@@ -88,14 +88,8 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             DynamicsWorldEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
             distributeEvents();
             setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
-            getBlockManager().load(getBlockLoadingBodies());
-
-            for (PhysicsRigidBody body : getRigidBodyList()) {
-                if (body instanceof SteppableBody) {
-                    ((EntityRigidBody) body).step(delta);
-                }
-            }
-
+            getBlockManager().load(getRigidBodiesByClass(BlockLoadingBody.class));
+            getRigidBodiesByClass(SteppableBody.class).forEach((body) -> body.step(delta));
             update(delta, Config.getInstance().getLocal().getMaxSubSteps());
             DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
@@ -107,12 +101,12 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         return this.blockManager;
     }
 
-    public List<BlockLoadingBody> getBlockLoadingBodies() {
-        List<BlockLoadingBody> out = Lists.newArrayList();
+    public <T> List<T> getRigidBodiesByClass(Class<T> type) {
+        List<T> out = Lists.newArrayList();
 
         getRigidBodyList().forEach(body -> {
-            if (body instanceof BlockLoadingBody) {
-                out.add((BlockLoadingBody) body);
+            if (type.isAssignableFrom(body.getClass())) {
+                out.add(type.cast(body));
             }
         });
 
@@ -140,7 +134,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     @Override
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
-            EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad((EntityRigidBody) collisionObject, this);
+            ((EntityRigidBody) collisionObject).onLoad(this);
         }
 
         super.addCollisionObject(collisionObject);
@@ -149,7 +143,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     @Override
     public void removeCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
-            EntityRigidBodyEvents.ENTITY_BODY_UNLOAD.invoker().onUnload((EntityRigidBody) collisionObject, this);
+            ((EntityRigidBody) collisionObject).onUnload(this);
         }
 
         super.removeCollisionObject(collisionObject);

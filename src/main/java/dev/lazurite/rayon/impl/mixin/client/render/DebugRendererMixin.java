@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.client;
+package dev.lazurite.rayon.impl.mixin.client.render;
 
 import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 import net.minecraft.client.render.*;

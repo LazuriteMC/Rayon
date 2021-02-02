@@ -6,6 +6,10 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.impl.mixin.client.KeyboardMixin;
+import dev.lazurite.rayon.impl.mixin.client.render.DebugRendererMixin;
+import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
+import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.helper.math.QuaternionHelper;
@@ -23,6 +27,22 @@ import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 
+/**
+ * This class handles basically everything related to debug rendering on
+ * the client. The idea is that when the user presses F3+r, it triggers a
+ * series of "layer changes" in this class. Each {@link DebugLayer} renders
+ * something new on the screen in addition to the previous layer's contents.<br>
+ * The two {@link DebugLayer}s currently available are {@link DebugLayer#ENTITY}
+ * and {@link DebugLayer#BLOCK}. Since both {@link EntityRigidBody} and
+ * {@link BlockRigidBody} are {@link DebuggableBody}s, they can both be rendered
+ * to the screen as debug objects with their own respective layers and colors.
+ *
+ * @see Config
+ * @see DrawMode
+ * @see DebugLayer
+ * @see KeyboardMixin
+ * @see DebugRendererMixin
+ */
 @Environment(EnvType.CLIENT)
 public final class DebugManager {
     private static final DebugManager instance = new DebugManager();
@@ -41,6 +61,10 @@ public final class DebugManager {
         return this.enabled;
     }
 
+    /**
+     * Go to the next layer based on the {@link DebugLayer} enum ordinal value.
+     * @return the current (and newly reached) {@link DebugLayer}.
+     */
     public DebugLayer nextLayer() {
         if (enabled) {
             if (debugLayer.ordinal() + 1 >= DebugLayer.values().length) {
