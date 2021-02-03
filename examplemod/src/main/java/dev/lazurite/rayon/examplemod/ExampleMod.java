@@ -3,7 +3,7 @@ package dev.lazurite.rayon.examplemod;
 import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
-import dev.lazurite.rayon.api.shape.BoundingBoxShape;
+import dev.lazurite.rayon.api.shape.shapes.PatternShape;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import dev.lazurite.rayon.examplemod.render.RectangularPrismEntityRenderer;
@@ -55,7 +55,7 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
         /* An example of using the builder and registering the built rigid body entry */
         RigidBodyRegistry.register(
                 RigidBodyBuilder.create(RectangularPrismEntity.class)
-                    .setShape(BoundingBoxShape.getFactory())
+                    .setShape(PatternShape.getFactory())
                     .setMass(2.0f)
                     .setDrag(0.05f)
                     .setFriction(0.5f)

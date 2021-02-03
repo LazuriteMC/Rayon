@@ -9,15 +9,15 @@ import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.api.shape.BoundingBoxShape;
+import dev.lazurite.rayon.api.shape.shapes.BoundingBoxShape;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
-import dev.lazurite.rayon.api.shape.PatternShape;
+import dev.lazurite.rayon.api.shape.shapes.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
-import dev.lazurite.rayon.impl.transporter.Pattern;
-import dev.lazurite.rayon.impl.transporter.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
+import dev.lazurite.rayon.impl.transporter.impl.PatternBufferImpl;
 import dev.lazurite.rayon.impl.physics.manager.FluidManager;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
@@ -110,8 +110,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
             applyCentralForce(FluidManager.getSimpleForce(this));
         }
 
-        System.out.println("IM ALIVE!!!!!!!!!!");
-
         /* Invoke all registered end step events */
         EntityRigidBodyEvents.END_ENTITY_BODY_STEP.invoker().onEndStep(this, delta);
     }
@@ -126,7 +124,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements
     public void tick() {
         if (!getDynamicsWorld().getWorld().isClient()) {
             Rayon.ENTITY.sync(entity);
-            Pattern pattern = PatternBuffer.getInstance().get(getIdentifier());
+            Pattern pattern = PatternBufferImpl.getInstance().get(getIdentifier());
 
             if (pattern != null) {
                 CollisionShape shape = getCollisionShape();
@@ -157,6 +155,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements
 
     public void onLoad(MinecraftDynamicsWorld world) {
         setCollisionShape(shapeFactory.create(getEntity()));
+        rebuildRigidBody();
         EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad(this, world);
     }
 

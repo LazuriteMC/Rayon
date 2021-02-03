@@ -2,7 +2,7 @@ package dev.lazurite.rayon;
 
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
-import dev.lazurite.rayon.impl.transporter.PatternC2S;
+import dev.lazurite.rayon.impl.transporter.impl.packet.PatternC2S;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.RayonSpawnHandler;

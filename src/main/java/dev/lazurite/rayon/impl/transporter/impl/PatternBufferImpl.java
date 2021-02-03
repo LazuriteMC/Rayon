@@ -1,17 +1,20 @@
-package dev.lazurite.rayon.impl.transporter;
+package dev.lazurite.rayon.impl.transporter.impl;
 
+import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.impl.packet.PatternC2S;
+import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
-public final class PatternBuffer extends HashMap<Identifier, Pattern> {
-    private static final PatternBuffer instance = new PatternBuffer();
+public final class PatternBufferImpl extends HashMap<Identifier, Pattern> implements PatternBuffer {
+    private static final PatternBufferImpl instance = new PatternBufferImpl();
 
-    private PatternBuffer() { }
+    private PatternBufferImpl() { }
 
-    public static PatternBuffer getInstance() {
+    public static PatternBufferImpl getInstance() {
         return instance;
     }
 

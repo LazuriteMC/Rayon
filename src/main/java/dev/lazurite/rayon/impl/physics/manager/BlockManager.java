@@ -4,14 +4,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
-import dev.lazurite.rayon.api.shape.BoundingBoxShape;
-import dev.lazurite.rayon.api.shape.PatternShape;
+import dev.lazurite.rayon.api.shape.shapes.BoundingBoxShape;
+import dev.lazurite.rayon.api.shape.shapes.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.impl.transporter.Disassembler;
-import dev.lazurite.rayon.impl.transporter.Pattern;
-import dev.lazurite.rayon.impl.transporter.PatternBuffer;
-import dev.lazurite.rayon.impl.transporter.PatternC2S;
+import dev.lazurite.rayon.impl.transporter.api.Disassembler;
+import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
+import dev.lazurite.rayon.impl.transporter.impl.PatternBufferImpl;
+import dev.lazurite.rayon.impl.transporter.impl.packet.PatternC2S;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
@@ -88,12 +88,12 @@ public class BlockManager {
 
                     if (world.isClient()) {
                         if (!blockState.isFullCube(world, blockPos)) {
-                            Pattern pattern = Disassembler.getPattern(blockState, world);
+                            Pattern pattern = Disassembler.patternFrom(blockState, blockPos, world);
                             body.setCollisionShape(new PatternShape(pattern));
                             PatternC2S.send(body.getIdentifier(), pattern);
                         }
                     } else {
-                        Pattern pattern = PatternBuffer.getInstance().get(body.getIdentifier());
+                        Pattern pattern = PatternBufferImpl.getInstance().get(body.getIdentifier());
 
                         if (pattern != null) {
                             body.setCollisionShape(new PatternShape(pattern));

@@ -1,7 +1,8 @@
-package dev.lazurite.rayon.api.shape;
+package dev.lazurite.rayon.api.shape.shapes;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.api.shape.EntityShapeFactory;
 import net.minecraft.util.math.Box;
 
 /**
