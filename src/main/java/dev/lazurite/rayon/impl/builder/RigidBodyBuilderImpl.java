@@ -3,7 +3,7 @@ package dev.lazurite.rayon.impl.builder;
 import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
-import dev.lazurite.rayon.api.shape.shapes.BoundingBoxShape;
+import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import net.minecraft.entity.Entity;
 
 /**

@@ -5,7 +5,7 @@ import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
 import dev.lazurite.rayon.impl.transporter.impl.packet.PatternC2S;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.impl.util.RayonSpawnHandler;
+import dev.lazurite.rayon.impl.util.spawn.RayonSpawnHandler;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;
@@ -37,14 +37,14 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 
 	@Override
 	public void onInitialize() {
-		Config.getInstance().load();
 		NativeLoader.load();
+		Config.getInstance().load();
 		ServerPlayNetworking.registerGlobalReceiver(PatternC2S.PACKET_ID, PatternC2S::accept);
 	}
 
 	@Override
 	public void onInitializeClient() {
-		RayonSpawnHandler.register();
+		ClientPlayNetworking.registerGlobalReceiver(new Identifier(Rayon.MODID, "rayon_spawn_s2c_packet"), RayonSpawnHandler::accept);
 		ClientPlayNetworking.registerGlobalReceiver(ConfigS2C.PACKET_ID, ConfigS2C::accept);
 	}
 

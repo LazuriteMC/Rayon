@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.api.shape.shapes;
+package dev.lazurite.rayon.impl.physics.body.shape;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
@@ -17,9 +17,8 @@ import java.util.List;
  * This collision shape is unique in that it uses rendered vertices to
  * build a shape out of quads that represents exactly what you see on-screen.
  * In doing so, it relies on clients being able to provide that information
- * at runtime.<br>
+ * at runtime.
  *
- * @since 1.1.0
  * @see Pattern
  * @see CompoundCollisionShape
  */

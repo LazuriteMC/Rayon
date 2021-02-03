@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util;
+package dev.lazurite.rayon.impl.util.spawn;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -8,7 +8,6 @@ import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -50,10 +49,6 @@ public class RayonSpawnHandler {
 
             client.world.addEntity(entityId, entity);
         });
-    }
-
-    public static void register() {
-        ClientPlayNetworking.registerGlobalReceiver(RayonSpawnS2CPacket.PACKET_ID, RayonSpawnHandler::accept);
     }
 
     /**
