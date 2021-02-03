@@ -61,11 +61,12 @@ public class ConfigScreen implements ModMenuApi {
         /* Load Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.load_distance"),
-                Config.getInstance().getLocal().getLoadDistance(), 2, 16)
-                .setDefaultValue(8)
+                Config.getInstance().getLocal().getLoadDistance(), 25, 100)
+                .setDefaultValue(100)
                 .setTooltip(
                         new TranslatableText("config.rayon.option.load_distance.tooltip"),
                         new TranslatableText("config.rayon.option.performance.medium"))
+                .setTextGetter((value) -> new LiteralText(value + "%"))
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setLoadDistance(newValue))
                 .build());
 
@@ -77,7 +78,13 @@ public class ConfigScreen implements ModMenuApi {
                 .setTooltip(
                         new TranslatableText("config.rayon.option.step_rate.tooltip"),
                         new TranslatableText("config.rayon.option.performance.medium"))
-                .setTextGetter((currValue) -> currValue == 260 ? new TranslatableText("config.rayon.option.step_rate.max") : new LiteralText(String.valueOf(currValue)))
+                .setTextGetter((currValue) -> {
+                    if(currValue == 260) {
+                        return new TranslatableText("config.rayon.option.step_rate.max");
+                    } else {
+                        return new LiteralText(String.valueOf((currValue / 10) * 10)); // concern
+                    }
+                })
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setStepRate(newValue))
                 .build());
 

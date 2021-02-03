@@ -69,12 +69,12 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
      * This method performs the following steps:
      * <ul>
      *     <li>Triggers all {@link DynamicsWorldEvents#START_WORLD_STEP} events.</li>
+     *     <li>Removes any distant {@link PhysicsRigidBody}s.</li>
      *     <li>Loads blocks into the simulation using {@link BlockManager}.</li>
      *     <li>Steps each {@link EntityRigidBody}s in the world.</li>
      *     <li>Sets gravity to the value stored in {@link Config}.</li>
      *     <li>Triggers all collision events.</li>
      *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
-     *     <li>Removes any distant {@link PhysicsRigidBody}s.</li>
      *     <li>Triggers all {@link DynamicsWorldEvents#END_WORLD_STEP} events.</li>
      * </ul>
      *
@@ -91,19 +91,18 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             float delta = this.clock.get();
             DynamicsWorldEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
 
-            getBlockManager().load(getRigidBodiesByClass(BlockLoadingBody.class));
-            getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta));
-            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
-            distributeEvents();
-
-            update(delta, Config.getInstance().getLocal().getMaxSubSteps());
-
             for (PhysicsRigidBody body : getRigidBodyList()) {
                 if (!isBodyNearPlayer(body) && body.isInWorld()) {
                     removeCollisionObject(body);
                 }
             }
 
+            getBlockManager().load(getRigidBodiesByClass(BlockLoadingBody.class));
+            getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta));
+            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+            distributeEvents();
+
+            update(delta, Config.getInstance().getLocal().getMaxSubSteps());
             DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
@@ -128,7 +127,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
 
     public boolean isBodyNearPlayer(PhysicsRigidBody body) {
         Vec3d pos = VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f()));
-        int loadDistance = Config.getInstance().getLocal().getLoadDistance() * 16;
+        int loadDistance = (Config.getInstance().getLocal().getLoadDistance() / 10) * 16;
 
         for (PlayerEntity player : getWorld().getPlayers()) {
             if (player.getPos().distanceTo(pos) < loadDistance) {

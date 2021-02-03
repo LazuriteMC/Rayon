@@ -11,7 +11,7 @@ public class LocalSettings {
     private int blockDistance;
 
     @Setting
-    @Setting.Constrain.Range(min = 2, max = 16, step = 1.0f)
+    @Setting.Constrain.Range(min = 25, max = 100, step = 1.0f)
     private int loadDistance;
 
     @Setting
