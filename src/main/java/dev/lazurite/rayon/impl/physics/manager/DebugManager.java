@@ -7,7 +7,7 @@ import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.mixin.client.KeyboardMixin;
-import dev.lazurite.rayon.impl.mixin.client.DebugRendererMixin;
+import dev.lazurite.rayon.impl.mixin.client.render.DebugRendererMixin;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;

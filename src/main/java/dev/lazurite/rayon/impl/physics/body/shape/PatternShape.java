@@ -1,8 +1,10 @@
 package dev.lazurite.rayon.impl.physics.body.shape;
 
 import com.google.common.collect.Lists;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
@@ -27,12 +29,16 @@ public class PatternShape extends CompoundCollisionShape {
 
     public PatternShape(Pattern pattern) {
         this.pattern = pattern;
+        this.setScale(0.9f);
 
         for (Quad quad : pattern.getQuads()) {
             List<Vector3f> points = Lists.newArrayList();
             quad.getPoints().forEach(vector -> points.add(VectorHelper.vec3dToVector3f(vector)));
             addChildShape(new HullCollisionShape(points), new Transform());
         }
+
+        BoundingBox box = boundingBox(new Vector3f(), new Quaternion(), new BoundingBox());
+        this.translate(new Vector3f(-box.getXExtent() / 2.0f, -box.getYExtent() / 2.0f, -box.getZExtent() / 2.0f));
     }
 
     public Pattern getPattern() {

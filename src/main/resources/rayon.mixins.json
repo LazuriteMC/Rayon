@@ -11,7 +11,9 @@
   ],
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
-    "client.DebugRendererMixin",
+    "client.render.DebugRendererMixin",
+    "client.render.EntityRenderDispatcherMixin",
+    "client.render.EntityRendererAccess",
     "client.KeyboardMixin",
     "client.MinecraftClientMixin"
   ],

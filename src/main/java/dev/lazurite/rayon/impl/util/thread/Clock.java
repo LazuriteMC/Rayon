@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util;
+package dev.lazurite.rayon.impl.util.thread;
 
 public class Clock {
     private long startTime;

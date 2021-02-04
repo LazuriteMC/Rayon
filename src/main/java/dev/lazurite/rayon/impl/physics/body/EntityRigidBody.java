@@ -62,6 +62,8 @@ public class EntityRigidBody extends PhysicsRigidBody implements
 
     private final Quaternion prevRotation = new Quaternion();
     private final Quaternion tickRotation = new Quaternion();
+    private final Vector3f prevPosition = new Vector3f();
+    private final Vector3f tickPosition = new Vector3f();
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final EntityShapeFactory shapeFactory;
     private final Entity entity;
@@ -122,7 +124,15 @@ public class EntityRigidBody extends PhysicsRigidBody implements
      */
     @Override
     public void tick() {
-        if (!getDynamicsWorld().getWorld().isClient()) {
+        if (getDynamicsWorld().getWorld().isClient()) {
+            /* Update orientation for rendering */
+            prevRotation.set(tickRotation);
+            tickRotation.set(getPhysicsRotation(new Quaternion()));
+
+            /* Update position for rendering */
+            prevPosition.set(tickPosition);
+            tickPosition.set(getPhysicsLocation(new Vector3f()));
+        } else {
             Rayon.ENTITY.sync(entity);
             Pattern pattern = PatternBufferImpl.getInstance().get(getIdentifier());
 
@@ -143,9 +153,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
             getDynamicsWorld().addCollisionObject(this);
         }
 
-        prevRotation.set(tickRotation);
-        tickRotation.set(getPhysicsRotation(new Quaternion()));
-
         Vector3f position = getPhysicsLocation(new Vector3f());
         entity.updatePosition(position.x, position.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, position.z);
 
@@ -155,7 +162,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
 
     public void onLoad(MinecraftDynamicsWorld world) {
         setCollisionShape(shapeFactory.create(getEntity()));
-        rebuildRigidBody();
         EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad(this, world);
     }
 
@@ -178,6 +184,11 @@ public class EntityRigidBody extends PhysicsRigidBody implements
     public Quaternion getPhysicsRotation(Quaternion quaternion, float delta) {
         quaternion.set(QuaternionHelper.slerp(prevRotation, tickRotation, delta));
         return quaternion;
+    }
+
+    public Vector3f getPhysicsLocation(Vector3f vector3f, float delta) {
+        vector3f.set(VectorHelper.lerp(prevPosition, tickPosition, delta));
+        return vector3f;
     }
 
     public Entity getEntity() {

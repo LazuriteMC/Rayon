@@ -3,6 +3,7 @@ package dev.lazurite.rayon.impl.util.math;
 import com.jme3.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -34,6 +35,14 @@ public class VectorHelper {
 
     public static Vector3f minecraftToBullet(net.minecraft.client.util.math.Vector3f vector3f) {
         return new Vector3f(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+    }
+
+    public static Vector3f lerp(Vector3f vec1, Vector3f vec2, float delta) {
+        Vector3f out = new Vector3f();
+        out.x = MathHelper.lerp(delta, vec1.x, vec2.x);
+        out.y = MathHelper.lerp(delta, vec1.y, vec2.y);
+        out.z = MathHelper.lerp(delta, vec1.z, vec2.z);
+        return out;
     }
 
     /**

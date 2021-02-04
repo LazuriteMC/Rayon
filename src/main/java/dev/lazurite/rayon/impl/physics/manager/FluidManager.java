@@ -43,8 +43,8 @@ public class FluidManager {
     }
 
     /**
-     * A simpler version of the above force calculations. It uses an calculated average
-     * area from the {@link EntityRigidBody} object's AABB so it <i>should</i> slightly be faster.
+     * A simpler version of the above force calculations. It uses a calculated average
+     * area from the {@link EntityRigidBody} object's AABB so it <i>should</i> be slightly faster.
      * @return a {@link Vector3f} containing the direction and amount of force (in newtons)
      * @see EntityRigidBody
      * @see FluidManager#getComplexForce

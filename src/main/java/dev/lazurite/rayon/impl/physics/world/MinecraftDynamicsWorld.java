@@ -14,7 +14,7 @@ import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.physics.manager.BlockManager;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.impl.util.Clock;
+import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.mixin.common.ServerWorldMixin;
 import dev.lazurite.rayon.impl.mixin.client.MinecraftClientMixin;
