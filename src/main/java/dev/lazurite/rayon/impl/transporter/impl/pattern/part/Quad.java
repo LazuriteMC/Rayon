@@ -26,17 +26,10 @@ public class Quad {
         return Lists.newArrayList(p1, p2, p3, p4);
     }
 
-    public Vec3d getCenterPoint() {
-        double x = (p1.getX() + p2.getX() + p3.getX() + p4.getX()) / 4.0f;
-        double y = (p1.getY() + p2.getY() + p3.getY() + p4.getY()) / 4.0f;
-        double z = (p1.getZ() + p2.getZ() + p3.getZ() + p4.getZ()) / 4.0f;
-        return new Vec3d(x, y, z);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Quad) {
-            return getCenterPoint().equals(((Quad) obj).getCenterPoint());
+            return ((Quad) obj).getPoints().equals(getPoints());
         }
 
         return false;

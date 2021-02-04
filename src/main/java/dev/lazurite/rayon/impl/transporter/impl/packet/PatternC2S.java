@@ -1,8 +1,9 @@
 package dev.lazurite.rayon.impl.transporter.impl.packet;
 
 import com.google.common.collect.Lists;
+import dev.lazurite.rayon.impl.transporter.api.event.PatternBufferEvents;
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
-import dev.lazurite.rayon.impl.transporter.impl.PatternBufferImpl;
+import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.QuadContainer;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.part.Quad;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -35,13 +36,18 @@ public class PatternC2S {
             quads.add(new Quad(points));
         }
 
-        server.execute(() -> PatternBufferImpl.getInstance().put(identifier, new QuadContainer(quads)));
+        server.execute(() -> {
+            Pattern pattern = new QuadContainer(quads);
+            PatternBuffer.getInstance().put(identifier, pattern);
+            PatternBufferEvents.PATTERN_RECEIVED.invoker().onReceived(identifier, pattern);
+        });
     }
 
     public static void send(Identifier identifier, Pattern pattern) {
         PacketByteBuf buf = PacketByteBufs.create();
         List<Quad> quads = pattern.getQuads();
 
+        System.out.println("SEND");
         buf.writeIdentifier(identifier);
         buf.writeInt(quads.size());
 

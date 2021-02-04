@@ -10,8 +10,10 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
+import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.part.Quad;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
+import net.minecraft.util.registry.Registry;
 
 import java.util.List;
 
@@ -28,8 +30,11 @@ public class PatternShape extends CompoundCollisionShape {
     private final Pattern pattern;
 
     public PatternShape(Pattern pattern) {
+        this(pattern, true);
+    }
+
+    public PatternShape(Pattern pattern, boolean translate) {
         this.pattern = pattern;
-        this.setScale(0.9f);
 
         for (Quad quad : pattern.getQuads()) {
             List<Vector3f> points = Lists.newArrayList();
@@ -37,8 +42,10 @@ public class PatternShape extends CompoundCollisionShape {
             addChildShape(new HullCollisionShape(points), new Transform());
         }
 
-        BoundingBox box = boundingBox(new Vector3f(), new Quaternion(), new BoundingBox());
-        this.translate(new Vector3f(-box.getXExtent() / 2.0f, -box.getYExtent() / 2.0f, -box.getZExtent() / 2.0f));
+        if (translate) {
+            BoundingBox box = boundingBox(new Vector3f(), new Quaternion(), new BoundingBox());
+            this.translate(new Vector3f(-box.getXExtent() / 2.0f, -box.getYExtent() / 2.0f, -box.getZExtent() / 2.0f));
+        }
     }
 
     public Pattern getPattern() {
@@ -47,12 +54,17 @@ public class PatternShape extends CompoundCollisionShape {
 
     public static EntityShapeFactory getFactory() {
         return (entity) -> {
-            if (entity.getEntityWorld().isClient()) {
-                return new PatternShape(Disassembler.patternFrom(entity));
-            } else {
-                /* Just use a bounding box shape until the vertex data is received. */
-                return new BoundingBoxShape(entity.getBoundingBox());
+            Pattern pattern = PatternBuffer.getInstance().get(Registry.ENTITY_TYPE.getId(entity.getType()));
+
+            if (pattern == null) {
+                if (entity.getEntityWorld().isClient()) {
+                    return new PatternShape(Disassembler.patternFrom(entity));
+                } else {
+                    return new BoundingBoxShape(entity.getBoundingBox());
+                }
             }
+
+            return new PatternShape(pattern);
         };
     }
 }

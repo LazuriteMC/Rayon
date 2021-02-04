@@ -10,8 +10,7 @@ import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
-import dev.lazurite.rayon.impl.transporter.impl.PatternBufferImpl;
-import dev.lazurite.rayon.impl.transporter.impl.packet.PatternC2S;
+import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
@@ -68,6 +67,7 @@ public class BlockManager {
     public void load(Box area) {
         World world = dynamicsWorld.getWorld();
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
+        List<BlockRigidBody> blocksInWorld = dynamicsWorld.getRigidBodiesByClass(BlockRigidBody.class);
 
         blockList.forEach((blockPos, blockState) -> {
             float friction = 1.5f;
@@ -84,19 +84,28 @@ public class BlockManager {
                 VoxelShape vox = blockState.getCollisionShape(world, blockPos);
 
                 if (!vox.isEmpty()) {
+                    for (BlockRigidBody body : blocksInWorld) {
+                        if (body.getBlockPos().equals(blockPos) && body.getBlockState().equals(blockState)) {
+                            toKeep.add(body);
+                            return;
+                        }
+                    }
+
                     BlockRigidBody body = new BlockRigidBody(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction, 0.25f);
 
-                    if (world.isClient()) {
-                        if (!blockState.isFullCube(world, blockPos)) {
-                            Pattern pattern = Disassembler.patternFrom(blockState, blockPos, world);
-                            body.setCollisionShape(new PatternShape(pattern));
-                            PatternC2S.send(body.getIdentifier(), pattern);
-                        }
+                    if (blockState.isFullCube(world, blockPos)) {
+                        body.setCollisionShape(new BoundingBoxShape(vox.getBoundingBox()));
                     } else {
-                        Pattern pattern = PatternBufferImpl.getInstance().get(body.getIdentifier());
+                        Pattern pattern = PatternBuffer.getInstance().pop(body.getIdentifier());
 
-                        if (pattern != null) {
-                            body.setCollisionShape(new PatternShape(pattern));
+                        if (pattern == null) {
+                            if (world.isClient()) {
+                                body.setCollisionShape(new PatternShape(Disassembler.patternFrom(blockState, blockPos, world), false));
+                            } else {
+                                body.setCollisionShape(new BoundingBoxShape(vox.getBoundingBox()));
+                            }
+                        } else {
+                            body.setCollisionShape(new PatternShape(pattern, false));
                         }
                     }
 
@@ -124,13 +133,9 @@ public class BlockManager {
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
 
-        dynamicsWorld.getRigidBodyList().forEach(body -> {
-            if (body instanceof BlockRigidBody) {
-                BlockRigidBody block = (BlockRigidBody) body;
-
-                if (!toKeep.contains(block)) {
-                    toRemove.add(block);
-                }
+        dynamicsWorld.getRigidBodiesByClass(BlockRigidBody.class).forEach(body -> {
+            if (!toKeep.contains(body)) {
+                toRemove.add(body);
             }
         });
 

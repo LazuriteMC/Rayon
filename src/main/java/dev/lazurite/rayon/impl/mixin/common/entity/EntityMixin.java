@@ -9,11 +9,20 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
+//    @Inject(method = "addVelocity", at = @At("HEAD"))
+//    public void addVelocity(double x, double y, double z, CallbackInfo info) {
+//        if (EntityRigidBody.is((Entity) (Object) this)) {
+//            EntityRigidBody body = Rayon.ENTITY.get((Entity) (Object) this);
+//            Vector3f vel = body.getLinearVelocity(new Vector3f());
+//            vel.add(new Vector3f((float) x, (float) y, (float) z));
+//            body.setLinearVelocity(vel);
+//        }
+//    }
+
     /**
      * This allows non-physics entities to interact with {@link EntityRigidBody}s.
      */
@@ -30,28 +39,6 @@ public abstract class EntityMixin {
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
         if (EntityRigidBody.is((Entity) (Object) this) && !EntityRigidBody.is(entity)) {
             Rayon.ENTITY.get((Entity) (Object) this).applyCentralImpulse(new Vector3f((float) -d * 100, 0.0f, (float) -e * 100));
-        }
-    }
-
-    /**
-     * This method makes sure that the default behavior for
-     * {@link EntityRigidBody}s is to be collidable.
-     */
-    @Inject(method = "collides", at = @At("HEAD"), cancellable = true)
-    public void collides(CallbackInfoReturnable<Boolean> info) {
-        if (EntityRigidBody.is((Entity) (Object) this)) {
-            info.setReturnValue(false);
-        }
-    }
-
-    /**
-     * This method makes sure that the default behavior for
-     * {@link EntityRigidBody}s is to be pushable.
-     */
-    @Inject(method = "isPushable", at = @At("HEAD"), cancellable = true)
-    public void isPushable(CallbackInfoReturnable<Boolean> info) {
-        if (EntityRigidBody.is((Entity) (Object) this)) {
-            info.setReturnValue(true);
         }
     }
 

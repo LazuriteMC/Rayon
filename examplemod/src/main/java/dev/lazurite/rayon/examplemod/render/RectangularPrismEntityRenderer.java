@@ -23,6 +23,7 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
         super(dispatcher);
         this.shadowRadius = 0.2F;
         this.model = new RectangularPrismModel(16, 32, 16);
+        this.model.child = false;
     }
 
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

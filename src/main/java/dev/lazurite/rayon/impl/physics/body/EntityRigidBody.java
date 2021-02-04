@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.impl.physics.body;
 
 import com.jme3.bounding.BoundingBox;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -16,8 +15,7 @@ import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
-import dev.lazurite.rayon.impl.transporter.impl.PatternBufferImpl;
+import dev.lazurite.rayon.impl.transporter.api.event.PatternBufferEvents;
 import dev.lazurite.rayon.impl.physics.manager.FluidManager;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
@@ -79,6 +77,13 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
+        this.prevPosition.set(getPhysicsLocation(new Vector3f()));
+
+        PatternBufferEvents.PATTERN_RECEIVED.register((identifier, pattern) -> {
+            if (getIdentifier().equals(identifier) && !(getCollisionShape() instanceof PatternShape)) {
+                setCollisionShape(new PatternShape(pattern));
+            }
+        });
     }
 
     public static boolean is(Entity entity) {
@@ -134,19 +139,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
             tickPosition.set(getPhysicsLocation(new Vector3f()));
         } else {
             Rayon.ENTITY.sync(entity);
-            Pattern pattern = PatternBufferImpl.getInstance().get(getIdentifier());
-
-            if (pattern != null) {
-                CollisionShape shape = getCollisionShape();
-
-                if (shape instanceof PatternShape) {
-                    if (!((PatternShape) shape).getPattern().equals(pattern)) {
-                        setCollisionShape(new PatternShape(pattern));
-                    }
-                } else {
-                    setCollisionShape(new PatternShape(pattern));
-                }
-            }
         }
 
         if (!isInWorld()) {

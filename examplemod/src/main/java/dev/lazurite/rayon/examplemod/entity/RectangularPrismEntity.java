@@ -16,6 +16,11 @@ public class RectangularPrismEntity extends Entity {
     }
 
     @Override
+    public boolean isPushable() {
+        return true;
+    }
+
+    @Override
     protected void initDataTracker() {
 
     }

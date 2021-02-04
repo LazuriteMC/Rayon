@@ -72,7 +72,7 @@ public class QuadConsumer implements VertexConsumer, Pattern {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof QuadConsumer) {
-            return ((QuadConsumer) obj).getQuads().size() == getQuads().size();
+            return ((QuadConsumer) obj).getQuads().equals(getQuads());
         }
 
         return false;

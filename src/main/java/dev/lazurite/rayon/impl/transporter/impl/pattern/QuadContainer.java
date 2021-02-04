@@ -16,4 +16,13 @@ public class QuadContainer implements Pattern {
     public List<Quad> getQuads() {
         return this.quads;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof QuadContainer) {
+            return ((QuadContainer) obj).getQuads().equals(getQuads());
+        }
+
+        return false;
+    }
 }
