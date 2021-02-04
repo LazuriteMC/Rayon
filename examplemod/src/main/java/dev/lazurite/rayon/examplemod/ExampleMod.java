@@ -3,7 +3,6 @@ package dev.lazurite.rayon.examplemod;
 import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
-import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
@@ -16,7 +15,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
@@ -63,15 +61,6 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
                     .setFriction(0.5f)
                     .setRestitution(0.75f)
                     .build());
-
-        RigidBodyRegistry.register(
-                RigidBodyBuilder.create(CowEntity.class)
-                        .setShape(PatternShape.getFactory())
-                        .setMass(2.0f)
-                        .setDrag(0.05f)
-                        .setFriction(0.5f)
-                        .setRestitution(0.75f)
-                        .build());
 
         /* An example of a block collision event */
         EntityRigidBodyEvents.BLOCK_COLLISION.register((entityBody, blockBody) -> {

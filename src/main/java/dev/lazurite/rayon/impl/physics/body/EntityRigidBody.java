@@ -17,6 +17,8 @@ import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.transporter.api.event.PatternBufferEvents;
 import dev.lazurite.rayon.impl.physics.manager.FluidManager;
+import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
+import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
@@ -79,9 +81,13 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
         this.prevPosition.set(getPhysicsLocation(new Vector3f()));
 
-        PatternBufferEvents.PATTERN_RECEIVED.register((identifier, pattern) -> {
+        PatternBufferEvents.PATTERN_RECEIVED.register((identifier) -> {
             if (getIdentifier().equals(identifier) && !(getCollisionShape() instanceof PatternShape)) {
-                setCollisionShape(new PatternShape(pattern));
+                Pattern pattern = PatternBuffer.getInstance().get(identifier);
+
+                if (pattern != null) {
+                    setCollisionShape(new PatternShape(pattern));
+                }
             }
         });
     }

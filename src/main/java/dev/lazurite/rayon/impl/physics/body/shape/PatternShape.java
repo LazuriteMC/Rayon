@@ -54,17 +54,11 @@ public class PatternShape extends CompoundCollisionShape {
 
     public static EntityShapeFactory getFactory() {
         return (entity) -> {
-            Pattern pattern = PatternBuffer.getInstance().get(Registry.ENTITY_TYPE.getId(entity.getType()));
-
-            if (pattern == null) {
-                if (entity.getEntityWorld().isClient()) {
-                    return new PatternShape(Disassembler.patternFrom(entity));
-                } else {
-                    return new BoundingBoxShape(entity.getBoundingBox());
-                }
+            if (entity.getEntityWorld().isClient()) {
+                return new PatternShape(Disassembler.patternFrom(entity));
+            } else {
+                return new BoundingBoxShape(entity.getBoundingBox());
             }
-
-            return new PatternShape(pattern);
         };
     }
 }

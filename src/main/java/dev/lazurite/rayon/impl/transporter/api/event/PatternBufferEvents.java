@@ -1,14 +1,13 @@
 package dev.lazurite.rayon.impl.transporter.api.event;
 
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.util.Identifier;
 
 public final class PatternBufferEvents {
-    public static final Event<PatternReceived> PATTERN_RECEIVED = EventFactory.createArrayBacked(PatternReceived.class, (callbacks) -> (identifier, pattern) -> {
+    public static final Event<PatternReceived> PATTERN_RECEIVED = EventFactory.createArrayBacked(PatternReceived.class, (callbacks) -> (identifier) -> {
         for (PatternReceived event : callbacks) {
-            event.onReceived(identifier, pattern);
+            event.onReceived(identifier);
         }
     });
 
@@ -16,6 +15,6 @@ public final class PatternBufferEvents {
 
     @FunctionalInterface
     public interface PatternReceived {
-        void onReceived(Identifier identifier, Pattern pattern);
+        void onReceived(Identifier identifier);
     }
 }

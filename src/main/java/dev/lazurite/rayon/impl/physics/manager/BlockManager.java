@@ -9,7 +9,6 @@ import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
@@ -92,20 +91,11 @@ public class BlockManager {
                     }
 
                     BlockRigidBody body = new BlockRigidBody(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction, 0.25f);
-
-                    if (blockState.isFullCube(world, blockPos)) {
-                        body.setCollisionShape(new BoundingBoxShape(vox.getBoundingBox()));
-                    } else {
-                        Pattern pattern = PatternBuffer.getInstance().pop(body.getIdentifier());
-
-                        if (pattern == null) {
-                            if (world.isClient()) {
-                                body.setCollisionShape(new PatternShape(Disassembler.patternFrom(blockState, blockPos, world), false));
-                            } else {
-                                body.setCollisionShape(new BoundingBoxShape(vox.getBoundingBox()));
-                            }
-                        } else {
-                            body.setCollisionShape(new PatternShape(pattern, false));
+                    if (!blockState.isFullCube(world, blockPos)) {
+                        if (world.isClient()) {
+                            body.setCollisionShape(new PatternShape(Disassembler.patternFrom(blockState, blockPos, world), false));
+                        } else if (PatternBuffer.getInstance().containsKey(body.getIdentifier())) {
+                            body.setCollisionShape(new PatternShape(PatternBuffer.getInstance().get(body.getIdentifier())));
                         }
                     }
 

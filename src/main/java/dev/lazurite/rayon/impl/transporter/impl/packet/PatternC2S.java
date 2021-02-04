@@ -39,7 +39,7 @@ public class PatternC2S {
         server.execute(() -> {
             Pattern pattern = new QuadContainer(quads);
             PatternBuffer.getInstance().put(identifier, pattern);
-            PatternBufferEvents.PATTERN_RECEIVED.invoker().onReceived(identifier, pattern);
+            PatternBufferEvents.PATTERN_RECEIVED.invoker().onReceived(identifier);
         });
     }
 

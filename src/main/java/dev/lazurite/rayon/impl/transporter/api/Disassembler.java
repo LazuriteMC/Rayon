@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.transporter.api;
 
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
-import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.impl.packet.PatternC2S;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.QuadConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,7 +24,7 @@ public interface Disassembler {
         QuadConsumer pattern = new QuadConsumer();
         MinecraftClient.getInstance().getItemRenderer()
                 .renderItem(new ItemStack(item), ModelTransformation.Mode.GROUND, 0, 0, new MatrixStack(), pattern.asProvider());
-        PatternBuffer.getInstance().put(Registry.ITEM.getId(item), pattern);
+        PatternC2S.send(Registry.ITEM.getId(item), pattern);
         return pattern;
     }
 
@@ -34,7 +34,7 @@ public interface Disassembler {
         matrixStack.translate(-0.5, -0.5, -0.5);
         MinecraftClient.getInstance().getBlockRenderManager()
                 .renderBlock(blockState, pos, world, matrixStack, pattern, false, new Random());
-        PatternBuffer.getInstance().put(Registry.BLOCK.getId(blockState.getBlock()), pattern);
+        PatternC2S.send(Registry.BLOCK.getId(blockState.getBlock()), pattern);
         return pattern;
     }
 
@@ -42,7 +42,7 @@ public interface Disassembler {
         QuadConsumer pattern = new QuadConsumer();
         MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
                 .render(entity, 0, 0, new MatrixStack(), pattern.asProvider(), 0);
-        PatternBuffer.getInstance().put(Registry.ENTITY_TYPE.getId(entity.getType()), pattern);
+        PatternC2S.send(Registry.ENTITY_TYPE.getId(entity.getType()), pattern);
         return pattern;
     }
 }
