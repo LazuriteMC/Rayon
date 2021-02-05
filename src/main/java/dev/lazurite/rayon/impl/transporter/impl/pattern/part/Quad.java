@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.impl.transporter.impl.pattern.part;
 
 import com.google.common.collect.Lists;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.List;
@@ -24,6 +25,24 @@ public class Quad {
 
     public List<Vec3d> getPoints() {
         return Lists.newArrayList(p1, p2, p3, p4);
+    }
+
+    public void serialize(PacketByteBuf buf) {
+        for (Vec3d point : getPoints()) {
+            buf.writeDouble(point.getX());
+            buf.writeDouble(point.getY());
+            buf.writeDouble(point.getZ());
+        }
+    }
+
+    public static Quad deserialize(PacketByteBuf buf) {
+        List<Vec3d> points = Lists.newArrayList();
+
+        for (int j = 0; j < 4; j++) {
+            points.add(new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()));
+        }
+
+        return new Quad(points);
     }
 
     @Override

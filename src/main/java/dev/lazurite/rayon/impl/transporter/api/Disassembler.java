@@ -1,7 +1,8 @@
 package dev.lazurite.rayon.impl.transporter.api;
 
+import dev.lazurite.rayon.impl.transporter.api.buffer.BufferStorage;
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
-import dev.lazurite.rayon.impl.transporter.impl.packet.PatternC2S;
+import dev.lazurite.rayon.impl.transporter.impl.pattern.BufferEntry;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.QuadConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,36 +14,42 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
 @Environment(EnvType.CLIENT)
 public interface Disassembler {
-    static Pattern patternFrom(Item item) {
-        QuadConsumer pattern = new QuadConsumer();
-        MinecraftClient.getInstance().getItemRenderer()
-                .renderItem(new ItemStack(item), ModelTransformation.Mode.GROUND, 0, 0, new MatrixStack(), pattern.asProvider());
-        PatternC2S.send(Registry.ITEM.getId(item), pattern);
-        return pattern;
-    }
-
-    static QuadConsumer patternFrom(BlockState blockState, BlockPos pos, World world) {
-        QuadConsumer pattern = new QuadConsumer();
+    static Pattern getBlock(BlockState blockState, BlockPos blockPos, World world) {
+        QuadConsumer consumer = new QuadConsumer();
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(-0.5, -0.5, -0.5);
         MinecraftClient.getInstance().getBlockRenderManager()
-                .renderBlock(blockState, pos, world, matrixStack, pattern, false, new Random());
-        PatternC2S.send(Registry.BLOCK.getId(blockState.getBlock()), pattern);
+                .renderBlock(blockState, blockPos, world, matrixStack, consumer, false, new Random());
+
+        BufferEntry<BlockPos> pattern = new BufferEntry<>(consumer, blockPos);
+        ((BufferStorage) world).getBlockBuffer().put(pattern);
         return pattern;
     }
 
-    static QuadConsumer patternFrom(Entity entity) {
-        QuadConsumer pattern = new QuadConsumer();
+    static Pattern getEntity(Entity entity, World world) {
+        QuadConsumer consumer = new QuadConsumer();
         MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
-                .render(entity, 0, 0, new MatrixStack(), pattern.asProvider(), 0);
-        PatternC2S.send(Registry.ENTITY_TYPE.getId(entity.getType()), pattern);
+                .render(entity, 0, 0, new MatrixStack(), consumer.asProvider(), 0);
+
+        BufferEntry<Entity> pattern = new BufferEntry<>(consumer, entity);
+        ((BufferStorage) world).getEntityBuffer().put(pattern);
         return pattern;
     }
+
+    static Pattern getItem(Item item, World world) {
+        QuadConsumer consumer = new QuadConsumer();
+        MinecraftClient.getInstance().getItemRenderer()
+                .renderItem(new ItemStack(item), ModelTransformation.Mode.GROUND, 0, 0, new MatrixStack(), consumer.asProvider());
+
+        BufferEntry<Item> pattern = new BufferEntry<>(consumer, item);
+        ((BufferStorage) world).getItemBuffer().put(pattern);
+        return pattern;
+    }
+
 }

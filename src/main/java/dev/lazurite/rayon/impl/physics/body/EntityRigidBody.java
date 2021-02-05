@@ -13,12 +13,10 @@ import dev.lazurite.rayon.api.shape.EntityShapeFactory;
 import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.physics.body.type.IdentifierBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
-import dev.lazurite.rayon.impl.transporter.api.event.PatternBufferEvents;
 import dev.lazurite.rayon.impl.physics.manager.FluidManager;
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
-import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
@@ -31,9 +29,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
@@ -57,9 +53,7 @@ import java.util.function.BooleanSupplier;
  * @see MinecraftDynamicsWorld
  * @see EntityRigidBodyEvents
  */
-public class EntityRigidBody extends PhysicsRigidBody implements
-        IdentifierBody, SteppableBody, BlockLoadingBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
-
+public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, BlockLoadingBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final Quaternion prevRotation = new Quaternion();
     private final Quaternion tickRotation = new Quaternion();
     private final Vector3f prevPosition = new Vector3f();
@@ -79,17 +73,9 @@ public class EntityRigidBody extends PhysicsRigidBody implements
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
         this.prevRotation.set(getPhysicsRotation(new Quaternion()));
+        this.tickRotation.set(getPhysicsRotation(new Quaternion()));
         this.prevPosition.set(getPhysicsLocation(new Vector3f()));
-
-        PatternBufferEvents.PATTERN_RECEIVED.register((identifier) -> {
-            if (getIdentifier().equals(identifier) && !(getCollisionShape() instanceof PatternShape)) {
-                Pattern pattern = PatternBuffer.getInstance().get(identifier);
-
-                if (pattern != null) {
-                    setCollisionShape(new PatternShape(pattern));
-                }
-            }
-        });
+        this.tickPosition.set(getPhysicsLocation(new Vector3f()));
     }
 
     public static boolean is(Entity entity) {
@@ -145,17 +131,28 @@ public class EntityRigidBody extends PhysicsRigidBody implements
             tickPosition.set(getPhysicsLocation(new Vector3f()));
         } else {
             Rayon.ENTITY.sync(entity);
+            PatternBuffer<Entity> buffer = PatternBuffer.getEntityBuffer(dynamicsWorld.getWorld());
+
+            for (TypedPattern<Entity> pattern : buffer.getAll()) {
+                if (pattern.getIdentifier().equals(getEntity())) {
+                    if (getCollisionShape() instanceof PatternShape) {
+                        if (!((PatternShape) getCollisionShape()).getPattern().equals(pattern)) {
+                            setCollisionShape(new PatternShape(pattern));
+                        }
+                    }
+                }
+            }
         }
 
-        if (!isInWorld()) {
+        if (isInWorld()) {
+            Vector3f position = getPhysicsLocation(new Vector3f());
+            entity.updatePosition(position.x, position.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, position.z);
+
+            entity.yaw = QuaternionHelper.getYaw(tickRotation);
+            entity.pitch = QuaternionHelper.getPitch(tickRotation);
+        } else {
             getDynamicsWorld().addCollisionObject(this);
         }
-
-        Vector3f position = getPhysicsLocation(new Vector3f());
-        entity.updatePosition(position.x, position.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, position.z);
-
-        entity.yaw = QuaternionHelper.getYaw(tickRotation);
-        entity.pitch = QuaternionHelper.getPitch(tickRotation);
     }
 
     public void onLoad(MinecraftDynamicsWorld world) {
@@ -216,11 +213,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements
     @Override
     public BlockPos getBlockPos() {
         return getEntity().getBlockPos();
-    }
-
-    @Override
-    public Identifier getIdentifier() {
-        return Registry.ENTITY_TYPE.getId(getEntity().getType());
     }
 
     @Override

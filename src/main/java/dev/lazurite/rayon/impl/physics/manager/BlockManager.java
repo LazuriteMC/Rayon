@@ -4,19 +4,21 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
-import dev.lazurite.rayon.impl.transporter.api.pattern.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
+import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -66,7 +68,6 @@ public class BlockManager {
     public void load(Box area) {
         World world = dynamicsWorld.getWorld();
         Map<BlockPos, BlockState> blockList = getBlockList(world, area);
-        List<BlockRigidBody> blocksInWorld = dynamicsWorld.getRigidBodiesByClass(BlockRigidBody.class);
 
         blockList.forEach((blockPos, blockState) -> {
             float friction = 1.5f;
@@ -78,34 +79,23 @@ public class BlockManager {
                 friction = 0.9F;
             }
 
-            /* Check if block is solid or not */
+            /* Check if the block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside()) {
-                VoxelShape vox = blockState.getCollisionShape(world, blockPos);
+                BlockRigidBody body = findBlockAtPos(blockPos, blockState);
 
-                if (!vox.isEmpty()) {
-                    for (BlockRigidBody body : blocksInWorld) {
-                        if (body.getBlockPos().equals(blockPos) && body.getBlockState().equals(blockState)) {
-                            toKeep.add(body);
-                            return;
-                        }
-                    }
+                /* Try to make a new rigid body if it's state or shape is different */
+                if (hasBlockChanged(body)) {
+                    if (body != null) dynamicsWorld.removeCollisionObject(body);
 
-                    BlockRigidBody body = new BlockRigidBody(blockPos, blockState, new BoundingBoxShape(vox.getBoundingBox()), friction, 0.25f);
-                    if (!blockState.isFullCube(world, blockPos)) {
-                        if (world.isClient()) {
-                            body.setCollisionShape(new PatternShape(Disassembler.patternFrom(blockState, blockPos, world), false));
-                        } else if (PatternBuffer.getInstance().containsKey(body.getIdentifier())) {
-                            body.setCollisionShape(new PatternShape(PatternBuffer.getInstance().get(body.getIdentifier())));
-                        }
-                    }
+                    body = new BlockRigidBody(blockState, blockPos, world, friction, 0.25f);
 
                     /* Check if the block isn't already in the dynamics world */
                     if (!dynamicsWorld.getRigidBodyList().contains(body)) {
                         dynamicsWorld.addCollisionObject(body);
                     }
-
-                    toKeep.add(body);
                 }
+
+                toKeep.add(body);
             }
         });
     }
@@ -132,6 +122,39 @@ public class BlockManager {
         toRemove.forEach(dynamicsWorld::removeCollisionObject);
         toKeep.clear();
     }
+
+    public boolean hasBlockChanged(@Nullable BlockRigidBody body) {
+        if (body == null) return true;
+
+        BlockState blockState = body.getBlockState();
+        BlockPos blockPos = body.getBlockPos();
+        World world = dynamicsWorld.getWorld();
+
+//        if (!blockState.equals(world.getBlockState(blockPos))) {
+//            return true;
+//        }
+
+        if (body.getCollisionShape() instanceof PatternShape) {
+            if (world.isClient()) {
+                return !Disassembler.getBlock(blockState, blockPos, world).equals(((PatternShape) body.getCollisionShape()).getPattern());
+            } else {
+                return PatternBuffer.getBlockBuffer(world).get(blockPos).contains(((PatternShape) body.getCollisionShape()).getPattern());
+            }
+        }
+
+         return false;
+    }
+
+    public BlockRigidBody findBlockAtPos(BlockPos blockPos, BlockState blockState) {
+        for (BlockRigidBody body : dynamicsWorld.getRigidBodiesByClass(BlockRigidBody.class)) {
+            if (body.getBlockPos().equals(blockPos) && body.getBlockState().equals(blockState)) {
+                return body;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Simply returns a basic {@link Map} of {@link BlockPos} and {@link BlockState}
      * objects representing the blocks that make up the {@link Box} area parameter.
