@@ -15,25 +15,15 @@ public class LocalSettings {
     private int loadDistance;
 
     @Setting
-    @Setting.Constrain.Range(min = 20, max = 260, step = 1.0f)
-    private int stepRate;
-
-    @Setting
-    @Setting.Constrain.Range(min = 5, max = 10, step = 1.0f)
-    private int maxSubSteps;
-
-    @Setting
     @Setting.Constrain.Range(min = 3, max = 16, step = 1.0f)
     private int debugDistance;
 
     @Setting
     private DebugManager.DrawMode debugDrawMode;
 
-    public LocalSettings(int blockDistance, int loadDistance, int stepRate, int maxSubSteps, int debugDistance, DebugManager.DrawMode debugDrawMode) {
+    public LocalSettings(int blockDistance, int loadDistance, int debugDistance, DebugManager.DrawMode debugDrawMode) {
         this.blockDistance = blockDistance;
         this.loadDistance = loadDistance;
-        this.stepRate = stepRate;
-        this.maxSubSteps = maxSubSteps;
         this.debugDistance = debugDistance;
         this.debugDrawMode = debugDrawMode;
     }
@@ -44,14 +34,6 @@ public class LocalSettings {
 
     public void setLoadDistance(int loadDistance) {
         this.loadDistance = loadDistance;
-    }
-
-    public void setStepRate(int stepRate) {
-        this.stepRate = stepRate;
-    }
-
-    public void setMaxSubSteps(int maxSubSteps) {
-        this.maxSubSteps = maxSubSteps;
     }
 
     public void setDebugDistance(int debugDistance) {
@@ -68,14 +50,6 @@ public class LocalSettings {
 
     public int getLoadDistance() {
         return this.loadDistance;
-    }
-
-    public int getStepRate() {
-        return this.stepRate;
-    }
-
-    public int getMaxSubSteps() {
-        return this.maxSubSteps;
     }
 
     public int getDebugDistance() {

@@ -94,13 +94,13 @@ public final class DebugManager {
                             RenderSystem.depthMask(false);
                             RenderSystem.lineWidth(1.0F);
 
-                            FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0).rewind();
+                            FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 1).rewind();
                             BufferBuilder builder = Tessellator.getInstance().getBuffer();
                             float alpha = ((DebuggableBody) body).getOutlineAlpha();
                             Vector3f color = ((DebuggableBody) body).getOutlineColor();
 
                             Vector3f position = body.getPhysicsLocation(new Vector3f())
-                                    .subtract(new Vector3f((float) camera.getPos().x, (float) camera.getPos().y, (float) camera.getPos().z));
+                                    .subtract(VectorHelper.vec3dToVector3f(camera.getPos()));
 
                             builder.begin(Config.getInstance().getLocal().getDebugDrawMode().getMode(), VertexFormats.POSITION_COLOR);
                             RenderSystem.translatef(position.x, position.y, position.z);

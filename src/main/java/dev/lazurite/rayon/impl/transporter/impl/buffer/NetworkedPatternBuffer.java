@@ -19,6 +19,10 @@ public class NetworkedPatternBuffer<T> extends AbstractPatternBuffer<T> {
         dirty = true;
     }
 
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
+    }
+
     public boolean isDirty() {
         return dirty;
     }

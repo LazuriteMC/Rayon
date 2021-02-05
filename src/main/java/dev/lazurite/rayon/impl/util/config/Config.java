@@ -23,7 +23,7 @@ public final class Config {
     private static final Config instance = new Config();
     public static final String CONFIG_NAME = "rayon.json";
 
-    private final LocalSettings local = new LocalSettings(1, 100, 260, 5, 10, DebugManager.DrawMode.LINES);
+    private final LocalSettings local = new LocalSettings(1, 100, 10, DebugManager.DrawMode.LINES);
     private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f, true);
     private GlobalSettings remoteGlobal;
 

@@ -10,13 +10,10 @@ import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
-import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
 import dev.lazurite.rayon.impl.physics.manager.FluidManager;
-import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
-import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
@@ -25,6 +22,8 @@ import dev.lazurite.rayon.impl.util.config.Config;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
@@ -59,15 +58,13 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     private final Vector3f prevPosition = new Vector3f();
     private final Vector3f tickPosition = new Vector3f();
     private final MinecraftDynamicsWorld dynamicsWorld;
-    private final EntityShapeFactory shapeFactory;
     private final Entity entity;
     private float dragCoefficient;
     private boolean noclip;
 
     public EntityRigidBody(Entity entity, EntityShapeFactory shapeFactory, float mass, float dragCoefficient, float friction, float restitution) {
-        super(new BoundingBoxShape(entity.getBoundingBox()), mass);
+        super(shapeFactory.create(entity), mass);
         this.entity = entity;
-        this.shapeFactory = shapeFactory;
         this.dragCoefficient = dragCoefficient;
         this.setFriction(friction);
         this.setRestitution(restitution);
@@ -121,47 +118,22 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
      */
     @Override
     public void tick() {
-        if (getDynamicsWorld().getWorld().isClient()) {
-            /* Update orientation for rendering */
-            prevRotation.set(tickRotation);
-            tickRotation.set(getPhysicsRotation(new Quaternion()));
-
-            /* Update position for rendering */
-            prevPosition.set(tickPosition);
-            tickPosition.set(getPhysicsLocation(new Vector3f()));
-        } else {
+        if (!getDynamicsWorld().getWorld().isClient()) {
             Rayon.ENTITY.sync(entity);
-            PatternBuffer<Entity> buffer = PatternBuffer.getEntityBuffer(dynamicsWorld.getWorld());
-
-            for (TypedPattern<Entity> pattern : buffer.getAll()) {
-                if (pattern.getIdentifier().equals(getEntity())) {
-                    if (getCollisionShape() instanceof PatternShape) {
-                        if (!((PatternShape) getCollisionShape()).getPattern().equals(pattern)) {
-                            setCollisionShape(new PatternShape(pattern));
-                        }
-                    }
-                }
-            }
         }
 
-        if (isInWorld()) {
-            Vector3f position = getPhysicsLocation(new Vector3f());
-            entity.updatePosition(position.x, position.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, position.z);
+        prevRotation.set(tickRotation);
+        prevPosition.set(tickPosition);
+        tickRotation.set(getPhysicsRotation(new Quaternion()));
+        tickPosition.set(getPhysicsLocation(new Vector3f()));
 
+        if (isInWorld()) {
+            entity.updatePosition(tickPosition.x, tickPosition.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, tickPosition.z);
             entity.yaw = QuaternionHelper.getYaw(tickRotation);
             entity.pitch = QuaternionHelper.getPitch(tickRotation);
         } else {
             getDynamicsWorld().addCollisionObject(this);
         }
-    }
-
-    public void onLoad(MinecraftDynamicsWorld world) {
-        setCollisionShape(shapeFactory.create(getEntity()));
-        EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad(this, world);
-    }
-
-    public void onUnload(MinecraftDynamicsWorld world) {
-        EntityRigidBodyEvents.ENTITY_BODY_UNLOAD.invoker().onUnload(this, world);
     }
 
     public void setDragCoefficient(float dragCoefficient) {
@@ -176,11 +148,13 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         return dragCoefficient;
     }
 
+    @Environment(EnvType.CLIENT)
     public Quaternion getPhysicsRotation(Quaternion quaternion, float delta) {
         quaternion.set(QuaternionHelper.slerp(prevRotation, tickRotation, delta));
         return quaternion;
     }
 
+    @Environment(EnvType.CLIENT)
     public Vector3f getPhysicsLocation(Vector3f vector3f, float delta) {
         vector3f.set(VectorHelper.lerp(prevPosition, tickPosition, delta));
         return vector3f;

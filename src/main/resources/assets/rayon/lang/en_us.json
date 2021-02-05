@@ -14,13 +14,6 @@
   "config.rayon.option.load_distance": "Load Distance",
   "config.rayon.option.load_distance.tooltip": "The maximum distance (in chunks) at which rigid body entities are loaded into the physics world.",
 
-  "config.rayon.option.step_rate": "Step Rate",
-  "config.rayon.option.step_rate.tooltip": "The rate at which the simulation is stepped.",
-  "config.rayon.option.step_rate.max": "Unlimited",
-
-  "config.rayon.option.max_sub_steps": "Max Sub Steps",
-  "config.rayon.option.max_sub_steps.tooltip": "The maximum amount of sub-steps taken during one simulation step.",
-
   "config.rayon.option.debug_distance": "Debug Render Distance",
   "config.rayon.option.debug_distance.tooltip": "The maximum distance (in blocks) from the player that debug outlines will be rendered.",
 

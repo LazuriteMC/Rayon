@@ -43,22 +43,14 @@ public abstract class MinecraftClientMixin {
         if (world != null) {
             profiler.swap("physicsSimulation");
             BooleanSupplier shouldStep = () -> !((MinecraftClient) (Object) this).isPaused();
+            float stepMillis = 1f / 60f;
 
-            /* Control the rate of execution... */
-            if (Config.getInstance().getLocal().getStepRate() < 260) {
-                float stepMillis = 1 / (float) Config.getInstance().getLocal().getStepRate();
-
-                if (delta > stepMillis) {
-                    Rayon.WORLD.get(world).step(shouldStep);
-                    delta -= stepMillis;
-                    clock.get();
-                } else {
-                    delta += clock.get();
-                }
-
-            /* ...or just go as fast as it can */
-            } else {
+            if (delta > stepMillis) {
                 Rayon.WORLD.get(world).step(shouldStep);
+                delta -= stepMillis;
+                clock.get();
+            } else {
+                delta += clock.get();
             }
         }
     }

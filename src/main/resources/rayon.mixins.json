@@ -13,8 +13,7 @@
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
     "client.render.DebugRendererMixin",
-    "client.render.EntityRenderDispatcherMixin",
-    "client.render.EntityRendererAccess",
+    "client.render.WorldRendererMixin",
     "client.KeyboardMixin",
     "client.MinecraftClientMixin"
   ],

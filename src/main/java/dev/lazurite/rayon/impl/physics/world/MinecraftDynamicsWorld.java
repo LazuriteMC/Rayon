@@ -102,7 +102,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
             distributeEvents();
 
-            update(delta, Config.getInstance().getLocal().getMaxSubSteps());
+            update(delta, 5);
             DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
@@ -161,7 +161,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
             if (!collisionObject.isInWorld() && isBodyNearPlayer((EntityRigidBody) collisionObject)) {
-                ((EntityRigidBody) collisionObject).onLoad(this);
+                EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad((EntityRigidBody) collisionObject, this);
                 super.addCollisionObject(collisionObject);
             }
         } else {
@@ -172,7 +172,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     @Override
     public void removeCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
-            ((EntityRigidBody) collisionObject).onUnload(this);
+            EntityRigidBodyEvents.ENTITY_BODY_UNLOAD.invoker().onUnload((EntityRigidBody) collisionObject, this);
         }
 
         super.removeCollisionObject(collisionObject);

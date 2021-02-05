@@ -8,8 +8,6 @@ import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.api.shape.EntityShapeFactory;
-import dev.lazurite.rayon.impl.transporter.api.Disassembler;
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.part.Quad;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
@@ -51,13 +49,13 @@ public class PatternShape extends CompoundCollisionShape {
         return this.pattern;
     }
 
-    public static EntityShapeFactory getFactory() {
-        return (entity) -> {
-            if (entity.getEntityWorld().isClient()) {
-                return new PatternShape(Disassembler.getEntity(entity, entity.getEntityWorld()));
-            } else {
-                return new BoundingBoxShape(entity.getBoundingBox());
-            }
-        };
-    }
+//    public static EntityShapeFactory getFactory() {
+//        return (entity) -> {
+//            if (entity.getEntityWorld().isClient()) {
+//                return new PatternShape(Disassembler.getEntity(entity, entity.getEntityWorld()));
+//            } else {
+//                return new BoundingBoxShape(entity.getBoundingBox());
+//            }
+//        };
+//    }
 }

@@ -1,8 +1,13 @@
 package dev.lazurite.rayon.examplemod.render;
 
+import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
+import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
@@ -13,6 +18,7 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPrismEntity> {
@@ -27,10 +33,17 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     }
 
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        EntityRigidBody body = Rayon.ENTITY.get(rectangularPrism);
+        Quaternion rot = QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
+        Vector3f bounds = body.getCollisionShape().boundingBox(new Vector3f(), new com.jme3.math.Quaternion(), new BoundingBox()).getExtent(new Vector3f()).multLocal(-1);
+
         matrixStack.push();
+        matrixStack.multiply(rot);
+        matrixStack.translate(bounds.x, bounds.y, bounds.z);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(model.getLayer(this.getTexture(rectangularPrism)));
         model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStack.pop();
+
         super.render(rectangularPrism, yaw, delta, matrixStack, vertexConsumerProvider, i);
     }
 

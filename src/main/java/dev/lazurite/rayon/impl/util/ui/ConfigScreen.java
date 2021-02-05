@@ -70,35 +70,6 @@ public class ConfigScreen implements ModMenuApi {
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setLoadDistance(newValue))
                 .build());
 
-        /* Client Step Rate */
-        category.addEntry(builder.entryBuilder().startIntSlider(
-                new TranslatableText("config.rayon.option.step_rate"),
-                Config.getInstance().getLocal().getStepRate(), 20, 260)
-                .setDefaultValue(260)
-                .setTooltip(
-                        new TranslatableText("config.rayon.option.step_rate.tooltip"),
-                        new TranslatableText("config.rayon.option.performance.medium"))
-                .setTextGetter((currValue) -> {
-                    if(currValue == 260) {
-                        return new TranslatableText("config.rayon.option.step_rate.max");
-                    } else {
-                        return new LiteralText(String.valueOf((currValue / 10) * 10)); // concern
-                    }
-                })
-                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setStepRate(newValue))
-                .build());
-
-        /* Simulation Max Sub Steps */
-        category.addEntry(builder.entryBuilder().startIntSlider(
-                new TranslatableText("config.rayon.option.max_sub_steps"),
-                Config.getInstance().getLocal().getMaxSubSteps(), 5, 10)
-                .setDefaultValue(5)
-                .setTooltip(
-                        new TranslatableText("config.rayon.option.max_sub_steps.tooltip"),
-                        new TranslatableText("config.rayon.option.performance.low"))
-                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setMaxSubSteps(newValue))
-                .build());
-
         /* Debug Render Distance */
         category.addEntry(builder.entryBuilder().startIntSlider(
                 new TranslatableText("config.rayon.option.debug_distance"),

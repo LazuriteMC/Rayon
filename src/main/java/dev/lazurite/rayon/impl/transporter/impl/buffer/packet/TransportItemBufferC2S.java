@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.impl.transporter.impl.buffer.packet;
 
 import com.google.common.collect.Lists;
-import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.rayon.impl.transporter.api.buffer.BufferStorage;
 import dev.lazurite.rayon.impl.transporter.api.event.PatternBufferEvents;
 import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
@@ -47,7 +46,7 @@ public class TransportItemBufferC2S {
         });
     }
 
-    public static void send(PatternBuffer<Item> buffer) {
+    public static void send(NetworkedPatternBuffer<Item> buffer) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(buffer.size());
 
@@ -60,6 +59,7 @@ public class TransportItemBufferC2S {
             }
         }
 
+        buffer.setDirty(false);
         ClientPlayNetworking.send(PACKET_ID, buf);
     }
 }

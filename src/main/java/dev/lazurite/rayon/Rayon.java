@@ -51,6 +51,12 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 		ServerPlayNetworking.registerGlobalReceiver(TransportBlockBufferC2S.PACKET_ID, TransportBlockBufferC2S::accept);
 		ServerPlayNetworking.registerGlobalReceiver(TransportEntityBufferC2S.PACKET_ID, TransportEntityBufferC2S::accept);
 		ServerPlayNetworking.registerGlobalReceiver(TransportItemBufferC2S.PACKET_ID, TransportItemBufferC2S::accept);
+
+		ServerTickEvents.START_WORLD_TICK.register(world -> {
+			((BufferStorage) world).getBlockBuffer().tick();
+			((BufferStorage) world).getEntityBuffer().tick();
+			((BufferStorage) world).getItemBuffer().tick();
+		});
 	}
 
 	@Override
@@ -63,13 +69,13 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 			NetworkedPatternBuffer<Entity> entityBuffer = ((BufferStorage) world).getEntityBuffer();
 			NetworkedPatternBuffer<Item> itemBuffer = ((BufferStorage) world).getItemBuffer();
 
-			blockBuffer.tick();
-			entityBuffer.tick();
-			itemBuffer.tick();
-
 			if (blockBuffer.isDirty()) TransportBlockBufferC2S.send(blockBuffer);
 			if (entityBuffer.isDirty()) TransportEntityBufferC2S.send(entityBuffer);
 			if (itemBuffer.isDirty()) TransportItemBufferC2S.send(itemBuffer);
+
+			blockBuffer.tick();
+			entityBuffer.tick();
+			itemBuffer.tick();
 		});
 	}
 
