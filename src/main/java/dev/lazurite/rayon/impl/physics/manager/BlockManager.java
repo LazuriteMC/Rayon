@@ -8,17 +8,14 @@ import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
-import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -81,15 +78,27 @@ public class BlockManager {
 
             /* Check if the block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside()) {
-                BlockRigidBody body = findBlockAtPos(blockPos, blockState);
+                BlockRigidBody body = findBlockAtPos(blockPos);
 
-                /* Try to make a new rigid body if it's state or shape is different */
-                if (hasBlockChanged(body)) {
-                    if (body != null) dynamicsWorld.removeCollisionObject(body);
+                if (world.isClient()) {
+                    MatrixStack transformation = new MatrixStack();
+                    transformation.translate(-0.5f, -0.5f, -0.5f);
+                    Disassembler.getBlock(blockState, blockPos, world, transformation);
+                }
 
+                if (body != null) {
+                    if (body.getCollisionShape() instanceof PatternShape) {
+                        if (PatternBuffer.getBlockBuffer(world).get(blockPos).contains(((PatternShape) body.getCollisionShape()).getPattern())) {
+                            dynamicsWorld.removeCollisionObject(body);
+                            body = new BlockRigidBody(blockState, blockPos, world, friction, 0.25f);
+
+                            if (!dynamicsWorld.getRigidBodyList().contains(body)) {
+                                dynamicsWorld.addCollisionObject(body);
+                            }
+                        }
+                    }
+                } else {
                     body = new BlockRigidBody(blockState, blockPos, world, friction, 0.25f);
-
-                    /* Check if the block isn't already in the dynamics world */
                     if (!dynamicsWorld.getRigidBodyList().contains(body)) {
                         dynamicsWorld.addCollisionObject(body);
                     }
@@ -123,31 +132,9 @@ public class BlockManager {
         toKeep.clear();
     }
 
-    public boolean hasBlockChanged(@Nullable BlockRigidBody body) {
-        if (body == null) return true;
-
-        BlockState blockState = body.getBlockState();
-        BlockPos blockPos = body.getBlockPos();
-        World world = dynamicsWorld.getWorld();
-
-//        if (!blockState.equals(world.getBlockState(blockPos))) {
-//            return true;
-//        }
-
-        if (body.getCollisionShape() instanceof PatternShape) {
-            if (world.isClient()) {
-                return !Disassembler.getBlock(blockState, blockPos, world).equals(((PatternShape) body.getCollisionShape()).getPattern());
-            } else {
-                return PatternBuffer.getBlockBuffer(world).get(blockPos).contains(((PatternShape) body.getCollisionShape()).getPattern());
-            }
-        }
-
-         return false;
-    }
-
-    public BlockRigidBody findBlockAtPos(BlockPos blockPos, BlockState blockState) {
+    public BlockRigidBody findBlockAtPos(BlockPos blockPos) {
         for (BlockRigidBody body : dynamicsWorld.getRigidBodiesByClass(BlockRigidBody.class)) {
-            if (body.getBlockPos().equals(blockPos) && body.getBlockState().equals(blockState)) {
+            if (body.getBlockPos().equals(blockPos)) {
                 return body;
             }
         }

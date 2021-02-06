@@ -13,16 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
-//    @Inject(method = "addVelocity", at = @At("HEAD"))
-//    public void addVelocity(double x, double y, double z, CallbackInfo info) {
-//        if (EntityRigidBody.is((Entity) (Object) this)) {
-//            EntityRigidBody body = Rayon.ENTITY.get((Entity) (Object) this);
-//            Vector3f vel = body.getLinearVelocity(new Vector3f());
-//            vel.add(new Vector3f((float) x, (float) y, (float) z));
-//            body.setLinearVelocity(vel);
-//        }
-//    }
-
     /**
      * This allows non-physics entities to interact with {@link EntityRigidBody}s.
      */
@@ -50,7 +40,13 @@ public abstract class EntityMixin {
     @Inject(method = "remove", at = @At("HEAD"))
     public void remove(CallbackInfo info) {
         if (EntityRigidBody.is((Entity) (Object) this)) {
-            Rayon.WORLD.get(((Entity) (Object) this).getEntityWorld()).removeCollisionObject(Rayon.ENTITY.get((Entity) (Object) this));
+            System.out.println("DIE");
+            MinecraftDynamicsWorld world = Rayon.WORLD.get(((Entity) (Object) this).getEntityWorld());
+            EntityRigidBody body = Rayon.ENTITY.get((Entity) (Object) this);
+
+            if (body.isInWorld()) {
+                world.removeCollisionObject(body);
+            }
         }
     }
 }

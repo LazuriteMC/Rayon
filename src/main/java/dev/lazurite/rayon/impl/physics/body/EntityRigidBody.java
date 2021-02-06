@@ -8,7 +8,6 @@ import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
 import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
@@ -118,21 +117,22 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
      */
     @Override
     public void tick() {
-        if (!getDynamicsWorld().getWorld().isClient()) {
-            Rayon.ENTITY.sync(entity);
-        }
-
-        prevRotation.set(tickRotation);
-        prevPosition.set(tickPosition);
-        tickRotation.set(getPhysicsRotation(new Quaternion()));
-        tickPosition.set(getPhysicsLocation(new Vector3f()));
-
         if (isInWorld()) {
+            prevRotation.set(tickRotation);
+            prevPosition.set(tickPosition);
+            tickRotation.set(getPhysicsRotation(new Quaternion()));
+            tickPosition.set(getPhysicsLocation(new Vector3f()));
+
             entity.updatePosition(tickPosition.x, tickPosition.y - boundingBox(new BoundingBox()).getYExtent() / 2.0f, tickPosition.z);
+
             entity.yaw = QuaternionHelper.getYaw(tickRotation);
             entity.pitch = QuaternionHelper.getPitch(tickRotation);
         } else {
             getDynamicsWorld().addCollisionObject(this);
+        }
+
+        if (!getDynamicsWorld().getWorld().isClient()) {
+            Rayon.ENTITY.sync(entity);
         }
     }
 

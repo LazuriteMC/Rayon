@@ -94,7 +94,7 @@ public final class DebugManager {
                             RenderSystem.depthMask(false);
                             RenderSystem.lineWidth(1.0F);
 
-                            FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 1).rewind();
+                            FloatBuffer buffer = DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0).rewind();
                             BufferBuilder builder = Tessellator.getInstance().getBuffer();
                             float alpha = ((DebuggableBody) body).getOutlineAlpha();
                             Vector3f color = ((DebuggableBody) body).getOutlineColor();

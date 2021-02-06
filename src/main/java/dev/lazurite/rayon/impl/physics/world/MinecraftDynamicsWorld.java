@@ -91,7 +91,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             float delta = this.clock.get();
             DynamicsWorldEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
 
-            for (PhysicsRigidBody body : getRigidBodyList()) {
+            for (EntityRigidBody body : getRigidBodiesByClass(EntityRigidBody.class)) {
                 if (!isBodyNearPlayer(body) && body.isInWorld()) {
                     removeCollisionObject(body);
                 }
@@ -102,7 +102,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
             distributeEvents();
 
-            update(delta, 5);
+            update(delta);
             DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
