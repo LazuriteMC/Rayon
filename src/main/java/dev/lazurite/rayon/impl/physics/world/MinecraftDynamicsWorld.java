@@ -10,9 +10,11 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.DynamicsWorldEvents;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
+import dev.lazurite.rayon.impl.physics.body.type.AirResistantBody;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
-import dev.lazurite.rayon.impl.physics.manager.BlockManager;
+import dev.lazurite.rayon.impl.physics.manager.FluidManager;
+import dev.lazurite.rayon.impl.physics.manager.TerrainManager;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
@@ -47,15 +49,19 @@ import java.util.function.BooleanSupplier;
  * @see MinecraftClientMixin
  */
 public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3, PhysicsCollisionListener {
-    private final BlockManager blockManager;
+    private static final int presimulationDuration = 20;
+    private final TerrainManager terrainManager;
+    private final FluidManager fluidManager;
     private final Clock clock;
     private final World world;
+    private int presimulationTicks;
 
     public MinecraftDynamicsWorld(World world, BroadphaseType broadphase) {
         super(broadphase);
         this.world = world;
         this.clock = new Clock();
-        this.blockManager = new BlockManager(this);
+        this.terrainManager = new TerrainManager(this);
+        this.fluidManager = new FluidManager(this);
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
         DynamicsWorldEvents.WORLD_LOAD.invoker().onLoad(this);
@@ -70,8 +76,9 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
      * <ul>
      *     <li>Triggers all {@link DynamicsWorldEvents#START_WORLD_STEP} events.</li>
      *     <li>Removes any distant {@link PhysicsRigidBody}s.</li>
-     *     <li>Loads blocks into the simulation using {@link BlockManager}.</li>
-     *     <li>Steps each {@link EntityRigidBody}s in the world.</li>
+     *     <li>Applies air resistance to all {@link AirResistantBody}s using {@link FluidManager}.</li>
+     *     <li>Loads blocks into the simulation around {@link BlockLoadingBody}s using {@link TerrainManager}.</li>
+     *     <li>Steps each {@link SteppableBody}.</li>
      *     <li>Sets gravity to the value stored in {@link Config}.</li>
      *     <li>Triggers all collision events.</li>
      *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
@@ -84,6 +91,8 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
      *
      * @see DynamicsWorldEvents
      * @see EntityRigidBodyEvents
+     * @see FluidManager
+     * @see TerrainManager
      * @param shouldStep whether or not the simulation should step
      */
     public void step(BooleanSupplier shouldStep) {
@@ -91,26 +100,39 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
             float delta = this.clock.get();
             DynamicsWorldEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
 
+            /* Remove far away entities */
             for (EntityRigidBody body : getRigidBodiesByClass(EntityRigidBody.class)) {
-                if (!isBodyNearPlayer(body) && body.isInWorld()) {
+                if (!isBodyNearPlayer(body)) {
                     removeCollisionObject(body);
                 }
             }
 
-            getBlockManager().load(getRigidBodiesByClass(BlockLoadingBody.class));
-            getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta));
-            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
-            distributeEvents();
+            getFluidManager().doAirResistance(getRigidBodiesByClass(AirResistantBody.class)); // air resistance
+            getTerrainManager().load(getRigidBodiesByClass(BlockLoadingBody.class)); // terrain loading
+            getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta)); // stepping
+            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0)); // gravity
+            distributeEvents(); // collision events
 
-            update(delta);
+            if (presimulationTicks > presimulationDuration) {
+                update(delta); // simulation step
+            } else ++presimulationTicks;
+
             DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
         }
     }
 
-    public BlockManager getBlockManager() {
-        return this.blockManager;
+    public TerrainManager getTerrainManager() {
+        return this.terrainManager;
+    }
+
+    public FluidManager getFluidManager() {
+        return this.fluidManager;
+    }
+
+    public boolean isInPresimulation() {
+        return this.presimulationTicks < presimulationDuration;
     }
 
     public <T> List<T> getRigidBodiesByClass(Class<T> type) {

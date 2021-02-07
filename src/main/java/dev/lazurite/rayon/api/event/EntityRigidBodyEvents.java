@@ -9,8 +9,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 /**
  * Callbacks for {@link EntityRigidBody}. Includes:
  * <ul>
- *     <li>{@link EntityRigidBodyEvents#START_ENTITY_BODY_STEP}: Before each {@link EntityRigidBody#step}.</li>
- *     <li>{@link EntityRigidBodyEvents#END_ENTITY_BODY_STEP}: After each {@link EntityRigidBody#step}.</li>
+ *     <li>{@link EntityRigidBodyEvents#ENTITY_BODY_STEP}: Before each {@link EntityRigidBody#step}.</li>
  *     <li>{@link EntityRigidBodyEvents#ENTITY_BODY_LOAD}: Just before being added to the {@link MinecraftDynamicsWorld}.</li>
  *     <li>{@link EntityRigidBodyEvents#ENTITY_BODY_UNLOAD}: Just after being removed from the {@link MinecraftDynamicsWorld}.</li>
  *     <li>{@link EntityRigidBodyEvents#BLOCK_COLLISION}: Whenever contact is made between a {@link EntityRigidBody} and a {@link BlockRigidBody}.</li>
@@ -22,15 +21,9 @@ import net.fabricmc.fabric.api.event.EventFactory;
  * @see MinecraftDynamicsWorld#collision
  */
 public class EntityRigidBodyEvents {
-    public static final Event<StartEntityBodyStep> START_ENTITY_BODY_STEP = EventFactory.createArrayBacked(StartEntityBodyStep.class, (callbacks) -> (body, delta) -> {
-        for (StartEntityBodyStep event : callbacks) {
-            event.onStartStep(body, delta);
-        }
-    });
-
-    public static final Event<EndEntityBodyStep> END_ENTITY_BODY_STEP = EventFactory.createArrayBacked(EndEntityBodyStep.class, (callbacks) -> (body, delta) -> {
-        for (EndEntityBodyStep event : callbacks) {
-            event.onEndStep(body, delta);
+    public static final Event<EntityBodyStep> ENTITY_BODY_STEP = EventFactory.createArrayBacked(EntityBodyStep.class, (callbacks) -> (body, delta) -> {
+        for (EntityBodyStep event : callbacks) {
+            event.onStep(body, delta);
         }
     });
 
@@ -61,13 +54,8 @@ public class EntityRigidBodyEvents {
     private EntityRigidBodyEvents() { }
 
     @FunctionalInterface
-    public interface StartEntityBodyStep {
-        void onStartStep(EntityRigidBody body, float delta);
-    }
-
-    @FunctionalInterface
-    public interface EndEntityBodyStep {
-        void onEndStep(EntityRigidBody body, float delta);
+    public interface EntityBodyStep {
+        void onStep(EntityRigidBody body, float delta);
     }
 
     @FunctionalInterface

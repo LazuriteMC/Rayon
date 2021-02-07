@@ -11,7 +11,7 @@ import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
 import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
+import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,11 +33,11 @@ import java.util.*;
  * @see MinecraftDynamicsWorld
  * @see Config
  */
-public class BlockManager {
+public class TerrainManager {
     private final List<BlockRigidBody> toKeep = Lists.newArrayList();
     private final MinecraftDynamicsWorld dynamicsWorld;
 
-    public BlockManager(MinecraftDynamicsWorld dynamicsWorld) {
+    public TerrainManager(MinecraftDynamicsWorld dynamicsWorld) {
         this.dynamicsWorld = dynamicsWorld;
     }
 
@@ -45,7 +45,7 @@ public class BlockManager {
      * Load every block within a set distance from the given entities. The distance is defined
      * earlier during execution and converted into a {@link Box} area parameter.
      * @param blockLoadingBodies the {@link List} of {@link EntityRigidBody} objects
-     * @see BlockManager#load(Box)
+     * @see TerrainManager#load(Box)
      */
     public void load(List<BlockLoadingBody> blockLoadingBodies) {
         int blockDistance = Config.getInstance().getLocal().getBlockDistance();
@@ -64,7 +64,7 @@ public class BlockManager {
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
      * @param area the {@link Box} area around the entity to search for blocks within
-     * @see BlockManager#load(List)
+     * @see TerrainManager#load(List)
      */
     public void load(Box area) {
         World world = dynamicsWorld.getWorld();
@@ -100,22 +100,41 @@ public class BlockManager {
 
                 /* Make a pattern shape if applicable */
                 if (!blockState.isFullCube(world, blockPos)) {
+                    TypedPattern<BlockPos> pattern;
+
                     if (world.isClient()) {
                         MatrixStack transformation = new MatrixStack();
+                        transformation.scale(0.95f, 0.95f, 0.95f);
                         transformation.translate(-0.5f, -0.5f, -0.5f);
-                        Disassembler.getBlock(blockState, blockPos, world, transformation);
+                        pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+                    } else {
+                        pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
                     }
-
-                    Pattern pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
 
                     if (pattern != null) {
                         if (body.getCollisionShape() instanceof PatternShape) {
                             if (!pattern.equals(((PatternShape) body.getCollisionShape()).getPattern())) {
                                 body.setCollisionShape(new PatternShape(pattern));
+
+                                if (world.isClient()) {
+                                    PatternBuffer.getBlockBuffer(world).put(pattern);
+                                }
                             }
                         } else {
                             body.setCollisionShape(new PatternShape(pattern));
+
+                            if (world.isClient()) {
+                                PatternBuffer.getBlockBuffer(world).put(pattern);
+                            }
                         }
+                    }
+                } else if (body.getCollisionShape() instanceof PatternShape) {
+                    VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
+
+                    if (!voxel.isEmpty()) {
+                        body.setCollisionShape(new BoundingBoxShape(voxel.getBoundingBox()));
+                    } else {
+                        body.setCollisionShape(new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f)));
                     }
                 }
 
@@ -132,11 +151,11 @@ public class BlockManager {
      * Prune out any unnecessary blocks from the world during each call
      * to {@link MinecraftDynamicsWorld#step}. The purpose is to prevent
      * any trailing or residual blocks from being left over from a
-     * previous {@link BlockManager#load(List)} call.
+     * previous {@link TerrainManager#load(List)} call.
      * <b>Note:</b> This method should only be called after every entity
      * has been passed through the loading process. Otherwise, blocks will
      * be removed from the simulation prematurely and cause you a headache.
-     * @see BlockManager#load(List)
+     * @see TerrainManager#load(List)
      */
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
@@ -167,7 +186,7 @@ public class BlockManager {
      * @param world the {@link World} to retrieve block info from
      * @param area  the {@link Box} area within the world to retrieve block info from
      * @return the {@link Map} of {@link BlockPos} and {@link BlockState} objects
-     * @see BlockManager#load(Box)
+     * @see TerrainManager#load(Box)
      */
     public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
         Map<BlockPos, BlockState> map = Maps.newHashMap();

@@ -9,15 +9,14 @@ import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
+import dev.lazurite.rayon.impl.physics.body.type.AirResistantBody;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.physics.body.type.SteppableBody;
-import dev.lazurite.rayon.impl.physics.manager.FluidManager;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.physics.manager.DebugManager;
-import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.net.RigidBodyC2S;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
@@ -54,7 +53,7 @@ import java.util.function.BooleanSupplier;
  * @see MinecraftDynamicsWorld
  * @see EntityRigidBodyEvents
  */
-public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, BlockLoadingBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
+public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, AirResistantBody, BlockLoadingBody, DebuggableBody, ComponentV3, CommonTickingComponent, AutoSyncedComponent {
     private final Quaternion prevRotation = new Quaternion();
     private final Quaternion tickRotation = new Quaternion();
     private final Vector3f prevPosition = new Vector3f();
@@ -95,15 +94,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     @Override
     public void step(float delta) {
         /* Invoke all registered start step events */
-        EntityRigidBodyEvents.START_ENTITY_BODY_STEP.invoker().onStartStep(this, delta);
-
-        /* Apply air resistance */
-        if (Config.getInstance().getGlobal().isAirResistanceEnabled()) {
-            applyCentralForce(FluidManager.getSimpleForce(this));
-        }
-
-        /* Invoke all registered end step events */
-        EntityRigidBodyEvents.END_ENTITY_BODY_STEP.invoker().onEndStep(this, delta);
+        EntityRigidBodyEvents.ENTITY_BODY_STEP.invoker().onStep(this, delta);
     }
 
     /**
@@ -150,14 +141,16 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.priorityPlayer = player.getUuid();
     }
 
-    public void setDragCoefficient(float dragCoefficient) {
-        this.dragCoefficient = dragCoefficient;
-    }
-
     public void setNoClip(boolean noclip) {
         this.noclip = noclip;
     }
 
+    @Override
+    public void setDragCoefficient(float dragCoefficient) {
+        this.dragCoefficient = dragCoefficient;
+    }
+
+    @Override
     public float getDragCoefficient() {
         return dragCoefficient;
     }
@@ -217,7 +210,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        boolean hasPriority = buf.readBoolean();
+        hasPriority = buf.readBoolean();
         setDragCoefficient(buf.readFloat());
         setMass(buf.readFloat());
 

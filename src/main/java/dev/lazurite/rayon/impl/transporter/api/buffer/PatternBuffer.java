@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.impl.transporter.api.buffer;
 
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -22,7 +21,8 @@ public interface PatternBuffer<T> {
         return ((BufferStorage) world).getItemBuffer();
     }
 
-    Pattern get(T identifier);
+    boolean put(TypedPattern<T> pattern);
+    TypedPattern<T> get(T identifier);
     List<TypedPattern<T>> getAll();
     boolean contains(T key);
     int size();

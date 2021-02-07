@@ -1,60 +1,34 @@
 package dev.lazurite.rayon.impl.physics.manager;
 
+import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.physics.body.type.AirResistantBody;
+import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.util.ui.ConfigScreen;
 
-import java.util.function.Function;
+import java.util.List;
 
 public class FluidManager {
-    /**
-     * The type of air resistance calculations to perform is
-     * controlled using this enumerator. The name {@link String} is used
-     * when presented on the {@link ConfigScreen}. The {@link Function}
-     * contains a reference to which method should be called during
-     * {@link EntityRigidBody#step}.
-     * @see EntityRigidBody#step
-     * @see ConfigScreen
-     */
-    public enum Type {
-        SIMPLE("config.rayon.option.air_resistance_type.simple", FluidManager::getSimpleForce),
-        COMPLEX("config.rayon.option.air_resistance_type.complex", FluidManager::getComplexForce);
+    private final MinecraftDynamicsWorld dynamicsWorld;
 
-        final String name;
-        final Function<EntityRigidBody, Vector3f> forceCalculation;
+    public FluidManager(MinecraftDynamicsWorld dynamicsWorld) {
+        this.dynamicsWorld = dynamicsWorld;
+    }
 
-        Type(String name, Function<EntityRigidBody, Vector3f> forceCalculation) {
-            this.name = name;
-            this.forceCalculation = forceCalculation;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Vector3f calculate(EntityRigidBody entity) {
-            return forceCalculation.apply(entity);
+    public void doAirResistance(List<AirResistantBody> rigidBodies) {
+        if (Config.getInstance().getGlobal().isAirResistanceEnabled()) {
+            rigidBodies.forEach(body -> doAirResistance((PhysicsRigidBody) body, body.getDragCoefficient()));
         }
     }
 
-    public static Vector3f getComplexForce(EntityRigidBody entity) {
-        return new Vector3f();
-    }
-
-    /**
-     * A simpler version of the above force calculations. It uses a calculated average
-     * area from the {@link EntityRigidBody} object's AABB so it <i>should</i> be slightly faster.
-     * @return a {@link Vector3f} containing the direction and amount of force (in newtons)
-     * @see EntityRigidBody
-     * @see FluidManager#getComplexForce
-     */
-    public static Vector3f getSimpleForce(EntityRigidBody entity) {
-        return getForce(
-                entity.getLinearVelocity(new Vector3f()),
-                (float) Math.pow(entity.getEntity().getBoundingBox().getAverageSideLength(), 2),
-                entity.getDragCoefficient()
-        );
+    public void doAirResistance(PhysicsRigidBody rigidBody, float dragCoefficient) {
+        rigidBody.applyCentralForce(getForce(
+                rigidBody.getLinearVelocity(new Vector3f()),
+                (float) Math.pow(rigidBody.boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2),
+                dragCoefficient
+        ));
     }
 
     /**

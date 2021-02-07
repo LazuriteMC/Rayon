@@ -41,7 +41,7 @@ public class TransportItemBufferC2S {
 
         server.execute(() -> {
             NetworkedPatternBuffer<Item> buffer = ((BufferStorage) player.getEntityWorld()).getItemBuffer();
-            buffer.putAll(patterns);
+            patterns.forEach(buffer::put);
             PatternBufferEvents.ITEM_BUFFER_UPDATE.invoker().onUpdate(buffer);
         });
     }

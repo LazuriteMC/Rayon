@@ -20,6 +20,8 @@ public class Transporter implements ModInitializer, ClientModInitializer {
     public static final String MODID = "transporter";
     public static final Logger LOGGER = LogManager.getLogger("Transporter");
 
+    private int tick;
+
     @Override
     public void onInitialize() {
         LOGGER.info("That's the trouble with tribbles...");
@@ -29,9 +31,14 @@ public class Transporter implements ModInitializer, ClientModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(TransportItemBufferC2S.PACKET_ID, TransportItemBufferC2S::accept);
 
         ServerTickEvents.START_WORLD_TICK.register(world -> {
-            ((BufferStorage) world).getBlockBuffer().clear();
-            ((BufferStorage) world).getEntityBuffer().clear();
-            ((BufferStorage) world).getItemBuffer().clear();
+            if (tick > 20) {
+//                ((BufferStorage) world).getBlockBuffer().clear();
+//                ((BufferStorage) world).getEntityBuffer().clear();
+//                ((BufferStorage) world).getItemBuffer().clear();
+                tick = 0;
+            } else {
+                ++tick;
+            }
         });
     }
 

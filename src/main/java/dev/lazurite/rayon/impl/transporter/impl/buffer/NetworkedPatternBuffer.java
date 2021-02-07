@@ -1,30 +1,22 @@
 package dev.lazurite.rayon.impl.transporter.impl.buffer;
 
-import dev.lazurite.rayon.impl.transporter.impl.pattern.BufferEntry;
-
-import java.util.List;
+import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 
 public class NetworkedPatternBuffer<T> extends AbstractPatternBuffer<T> {
     private boolean dirty;
 
-    public void put(BufferEntry<T> pattern) {
-        if (!patterns.contains(pattern)) {
-            patterns.removeIf(entry -> entry.getIdentifier().equals((pattern).getIdentifier()));
-            patterns.add(pattern);
-            setDirty(true);
-        }
-    }
-
-    public void putAll(List<BufferEntry<T>> patterns) {
-        patterns.forEach(this::put);
+    @Override
+    public boolean put(TypedPattern<T> pattern) {
+        return setDirty(super.put(pattern));
     }
 
     public void clear() {
         patterns.clear();
     }
 
-    public void setDirty(boolean dirty) {
+    public boolean setDirty(boolean dirty) {
         this.dirty = dirty;
+        return this.dirty;
     }
 
     public boolean isDirty() {

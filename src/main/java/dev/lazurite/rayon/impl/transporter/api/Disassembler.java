@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.transporter.api;
 
-import dev.lazurite.rayon.impl.transporter.api.buffer.BufferStorage;
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
+import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.BufferEntry;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.QuadConsumer;
 import net.fabricmc.api.EnvType;
@@ -21,7 +21,7 @@ import java.util.Random;
 
 @Environment(EnvType.CLIENT)
 public interface Disassembler {
-    static Pattern getBlock(BlockState blockState, BlockPos blockPos, World world, @Nullable MatrixStack transformation) {
+    static TypedPattern<BlockPos> getBlock(BlockState blockState, BlockPos blockPos, World world, @Nullable MatrixStack transformation) {
         if (transformation == null) {
             transformation = new MatrixStack();
         }
@@ -30,12 +30,10 @@ public interface Disassembler {
         MinecraftClient.getInstance().getBlockRenderManager()
                 .renderBlock(blockState, blockPos, world, transformation, consumer, false, new Random());
 
-        BufferEntry<BlockPos> pattern = new BufferEntry<>(consumer, blockPos);
-        ((BufferStorage) world).getBlockBuffer().put(pattern);
-        return pattern;
+        return new BufferEntry<>(consumer, blockPos);
     }
 
-    static Pattern getEntity(Entity entity, World world, @Nullable MatrixStack transformation) {
+    static TypedPattern<Entity> getEntity(Entity entity, World world, @Nullable MatrixStack transformation) {
         if (transformation == null) {
             transformation = new MatrixStack();
         }
@@ -44,12 +42,10 @@ public interface Disassembler {
         MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
                 .render(entity, 0, 0, transformation, consumer.asProvider(), 0);
 
-        BufferEntry<Entity> pattern = new BufferEntry<>(consumer, entity);
-        ((BufferStorage) world).getEntityBuffer().put(pattern);
-        return pattern;
+        return new BufferEntry<>(consumer, entity);
     }
 
-    static Pattern getItem(Item item, World world, @Nullable MatrixStack transformation) {
+    static TypedPattern<Item> getItem(Item item, World world, @Nullable MatrixStack transformation) {
         if (transformation == null) {
             transformation = new MatrixStack();
         }
@@ -58,8 +54,6 @@ public interface Disassembler {
         MinecraftClient.getInstance().getItemRenderer()
                 .renderItem(new ItemStack(item), ModelTransformation.Mode.GROUND, 0, 0, transformation, consumer.asProvider());
 
-        BufferEntry<Item> pattern = new BufferEntry<>(consumer, item);
-        ((BufferStorage) world).getItemBuffer().put(pattern);
-        return pattern;
+        return new BufferEntry<>(consumer, item);
     }
 }

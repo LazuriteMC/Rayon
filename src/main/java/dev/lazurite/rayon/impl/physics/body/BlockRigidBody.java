@@ -5,8 +5,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.physics.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.physics.manager.BlockManager;
-import dev.lazurite.rayon.impl.physics.manager.DebugManager;
+import dev.lazurite.rayon.impl.physics.manager.TerrainManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A basic {@link PhysicsRigidBody} class representing a block.
- * @see BlockManager
+ * @see TerrainManager
  */
 public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     private final BlockState blockState;

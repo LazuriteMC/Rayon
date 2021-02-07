@@ -2,7 +2,6 @@ package dev.lazurite.rayon.impl.transporter.impl.buffer;
 
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
-import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import dev.lazurite.rayon.impl.transporter.api.pattern.TypedPattern;
 import dev.lazurite.rayon.impl.transporter.impl.pattern.BufferEntry;
 
@@ -12,7 +11,18 @@ public abstract class AbstractPatternBuffer<T> implements PatternBuffer<T> {
     protected final List<BufferEntry<T>> patterns = Lists.newArrayList();
 
     @Override
-    public Pattern get(T identifier) {
+    public boolean put(TypedPattern<T> pattern) {
+        if (!patterns.contains((BufferEntry<T>) pattern)) {
+            patterns.removeIf(entry -> entry.getIdentifier().equals(pattern.getIdentifier()));
+            patterns.add((BufferEntry<T>) pattern);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public TypedPattern<T> get(T identifier) {
         for (BufferEntry<T> pattern : patterns) {
             if (pattern.getIdentifier().equals(identifier)) {
                 return pattern;
