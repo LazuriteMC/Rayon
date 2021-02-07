@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.api.packet;
 
-import dev.lazurite.rayon.impl.util.spawn.RayonSpawnProvider;
+import dev.lazurite.rayon.impl.util.net.spawn.RayonSpawnProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 

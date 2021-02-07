@@ -161,6 +161,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
             if (!collisionObject.isInWorld() && isBodyNearPlayer((EntityRigidBody) collisionObject)) {
+                ((EntityRigidBody) collisionObject).onLoad();
                 EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad((EntityRigidBody) collisionObject, this);
                 super.addCollisionObject(collisionObject);
             }

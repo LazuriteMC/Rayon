@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util.spawn;
+package dev.lazurite.rayon.impl.util.net.spawn;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
@@ -17,7 +17,7 @@ import net.minecraft.util.registry.Registry;
 
 public class RayonSpawnProvider {
     public static Packet<?> get (Entity entity) {
-        if (!EntityRigidBody.is(entity)) {
+        if (!Rayon.ENTITY.maybeGet(entity).isPresent()) {
             throw new RayonSpawnHandler.RayonSpawnException(entity.getEntityName() + " is not registered!");
         }
 

@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.mixin.common.entity.player;
 
 import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.util.config.ConfigS2C;
+import dev.lazurite.rayon.impl.util.net.ConfigS2C;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;

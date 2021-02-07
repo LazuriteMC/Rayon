@@ -12,6 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+/**
+ * This mixin changes the given coordinates during entity rendering
+ * so any {@link EntityRigidBody}s will be rendered at the rigid
+ * body position instead of the entity position.
+ */
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
     @ModifyArgs(
@@ -22,7 +27,7 @@ public class WorldRendererMixin {
             )
     )
     public void render(Args args) {
-        if (EntityRigidBody.is(args.get(0))) {
+        if (Rayon.ENTITY.maybeGet(args.get(0)).isPresent()) {
             Vec3d pos = VectorHelper.vector3fToVec3d(Rayon.ENTITY.get(args.get(0)).getPhysicsLocation(new Vector3f(), args.get(5)))
                     .subtract(MinecraftClient.getInstance().gameRenderer.getCamera().getPos());
 

@@ -12,16 +12,21 @@ public abstract class AbstractPatternBuffer<T> implements PatternBuffer<T> {
     protected final List<BufferEntry<T>> patterns = Lists.newArrayList();
 
     @Override
-    public List<Pattern> get(T identifier) {
-        List<Pattern> out = Lists.newArrayList();
+    public Pattern pop(T identifier) {
+        Pattern pattern = get(identifier);
+        patterns.remove(pattern);
+        return pattern;
+    }
 
-        patterns.forEach(pattern -> {
+    @Override
+    public Pattern get(T identifier) {
+        for (BufferEntry<T> pattern : patterns) {
             if (pattern.getIdentifier().equals(identifier)) {
-                out.add(pattern);
+                return pattern;
             }
-        });
+        }
 
-        return out;
+        return null;
     }
 
     @Override
@@ -43,19 +48,5 @@ public abstract class AbstractPatternBuffer<T> implements PatternBuffer<T> {
     @Override
     public int size() {
         return patterns.size();
-    }
-
-    public void tick() {
-        List<BufferEntry<T>> toRemove = Lists.newArrayList();
-
-        patterns.forEach(pattern -> {
-            pattern.tick();
-
-            if (pattern.getAge() > pattern.getMaxAge()) {
-                toRemove.add(pattern);
-            }
-        });
-
-        patterns.removeAll(toRemove);
     }
 }

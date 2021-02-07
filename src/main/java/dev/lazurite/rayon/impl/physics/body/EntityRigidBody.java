@@ -18,18 +18,21 @@ import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 import dev.lazurite.rayon.impl.util.config.Config;
+import dev.lazurite.rayon.impl.util.net.RigidBodyC2S;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Locale;
+import java.util.UUID;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -58,6 +61,8 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     private final Vector3f tickPosition = new Vector3f();
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final Entity entity;
+    private UUID priorityPlayer;
+    private boolean hasPriority;
     private float dragCoefficient;
     private boolean noclip;
 
@@ -68,14 +73,6 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         this.setFriction(friction);
         this.setRestitution(restitution);
         this.dynamicsWorld = Rayon.WORLD.get(entity.getEntityWorld());
-        this.prevRotation.set(getPhysicsRotation(new Quaternion()));
-        this.tickRotation.set(getPhysicsRotation(new Quaternion()));
-        this.prevPosition.set(getPhysicsLocation(new Vector3f()));
-        this.tickPosition.set(getPhysicsLocation(new Vector3f()));
-    }
-
-    public static boolean is(Entity entity) {
-        return Rayon.ENTITY.maybeGet(entity).isPresent();
     }
 
     /**
@@ -117,6 +114,12 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
      */
     @Override
     public void tick() {
+        if (!getDynamicsWorld().getWorld().isClient()) {
+            Rayon.ENTITY.sync(entity);
+        } else if (hasPriority) {
+            RigidBodyC2S.send(this);
+        }
+
         if (isInWorld()) {
             prevRotation.set(tickRotation);
             prevPosition.set(tickPosition);
@@ -130,10 +133,21 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         } else {
             getDynamicsWorld().addCollisionObject(this);
         }
+    }
 
-        if (!getDynamicsWorld().getWorld().isClient()) {
-            Rayon.ENTITY.sync(entity);
-        }
+    public void onLoad() {
+        this.prevRotation.set(getPhysicsRotation(new Quaternion()));
+        this.tickRotation.set(getPhysicsRotation(new Quaternion()));
+        this.prevPosition.set(getPhysicsLocation(new Vector3f()));
+        this.tickPosition.set(getPhysicsLocation(new Vector3f()));
+    }
+
+    /**
+     * This has no effect is used client-side. For servers only.
+     * @param player the player to prioritize
+     */
+    public void prioritize(PlayerEntity player) {
+        this.priorityPlayer = player.getUuid();
     }
 
     public void setDragCoefficient(float dragCoefficient) {
@@ -148,12 +162,24 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         return dragCoefficient;
     }
 
+    /**
+     * Performs automatic lerping of the rotation given tick delta.
+     * @param quaternion the quaternion to store the result in
+     * @param delta minecraft tick delta
+     * @return the lerped quaternion (same as param 1)
+     */
     @Environment(EnvType.CLIENT)
     public Quaternion getPhysicsRotation(Quaternion quaternion, float delta) {
         quaternion.set(QuaternionHelper.slerp(prevRotation, tickRotation, delta));
         return quaternion;
     }
 
+    /**
+     * Performs automatic lerping of the position given tick delta.
+     * @param vector3f the vector to store the result in
+     * @param delta minecraft tick delta
+     * @return the lerped vector (same as param 1)
+     */
     @Environment(EnvType.CLIENT)
     public Vector3f getPhysicsLocation(Vector3f vector3f, float delta) {
         vector3f.set(VectorHelper.lerp(prevPosition, tickPosition, delta));
@@ -191,22 +217,32 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
 
     @Override
     public void applySyncPacket(PacketByteBuf buf) {
-        setPhysicsRotation(QuaternionHelper.fromBuffer(buf));
-        setPhysicsLocation(VectorHelper.fromBuffer(buf));
-        setLinearVelocity(VectorHelper.fromBuffer(buf));
-        setAngularVelocity(VectorHelper.fromBuffer(buf));
+        boolean hasPriority = buf.readBoolean();
         setDragCoefficient(buf.readFloat());
         setMass(buf.readFloat());
+
+        if (!hasPriority) {
+            setPhysicsRotation(QuaternionHelper.fromBuffer(buf));
+            setPhysicsLocation(VectorHelper.fromBuffer(buf));
+            setLinearVelocity(VectorHelper.fromBuffer(buf));
+            setAngularVelocity(VectorHelper.fromBuffer(buf));
+        }
     }
 
     @Override
     public void writeSyncPacket(PacketByteBuf buf, ServerPlayerEntity recipient) {
-        QuaternionHelper.toBuffer(buf, getPhysicsRotation(new Quaternion()));
-        VectorHelper.toBuffer(buf, getPhysicsLocation(new Vector3f()));
-        VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
-        VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
+        boolean hasPriority = recipient.getUuid().equals(priorityPlayer);
+
+        buf.writeBoolean(hasPriority);
         buf.writeFloat(getDragCoefficient());
         buf.writeFloat(getMass());
+
+        if (!hasPriority) {
+            QuaternionHelper.toBuffer(buf, getPhysicsRotation(new Quaternion()));
+            VectorHelper.toBuffer(buf, getPhysicsLocation(new Vector3f()));
+            VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
+            VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
+        }
     }
 
     @Override
@@ -217,6 +253,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
         setDragCoefficient(tag.getFloat("drag_coefficient"));
         setMass(tag.getFloat("mass"));
+        priorityPlayer = tag.getUuid("priority_player");
     }
 
     @Override
@@ -227,6 +264,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
         tag.putFloat("drag_coefficient", getDragCoefficient());
         tag.putFloat("mass", getMass());
+        tag.putUuid("priority_player", priorityPlayer);
     }
 
     @Override

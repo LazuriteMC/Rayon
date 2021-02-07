@@ -27,7 +27,7 @@ public abstract class EntityMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     public void pushAwayFrom(Entity entity, CallbackInfo info, double d, double e) {
-        if (EntityRigidBody.is((Entity) (Object) this) && !EntityRigidBody.is(entity)) {
+        if (Rayon.ENTITY.maybeGet((Entity) (Object) this).isPresent() && !Rayon.ENTITY.maybeGet(entity).isPresent()) {
             Rayon.ENTITY.get((Entity) (Object) this).applyCentralImpulse(new Vector3f((float) -d * 100, 0.0f, (float) -e * 100));
         }
     }
@@ -39,8 +39,7 @@ public abstract class EntityMixin {
      */
     @Inject(method = "remove", at = @At("HEAD"))
     public void remove(CallbackInfo info) {
-        if (EntityRigidBody.is((Entity) (Object) this)) {
-            System.out.println("DIE");
+        if (Rayon.ENTITY.maybeGet((Entity) (Object) this).isPresent()) {
             MinecraftDynamicsWorld world = Rayon.WORLD.get(((Entity) (Object) this).getEntityWorld());
             EntityRigidBody body = Rayon.ENTITY.get((Entity) (Object) this);
 

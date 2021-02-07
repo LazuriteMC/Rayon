@@ -49,6 +49,7 @@ public class TransportBlockBufferC2S {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(buffer.size());
 
+        System.out.println("SEND");
         for (TypedPattern<BlockPos> pattern : buffer.getAll()) {
             buf.writeBlockPos(pattern.getIdentifier());
             buf.writeInt(pattern.getQuads().size());

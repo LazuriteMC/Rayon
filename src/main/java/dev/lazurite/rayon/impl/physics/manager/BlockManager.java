@@ -2,20 +2,26 @@ package dev.lazurite.rayon.impl.physics.manager;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
+import dev.lazurite.rayon.impl.physics.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
+import dev.lazurite.rayon.impl.transporter.api.buffer.BufferStorage;
 import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
+import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import dev.lazurite.rayon.impl.util.config.Config;
 import net.minecraft.block.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -78,35 +84,52 @@ public class BlockManager {
 
             /* Check if the block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside()) {
-                BlockRigidBody body = findBlockAtPos(blockPos);
+                BlockRigidBody body;
 
-                if (world.isClient()) {
-                    MatrixStack transformation = new MatrixStack();
-                    transformation.translate(-0.5f, -0.5f, -0.5f);
-                    Disassembler.getBlock(blockState, blockPos, world, transformation);
-                }
-
-                if (body != null) {
-                    if (body.getCollisionShape() instanceof PatternShape) {
-                        if (PatternBuffer.getBlockBuffer(world).get(blockPos).contains(((PatternShape) body.getCollisionShape()).getPattern())) {
-                            dynamicsWorld.removeCollisionObject(body);
-                            body = new BlockRigidBody(blockState, blockPos, world, friction, 0.25f);
-
-                            if (!dynamicsWorld.getRigidBodyList().contains(body)) {
-                                dynamicsWorld.addCollisionObject(body);
-                            }
-                        }
+                if (!blockState.isFullCube(world, blockPos)) {
+                    if (world.isClient()) {
+                        MatrixStack transformation = new MatrixStack();
+                        transformation.translate(-0.5f, -0.5f, -0.5f);
+                        body = load(blockPos, blockState, world, friction, 0.25f, Disassembler.getBlock(blockState, blockPos, world, transformation));
+                    } else {
+                        body = load(blockPos, blockState, world, friction, 0.25f, PatternBuffer.getBlockBuffer(world).pop(blockPos));
                     }
                 } else {
-                    body = new BlockRigidBody(blockState, blockPos, world, friction, 0.25f);
-                    if (!dynamicsWorld.getRigidBodyList().contains(body)) {
-                        dynamicsWorld.addCollisionObject(body);
-                    }
+                    body = load(blockPos, blockState, world, friction, 0.25f, null);
                 }
 
                 toKeep.add(body);
             }
         });
+    }
+
+    public BlockRigidBody load(BlockPos blockPos, BlockState blockState, World world, float friction, float restitution, @Nullable Pattern pattern) {
+        CollisionShape shape = null;
+
+        if (pattern != null) {
+            shape = new PatternShape(pattern);
+        } else {
+            VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
+
+            if (!voxel.isEmpty()) {
+                shape = new BoundingBoxShape(voxel.getBoundingBox());
+            }
+        }
+
+        BlockRigidBody body = findBlockAtPos(blockPos);
+
+        if (body == null) {
+            body = new BlockRigidBody(blockState, blockPos, shape);
+        }
+
+        body.setFriction(friction);
+        body.setRestitution(restitution);
+
+        if (!dynamicsWorld.getRigidBodyList().contains(body)) {
+            dynamicsWorld.addCollisionObject(body);
+        }
+
+        return body;
     }
 
     /**

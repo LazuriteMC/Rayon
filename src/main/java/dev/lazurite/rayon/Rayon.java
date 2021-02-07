@@ -9,10 +9,11 @@ import dev.lazurite.rayon.impl.transporter.impl.buffer.packet.TransportEntityBuf
 import dev.lazurite.rayon.impl.transporter.impl.buffer.packet.TransportItemBufferC2S;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.impl.util.spawn.RayonSpawnHandler;
+import dev.lazurite.rayon.impl.util.net.RigidBodyC2S;
+import dev.lazurite.rayon.impl.util.net.spawn.RayonSpawnHandler;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
-import dev.lazurite.rayon.impl.util.config.ConfigS2C;
+import dev.lazurite.rayon.impl.util.net.ConfigS2C;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
@@ -23,7 +24,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -52,11 +52,7 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 		ServerPlayNetworking.registerGlobalReceiver(TransportEntityBufferC2S.PACKET_ID, TransportEntityBufferC2S::accept);
 		ServerPlayNetworking.registerGlobalReceiver(TransportItemBufferC2S.PACKET_ID, TransportItemBufferC2S::accept);
 
-		ServerTickEvents.START_WORLD_TICK.register(world -> {
-			((BufferStorage) world).getBlockBuffer().tick();
-			((BufferStorage) world).getEntityBuffer().tick();
-			((BufferStorage) world).getItemBuffer().tick();
-		});
+		ServerPlayNetworking.registerGlobalReceiver(RigidBodyC2S.PACKET_ID, RigidBodyC2S::accept);
 	}
 
 	@Override
@@ -72,10 +68,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 			if (blockBuffer.isDirty()) TransportBlockBufferC2S.send(blockBuffer);
 			if (entityBuffer.isDirty()) TransportEntityBufferC2S.send(entityBuffer);
 			if (itemBuffer.isDirty()) TransportItemBufferC2S.send(itemBuffer);
-
-			blockBuffer.tick();
-			entityBuffer.tick();
-			itemBuffer.tick();
 		});
 	}
 

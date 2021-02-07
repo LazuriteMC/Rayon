@@ -20,5 +20,7 @@ public interface DebuggableBody {
         return 0.5f;
     }
 
-    DebugManager.DebugLayer getDebugLayer();
+    default DebugManager.DebugLayer getDebugLayer() {
+        return DebugManager.DebugLayer.BLOCK;
+    }
 }

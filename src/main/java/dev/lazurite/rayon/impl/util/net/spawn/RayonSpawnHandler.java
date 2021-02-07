@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util.spawn;
+package dev.lazurite.rayon.impl.util.net.spawn;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
