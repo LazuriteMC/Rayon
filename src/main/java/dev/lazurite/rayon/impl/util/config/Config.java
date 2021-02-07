@@ -3,7 +3,6 @@ package dev.lazurite.rayon.impl.util.config;
 import dev.lazurite.rayon.impl.physics.manager.DebugManager;
 import dev.lazurite.rayon.impl.util.config.settings.GlobalSettings;
 import dev.lazurite.rayon.impl.util.config.settings.LocalSettings;
-import dev.lazurite.rayon.impl.util.ui.ConfigScreen;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;

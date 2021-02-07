@@ -1,7 +1,6 @@
-package dev.lazurite.rayon.impl.util.ui;
+package dev.lazurite.rayon.impl.util.config;
 
 import dev.lazurite.rayon.impl.physics.manager.DebugManager;
-import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.net.ConfigS2C;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;

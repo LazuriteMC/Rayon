@@ -33,6 +33,8 @@ public class NativeLoader {
         String name = System.getProperty("os.name");
         OperatingSystem os;
 
+        Rayon.LOGGER.info("Downloading natives for " + name + "...");
+
         if (name.contains("Linux")) {
             os = OperatingSystem.LINUX;
         } else {

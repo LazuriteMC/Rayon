@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.transporter;
+package dev.lazurite.rayon.impl.transporter.impl;
 
 import dev.lazurite.rayon.impl.transporter.api.buffer.BufferStorage;
 import dev.lazurite.rayon.impl.transporter.impl.buffer.NetworkedPatternBuffer;
