@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.examplemod.item;
 
-import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +27,6 @@ public class WandItem extends Item {
         if (!world.isClient()) {
             RectangularPrismEntity rectangularPrism = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
             rectangularPrism.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-            Rayon.ENTITY.get(rectangularPrism).prioritize(user);
             world.spawnEntity(rectangularPrism);
             return TypedActionResult.success(itemStack);
         }

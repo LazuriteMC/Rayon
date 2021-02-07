@@ -12,13 +12,6 @@ public abstract class AbstractPatternBuffer<T> implements PatternBuffer<T> {
     protected final List<BufferEntry<T>> patterns = Lists.newArrayList();
 
     @Override
-    public Pattern pop(T identifier) {
-        Pattern pattern = get(identifier);
-        patterns.remove(pattern);
-        return pattern;
-    }
-
-    @Override
     public Pattern get(T identifier) {
         for (BufferEntry<T> pattern : patterns) {
             if (pattern.getIdentifier().equals(identifier)) {

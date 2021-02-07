@@ -18,8 +18,8 @@
   "environment": "*",
 
   "entrypoints": {
-    "main": [ "dev.lazurite.rayon.Rayon" ],
-    "client": [ "dev.lazurite.rayon.Rayon" ],
+    "main": [ "dev.lazurite.rayon.Rayon", "dev.lazurite.rayon.impl.transporter.Transporter" ],
+    "client": [ "dev.lazurite.rayon.Rayon", "dev.lazurite.rayon.impl.transporter.Transporter" ],
     "cardinal-components-entity": [ "dev.lazurite.rayon.Rayon" ],
     "cardinal-components-world": [ "dev.lazurite.rayon.Rayon" ],
     "modmenu": [ "dev.lazurite.rayon.impl.util.ui.ConfigScreen" ]

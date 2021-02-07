@@ -32,7 +32,8 @@ public class BufferEntry<T> implements TypedPattern<T> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof BufferEntry) {
-            return ((BufferEntry<?>) obj).getQuads().equals(getQuads());
+            return ((BufferEntry<?>) obj).getQuads().equals(getQuads()) &&
+                    ((BufferEntry<?>) obj).getIdentifier().equals(getIdentifier());
         }
 
         return false;

@@ -10,7 +10,6 @@ import dev.lazurite.rayon.impl.physics.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.physics.body.type.BlockLoadingBody;
 import dev.lazurite.rayon.impl.physics.world.MinecraftDynamicsWorld;
 import dev.lazurite.rayon.impl.transporter.api.Disassembler;
-import dev.lazurite.rayon.impl.transporter.api.buffer.BufferStorage;
 import dev.lazurite.rayon.impl.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.rayon.impl.transporter.api.pattern.Pattern;
 import dev.lazurite.rayon.impl.util.config.Config;
@@ -21,7 +20,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -84,52 +82,50 @@ public class BlockManager {
 
             /* Check if the block is solid or not */
             if (!blockState.getBlock().canMobSpawnInside()) {
-                BlockRigidBody body;
+                BlockRigidBody body = findBlockAtPos(blockPos);
 
+                /* Make a new rigid body if there isn't already one */
+                if (body == null) {
+                    VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
+                    CollisionShape shape;
+
+                    if (!voxel.isEmpty()) {
+                        shape = new BoundingBoxShape(voxel.getBoundingBox());
+                    } else {
+                        shape = new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
+                    }
+
+                    body = new BlockRigidBody(blockState, blockPos, shape, friction, 0.25f);
+                }
+
+                /* Make a pattern shape if applicable */
                 if (!blockState.isFullCube(world, blockPos)) {
                     if (world.isClient()) {
                         MatrixStack transformation = new MatrixStack();
                         transformation.translate(-0.5f, -0.5f, -0.5f);
-                        body = load(blockPos, blockState, world, friction, 0.25f, Disassembler.getBlock(blockState, blockPos, world, transformation));
-                    } else {
-                        body = load(blockPos, blockState, world, friction, 0.25f, PatternBuffer.getBlockBuffer(world).pop(blockPos));
+                        Disassembler.getBlock(blockState, blockPos, world, transformation);
                     }
-                } else {
-                    body = load(blockPos, blockState, world, friction, 0.25f, null);
+
+                    Pattern pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
+
+                    if (pattern != null) {
+                        if (body.getCollisionShape() instanceof PatternShape) {
+                            if (!pattern.equals(((PatternShape) body.getCollisionShape()).getPattern())) {
+                                body.setCollisionShape(new PatternShape(pattern));
+                            }
+                        } else {
+                            body.setCollisionShape(new PatternShape(pattern));
+                        }
+                    }
+                }
+
+                if (!dynamicsWorld.getRigidBodyList().contains(body)) {
+                    dynamicsWorld.addCollisionObject(body);
                 }
 
                 toKeep.add(body);
             }
         });
-    }
-
-    public BlockRigidBody load(BlockPos blockPos, BlockState blockState, World world, float friction, float restitution, @Nullable Pattern pattern) {
-        CollisionShape shape = null;
-
-        if (pattern != null) {
-            shape = new PatternShape(pattern);
-        } else {
-            VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
-
-            if (!voxel.isEmpty()) {
-                shape = new BoundingBoxShape(voxel.getBoundingBox());
-            }
-        }
-
-        BlockRigidBody body = findBlockAtPos(blockPos);
-
-        if (body == null) {
-            body = new BlockRigidBody(blockState, blockPos, shape);
-        }
-
-        body.setFriction(friction);
-        body.setRestitution(restitution);
-
-        if (!dynamicsWorld.getRigidBodyList().contains(body)) {
-            dynamicsWorld.addCollisionObject(body);
-        }
-
-        return body;
     }
 
     /**

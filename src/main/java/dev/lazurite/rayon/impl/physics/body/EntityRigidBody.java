@@ -61,7 +61,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     private final Vector3f tickPosition = new Vector3f();
     private final MinecraftDynamicsWorld dynamicsWorld;
     private final Entity entity;
-    private UUID priorityPlayer;
+    private UUID priorityPlayer = new UUID(0, 0);
     private boolean hasPriority;
     private float dragCoefficient;
     private boolean noclip;

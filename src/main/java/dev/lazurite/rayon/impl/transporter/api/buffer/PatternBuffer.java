@@ -22,7 +22,6 @@ public interface PatternBuffer<T> {
         return ((BufferStorage) world).getItemBuffer();
     }
 
-    Pattern pop(T identifier);
     Pattern get(T identifier);
     List<TypedPattern<T>> getAll();
     boolean contains(T key);

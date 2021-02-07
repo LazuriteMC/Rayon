@@ -2,11 +2,6 @@ package dev.lazurite.rayon;
 
 import com.google.common.collect.Lists;
 import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
-import dev.lazurite.rayon.impl.transporter.api.buffer.BufferStorage;
-import dev.lazurite.rayon.impl.transporter.impl.buffer.NetworkedPatternBuffer;
-import dev.lazurite.rayon.impl.transporter.impl.buffer.packet.TransportBlockBufferC2S;
-import dev.lazurite.rayon.impl.transporter.impl.buffer.packet.TransportEntityBufferC2S;
-import dev.lazurite.rayon.impl.transporter.impl.buffer.packet.TransportItemBufferC2S;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.net.RigidBodyC2S;
@@ -22,13 +17,10 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,11 +39,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	public void onInitialize() {
 		NativeLoader.load();
 		Config.getInstance().load();
-
-		ServerPlayNetworking.registerGlobalReceiver(TransportBlockBufferC2S.PACKET_ID, TransportBlockBufferC2S::accept);
-		ServerPlayNetworking.registerGlobalReceiver(TransportEntityBufferC2S.PACKET_ID, TransportEntityBufferC2S::accept);
-		ServerPlayNetworking.registerGlobalReceiver(TransportItemBufferC2S.PACKET_ID, TransportItemBufferC2S::accept);
-
 		ServerPlayNetworking.registerGlobalReceiver(RigidBodyC2S.PACKET_ID, RigidBodyC2S::accept);
 	}
 
@@ -59,16 +46,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(new Identifier(Rayon.MODID, "rayon_spawn_s2c_packet"), RayonSpawnHandler::accept);
 		ClientPlayNetworking.registerGlobalReceiver(ConfigS2C.PACKET_ID, ConfigS2C::accept);
-
-		ClientTickEvents.START_WORLD_TICK.register(world -> {
-			NetworkedPatternBuffer<BlockPos> blockBuffer = ((BufferStorage) world).getBlockBuffer();
-			NetworkedPatternBuffer<Entity> entityBuffer = ((BufferStorage) world).getEntityBuffer();
-			NetworkedPatternBuffer<Item> itemBuffer = ((BufferStorage) world).getItemBuffer();
-
-			if (blockBuffer.isDirty()) TransportBlockBufferC2S.send(blockBuffer);
-			if (entityBuffer.isDirty()) TransportEntityBufferC2S.send(entityBuffer);
-			if (itemBuffer.isDirty()) TransportItemBufferC2S.send(itemBuffer);
-		});
 	}
 
 	/**
