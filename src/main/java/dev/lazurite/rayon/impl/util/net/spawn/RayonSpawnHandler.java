@@ -3,7 +3,7 @@ package dev.lazurite.rayon.impl.util.net.spawn;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
+import dev.lazurite.rayon.api.builder.EntityRigidBodyRegistry;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
@@ -53,9 +53,9 @@ public class RayonSpawnHandler {
 
     /**
      * A custom runtime exception thrown when the user attempts
-     * to spawn an entity that isn't registered in {@link RigidBodyRegistry}.
+     * to spawn an entity that isn't registered in {@link EntityRigidBodyRegistry}.
      * @see RayonSpawnS2CPacket
-     * @see RigidBodyRegistry
+     * @see EntityRigidBodyRegistry
      */
     public static class RayonSpawnException extends RuntimeException {
         public RayonSpawnException(String message) {

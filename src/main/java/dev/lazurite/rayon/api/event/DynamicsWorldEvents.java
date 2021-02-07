@@ -9,9 +9,9 @@ import net.minecraft.world.World;
 /**
  * Callbacks for events within {@link MinecraftDynamicsWorld}. Includes:
  * <ul>
- *     <li>{@link DynamicsWorldEvents#START_WORLD_STEP}: Before each {@link MinecraftDynamicsWorld#step}.</li>
- *     <li>{@link DynamicsWorldEvents#END_WORLD_STEP}: After each {@link MinecraftDynamicsWorld#step}.</li>
- *     <li>{@link DynamicsWorldEvents#WORLD_LOAD}: After {@link MinecraftDynamicsWorld#MinecraftDynamicsWorld(World, PhysicsSpace.BroadphaseType)}.</li>
+ *     <li>{@link DynamicsWorldEvents#START_STEP}: Before each {@link MinecraftDynamicsWorld#step}.</li>
+ *     <li>{@link DynamicsWorldEvents#END_STEP}: After each {@link MinecraftDynamicsWorld#step}.</li>
+ *     <li>{@link DynamicsWorldEvents#LOAD}: After {@link MinecraftDynamicsWorld#MinecraftDynamicsWorld(World, PhysicsSpace.BroadphaseType)}.</li>
  * </ul>
  *
  * @since 1.1.0
@@ -19,20 +19,20 @@ import net.minecraft.world.World;
  * @see MinecraftDynamicsWorld#MinecraftDynamicsWorld(World, PhysicsSpace.BroadphaseType) 
  */
 public final class DynamicsWorldEvents {
-    public static final Event<StartWorldStep> START_WORLD_STEP = EventFactory.createArrayBacked(StartWorldStep.class, (callbacks) -> (world, delta) -> {
-        for (StartWorldStep event : callbacks) {
+    public static final Event<StartStep> START_STEP = EventFactory.createArrayBacked(StartStep.class, (callbacks) -> (world, delta) -> {
+        for (StartStep event : callbacks) {
             event.onStartStep(world, delta);
         }
     });
 
-    public static final Event<EndWorldStep> END_WORLD_STEP = EventFactory.createArrayBacked(EndWorldStep.class, (callbacks) -> (world, delta) -> {
-        for (EndWorldStep event : callbacks) {
+    public static final Event<EndStep> END_STEP = EventFactory.createArrayBacked(EndStep.class, (callbacks) -> (world, delta) -> {
+        for (EndStep event : callbacks) {
             event.onEndStep(world, delta);
         }
     });
 
-    public static final Event<WorldLoad> WORLD_LOAD = EventFactory.createArrayBacked(WorldLoad.class, (callbacks) -> (world) -> {
-        for (WorldLoad event : callbacks) {
+    public static final Event<Load> LOAD = EventFactory.createArrayBacked(Load.class, (callbacks) -> (world) -> {
+        for (Load event : callbacks) {
             event.onLoad(world);
         }
     });
@@ -40,16 +40,16 @@ public final class DynamicsWorldEvents {
     private DynamicsWorldEvents() { }
 
     @FunctionalInterface
-    public interface StartWorldStep {
+    public interface StartStep {
         void onStartStep(MinecraftDynamicsWorld world, float delta);
     }
 
     @FunctionalInterface
-    public interface EndWorldStep {
+    public interface EndStep {
         void onEndStep(MinecraftDynamicsWorld world, float delta);
     }
 
-    public interface WorldLoad {
+    public interface Load {
         void onLoad(MinecraftDynamicsWorld world);
     }
 }

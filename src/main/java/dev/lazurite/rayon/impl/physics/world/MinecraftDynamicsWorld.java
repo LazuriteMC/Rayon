@@ -64,7 +64,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         this.fluidManager = new FluidManager(this);
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
-        DynamicsWorldEvents.WORLD_LOAD.invoker().onLoad(this);
+        DynamicsWorldEvents.LOAD.invoker().onLoad(this);
     }
 
     public MinecraftDynamicsWorld(World world) {
@@ -74,7 +74,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     /**
      * This method performs the following steps:
      * <ul>
-     *     <li>Triggers all {@link DynamicsWorldEvents#START_WORLD_STEP} events.</li>
+     *     <li>Triggers all {@link DynamicsWorldEvents#START_STEP} events.</li>
      *     <li>Removes any distant {@link PhysicsRigidBody}s.</li>
      *     <li>Applies air resistance to all {@link AirResistantBody}s using {@link FluidManager}.</li>
      *     <li>Loads blocks into the simulation around {@link BlockLoadingBody}s using {@link TerrainManager}.</li>
@@ -82,7 +82,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
      *     <li>Sets gravity to the value stored in {@link Config}.</li>
      *     <li>Triggers all collision events.</li>
      *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
-     *     <li>Triggers all {@link DynamicsWorldEvents#END_WORLD_STEP} events.</li>
+     *     <li>Triggers all {@link DynamicsWorldEvents#END_STEP} events.</li>
      * </ul>
      *
      * Additionally, none of the above steps execute when either the world is empty
@@ -98,7 +98,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     public void step(BooleanSupplier shouldStep) {
         if (shouldStep.getAsBoolean() && !isEmpty()) {
             float delta = this.clock.get();
-            DynamicsWorldEvents.START_WORLD_STEP.invoker().onStartStep(this, delta);
+            DynamicsWorldEvents.START_STEP.invoker().onStartStep(this, delta);
 
             /* Remove far away entities */
             for (EntityRigidBody body : getRigidBodiesByClass(EntityRigidBody.class)) {
@@ -117,7 +117,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
                 update(delta); // simulation step
             } else ++presimulationTicks;
 
-            DynamicsWorldEvents.END_WORLD_STEP.invoker().onEndStep(this, delta);
+            DynamicsWorldEvents.END_STEP.invoker().onEndStep(this, delta);
         } else {
             this.clock.reset();
         }
@@ -184,7 +184,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         if (collisionObject instanceof EntityRigidBody) {
             if (!collisionObject.isInWorld() && isBodyNearPlayer((EntityRigidBody) collisionObject)) {
                 ((EntityRigidBody) collisionObject).onLoad();
-                EntityRigidBodyEvents.ENTITY_BODY_LOAD.invoker().onLoad((EntityRigidBody) collisionObject, this);
+                EntityRigidBodyEvents.LOAD.invoker().onLoad((EntityRigidBody) collisionObject, this);
                 super.addCollisionObject(collisionObject);
             }
         } else {
@@ -195,7 +195,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     @Override
     public void removeCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
-            EntityRigidBodyEvents.ENTITY_BODY_UNLOAD.invoker().onUnload((EntityRigidBody) collisionObject, this);
+            EntityRigidBodyEvents.UNLOAD.invoker().onUnload((EntityRigidBody) collisionObject, this);
         }
 
         super.removeCollisionObject(collisionObject);

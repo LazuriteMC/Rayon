@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.examplemod;
 
-import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
-import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
+import dev.lazurite.rayon.api.builder.EntityRigidBodyBuilder;
+import dev.lazurite.rayon.api.builder.EntityRigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
@@ -52,8 +52,8 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
         );
 
         /* An example of using the builder and registering the built rigid body entry */
-        RigidBodyRegistry.register(
-                RigidBodyBuilder.create(RectangularPrismEntity.class)
+        EntityRigidBodyRegistry.register(
+                EntityRigidBodyBuilder.create(RectangularPrismEntity.class)
                     .setMass(2.0f)
                     .setDrag(0.05f)
                     .setFriction(0.5f)

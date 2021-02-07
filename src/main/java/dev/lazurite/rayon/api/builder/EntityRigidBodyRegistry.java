@@ -6,13 +6,13 @@ import net.minecraft.entity.Entity;
 
 /**
  * This where you can register your {@link RigidBodyEntry} after
- * it's creation using the {@link RigidBodyBuilder}.
+ * it's creation using the {@link EntityRigidBodyBuilder}.
  *
  * @since 1.1.0
  * @see Rayon#registerEntityComponentFactories
- * @see RigidBodyBuilder
+ * @see EntityRigidBodyBuilder
  */
-public interface RigidBodyRegistry {
+public interface EntityRigidBodyRegistry {
     static <E extends Entity> void register(RigidBodyEntry<E> entry) {
         Rayon.entries.add(entry);
     }

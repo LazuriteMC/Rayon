@@ -4,8 +4,8 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.api.builder.RigidBodyBuilder;
-import dev.lazurite.rayon.api.builder.RigidBodyRegistry;
+import dev.lazurite.rayon.api.builder.EntityRigidBodyBuilder;
+import dev.lazurite.rayon.api.builder.EntityRigidBodyRegistry;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.shape.EntityShapeFactory;
@@ -36,7 +36,7 @@ import java.util.function.BooleanSupplier;
 
 /**
  * {@link EntityRigidBody} is the mainsail of Rayon. It's currently the only component that you're
- * able to register to an entity type using {@link RigidBodyBuilder} and {@link RigidBodyRegistry}.
+ * able to register to an entity type using {@link EntityRigidBodyBuilder} and {@link EntityRigidBodyRegistry}.
  * Not only is it a CCA component, but it also represents a bullet {@link PhysicsRigidBody}. In
  * this way it can be directly added to a {@link MinecraftDynamicsWorld}.<br><br>
  *
@@ -94,7 +94,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements SteppableBody, 
     @Override
     public void step(float delta) {
         /* Invoke all registered start step events */
-        EntityRigidBodyEvents.ENTITY_BODY_STEP.invoker().onStep(this, delta);
+        EntityRigidBodyEvents.STEP.invoker().onStep(this, delta);
     }
 
     /**
