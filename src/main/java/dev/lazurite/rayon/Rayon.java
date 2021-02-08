@@ -1,6 +1,7 @@
 package dev.lazurite.rayon;
 
 import com.google.common.collect.Lists;
+import dev.lazurite.rayon.api.event.DynamicsWorldEvents;
 import dev.lazurite.rayon.impl.builder.RigidBodyEntry;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
@@ -25,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Rayon implements ModInitializer, ClientModInitializer, EntityComponentInitializer, WorldComponentInitializer {
 	public static final String MODID = "rayon";
@@ -66,6 +68,22 @@ public class Rayon implements ModInitializer, ClientModInitializer, EntityCompon
 	 */
 	@Override
 	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-		registry.register(WORLD, MinecraftDynamicsWorld::new);
+		registry.register(WORLD, world -> {
+			String name = world.isClient ? "Client" : "Server";
+			AtomicReference<MinecraftDynamicsWorld> dynamicsWorld = new AtomicReference<>();
+
+			Thread thread = new Thread(() -> {
+				DynamicsWorldEvents.LOAD.invoker().onLoad(dynamicsWorld.get());
+
+				while (!dynamicsWorld.get().isDestroyed()) {
+					dynamicsWorld.get().step();
+				}
+			}, name + " Physics Thread");
+
+			dynamicsWorld.set(new MinecraftDynamicsWorld(thread, world));
+			thread.start();
+
+			return dynamicsWorld.get();
+		});
 	}
 }

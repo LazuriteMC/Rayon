@@ -7,6 +7,7 @@ import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.api.event.DynamicsWorldEvents;
 import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.impl.physics.body.BlockRigidBody;
@@ -18,12 +19,12 @@ import dev.lazurite.rayon.impl.physics.manager.TerrainManager;
 import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.mixin.common.ServerWorldMixin;
-import dev.lazurite.rayon.impl.mixin.client.MinecraftClientMixin;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -38,37 +39,42 @@ import java.util.function.BooleanSupplier;
  * World-level values are controlled here such as gravity and air density. This class also facilitates
  * the loading of blocks into the world as {@link BlockRigidBody} objects.<br><br>
  *
- * The {@link MinecraftDynamicsWorld#step} method is called in two separate mixins: {@link MinecraftClientMixin}
- * and {@link ServerWorldMixin}. {@link MinecraftClientMixin} allows for running the simulation at any rate
- * from 20 steps/second to the frame rate of the game. {@link ServerWorldMixin}, however, is only capable of
- * stepping at 20 steps/second on the server.<br><br>
+ * The {@link MinecraftDynamicsWorld#step} method is called from a separate physics thread. There is one
+ * physics thread per {@link World}. The rate at which it is stepped is locked to <b>60 steps/second.</b>
+ * What this means is that every event in {@link EntityRigidBodyEvents} and {@link DynamicsWorldEvents} are
+ * run on a separate thread from the client or the server thread as well as all other physics-related logic
+ * that stems from the {@link MinecraftDynamicsWorld#step} method.
  *
  * Additionally, there are world step events that can be utilized in {@link DynamicsWorldEvents}.
  * @see EntityRigidBody
- * @see ServerWorldMixin
- * @see MinecraftClientMixin
  */
 public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3, PhysicsCollisionListener {
-    private static final int presimulationDuration = 20;
+    private static final int PRESIM_STEPS = 10;
+    private static final long STEP_SIZE = 20L;
+
     private final TerrainManager terrainManager;
     private final FluidManager fluidManager;
-    private final Clock clock;
+    private final Thread thread;
     private final World world;
+    private final Clock clock;
+    private boolean destroyed;
     private int presimulationTicks;
+    private long nextStep;
 
-    public MinecraftDynamicsWorld(World world, BroadphaseType broadphase) {
+    public MinecraftDynamicsWorld(Thread thread, World world, BroadphaseType broadphase) {
         super(broadphase);
+        this.thread = thread;
         this.world = world;
+        this.nextStep = Util.getMeasuringTimeMs() + STEP_SIZE;
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
         this.fluidManager = new FluidManager(this);
         this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
         this.addCollisionListener(this);
-        DynamicsWorldEvents.LOAD.invoker().onLoad(this);
     }
 
-    public MinecraftDynamicsWorld(World world) {
-        this(world, BroadphaseType.DBVT);
+    public MinecraftDynamicsWorld(Thread thread, World world) {
+        this(thread, world, BroadphaseType.DBVT);
     }
 
     /**
@@ -93,33 +99,36 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
      * @see EntityRigidBodyEvents
      * @see FluidManager
      * @see TerrainManager
-     * @param shouldStep whether or not the simulation should step
      */
-    public void step(BooleanSupplier shouldStep) {
-        if (shouldStep.getAsBoolean() && !isEmpty()) {
-            float delta = this.clock.get();
-            DynamicsWorldEvents.START_STEP.invoker().onStartStep(this, delta);
+    public void step() {
+        if (Util.getMeasuringTimeMs() > nextStep) {
+            nextStep = Util.getMeasuringTimeMs() + STEP_SIZE;
 
-            /* Remove far away entities */
-            for (EntityRigidBody body : getRigidBodiesByClass(EntityRigidBody.class)) {
-                if (!isBodyNearPlayer(body)) {
-                    removeCollisionObject(body);
+            if (!isPaused()) {
+                float delta = this.clock.get();
+                DynamicsWorldEvents.START_STEP.invoker().onStartStep(this, delta);
+
+                /* Remove far away entities */
+                for (EntityRigidBody body : getRigidBodiesByClass(EntityRigidBody.class)) {
+                    if (!isBodyNearPlayer(body)) {
+                        removeCollisionObject(body);
+                    }
                 }
+
+                getFluidManager().doAirResistance(getRigidBodiesByClass(AirResistantBody.class)); // air resistance
+                getTerrainManager().load(getRigidBodiesByClass(BlockLoadingBody.class)); // terrain loading
+                getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta)); // stepping
+                setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0)); // gravity
+                distributeEvents(); // collision events
+
+                if (presimulationTicks > PRESIM_STEPS) {
+                    update(delta); // simulation step
+                } else ++presimulationTicks;
+
+                DynamicsWorldEvents.END_STEP.invoker().onEndStep(this, delta);
+            } else {
+                this.clock.reset();
             }
-
-            getFluidManager().doAirResistance(getRigidBodiesByClass(AirResistantBody.class)); // air resistance
-            getTerrainManager().load(getRigidBodiesByClass(BlockLoadingBody.class)); // terrain loading
-            getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta)); // stepping
-            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0)); // gravity
-            distributeEvents(); // collision events
-
-            if (presimulationTicks > presimulationDuration) {
-                update(delta); // simulation step
-            } else ++presimulationTicks;
-
-            DynamicsWorldEvents.END_STEP.invoker().onEndStep(this, delta);
-        } else {
-            this.clock.reset();
         }
     }
 
@@ -131,20 +140,8 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         return this.fluidManager;
     }
 
-    public boolean isInPresimulation() {
-        return this.presimulationTicks < presimulationDuration;
-    }
-
-    public <T> List<T> getRigidBodiesByClass(Class<T> type) {
-        List<T> out = Lists.newArrayList();
-
-        getRigidBodyList().forEach(body -> {
-            if (type.isAssignableFrom(body.getClass())) {
-                out.add(type.cast(body));
-            }
-        });
-
-        return out;
+    public boolean isPaused() {
+        return getWorld().isClient() && MinecraftClient.getInstance().isPaused();
     }
 
     public boolean isBodyNearPlayer(PhysicsRigidBody body) {
@@ -160,9 +157,35 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         return false;
     }
 
+    public boolean isDestroyed() {
+        return this.destroyed;
+    }
 
-    public Clock getClock() {
-        return this.clock;
+    public void destroy() {
+        this.destroyed = true;
+
+        try {
+            getThread().join();
+        } catch (InterruptedException e) {
+            Rayon.LOGGER.error("Error joining physics thread.");
+            e.printStackTrace();
+        }
+    }
+
+    public <T> List<T> getRigidBodiesByClass(Class<T> type) {
+        List<T> out = Lists.newArrayList();
+
+        getRigidBodyList().forEach(body -> {
+            if (type.isAssignableFrom(body.getClass())) {
+                out.add(type.cast(body));
+            }
+        });
+
+        return out;
+    }
+
+    public Thread getThread() {
+        return this.thread;
     }
 
     public World getWorld() {
@@ -179,6 +202,13 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
 
     }
 
+    /**
+     * On top of adding the given collision object to the world, it also triggers
+     * the LOAD event in {@link EntityRigidBodyEvents} if the given collision object
+     * is a {@link EntityRigidBody}.
+     * @see EntityRigidBodyEvents
+     * @param collisionObject the collision object to add
+     */
     @Override
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
@@ -192,6 +222,13 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         }
     }
 
+    /**
+     * On top of removing the given collision object from the world, it also triggers
+     * the UNLOAD event in {@link EntityRigidBodyEvents} if the given collision object
+     * is a {@link EntityRigidBody}.
+     * @see EntityRigidBodyEvents
+     * @param collisionObject the collision object to remove
+     */
     @Override
     public void removeCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject instanceof EntityRigidBody) {
@@ -201,6 +238,11 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         super.removeCollisionObject(collisionObject);
     }
 
+    /**
+     * Trigger all collision events (e.g. block/entity or entity/entity).
+     * @see EntityRigidBodyEvents
+     * @param event the event context
+     */
     @Override
     public void collision(PhysicsCollisionEvent event) {
         if (event.getObjectA() instanceof EntityRigidBody && event.getObjectB() instanceof EntityRigidBody) {

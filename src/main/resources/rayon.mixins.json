@@ -4,18 +4,17 @@
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "common.entity.EntityMixin",
-    "common.entity.player.PlayerManagerMixin",
-    "common.IntegratedServerMixin",
-    "common.ServerWorldMixin",
+    "common.EntityMixin",
+    "common.player.PlayerManagerMixin",
+    "common.WorldMixin",
     "transporter.WorldMixin"
   ],
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
+    "client.ClientWorldMixin",
     "client.render.DebugRendererMixin",
     "client.render.WorldRendererMixin",
-    "client.KeyboardMixin",
-    "client.MinecraftClientMixin"
+    "client.KeyboardMixin"
   ],
   "injectors": {
     "defaultRequire": 1
