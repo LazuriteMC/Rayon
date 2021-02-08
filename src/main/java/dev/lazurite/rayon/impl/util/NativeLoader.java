@@ -15,10 +15,12 @@ import java.net.URL;
  * @see Rayon#onInitialize()
  */
 public class NativeLoader {
+    public static final String VERSION = "10.0.0";
+
     public enum OperatingSystem {
-        WINDOWS("https://github.com/stephengold/Libbulletjme/releases/download/10.0.0/Windows64ReleaseSp_bulletjme.dll", "Windows64ReleaseSp_bulletjme.dll"),
-        LINUX("https://github.com/stephengold/Libbulletjme/releases/download/10.0.0/Linux64ReleaseSp_libbulletjme.so", "Linux64ReleaseSp_libbulletjme.so");
-        // TODO Mac OS
+        WINDOWS(String.format("https://github.com/stephengold/Libbulletjme/releases/download/%s/Windows64ReleaseSp_bulletjme.dll", VERSION), "Windows64ReleaseSp_bulletjme.dll"),
+        LINUX(String.format("https://github.com/stephengold/Libbulletjme/releases/download/%s/Linux64ReleaseSp_libbulletjme.so", VERSION), "Linux64ReleaseSp_libbulletjme.so"),
+        MACOS(String.format("https://github.com/stephengold/Libbulletjme/releases/download/%s/MacOSX64ReleaseSp_libbulletjme.dylib", VERSION), "MacOSX64ReleaseSp_libbulletjme.dylib");
 
         final String url;
         final String file;
@@ -31,12 +33,13 @@ public class NativeLoader {
 
     public static void load() {
         String name = System.getProperty("os.name");
-        OperatingSystem os;
-
         Rayon.LOGGER.info("Downloading natives for " + name + "...");
+        OperatingSystem os;
 
         if (name.contains("Linux")) {
             os = OperatingSystem.LINUX;
+        } else if (name.contains("Mac")) {
+            os = OperatingSystem.MACOS;
         } else {
             os = OperatingSystem.WINDOWS;
         }

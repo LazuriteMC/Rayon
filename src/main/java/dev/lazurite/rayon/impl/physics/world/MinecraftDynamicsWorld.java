@@ -49,7 +49,7 @@ import java.util.function.BooleanSupplier;
  * @see EntityRigidBody
  */
 public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3, PhysicsCollisionListener {
-    private static final int PRESIM_STEPS = 10;
+    private static final int MAX_PRESIM_STEPS = 10;
     private static final long STEP_SIZE = 20L;
 
     private final TerrainManager terrainManager;
@@ -58,7 +58,7 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
     private final World world;
     private final Clock clock;
     private boolean destroyed;
-    private int presimulationTicks;
+    private int presimSteps;
     private long nextStep;
 
     public MinecraftDynamicsWorld(Thread thread, World world, BroadphaseType broadphase) {
@@ -104,8 +104,10 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
         if (Util.getMeasuringTimeMs() > nextStep) {
             nextStep = Util.getMeasuringTimeMs() + STEP_SIZE;
 
-            if (!isPaused()) {
+            if (!isPaused() && (!isEmpty() || isInPresim())) {
                 float delta = this.clock.get();
+
+                /* World Step Event */
                 DynamicsWorldEvents.START_STEP.invoker().onStartStep(this, delta);
 
                 /* Remove far away entities */
@@ -115,16 +117,27 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
                     }
                 }
 
-                getFluidManager().doAirResistance(getRigidBodiesByClass(AirResistantBody.class)); // air resistance
-                getTerrainManager().load(getRigidBodiesByClass(BlockLoadingBody.class)); // terrain loading
-                getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta)); // stepping
-                setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0)); // gravity
-                distributeEvents(); // collision events
+                /* Air Resistance */
+                getFluidManager().doAirResistance(getRigidBodiesByClass(AirResistantBody.class));
 
-                if (presimulationTicks > PRESIM_STEPS) {
-                    update(delta); // simulation step
-                } else ++presimulationTicks;
+                /* Terrain Loading */
+                getTerrainManager().load(getRigidBodiesByClass(BlockLoadingBody.class));
 
+                /* Stepping */
+                getRigidBodiesByClass(SteppableBody.class).forEach(body -> body.step(delta));
+
+                /* Gravity */
+                setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+
+                /* Collision Events */
+                distributeEvents();
+
+                /* Step Simulation */
+                if (presimSteps > MAX_PRESIM_STEPS) {
+                    update(delta);
+                } else ++presimSteps;
+
+                /* World Step Event */
                 DynamicsWorldEvents.END_STEP.invoker().onEndStep(this, delta);
             } else {
                 this.clock.reset();
@@ -142,6 +155,10 @@ public class MinecraftDynamicsWorld extends PhysicsSpace implements ComponentV3,
 
     public boolean isPaused() {
         return getWorld().isClient() && MinecraftClient.getInstance().isPaused();
+    }
+
+    public boolean isInPresim() {
+        return presimSteps < MAX_PRESIM_STEPS;
     }
 
     public boolean isBodyNearPlayer(PhysicsRigidBody body) {
