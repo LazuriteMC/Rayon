@@ -1,5 +1,0 @@
-accessWidener	v1	named
-accessible field net/minecraft/client/render/model/MultipartBakedModel components Ljava/util/List;
-accessible field net/minecraft/client/render/model/BasicBakedModel faceQuads Ljava/util/Map;
-accessible field net/minecraft/client/render/model/WeightedBakedModel models Ljava/util/List;
-accessible class net/minecraft/client/render/model/WeightedBakedModel$Entry
