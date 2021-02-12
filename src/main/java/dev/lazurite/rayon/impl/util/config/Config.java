@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.impl.util.config;
 
-import dev.lazurite.rayon.impl.physics.manager.DebugManager;
+import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
 import dev.lazurite.rayon.impl.util.config.settings.GlobalSettings;
 import dev.lazurite.rayon.impl.util.config.settings.LocalSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
@@ -22,7 +22,7 @@ public final class Config {
     private static final Config instance = new Config();
     public static final String CONFIG_NAME = "rayon.json";
 
-    private final LocalSettings local = new LocalSettings(1, 100, 10, DebugManager.DrawMode.LINES);
+    private final LocalSettings local = new LocalSettings(1, 10, DebugManager.DrawMode.LINES);
     private final GlobalSettings global = new GlobalSettings(-9.81f, 1.2f, true);
     private GlobalSettings remoteGlobal;
 

@@ -1,18 +1,29 @@
 package dev.lazurite.rayon.examplemod.entity;
 
-import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
+import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.api.PhysicsElement;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.world.World;
 
-public class RectangularPrismEntity extends Entity {
+public class RectangularPrismEntity extends Entity implements PhysicsElement {
+    private final ElementRigidBody rigidBody;
+
     public RectangularPrismEntity(EntityType<?> type, World world) {
         super(type, world);
+        this.rigidBody = new ElementRigidBody(this);
+    }
+
+    @Override
+    public void step(MinecraftSpace space) {
+        rigidBody.applyCentralForce(new Vector3f(0, 0.1f, 0));
     }
 
     @Override
@@ -36,12 +47,6 @@ public class RectangularPrismEntity extends Entity {
     }
 
     @Override
-    public void kill() {
-        super.kill();
-        this.dropItem(Items.FEATHER);
-    }
-
-    @Override
     @Environment(EnvType.CLIENT)
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         return true;
@@ -49,6 +54,11 @@ public class RectangularPrismEntity extends Entity {
 
     @Override
     public Packet<?> createSpawnPacket() {
-        return RayonSpawnS2CPacket.get(this);
+        return new EntitySpawnS2CPacket(this);
+    }
+
+    @Override
+    public ElementRigidBody getRigidBody() {
+        return this.rigidBody;
     }
 }

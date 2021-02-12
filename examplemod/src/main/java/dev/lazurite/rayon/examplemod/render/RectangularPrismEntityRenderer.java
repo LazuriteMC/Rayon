@@ -2,11 +2,10 @@ package dev.lazurite.rayon.examplemod.render;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.Rayon;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
-import dev.lazurite.rayon.impl.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,7 +32,7 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     }
 
     public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        EntityRigidBody body = Rayon.ENTITY.get(rectangularPrism);
+        ElementRigidBody body = rectangularPrism.getRigidBody();
         Quaternion rot = QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
         Vector3f bounds = body.getCollisionShape().boundingBox(new Vector3f(), new com.jme3.math.Quaternion(), new BoundingBox()).getExtent(new Vector3f()).multLocal(-1);
 

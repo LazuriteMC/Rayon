@@ -2,7 +2,7 @@ package dev.lazurite.rayon.impl.util.config.settings;
 
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Setting;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Settings;
-import dev.lazurite.rayon.impl.util.net.ConfigS2C;
+import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 
 /**
  * This class contains settings that <b>must</b> be the

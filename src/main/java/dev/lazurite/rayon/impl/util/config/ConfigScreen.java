@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.impl.util.config;
 
-import dev.lazurite.rayon.impl.physics.manager.DebugManager;
-import dev.lazurite.rayon.impl.util.net.ConfigS2C;
+import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -55,18 +54,6 @@ public class ConfigScreen implements ModMenuApi {
                         new TranslatableText("config.rayon.option.block_distance.tooltip"),
                         new TranslatableText("config.rayon.option.performance.high"))
                 .setSaveConsumer(newValue -> Config.getInstance().getLocal().setBlockDistance(newValue))
-                .build());
-
-        /* Load Distance */
-        category.addEntry(builder.entryBuilder().startIntSlider(
-                new TranslatableText("config.rayon.option.load_distance"),
-                Config.getInstance().getLocal().getLoadDistance(), 25, 100)
-                .setDefaultValue(100)
-                .setTooltip(
-                        new TranslatableText("config.rayon.option.load_distance.tooltip"),
-                        new TranslatableText("config.rayon.option.performance.medium"))
-                .setTextGetter((value) -> new LiteralText(value + "%"))
-                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setLoadDistance(newValue))
                 .build());
 
         /* Debug Render Distance */

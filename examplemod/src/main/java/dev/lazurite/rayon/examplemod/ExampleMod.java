@@ -1,8 +1,5 @@
 package dev.lazurite.rayon.examplemod;
 
-import dev.lazurite.rayon.api.builder.EntityRigidBodyBuilder;
-import dev.lazurite.rayon.api.builder.EntityRigidBodyRegistry;
-import dev.lazurite.rayon.api.event.EntityRigidBodyEvents;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
 import dev.lazurite.rayon.examplemod.render.RectangularPrismEntityRenderer;
@@ -10,7 +7,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -51,23 +47,14 @@ public class ExampleMod implements ModInitializer, ClientModInitializer {
                         .build()
         );
 
-        /* An example of using the builder and registering the built rigid body entry */
-        EntityRigidBodyRegistry.register(
-                EntityRigidBodyBuilder.create(RectangularPrismEntity.class)
-                    .setMass(2.0f)
-                    .setDrag(0.05f)
-                    .setFriction(0.5f)
-                    .setRestitution(0.75f)
-                    .build());
-
-        /* An example of a block collision event */
-        EntityRigidBodyEvents.BLOCK_COLLISION.register((entityBody, blockBody) -> {
-            if (!entityBody.getDynamicsWorld().getWorld().isClient()) {
-                if (blockBody.getBlockState().getBlock().equals(Blocks.BRICKS)) {
-                    LOGGER.info("Touching bricks!!");
-                    entityBody.getEntity().kill();
-                }
-            }
-        });
+//        /* An example of a block collision event */
+//        EntityRigidBodyEvents.BLOCK_COLLISION.register((entityBody, blockBody) -> {
+//            if (!entityBody.getSpace().getWorld().isClient()) {
+//                if (blockBody.getBlockState().getBlock().equals(Blocks.BRICKS)) {
+//                    LOGGER.info("Touching bricks!!");
+//                    entityBody.getEntity().kill();
+//                }
+//            }
+//        });
     }
 }

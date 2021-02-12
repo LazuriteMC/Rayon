@@ -11,14 +11,9 @@ subprojects {
 	archivesBaseName = rootProject.archives_base_name + "-" + project.name
 	group = rootProject.maven_group + "." + rootProject.archives_base_name
 
-	repositories {
-		maven { url 'https://jitpack.io' }
-	}
-
 	dependencies {
 		compile rootProject.sourceSets.main.output
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-		modImplementation "com.github.joaoh1:OkZoomer:4.0.0-alpha.4.1.16.1"
 	}
 }
 
@@ -34,10 +29,9 @@ allprojects {
 	group = project.maven_group
 
 	repositories {
-		maven {
-			name = "Ladysnake Libs"
-			url = "https://dl.bintray.com/ladysnake/libs"
-		}
+		maven { url = "https://maven.terraformersmc.com/releases/" }
+		maven { url = "https://dl.bintray.com/ladysnake/libs" }
+		maven { url = "https://jitpack.io" }
 	}
 
 	dependencies {
@@ -50,14 +44,18 @@ allprojects {
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 		// Mod Menu
-		modImplementation ("io.github.prospector:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
 
-		// Cardinal Components
+		// Transporter
+		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
+		include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
+
+		// Cardinal Components Base
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
-		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
+
+		// Cardinal Components World
+		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 
 		// Fiber
@@ -68,7 +66,7 @@ allprojects {
 		modApi ("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
 		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
-		// JBullet
+		// LibBulletJME
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 	}
