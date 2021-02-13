@@ -1,11 +1,10 @@
-package dev.lazurite.rayon.examplemod.render;
+package dev.lazurite.rayon.examplemod.client.render;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.examplemod.ExampleMod;
-import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
-import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
-import dev.lazurite.rayon.impl.element.ElementRigidBody;
+import dev.lazurite.rayon.examplemod.client.render.model.RectangularPrismModel;
+import dev.lazurite.rayon.examplemod.entity.BigRectangularPrismEntity;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,18 +19,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
-public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPrismEntity> {
+public class BigRectangularPrismEntityRenderer extends EntityRenderer<BigRectangularPrismEntity> {
     public static final Identifier texture = new Identifier(ExampleMod.MODID, "textures/entity/rectangular_prism.png");
     private final RectangularPrismModel model;
 
-    public RectangularPrismEntityRenderer(EntityRenderDispatcher dispatcher) {
+    public BigRectangularPrismEntityRenderer(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
         this.shadowRadius = 0.2F;
-        this.model = new RectangularPrismModel(16, 32, 16);
+        this.model = new RectangularPrismModel(32, 64, 32);
         this.model.child = false;
     }
 
-    public void render(RectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(BigRectangularPrismEntity rectangularPrism, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         Vector3f bounds = rectangularPrism.getRigidBody().getCollisionShape().boundingBox(new Vector3f(), new com.jme3.math.Quaternion(), new BoundingBox()).getExtent(new Vector3f()).multLocal(-1);
         Quaternion rot = QuaternionHelper.bulletToMinecraft(rectangularPrism.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
 
@@ -46,12 +45,12 @@ public class RectangularPrismEntityRenderer extends EntityRenderer<RectangularPr
     }
 
     @Override
-    public boolean shouldRender(RectangularPrismEntity rectangularPrism, Frustum frustum, double x, double y, double z) {
+    public boolean shouldRender(BigRectangularPrismEntity rectangularPrism, Frustum frustum, double x, double y, double z) {
         return rectangularPrism.shouldRender(x, y, z);
     }
 
     @Override
-    public Identifier getTexture(RectangularPrismEntity rectangularPrism) {
+    public Identifier getTexture(BigRectangularPrismEntity rectangularPrism) {
         return texture;
     }
 }

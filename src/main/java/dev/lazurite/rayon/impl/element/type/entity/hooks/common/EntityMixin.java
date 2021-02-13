@@ -1,12 +1,12 @@
-package dev.lazurite.rayon.impl.element.hooks.entity.common;
+package dev.lazurite.rayon.impl.element.type.entity.hooks.common;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.element.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
-import dev.lazurite.rayon.impl.element.network.EntityElementS2C;
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import dev.lazurite.rayon.impl.element.type.entity.net.EntityElementS2C;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;

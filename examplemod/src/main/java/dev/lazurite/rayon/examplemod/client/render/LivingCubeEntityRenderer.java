@@ -1,10 +1,10 @@
-package dev.lazurite.rayon.examplemod.render;
+package dev.lazurite.rayon.examplemod.client.render;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.examplemod.ExampleMod;
 import dev.lazurite.rayon.examplemod.entity.LivingCubeEntity;
-import dev.lazurite.rayon.examplemod.render.model.RectangularPrismModel;
+import dev.lazurite.rayon.examplemod.client.render.model.RectangularPrismModel;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

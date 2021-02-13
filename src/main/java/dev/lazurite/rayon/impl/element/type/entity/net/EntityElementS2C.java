@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.network;
+package dev.lazurite.rayon.impl.element.type.entity.net;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -15,38 +15,39 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class EntityElementS2C {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "entity_element_s2c");
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
-        int entityId = buf.readInt();
-        float mass = buf.readFloat();
-        float dragCoefficient = buf.readFloat();
-        float friction = buf.readFloat();
-        float restitution = buf.readFloat();
-        Quaternion rotation = QuaternionHelper.fromBuffer(buf);
-        Vector3f location = VectorHelper.fromBuffer(buf);
-        Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
-        Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
+        if (client.world != null) {
+            int entityId = buf.readInt();
+            float mass = buf.readFloat();
+            float dragCoefficient = buf.readFloat();
+            float friction = buf.readFloat();
+            float restitution = buf.readFloat();
+            Quaternion rotation = QuaternionHelper.fromBuffer(buf);
+            Vector3f location = VectorHelper.fromBuffer(buf);
+            Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
+            Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-        Rayon.THREAD.get(client.world).execute(space -> {
-            Entity entity = client.world.getEntityById(entityId);
+            Rayon.THREAD.get(client.world).execute(space -> {
+                Entity entity = client.world.getEntityById(entityId);
 
-            if (entity instanceof PhysicsElement) {
-                ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
-                rigidBody.setMass(mass);
-                rigidBody.setDragCoefficient(dragCoefficient);
-                rigidBody.setFriction(friction);
-                rigidBody.setRestitution(restitution);
-                rigidBody.setPhysicsRotation(rotation);
-                rigidBody.setPhysicsLocation(location);
-                rigidBody.setLinearVelocity(linearVelocity);
-                rigidBody.setAngularVelocity(angularVelocity);
-            }
-        });
+                if (entity instanceof PhysicsElement) {
+                    ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+                    rigidBody.setMass(mass);
+                    rigidBody.setDragCoefficient(dragCoefficient);
+                    rigidBody.setFriction(friction);
+                    rigidBody.setRestitution(restitution);
+                    rigidBody.setPhysicsRotation(rotation);
+                    rigidBody.setPhysicsLocation(location);
+                    rigidBody.setLinearVelocity(linearVelocity);
+                    rigidBody.setAngularVelocity(angularVelocity);
+                }
+            });
+        }
     }
 
     public static void send(PhysicsElement element) {

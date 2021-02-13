@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.bullet.space;
+package dev.lazurite.rayon.impl.bullet.thread;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
@@ -6,26 +6,31 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.api.element.PhysicsElement;
+import dev.lazurite.rayon.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
+import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.manager.FluidManager;
 import dev.lazurite.rayon.impl.bullet.manager.TerrainManager;
-import dev.lazurite.rayon.impl.bullet.thread.Clock;
-import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
-import net.minecraft.client.MinecraftClient;
+import dev.lazurite.rayon.impl.util.thread.Pausable;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
-public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
+public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
     private final FluidManager fluidManager;
+    private final ThreadExecutor<?> server;
     private final PhysicsThread thread;
     private final World world;
     private final Clock clock;
@@ -39,7 +44,9 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
         this.fluidManager = new FluidManager();
-        this.setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+        this.server = world.getServer();
+        this.setGravity(new Vector3f(0, Config.getInstance().getGravity(), 0));
+        this.addCollisionListener(this);
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
@@ -49,19 +56,21 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     /**
      * This method performs the following steps:
      * <ul>
-     *     <li>Applies air resistance to all {@link ElementRigidBody}s using {@link FluidManager}.</li>
-     *     <li>Loads blocks into the simulation around {@link ElementRigidBody}s using {@link TerrainManager}.</li>
+     *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
+     *     <li>Steps {@link ElementRigidBody}s.</li>
+     *     <li>Applies air resistance to all {@link PhysicsRigidBody}s using {@link FluidManager}.</li>
+     *     <li>Loads blocks into the simulation around {@link TerrainLoadingBody}s using {@link TerrainManager}.</li>
      *     <li>Sets gravity to the value stored in {@link Config}.</li>
-     *     <li>Triggers all collision events.</li>
+     *     <li>Triggers all collision events (queues up tasks in server thread).</li>
      *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
      * </ul>
      *
      * Additionally, none of the above steps execute when either the world is empty
-     * (no {@link PhysicsRigidBody}s) or when the {@link BooleanSupplier} shouldStep
-     * returns false.<br><br>
+     * (no {@link PhysicsRigidBody}s) or when the game is paused.
      *
      * @see FluidManager
      * @see TerrainManager
+     * @see PhysicsSpaceEvents
      */
     public void step() {
         if (!isPaused() && (!isEmpty() || isInPresim())) {
@@ -80,10 +89,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             getTerrainManager().load(getRigidBodiesByClass(TerrainLoadingBody.class));
 
             /* Gravity */
-            setGravity(new Vector3f(0, Config.getInstance().getGlobal().getGravity(), 0));
+            setGravity(new Vector3f(0, Config.getInstance().getGravity(), 0));
 
             /* Collision Events */
-            distributeEvents();
+            if (!getWorld().isClient()) {
+                distributeEvents();
+            }
 
             /* Step Simulation */
             if (presimSteps > MAX_PRESIM_STEPS) {
@@ -100,10 +111,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     public FluidManager getFluidManager() {
         return this.fluidManager;
-    }
-
-    public boolean isPaused() {
-        return MinecraftClient.getInstance().isPaused();
     }
 
     public boolean isInPresim() {
@@ -146,17 +153,30 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     /**
-     * Trigger all collision events (e.g. block/entity or entity/entity).
+     * Trigger all collision events (e.g. block/element or element/element).
+     * Executed on the main thread rather than the physics thread.
      * @param event the event context
      */
     @Override
     public void collision(PhysicsCollisionEvent event) {
-//        if (event.getObjectA() instanceof SynchronousRigidBody && event.getObjectB() instanceof SynchronousRigidBody) {
-//            EntityRigidBodyEvents.ENTITY_COLLISION.invoker().onEntityCollision((SynchronousRigidBody) event.getObjectA(), (SynchronousRigidBody) event.getObjectB());
-//        } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof SynchronousRigidBody) {
-//            EntityRigidBodyEvents.BLOCK_COLLISION.invoker().onBlockCollision((SynchronousRigidBody) event.getObjectB(), (BlockRigidBody) event.getObjectA());
-//        } else if (event.getObjectA() instanceof SynchronousRigidBody && event.getObjectB() instanceof BlockRigidBody) {
-//            EntityRigidBodyEvents.BLOCK_COLLISION.invoker().onBlockCollision((SynchronousRigidBody) event.getObjectA(), (BlockRigidBody) event.getObjectB());
-//        }
+        server.execute(() -> {
+            if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof ElementRigidBody) {
+                PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
+                PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
+                ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(element1, element2);
+
+            } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {
+                BlockPos blockPos = ((BlockRigidBody) event.getObjectA()).getBlockPos();
+                BlockState blockState = ((BlockRigidBody) event.getObjectA()).getBlockState();
+                PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, world, blockPos, blockState);
+
+            } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof BlockRigidBody) {
+                BlockPos blockPos = ((BlockRigidBody) event.getObjectB()).getBlockPos();
+                BlockState blockState = ((BlockRigidBody) event.getObjectB()).getBlockState();
+                PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, world, blockPos, blockState);
+            }
+        });
     }
 }

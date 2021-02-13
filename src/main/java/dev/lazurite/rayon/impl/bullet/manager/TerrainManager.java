@@ -7,7 +7,7 @@ import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
-import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
@@ -43,15 +43,13 @@ public class TerrainManager {
     /**
      * Load every block within a set distance from the given entities. The distance is defined
      * earlier during execution and converted into a {@link Box} area parameter.
-     * @param blockLoadingBodies the {@link List} of {@link TerrainLoadingBody} objects
+     * @param terrainLoadingBodies the {@link List} of {@link TerrainLoadingBody} objects
      * @see TerrainManager#load(Box)
      */
-    public void load(List<TerrainLoadingBody> blockLoadingBodies) {
-        int blockDistance = Config.getInstance().getLocal().getBlockDistance();
-
-        blockLoadingBodies.forEach(body -> {
-            load(new Box(body.getBlockPos()).expand(blockDistance));
-        });
+    public void load(List<TerrainLoadingBody> terrainLoadingBodies) {
+        terrainLoadingBodies.forEach(body ->
+            load(new Box(body.getBlockPos()).expand(body.getLoadDistance()))
+        );
 
         purge();
     }

@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.impl;
 
-import dev.lazurite.rayon.impl.element.network.EntityElementS2C;
+import dev.lazurite.rayon.impl.element.type.entity.net.EntityElementS2C;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;

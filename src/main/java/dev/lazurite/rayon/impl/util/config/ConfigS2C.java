@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.impl.util.config;
 
 import dev.lazurite.rayon.impl.Rayon;
-import dev.lazurite.rayon.impl.util.config.settings.GlobalSettings;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -14,9 +13,6 @@ import net.minecraft.util.Identifier;
 /**
  * This packet is used for sending the server's config info to all of the clients.
  * The reason to do this is to force all clients to conform to the server's settings.
- * However, there are some values that the user can change on their own client when
- * they're connected to a remote server such as step rate, block distance, and air
- * resistance type.
  * @see Config
  */
 public class ConfigS2C {
@@ -25,22 +21,22 @@ public class ConfigS2C {
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         if (client.getServer() != null) {
             if (client.getServer().isRemote()) {
-                GlobalSettings remoteGlobal = new GlobalSettings(
+                Config config = new Config(
                         buf.readFloat(),
                         buf.readFloat(),
                         buf.readBoolean()
                 );
 
-                client.execute(() -> Config.getInstance().setRemoteGlobal(remoteGlobal));
+                client.execute(() -> Config.setRemote(config));
             }
         }
     }
 
     public static void send(ServerPlayerEntity player, Config config) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeFloat(config.getGlobal().getGravity());
-        buf.writeFloat(config.getGlobal().getAirDensity());
-        buf.writeBoolean(config.getGlobal().isAirResistanceEnabled());
+        buf.writeFloat(config.getGravity());
+        buf.writeFloat(config.getAirDensity());
+        buf.writeBoolean(config.isAirResistanceEnabled());
         ServerPlayNetworking.send(player, PACKET_ID, buf);
     }
 }

@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.impl.element;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
@@ -9,7 +10,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.body.type.CustomDragBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
-import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
+import dev.lazurite.rayon.impl.util.debug.DebugLayer;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,8 +23,8 @@ import java.util.UUID;
 public class ElementRigidBody extends PhysicsRigidBody implements CustomDragBody, TerrainLoadingBody, DebuggableBody {
     private final PhysicsElement element;
     private float dragCoefficient;
-    private SyncMode syncMode = SyncMode.SERVER;
     private UUID priorityPlayer;
+    private int loadDistance;
 
     public final Quaternion prevRotation = new Quaternion();
     public final Quaternion tickRotation = new Quaternion();
@@ -36,6 +37,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements CustomDragBody
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
+        this.loadDistance = calculateLoadDistance();
     }
 
     public ElementRigidBody(PhysicsElement entity, CollisionShape shape) {
@@ -48,15 +50,14 @@ public class ElementRigidBody extends PhysicsRigidBody implements CustomDragBody
 
     public void prioritize(@Nullable PlayerEntity player) {
         if (player == null) {
-            syncMode = SyncMode.SERVER;
+            priorityPlayer = null;
         } else {
-            this.priorityPlayer = player.getUuid();
-            this.syncMode = SyncMode.CLIENT;
+            priorityPlayer = player.getUuid();
         }
     }
 
-    public SyncMode getSyncMode() {
-        return this.syncMode;
+    public int calculateLoadDistance() {
+        return (int) boundingBox(new BoundingBox()).getExtent(new Vector3f()).length() + 1;
     }
 
     public void fromTag(CompoundTag tag) {
@@ -91,9 +92,20 @@ public class ElementRigidBody extends PhysicsRigidBody implements CustomDragBody
     }
 
     @Override
+    public void setCollisionShape(CollisionShape collisionShape) {
+        super.setCollisionShape(collisionShape);
+        this.loadDistance = calculateLoadDistance();
+    }
+
+    @Override
     public BlockPos getBlockPos() {
         Vector3f pos = getPhysicsLocation(new Vector3f());
         return new BlockPos(pos.x, pos.y, pos.z);
+    }
+
+    @Override
+    public int getLoadDistance() {
+        return this.loadDistance;
     }
 
     @Override
@@ -102,12 +114,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements CustomDragBody
     }
 
     @Override
-    public DebugManager.DebugLayer getDebugLayer() {
-        return DebugManager.DebugLayer.ENTITY;
-    }
-
-    public enum SyncMode {
-        CLIENT,
-        SERVER
+    public DebugLayer getDebugLayer() {
+        return DebugLayer.ENTITY;
     }
 }

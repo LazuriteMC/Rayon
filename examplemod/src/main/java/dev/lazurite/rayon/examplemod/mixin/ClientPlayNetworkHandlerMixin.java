@@ -1,9 +1,11 @@
 package dev.lazurite.rayon.examplemod.mixin;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
+import dev.lazurite.rayon.examplemod.entity.BigRectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,9 +26,15 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void onEntitySpawn(EntitySpawnS2CPacket packet, CallbackInfo info, double x, double y, double z, EntityType<?> type) {
+        Entity entity = null;
 
         if (type == ExampleMod.RECTANGULAR_PRISM_ENTITY) {
-            RectangularPrismEntity entity = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
+            entity = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
+        } else if (type == ExampleMod.BIG_RECTANGULAR_PRISM_ENTITY) {
+            entity = new BigRectangularPrismEntity(ExampleMod.BIG_RECTANGULAR_PRISM_ENTITY, world);
+        }
+
+        if (entity != null) {
             int i = packet.getId();
             entity.updatePositionAndAngles(x, y, z, (float) packet.getY() * 360 / 250, 0);
             entity.setEntityId(i);

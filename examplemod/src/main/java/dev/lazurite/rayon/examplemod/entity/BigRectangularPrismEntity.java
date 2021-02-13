@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.examplemod.entity;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -12,10 +12,10 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.world.World;
 
-public class RectangularPrismEntity extends Entity implements PhysicsElement {
+public class BigRectangularPrismEntity extends Entity implements PhysicsElement {
     private final ElementRigidBody rigidBody;
 
-    public RectangularPrismEntity(EntityType<?> type, World world) {
+    public BigRectangularPrismEntity(EntityType<?> type, World world) {
         super(type, world);
         this.rigidBody = new ElementRigidBody(this);
     }

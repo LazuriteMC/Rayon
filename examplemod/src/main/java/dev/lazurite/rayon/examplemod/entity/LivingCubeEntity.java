@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.examplemod.entity;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
 import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;

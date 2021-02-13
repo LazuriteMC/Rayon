@@ -10,7 +10,7 @@ import java.util.Collection;
 
 public class FluidManager {
     public void doAirResistance(Collection<PhysicsRigidBody> rigidBodies) {
-        if (Config.getInstance().getGlobal().isAirResistanceEnabled()) {
+        if (Config.getInstance().isAirResistanceEnabled()) {
             rigidBodies.forEach(body -> {
                 if (body instanceof CustomDragBody) {
                     doAirResistance(body, ((CustomDragBody) body).getDragCoefficient());
@@ -38,7 +38,7 @@ public class FluidManager {
      * @return the force vector of air resistance
      */
     public static Vector3f getForce(Vector3f velocity, float area, float dragCoefficient) {
-        float k = (Config.getInstance().getGlobal().getAirDensity() * dragCoefficient * area) / 2.0f;
+        float k = (Config.getInstance().getAirDensity() * dragCoefficient * area) / 2.0f;
         Vector3f force = new Vector3f();
         force.set(velocity);
         force.multLocal(k);

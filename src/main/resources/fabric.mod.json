@@ -17,19 +17,13 @@
   "environment": "*",
 
   "entrypoints": {
-    "main": [
-      "dev.lazurite.rayon.impl.Rayon"
-    ],
-    "client": [
-      "dev.lazurite.rayon.impl.Rayon"
-    ],
-    "cardinal-components-world": [
-      "dev.lazurite.rayon.impl.Rayon"
-    ],
+    "main": [ "dev.lazurite.rayon.impl.Rayon" ],
+    "client": [ "dev.lazurite.rayon.impl.Rayon" ],
+    "cardinal-components-world": [ "dev.lazurite.rayon.impl.Rayon" ],
     "modmenu": [ "dev.lazurite.rayon.impl.util.config.ConfigScreen" ]
   },
 
-  "mixins": [ "rayon.mixins.json", "hooks.mixins.json" ],
+  "mixins": [ "rayon.mixins.json", "entity.mixins.json" ],
 
   "depends": {
     "fabricloader": ">=0.7.4",

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.bullet.manager;
+package dev.lazurite.rayon.impl.util.debug;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.bullet.util.DebugShapeFactory;
@@ -38,7 +38,6 @@ import java.nio.FloatBuffer;
  * to the screen as debug objects with their own respective layers and colors.
  *
  * @see Config
- * @see DrawMode
  * @see DebugLayer
  * @see KeyboardMixin
  * @see DebugRendererMixin
@@ -88,7 +87,8 @@ public final class DebugManager {
             for (PhysicsRigidBody body : Rayon.THREAD.get(world).getSpace().getRigidBodyList()) {
                 if (body instanceof DebuggableBody) {
                     if (((DebuggableBody) body).getDebugLayer().ordinal() <= debugLayer.ordinal()) {
-                        if (VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f())).distanceTo(camera.getPos()) < Config.getInstance().getLocal().getDebugDistance()) {
+                        if (VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f()))
+                                .distanceTo(camera.getPos()) < MinecraftClient.getInstance().options.viewDistance * 16) {
                             renderBody(body, VectorHelper.vec3dToVector3f(camera.getPos()));
                         }
                     }
@@ -110,7 +110,7 @@ public final class DebugManager {
 
         Vector3f position = body.getPhysicsLocation(new Vector3f()).subtract(cameraPos);
 
-        builder.begin(Config.getInstance().getLocal().getDebugDrawMode().getMode(), VertexFormats.POSITION_COLOR);
+        builder.begin(GL11.GL_LINE_LOOP, VertexFormats.POSITION_COLOR);
         RenderSystem.translatef(position.x, position.y, position.z);
         RenderSystem.multMatrix(new Matrix4f(QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new Quaternion()))));
 
@@ -122,41 +122,5 @@ public final class DebugManager {
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();
         RenderSystem.popMatrix();
-    }
-
-    public enum DebugLayer {
-        ENTITY("debug.rayon.layer.entity"),
-        BLOCK("debug.rayon.layer.block");
-
-        private final String translation;
-
-        DebugLayer(String translation) {
-            this.translation = translation;
-        }
-
-        public String getTranslation() {
-            return this.translation;
-        }
-    }
-
-    public enum DrawMode {
-        LINES("debug.rayon.draw.lines", GL11.GL_LINE_LOOP),
-        TRIANGLES("debug.rayon.draw.triangles", GL11.GL_TRIANGLES);
-
-        private final String translation;
-        private final int mode;
-
-        DrawMode(String translation, int mode) {
-            this.translation = translation;
-            this.mode = mode;
-        }
-
-        public int getMode() {
-            return this.mode;
-        }
-
-        public String getTranslation() {
-            return this.translation;
-        }
     }
 }

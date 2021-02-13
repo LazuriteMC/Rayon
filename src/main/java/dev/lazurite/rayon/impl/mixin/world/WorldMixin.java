@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.mixin.world;
 
 import dev.lazurite.rayon.impl.Rayon;
-import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.interpolate;
+package dev.lazurite.rayon.impl.util.math.interpolate;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;

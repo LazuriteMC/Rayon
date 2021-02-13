@@ -13,7 +13,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [ "dev.lazurite.rayon.examplemod.ExampleMod" ],
-    "client": [ "dev.lazurite.rayon.examplemod.ExampleMod" ]
+    "client": [ "dev.lazurite.rayon.examplemod.client.ExampleModClient" ]
   },
 
   "mixins": [ "examplemod.mixins.json" ],

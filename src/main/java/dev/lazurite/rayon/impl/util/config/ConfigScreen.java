@@ -1,8 +1,7 @@
 package dev.lazurite.rayon.impl.util.config;
 
-import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
-import io.github.prospector.modmenu.api.ConfigScreenFactory;
-import io.github.prospector.modmenu.api.ModMenuApi;
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import net.fabricmc.api.EnvType;
@@ -10,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
 /**
@@ -45,70 +43,35 @@ public class ConfigScreen implements ModMenuApi {
     public static ConfigCategory getPhysicsSettings(ConfigBuilder builder) {
         ConfigCategory category = builder.getOrCreateCategory(new TranslatableText("config.rayon.title"));
 
-        /* Block Distance */
-        category.addEntry(builder.entryBuilder().startIntSlider(
-                new TranslatableText("config.rayon.option.block_distance"),
-                Config.getInstance().getLocal().getBlockDistance(), 1, 5)
-                .setDefaultValue(1)
-                .setTooltip(
-                        new TranslatableText("config.rayon.option.block_distance.tooltip"),
-                        new TranslatableText("config.rayon.option.performance.high"))
-                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setBlockDistance(newValue))
-                .build());
-
-        /* Debug Render Distance */
-        category.addEntry(builder.entryBuilder().startIntSlider(
-                new TranslatableText("config.rayon.option.debug_distance"),
-                Config.getInstance().getLocal().getDebugDistance(), 3, 16)
-                .setDefaultValue(10)
-                .setTooltip(
-                        new TranslatableText("config.rayon.option.debug_distance.tooltip"),
-                        new TranslatableText("config.rayon.option.performance.high"))
-                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setDebugDistance(newValue))
-                .build());
-
-        /* Debug Draw Mode */
-        category.addEntry(builder.entryBuilder().startEnumSelector(
-                new TranslatableText("config.rayon.option.debug_draw_mode"),
-                DebugManager.DrawMode.class,
-                Config.getInstance().getLocal().getDebugDrawMode())
-                .setDefaultValue(DebugManager.DrawMode.LINES)
-                .setTooltip(
-                        new TranslatableText("config.rayon.option.debug_draw_mode.tooltip"),
-                        new TranslatableText("config.rayon.option.performance.low"))
-                .setEnumNameProvider((value) -> new TranslatableText(((DebugManager.DrawMode) value).getTranslation()))
-                .setSaveConsumer(newValue -> Config.getInstance().getLocal().setDebugDrawMode(newValue))
-                .build());
-
         if (!Config.getInstance().isRemote()) {
             /* Air Density */
             category.addEntry(builder.entryBuilder().startFloatField(
-                    new TranslatableText("config.rayon.option.air_density"), Config.getInstance().getGlobal().getAirDensity())
+                    new TranslatableText("config.rayon.option.air_density"), Config.getInstance().getAirDensity())
                     .setDefaultValue(1.2f)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.air_density.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
-                    .setSaveConsumer(newValue -> Config.getInstance().getGlobal().setAirDensity(newValue))
+                    .setSaveConsumer(newValue -> Config.getInstance().setAirDensity(newValue))
                     .build());
 
             /* Gravity */
             category.addEntry(builder.entryBuilder().startFloatField(
-                    new TranslatableText("config.rayon.option.gravity"), Config.getInstance().getGlobal().getGravity())
+                    new TranslatableText("config.rayon.option.gravity"), Config.getInstance().getGravity())
                     .setDefaultValue(-9.81f)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.gravity.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
-                    .setSaveConsumer(newValue -> Config.getInstance().getGlobal().setGravity(newValue))
+                    .setSaveConsumer(newValue -> Config.getInstance().setGravity(newValue))
                     .build());
 
             /* Air Resistance */
             category.addEntry(builder.entryBuilder().startBooleanToggle(
-                    new TranslatableText("config.rayon.option.air_resistance_enabled"), Config.getInstance().getGlobal().isAirResistanceEnabled())
+                    new TranslatableText("config.rayon.option.air_resistance_enabled"), Config.getInstance().isAirResistanceEnabled())
                     .setDefaultValue(true)
                     .setTooltip(
                             new TranslatableText("config.rayon.option.air_resistance_enabled.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
-                    .setSaveConsumer(newValue -> Config.getInstance().getGlobal().setAirResistanceEnabled(newValue))
+                    .setSaveConsumer(newValue -> Config.getInstance().setAirResistanceEnabled(newValue))
                     .build());
         }
 

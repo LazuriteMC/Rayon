@@ -3,22 +3,7 @@
   "debug.rayon.layer.block": "Rigid Body Hitboxes: entities + blocks",
   "debug.rayon.off": "Rigid Body Hitboxes: hidden",
 
-  "debug.rayon.draw.lines": "Lines",
-  "debug.rayon.draw.triangles": "Triangles",
-
   "config.rayon.title": "Physics Simulation Settings",
-
-  "config.rayon.option.block_distance": "Block Distance",
-  "config.rayon.option.block_distance.tooltip": "The maximum distance (in blocks) from an entity at which blocks are loaded.",
-
-  "config.rayon.option.load_distance": "Load Distance",
-  "config.rayon.option.load_distance.tooltip": "The maximum distance (in chunks) at which rigid body entities are loaded into the physics world.",
-
-  "config.rayon.option.debug_distance": "Debug Render Distance",
-  "config.rayon.option.debug_distance.tooltip": "The maximum distance (in blocks) from the player that debug outlines will be rendered.",
-
-  "config.rayon.option.debug_draw_mode": "Debug Draw Mode",
-  "config.rayon.option.debug_draw_mode.tooltip": "The mode in which to draw debugging shapes to the screen",
 
   "config.rayon.option.air_density": "Air Density",
   "config.rayon.option.air_density.tooltip": "The air density used by the air resistance simulation.",

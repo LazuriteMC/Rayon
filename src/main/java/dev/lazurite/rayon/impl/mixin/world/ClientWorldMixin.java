@@ -1,7 +1,9 @@
 package dev.lazurite.rayon.impl.mixin.world;
 
 import dev.lazurite.rayon.impl.Rayon;
-import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @see MinecraftSpace
  */
 @Mixin(ClientWorld.class)
+@Environment(EnvType.CLIENT)
 public class ClientWorldMixin {
     @Inject(method = "disconnect", at = @At("HEAD"))
     public void disconnect(CallbackInfo info) {

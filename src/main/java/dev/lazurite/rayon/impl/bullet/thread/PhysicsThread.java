@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.impl.bullet.thread;
 
-import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
@@ -11,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 public class PhysicsThread extends Thread implements ComponentV3 {
-    private static final long STEP_SIZE = 15L;
+    private static final long STEP_SIZE = 20L;
     private static int serverThreads;
 
     private final Queue<Consumer<MinecraftSpace>> tasks = new ConcurrentLinkedQueue<>();
@@ -36,6 +35,7 @@ public class PhysicsThread extends Thread implements ComponentV3 {
     @Override
     public void run() {
         this.space = new MinecraftSpace(this, world);
+        this.space.setAccuracy(STEP_SIZE * 0.001f);
 
         while (!space.isDestroyed()) {
             if (Util.getMeasuringTimeMs() > nextStep) {

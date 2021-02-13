@@ -2,7 +2,10 @@ package dev.lazurite.rayon.impl.mixin.debug;
 
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.element.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
+import dev.lazurite.rayon.impl.util.debug.DebugManager;
+import dev.lazurite.rayon.impl.util.debug.DebugLayer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,13 +21,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * @see DebugRendererMixin
  */
 @Mixin(Keyboard.class)
+@Environment(EnvType.CLIENT)
 public abstract class KeyboardMixin {
     @Shadow protected abstract void debugWarn(String string, Object... objects);
 
     @Inject(method = "processF3", at = @At("HEAD"), cancellable = true)
     private void processF3(int key, CallbackInfoReturnable<Boolean> info) {
         if (key == 82) { // 'r' key
-            DebugManager.DebugLayer layer = DebugManager.getInstance().nextLayer();
+            DebugLayer layer = DebugManager.getInstance().nextLayer();
 
             if (DebugManager.getInstance().isEnabled()) {
                 debugWarn(layer.getTranslation());

@@ -1,10 +1,12 @@
-package dev.lazurite.rayon.impl.element.hooks.entity.client;
+package dev.lazurite.rayon.impl.element.type.entity.hooks.client;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.element.ElementRigidBody;
-import dev.lazurite.rayon.impl.element.interpolate.Frame;
+import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Entity.class)
+@Environment(EnvType.CLIENT)
 public class EntityMixin implements Frame.Storage {
     @Unique private Frame frame;
 

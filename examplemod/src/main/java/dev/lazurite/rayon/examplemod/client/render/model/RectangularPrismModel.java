@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.examplemod.render.model;
+package dev.lazurite.rayon.examplemod.client.render.model;
 
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import net.fabricmc.api.EnvType;

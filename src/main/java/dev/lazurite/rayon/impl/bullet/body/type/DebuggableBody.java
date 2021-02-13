@@ -2,14 +2,15 @@ package dev.lazurite.rayon.impl.bullet.body.type;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
+import dev.lazurite.rayon.impl.util.debug.DebugManager;
+import dev.lazurite.rayon.impl.util.debug.DebugLayer;
 
 /**
  * Any {@link PhysicsRigidBody} with this assigned will show up
  * when rending rigid bodies using the {@link DebugManager}.
  *
  * @see DebugManager
- * @see DebugManager.DebugLayer
+ * @see DebugLayer
  */
 public interface DebuggableBody {
     default Vector3f getOutlineColor() {
@@ -20,7 +21,7 @@ public interface DebuggableBody {
         return 0.5f;
     }
 
-    default DebugManager.DebugLayer getDebugLayer() {
-        return DebugManager.DebugLayer.BLOCK;
+    default DebugLayer getDebugLayer() {
+        return DebugLayer.BLOCK;
     }
 }

@@ -1,13 +1,13 @@
 package dev.lazurite.rayon.api.event;
 
-import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 public final class PhysicsSpaceEvents {
-    public static final Event<Step> STEP = EventFactory.createArrayBacked(Step.class, (callbacks) -> (world) -> {
+    public static final Event<Step> STEP = EventFactory.createArrayBacked(Step.class, (callbacks) -> (space) -> {
         for (Step event : callbacks) {
-            event.onStep(world);
+            event.onStep(space);
         }
     });
 
