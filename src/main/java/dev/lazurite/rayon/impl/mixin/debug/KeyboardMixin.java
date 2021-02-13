@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.mixin.debug;
 
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
 import net.minecraft.client.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;

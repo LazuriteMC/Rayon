@@ -1,7 +1,7 @@
-package dev.lazurite.rayon.impl.bullet.body;
+package dev.lazurite.rayon.impl.element;
 
 import com.jme3.math.Quaternion;
-import dev.lazurite.rayon.api.PhysicsElement;
+import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -12,11 +12,8 @@ import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.manager.DebugManager;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,28 +44,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements CustomDragBody
 
     public ElementRigidBody(PhysicsElement entity) {
         this(entity, new BoundingBoxShape(entity.asEntity().getBoundingBox()));
-    }
-
-    public void serialize(PacketByteBuf buf) {
-        buf.writeFloat(getMass());
-        buf.writeFloat(getDragCoefficient());
-        buf.writeFloat(getFriction());
-        buf.writeFloat(getRestitution());
-        QuaternionHelper.toBuffer(buf, getPhysicsRotation(new Quaternion()));
-        VectorHelper.toBuffer(buf, getPhysicsLocation(new Vector3f()));
-        VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
-        VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
-    }
-
-    public void deserialize(PacketByteBuf buf) {
-        setMass(buf.readFloat());
-        setDragCoefficient(buf.readFloat());
-        setFriction(buf.readFloat());
-        setRestitution(buf.readFloat());
-        setPhysicsRotation(QuaternionHelper.fromBuffer(buf));
-        setPhysicsLocation(VectorHelper.fromBuffer(buf));
-        setLinearVelocity(VectorHelper.fromBuffer(buf));
-        setAngularVelocity(VectorHelper.fromBuffer(buf));
     }
 
     public void prioritize(@Nullable PlayerEntity player) {
@@ -129,30 +104,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements CustomDragBody
     @Override
     public DebugManager.DebugLayer getDebugLayer() {
         return DebugManager.DebugLayer.ENTITY;
-    }
-
-    /**
-     * Performs automatic lerping of the rotation given tick delta.
-     * @param quaternion the quaternion to store the result in
-     * @param delta minecraft tick delta
-     * @return the lerped quaternion (same as param 1)
-     */
-    @Environment(EnvType.CLIENT)
-    public Quaternion getPhysicsRotation(Quaternion quaternion, float delta) {
-        quaternion.set(QuaternionHelper.slerp(prevRotation, tickRotation, delta));
-        return quaternion;
-    }
-
-    /**
-     * Performs automatic lerping of the position given tick delta.
-     * @param vector3f the vector to store the result in
-     * @param delta minecraft tick delta
-     * @return the lerped vector (same as param 1)
-     */
-    @Environment(EnvType.CLIENT)
-    public Vector3f getPhysicsLocation(Vector3f vector3f, float delta) {
-        vector3f.set(VectorHelper.lerp(prevLocation, tickLocation, delta));
-        return vector3f;
     }
 
     public enum SyncMode {

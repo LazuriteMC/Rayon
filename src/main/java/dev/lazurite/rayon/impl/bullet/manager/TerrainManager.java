@@ -7,7 +7,7 @@ import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
@@ -70,7 +70,6 @@ public class TerrainManager {
         blockList.forEach((blockPos, blockState) -> {
             float friction = 1.5f;
 
-            /* Will be replaced with json code in a future version */
             if (blockState.getBlock() instanceof IceBlock) {
                 friction = 0.05F;
             } else if (!(blockState.getBlock() instanceof HoneyBlock) && !(blockState.getBlock() instanceof SlimeBlock) && !(blockState.getBlock() instanceof SoulSandBlock)) {

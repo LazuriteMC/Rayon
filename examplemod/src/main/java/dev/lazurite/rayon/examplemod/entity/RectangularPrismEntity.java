@@ -1,9 +1,9 @@
 package dev.lazurite.rayon.examplemod.entity;
 
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.api.PhysicsElement;
-import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.api.element.PhysicsElement;
+import dev.lazurite.rayon.impl.element.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;

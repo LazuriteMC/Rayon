@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.util;
 
 import com.jme3.system.NativeLibraryLoader;
-import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.impl.Rayon;
 
 import java.io.BufferedInputStream;
 import java.io.File;

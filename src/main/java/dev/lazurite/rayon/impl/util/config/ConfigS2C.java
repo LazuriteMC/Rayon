@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.impl.util.config;
 
-import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.impl.util.config.Config;
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.util.config.settings.GlobalSettings;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;

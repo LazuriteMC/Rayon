@@ -4,16 +4,13 @@
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "hooks.entity.EntityMixin",
     "config.PlayerManagerMixin",
-    "hooks.world.ServerWorldMixin",
-    "hooks.world.WorldMixin"
+    "world.WorldMixin"
   ],
   "client": [
-    "hooks.entity.ClientPlayNetworkHandlerMixin",
-    "hooks.world.ClientWorldMixin",
     "debug.DebugRendererMixin",
-    "debug.KeyboardMixin"
+    "debug.KeyboardMixin",
+    "world.ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -5,9 +5,9 @@ import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.lazurite.rayon.Rayon;
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import dev.lazurite.rayon.impl.mixin.debug.KeyboardMixin;
 import dev.lazurite.rayon.impl.mixin.debug.DebugRendererMixin;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
@@ -89,36 +89,39 @@ public final class DebugManager {
                 if (body instanceof DebuggableBody) {
                     if (((DebuggableBody) body).getDebugLayer().ordinal() <= debugLayer.ordinal()) {
                         if (VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f())).distanceTo(camera.getPos()) < Config.getInstance().getLocal().getDebugDistance()) {
-                            RenderSystem.pushMatrix();
-                            RenderSystem.disableTexture();
-                            RenderSystem.depthMask(false);
-                            RenderSystem.lineWidth(1.0F);
-
-                            FloatBuffer buffer = (FloatBuffer) DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0).rewind();
-                            BufferBuilder builder = Tessellator.getInstance().getBuffer();
-                            float alpha = ((DebuggableBody) body).getOutlineAlpha();
-                            Vector3f color = ((DebuggableBody) body).getOutlineColor();
-
-                            Vector3f position = body.getPhysicsLocation(new Vector3f())
-                                    .subtract(VectorHelper.vec3dToVector3f(camera.getPos()));
-
-                            builder.begin(Config.getInstance().getLocal().getDebugDrawMode().getMode(), VertexFormats.POSITION_COLOR);
-                            RenderSystem.translatef(position.x, position.y, position.z);
-                            RenderSystem.multMatrix(new Matrix4f(QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new Quaternion()))));
-
-                            while (buffer.hasRemaining()) {
-                                builder.vertex(buffer.get(), buffer.get(), buffer.get()).color(color.x, color.y, color.z, alpha).next();
-                            }
-
-                            Tessellator.getInstance().draw();
-                            RenderSystem.depthMask(true);
-                            RenderSystem.enableTexture();
-                            RenderSystem.popMatrix();
+                            renderBody(body, VectorHelper.vec3dToVector3f(camera.getPos()));
                         }
                     }
                 }
             }
         }
+    }
+
+    private void renderBody(PhysicsRigidBody body, Vector3f cameraPos) {
+        RenderSystem.pushMatrix();
+        RenderSystem.disableTexture();
+        RenderSystem.depthMask(false);
+        RenderSystem.lineWidth(1.0F);
+
+        FloatBuffer buffer = (FloatBuffer) DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0).rewind();
+        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        float alpha = ((DebuggableBody) body).getOutlineAlpha();
+        Vector3f color = ((DebuggableBody) body).getOutlineColor();
+
+        Vector3f position = body.getPhysicsLocation(new Vector3f()).subtract(cameraPos);
+
+        builder.begin(Config.getInstance().getLocal().getDebugDrawMode().getMode(), VertexFormats.POSITION_COLOR);
+        RenderSystem.translatef(position.x, position.y, position.z);
+        RenderSystem.multMatrix(new Matrix4f(QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new Quaternion()))));
+
+        while (buffer.hasRemaining()) {
+            builder.vertex(buffer.get(), buffer.get(), buffer.get()).color(color.x, color.y, color.z, alpha).next();
+        }
+
+        Tessellator.getInstance().draw();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableTexture();
+        RenderSystem.popMatrix();
     }
 
     public enum DebugLayer {

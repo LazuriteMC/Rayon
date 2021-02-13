@@ -1,7 +1,7 @@
-package dev.lazurite.rayon.impl.mixin.hooks.entity;
+package dev.lazurite.rayon.impl.element.hooks.entity.client;
 
-import dev.lazurite.rayon.api.PhysicsElement;
-import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.api.element.PhysicsElement;
+import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;

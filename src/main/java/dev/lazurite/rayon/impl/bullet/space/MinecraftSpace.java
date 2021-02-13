@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.bullet.world;
+package dev.lazurite.rayon.impl.bullet.space;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
@@ -6,8 +6,9 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.Rayon;
-import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.impl.Rayon;
+import dev.lazurite.rayon.impl.element.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.manager.FluidManager;
 import dev.lazurite.rayon.impl.bullet.manager.TerrainManager;
@@ -65,6 +66,9 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public void step() {
         if (!isPaused() && (!isEmpty() || isInPresim())) {
             float delta = this.clock.get();
+
+            /* World Step Event */
+            PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
             /* Steppp */
             getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> body.getElement().step(this));

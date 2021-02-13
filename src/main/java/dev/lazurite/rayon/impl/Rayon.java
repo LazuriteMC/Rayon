@@ -1,8 +1,7 @@
-package dev.lazurite.rayon;
+package dev.lazurite.rayon.impl;
 
-import dev.lazurite.rayon.impl.bullet.body.packet.SyncRigidBodyS2C;
+import dev.lazurite.rayon.impl.element.network.EntityElementS2C;
 import dev.lazurite.rayon.impl.util.NativeLoader;
-import dev.lazurite.rayon.impl.bullet.body.packet.SyncRigidBodyC2S;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
@@ -13,7 +12,6 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,13 +26,13 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 	public void onInitialize() {
 		NativeLoader.load();
 		Config.getInstance().load();
-		ServerPlayNetworking.registerGlobalReceiver(SyncRigidBodyC2S.PACKET_ID, SyncRigidBodyC2S::accept);
+//		ServerPlayNetworking.registerGlobalReceiver(SyncRigidBodyC2S.PACKET_ID, SyncRigidBodyC2S::accept);
 	}
 
 	@Override
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(ConfigS2C.PACKET_ID, ConfigS2C::accept);
-		ClientPlayNetworking.registerGlobalReceiver(SyncRigidBodyS2C.PACKET_ID, SyncRigidBodyS2C::accept);
+		ClientPlayNetworking.registerGlobalReceiver(EntityElementS2C.PACKET_ID, EntityElementS2C::accept);
 	}
 
 	/**
@@ -44,6 +42,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 	 */
 	@Override
 	public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-		registry.register(THREAD, world -> new PhysicsThread(world, Thread.currentThread()));
+		registry.register(THREAD, PhysicsThread::new);
 	}
 }
