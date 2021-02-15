@@ -8,7 +8,7 @@ import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.mixin.debug.KeyboardMixin;
 import dev.lazurite.rayon.impl.mixin.debug.DebugRendererMixin;

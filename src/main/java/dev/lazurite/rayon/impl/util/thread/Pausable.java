@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.impl.util.thread;
 
-import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;

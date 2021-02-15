@@ -56,8 +56,8 @@ public class ExampleMod implements ModInitializer {
         );
 
         /* An example of a block collision event */
-        ElementCollisionEvents.BLOCK_COLLISION.register((element, world, blockPos, blockState) -> {
-            if (!world.isClient() && element instanceof RectangularPrismEntity) {
+        ElementCollisionEvents.BLOCK_COLLISION.register((element, blockPos, blockState) -> {
+            if (element instanceof RectangularPrismEntity) {
                 if (blockState.getBlock().equals(Blocks.BRICKS)) {
                     LOGGER.info("Touching bricks!!");
                     element.asEntity().kill();

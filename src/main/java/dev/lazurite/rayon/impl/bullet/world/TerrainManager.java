@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.bullet.manager;
+package dev.lazurite.rayon.impl.bullet.world;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -7,7 +7,6 @@ import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
-import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;

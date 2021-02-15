@@ -2,7 +2,7 @@ package dev.lazurite.rayon.impl.element.entity.hooks.client;
 
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;

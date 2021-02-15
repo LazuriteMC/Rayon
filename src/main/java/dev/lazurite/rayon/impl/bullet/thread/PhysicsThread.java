@@ -2,6 +2,7 @@ package dev.lazurite.rayon.impl.bullet.thread;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;

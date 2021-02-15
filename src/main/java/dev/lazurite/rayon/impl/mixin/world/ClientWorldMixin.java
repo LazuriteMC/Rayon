@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.mixin.world;
 
 import dev.lazurite.rayon.impl.Rayon;
-import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;

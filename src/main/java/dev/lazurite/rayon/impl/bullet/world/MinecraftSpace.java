@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.bullet.thread;
+package dev.lazurite.rayon.impl.bullet.world;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
@@ -12,9 +12,9 @@ import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.body.type.AirDragBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
-import dev.lazurite.rayon.impl.bullet.manager.FluidManager;
-import dev.lazurite.rayon.impl.bullet.manager.TerrainManager;
+import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.thread.Pausable;
@@ -42,7 +42,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
-    private final FluidManager fluidManager;
     private final ThreadExecutor<?> server;
     private final PhysicsThread thread;
     private final World world;
@@ -56,7 +55,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         this.world = world;
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
-        this.fluidManager = new FluidManager();
         this.server = world.getServer();
         this.setGravity(new Vector3f(0, Config.getInstance().getGravity(), 0));
         this.addCollisionListener(this);
@@ -71,7 +69,7 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      * <ul>
      *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
-     *     <li>Applies air resistance to all {@link PhysicsRigidBody}s using {@link FluidManager}.</li>
+     *     <li>Applies air drag force to all {@link AirDragBody}s.</li>
      *     <li>Loads blocks into the simulation around {@link TerrainLoadingBody}s using {@link TerrainManager}.</li>
      *     <li>Sets gravity to the value stored in {@link Config}.</li>
      *     <li>Triggers all collision events (queues up tasks in server thread).</li>
@@ -81,7 +79,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      * Additionally, none of the above steps execute when either the world is empty
      * (no {@link PhysicsRigidBody}s) or when the game is paused.
      *
-     * @see FluidManager
      * @see TerrainManager
      * @see PhysicsSpaceEvents
      */
@@ -96,7 +93,7 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
             getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> body.getElement().step(this));
 
             /* Air Resistance */
-            getFluidManager().doAirResistance(getRigidBodyList());
+            getRigidBodiesByClass(AirDragBody.class).forEach(AirDragBody::applyAirDrag);
 
             /* Terrain Loading */
             getTerrainManager().load(getRigidBodiesByClass(TerrainLoadingBody.class));
@@ -120,10 +117,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
 
     public TerrainManager getTerrainManager() {
         return this.terrainManager;
-    }
-
-    public FluidManager getFluidManager() {
-        return this.fluidManager;
     }
 
     public boolean isInPresim() {
