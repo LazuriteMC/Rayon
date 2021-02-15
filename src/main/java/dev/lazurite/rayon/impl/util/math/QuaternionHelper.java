@@ -6,7 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketByteBuf;
 
 /**
- * A helper class for {@link Quaternion} which contains useful
+ * A helper class for quaternion objects which contains useful
  * operations that don't come with bullet (or minecraft).
  */
 public class QuaternionHelper {

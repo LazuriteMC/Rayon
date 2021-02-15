@@ -1,13 +1,17 @@
-package dev.lazurite.rayon.impl.element.type.entity.hooks.common;
+package dev.lazurite.rayon.impl.element.entity.hooks.common;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.element.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
-import dev.lazurite.rayon.impl.element.type.entity.net.EntityElementS2C;
+import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementC2S;
+import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
+import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
@@ -29,14 +33,37 @@ public abstract class EntityMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {
         if (this instanceof PhysicsElement) {
-            if (!world.isClient()) {
-                EntityElementS2C.send((PhysicsElement) this);
+            PhysicsElement element = (PhysicsElement) this;
+            ElementRigidBody body = element.getRigidBody();
+            Frame prevFrame = body.getFrame();
+
+            /* Update frame information for lerping */
+            if (prevFrame == null) {
+                body.setFrame(new Frame(
+                        body.getPhysicsLocation(new Vector3f()),
+                        body.getPhysicsRotation(new Quaternion())));
+            } else {
+                body.setFrame(new Frame(
+                        prevFrame,
+                        body.getPhysicsLocation(new Vector3f()),
+                        body.getPhysicsRotation(new Quaternion())));
             }
 
-            ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
-            Vector3f pos = body.getPhysicsLocation(new Vector3f());
+            // TODO optimize this better
+            if (world.isClient()) {
+                if (MinecraftClient.getInstance().player != null) {
+                    if (MinecraftClient.getInstance().player.equals(body.getPriorityPlayer())) {
+                        EntityElementMovementC2S.send((PhysicsElement) this);
+                    }
+                }
+            } else {
+                EntityElementMovementS2C.send(element);
+                ElementPropertiesS2C.send(element);
+            }
 
+            Vector3f pos = body.getPhysicsLocation(new Vector3f());
             updatePosition(pos.x, pos.y, pos.z);
+
             yaw = QuaternionHelper.getYaw(body.getPhysicsRotation(new Quaternion()));
             pitch = QuaternionHelper.getPitch(body.getPhysicsRotation(new Quaternion()));
         }

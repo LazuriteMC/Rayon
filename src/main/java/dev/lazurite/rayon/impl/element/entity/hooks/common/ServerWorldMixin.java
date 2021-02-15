@@ -1,9 +1,9 @@
-package dev.lazurite.rayon.impl.element.type.entity.hooks.common;
+package dev.lazurite.rayon.impl.element.entity.hooks.common;
 
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
-import dev.lazurite.rayon.impl.element.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;

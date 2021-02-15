@@ -31,6 +31,7 @@ allprojects {
 	repositories {
 		maven { url = "https://maven.terraformersmc.com/releases/" }
 		maven { url = "https://dl.bintray.com/ladysnake/libs" }
+		maven { url = "https://maven.shedaniel.me/" }
 		maven { url = "https://jitpack.io" }
 	}
 
@@ -63,8 +64,8 @@ allprojects {
 		include "me.zeroeightsix:fiber:${project.fiber_version}"
 
 		// Cloth
-		modApi ("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
-		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
+		modApi ("me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric") { exclude(group: "net.fabricmc.fabric-api") }
+		include "me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric"
 
 		// LibBulletJME
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"

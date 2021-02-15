@@ -43,32 +43,34 @@ public class NativeLoader {
             os = OperatingSystem.WINDOWS;
         }
 
-        getFromWeb(os);
+        File file = new File("natives/" + os.file);
+        if (!file.exists()) {
+            download(os);
+        }
+
         NativeLibraryLoader.loadLibbulletjme(true, new File("natives/"), "Release", "Sp");
     }
 
-    public static void getFromWeb(OperatingSystem os) {
+    private static void download(OperatingSystem os) {
+        Rayon.LOGGER.info("Downloading bullet natives for " + System.getProperty("os.name"));
+
         try {
-            File file = new File("natives/" + os.file);
+            BufferedInputStream in = new BufferedInputStream(new URL(os.url).openStream());
+            File nativeDirectory = new File("natives/");
 
-            if (!file.exists()) {
-                BufferedInputStream in = new BufferedInputStream(new URL(os.url).openStream());
-                File nativeDirectory = new File("natives/");
-
-                if (!nativeDirectory.exists()) {
-                    nativeDirectory.mkdir();
-                }
-
-                FileOutputStream out = new FileOutputStream("natives/" + os.file);
-                byte[] dataBuffer = new byte[1024];
-                int bytesRead;
-
-                while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                    out.write(dataBuffer, 0, bytesRead);
-                }
-
-                out.close();
+            if (!nativeDirectory.exists()) {
+                nativeDirectory.mkdir();
             }
+
+            FileOutputStream out = new FileOutputStream("natives/" + os.file);
+            byte[] dataBuffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                out.write(dataBuffer, 0, bytesRead);
+            }
+
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

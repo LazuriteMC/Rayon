@@ -11,7 +11,7 @@ import dev.lazurite.rayon.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.element.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.manager.FluidManager;
 import dev.lazurite.rayon.impl.bullet.manager.TerrainManager;
@@ -25,6 +25,19 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+/**
+ * This is the physics simulation environment for all {@link BlockRigidBody}s and {@link ElementRigidBody}s. It runs
+ * on a separate thread from the rest of the game using {@link PhysicsThread}. Users shouldn't have to interact with
+ * this object too much.<br>
+ * To gain access to the world's {@link MinecraftSpace}, you can either call {@link PhysicsThread#execute}, register
+ * a step event in {@link PhysicsSpaceEvents}, or call {@link PhysicsThread#getSpace()}. As a rule of thumb, if you
+ * need to modify information in the physics world (e.g. add a rigid body) then you should always perform operations
+ * on the same thread. {@link PhysicsSpaceEvents} and {@link PhysicsThread#execute} both get you onto the physics thread
+ * while {@link PhysicsThread#getSpace()} does not. If you only need to read information from the physics world,
+ * {@link PhysicsThread#getSpace()} is ok to use but should be considered a last resort.
+ * @see PhysicsThread
+ * @see PhysicsSpaceEvents
+ */
 public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 30;
 
@@ -121,6 +134,10 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         return this.destroyed;
     }
 
+    /**
+     * Ends the {@link PhysicsThread} loop and joins
+     * it back into the main thread.
+     */
     public void destroy() {
         this.destroyed = true;
 

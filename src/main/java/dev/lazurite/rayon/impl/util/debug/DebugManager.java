@@ -1,13 +1,15 @@
 package dev.lazurite.rayon.impl.util.debug;
 
-import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.google.common.collect.Lists;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.element.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.mixin.debug.KeyboardMixin;
 import dev.lazurite.rayon.impl.mixin.debug.DebugRendererMixin;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
@@ -26,6 +28,7 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 /**
  * This class handles basically everything related to debug rendering on
@@ -84,7 +87,11 @@ public final class DebugManager {
         World world = MinecraftClient.getInstance().world;
 
         if (isEnabled()) {
-            for (PhysicsRigidBody body : Rayon.THREAD.get(world).getSpace().getRigidBodyList()) {
+            MinecraftSpace space = Rayon.THREAD.get(world).getSpace();
+            List<PhysicsCollisionObject> collisionObjects = Lists.newArrayList();
+            collisionObjects.addAll(space.getRigidBodyList());
+            collisionObjects.addAll(space.getGhostObjectList());
+            for (PhysicsCollisionObject body : collisionObjects) {
                 if (body instanceof DebuggableBody) {
                     if (((DebuggableBody) body).getDebugLayer().ordinal() <= debugLayer.ordinal()) {
                         if (VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f()))
@@ -97,7 +104,7 @@ public final class DebugManager {
         }
     }
 
-    private void renderBody(PhysicsRigidBody body, Vector3f cameraPos) {
+    private void renderBody(PhysicsCollisionObject body, Vector3f cameraPos) {
         RenderSystem.pushMatrix();
         RenderSystem.disableTexture();
         RenderSystem.depthMask(false);

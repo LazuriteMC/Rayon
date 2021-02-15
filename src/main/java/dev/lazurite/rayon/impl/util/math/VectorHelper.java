@@ -8,7 +8,7 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * A helper class which contains useful operations and
- * functions specifically for {@link Vector3f} objects.
+ * functions specifically for vector objects.
  */
 public class VectorHelper {
     /**
@@ -21,7 +21,7 @@ public class VectorHelper {
     }
 
     /**
-     * Convert a vecmath {@link Vector3f} to a minecraft {@link Vec3d}.
+     * Convert a bullet physics {@link Vector3f} to a minecraft {@link Vec3d}.
      * @param vector3f the {@link Vector3f} to convert
      * @return the new {@link Vec3d}
      */
@@ -29,14 +29,31 @@ public class VectorHelper {
         return new Vec3d(vector3f.x, vector3f.y, vector3f.z);
     }
 
+    /**
+     * Convert a bullet physics {@link Vector3f} to a minecraft {@link net.minecraft.client.util.math.Vector3f}.
+     * @param vector3f the bullet physics {@link Vector3f}
+     * @return the new minecraft {@link net.minecraft.client.util.math.Vector3f}
+     */
     public static net.minecraft.client.util.math.Vector3f bulletToMinecraft(Vector3f vector3f) {
         return new net.minecraft.client.util.math.Vector3f(vector3f.x, vector3f.y, vector3f.z);
     }
 
+    /**
+     * Convert a minecraft {@link net.minecraft.client.util.math.Vector3f} to a bullet physics {@link Vector3f}.
+     * @param vector3f the minecraft {@link net.minecraft.client.util.math.Vector3f}
+     * @return the new bullet {@link Vector3f}
+     */
     public static Vector3f minecraftToBullet(net.minecraft.client.util.math.Vector3f vector3f) {
         return new Vector3f(vector3f.getX(), vector3f.getY(), vector3f.getZ());
     }
 
+    /**
+     * Lerps two bullet {@link Vector3f} objects using minecraft tick delta.
+     * @param vec1 the first vector
+     * @param vec2 the second vector
+     * @param delta minecraft tick delta (time between ticks)
+     * @return the lerped {@link Vector3f}
+     */
     public static Vector3f lerp(Vector3f vec1, Vector3f vec2, float delta) {
         Vector3f out = new Vector3f();
         out.x = MathHelper.lerp(delta, vec1.x, vec2.x);

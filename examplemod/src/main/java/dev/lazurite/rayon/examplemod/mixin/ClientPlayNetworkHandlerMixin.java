@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.examplemod.mixin;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
-import dev.lazurite.rayon.examplemod.entity.BigRectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
@@ -30,8 +29,6 @@ public class ClientPlayNetworkHandlerMixin {
 
         if (type == ExampleMod.RECTANGULAR_PRISM_ENTITY) {
             entity = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
-        } else if (type == ExampleMod.BIG_RECTANGULAR_PRISM_ENTITY) {
-            entity = new BigRectangularPrismEntity(ExampleMod.BIG_RECTANGULAR_PRISM_ENTITY, world);
         }
 
         if (entity != null) {

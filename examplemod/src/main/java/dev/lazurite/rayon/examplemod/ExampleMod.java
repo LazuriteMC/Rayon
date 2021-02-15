@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.examplemod;
 
 import dev.lazurite.rayon.api.event.ElementCollisionEvents;
-import dev.lazurite.rayon.examplemod.entity.BigRectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.entity.LivingCubeEntity;
 import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
 import dev.lazurite.rayon.examplemod.item.WandItem;
@@ -25,7 +24,6 @@ public class ExampleMod implements ModInitializer {
 
     public static WandItem WAND_ITEM;
     public static EntityType<RectangularPrismEntity> RECTANGULAR_PRISM_ENTITY;
-    public static EntityType<BigRectangularPrismEntity> BIG_RECTANGULAR_PRISM_ENTITY;
     public static EntityType<LivingCubeEntity> LIVING_CUBE_ENTITY;
 
     @Override
@@ -46,27 +44,14 @@ public class ExampleMod implements ModInitializer {
                         .build()
         );
 
-        BIG_RECTANGULAR_PRISM_ENTITY = Registry.register(
-                Registry.ENTITY_TYPE,
-                new Identifier(MODID, "big_rectangular_prism_entity"),
-                FabricEntityTypeBuilder.create(SpawnGroup.MISC, BigRectangularPrismEntity::new)
-                        .dimensions(EntityDimensions.fixed(1.0f, 2.0f)) // (16/16 x 32/16)
-                        .trackedUpdateRate(3)
-                        .trackRangeBlocks(80)
-                        .forceTrackedVelocityUpdates(true)
-                        .build()
-        );
-
         LIVING_CUBE_ENTITY = Registry.register(
                 Registry.ENTITY_TYPE,
                 new Identifier(MODID, "living_cube_entity"),
                 FabricEntityTypeBuilder.createLiving()
                         .entityFactory(LivingCubeEntity::new)
+                        .spawnGroup(SpawnGroup.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
                         .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
-                        .trackedUpdateRate(3)
-                        .trackRangeBlocks(80)
-                        .forceTrackedVelocityUpdates(true)
                         .build()
         );
 

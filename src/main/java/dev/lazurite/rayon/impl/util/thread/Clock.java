@@ -1,5 +1,11 @@
 package dev.lazurite.rayon.impl.util.thread;
 
+import dev.lazurite.rayon.impl.bullet.thread.MinecraftSpace;
+
+/**
+ * A simple clock for keeping track of delta time in milliseconds and microseconds.
+ * @see MinecraftSpace
+ */
 public class Clock {
     private long startTime;
 
@@ -7,6 +13,9 @@ public class Clock {
         this.reset();
     }
 
+    /**
+     * @return seconds since last called
+     */
     public float get() {
         float out = getTimeMicroseconds() / 1000000F;
         this.reset();
