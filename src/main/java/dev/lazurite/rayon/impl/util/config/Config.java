@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- * The class containing two POJOs that hosts Rayon's Fiber config.
+ * The class that hosts Rayon's Fiber config.
  * @see ConfigScreen
  */
 @Settings(onlyAnnotated = true)

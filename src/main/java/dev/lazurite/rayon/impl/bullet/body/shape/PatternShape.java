@@ -17,7 +17,6 @@ import java.util.List;
  * build a shape out of quads that represents exactly what you see on-screen.
  * In doing so, it relies on clients being able to provide that information
  * at runtime.
- *
  * @see Pattern
  * @see CompoundCollisionShape
  */
@@ -32,24 +31,9 @@ public class PatternShape extends CompoundCollisionShape {
             quad.getPoints().forEach(vector -> points.add(VectorHelper.vec3dToVector3f(vector)));
             addChildShape(new Convex2dShape(new HullCollisionShape(points)), new Transform());
         }
-
-//        if (translate) {
-//            BoundingBox box = boundingBox(new Vector3f(), new Quaternion(), new BoundingBox());
-//            this.translate(new Vector3f(-box.getXExtent() / 2.0f, -box.getYExtent() / 2.0f, -box.getZExtent() / 2.0f));
-//        }
     }
 
     public Pattern getPattern() {
         return this.pattern;
     }
-
-//    public static EntityShapeFactory getFactory() {
-//        return (entity) -> {
-//            if (entity.getEntityWorld().isClient()) {
-//                return new PatternShape(Disassembler.getEntity(entity, entity.getEntityWorld()));
-//            } else {
-//                return new BoundingBoxShape(entity.getBoundingBox());
-//            }
-//        };
-//    }
 }

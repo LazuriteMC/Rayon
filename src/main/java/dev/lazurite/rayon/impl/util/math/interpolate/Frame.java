@@ -3,7 +3,7 @@ package dev.lazurite.rayon.impl.util.math.interpolate;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.element.type.entity.hooks.client.EntityMixin;
+import dev.lazurite.rayon.impl.element.entity.hooks.common.EntityMixin;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;

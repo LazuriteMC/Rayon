@@ -11,6 +11,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * The main injection point for {@link DebugManager} to render to the screen.
+ * @see DebugManager#render()
+ */
 @Mixin(DebugRenderer.class)
 @Environment(EnvType.CLIENT)
 public class DebugRendererMixin {

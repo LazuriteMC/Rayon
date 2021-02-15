@@ -186,13 +186,13 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
                 BlockPos blockPos = ((BlockRigidBody) event.getObjectA()).getBlockPos();
                 BlockState blockState = ((BlockRigidBody) event.getObjectA()).getBlockState();
                 PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, world, blockPos, blockState);
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState);
 
             } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof BlockRigidBody) {
                 BlockPos blockPos = ((BlockRigidBody) event.getObjectB()).getBlockPos();
                 BlockState blockState = ((BlockRigidBody) event.getObjectB()).getBlockState();
                 PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, world, blockPos, blockState);
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState);
             }
         });
     }

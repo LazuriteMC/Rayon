@@ -8,7 +8,6 @@ import net.minecraft.util.math.Box;
  * This class is basically just a wrapper for {@link BoxCollisionShape}. It's
  * meant to provide an easy way to create a {@link BoxCollisionShape} using
  * a bounding {@link Box} object.
- *
  * @see BoxCollisionShape
  */
 public class BoundingBoxShape extends BoxCollisionShape {
