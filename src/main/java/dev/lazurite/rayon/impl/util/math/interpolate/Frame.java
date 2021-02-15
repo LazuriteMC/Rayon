@@ -6,8 +6,6 @@ import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.element.entity.hooks.common.EntityMixin;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.
@@ -15,7 +13,6 @@ import net.fabricmc.api.Environment;
  * each tick.
  * @see EntityMixin
  */
-@Environment(EnvType.CLIENT)
 public class Frame {
     private final Vector3f prevLocation;
     private final Vector3f tickLocation;

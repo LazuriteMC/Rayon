@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * A class for loading native bullet bindings. It handles downloading the necessary libraries from
- * online and storing them in the natives folder in the player's minecraft directory.
+ * A class for loading native bullet bindings. It handles downloading the necessary lbraries from
+ * online and storing them in the natives folder in the player's minecraft directory.i
  * @see Rayon#onInitialize()
  */
 public class NativeLoader {
-    public static final String VERSION = "10.0.0";
+    public static final String VERSION = "10.1.0";
 
     public enum OperatingSystem {
         WINDOWS(String.format("https://github.com/stephengold/Libbulletjme/releases/download/%s/Windows64ReleaseSp_bulletjme.dll", VERSION), "Windows64ReleaseSp_bulletjme.dll"),
