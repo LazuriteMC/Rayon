@@ -6,12 +6,10 @@ import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
-import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementC2S;
 import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
@@ -50,13 +48,7 @@ public abstract class EntityMixin {
             }
 
             // TODO optimize this better
-            if (world.isClient()) {
-                if (MinecraftClient.getInstance().player != null) {
-                    if (MinecraftClient.getInstance().player.equals(body.getPriorityPlayer())) {
-                        EntityElementMovementC2S.send((PhysicsElement) this);
-                    }
-                }
-            } else {
+            if (!world.isClient()) {
                 EntityElementMovementS2C.send(element);
                 ElementPropertiesS2C.send(element);
             }

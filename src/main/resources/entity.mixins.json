@@ -9,7 +9,8 @@
   ],
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
-    "client.ClientWorldMixin"
+    "client.ClientWorldMixin",
+    "client.EntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

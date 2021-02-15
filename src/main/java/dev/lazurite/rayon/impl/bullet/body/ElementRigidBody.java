@@ -15,8 +15,6 @@ import dev.lazurite.rayon.impl.util.debug.DebugLayer;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -121,7 +119,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements AirDragBody, T
         this.loadDistance = calculateLoadDistance();
     }
 
-    @Environment(EnvType.CLIENT)
     public void setFrame(Frame frame) {
         this.frame = frame;
     }
