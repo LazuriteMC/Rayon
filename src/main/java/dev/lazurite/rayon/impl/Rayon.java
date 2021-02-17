@@ -20,13 +20,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The main entrypoint for Rayon. Mainly contains packet registrations and also contains
- * the load call for {@link Config} and {@link NativeLoader}.
+ * The main entrypoint for Rayon. Mainly contains packet registrations and also
+ * contains the load call for {@link Config} and bullet natives.
  */
 public class Rayon implements ModInitializer, ClientModInitializer, WorldComponentInitializer {
 	public static final String MODID = "rayon";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
-
 	public static final ComponentKey<PhysicsThread> THREAD = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier(MODID, "thread"), PhysicsThread.class);
 
 	@Override

@@ -44,30 +44,26 @@ allprojects {
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-		// Mod Menu
-		modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
 
 		// Transporter
 		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 		include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 
-		// Cardinal Components Base
+		// Cardinal Components
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-
-		// Cardinal Components World
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 
-		// Fiber
+		// Mod Menu + Cloth + Fiber
+		modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		modApi ("me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric") { exclude(group: "net.fabricmc.fabric-api") }
+		include "me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric"
 		modApi "me.zeroeightsix:fiber:${project.fiber_version}"
 		include "me.zeroeightsix:fiber:${project.fiber_version}"
 
-		// Cloth
-		modApi ("me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric") { exclude(group: "net.fabricmc.fabric-api") }
-		include "me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric"
-
-		// LibBulletJME
+		// Zip4j + LibBulletJME
+		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 	}
