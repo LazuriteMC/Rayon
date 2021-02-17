@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
-
 plugins {
 	id 'com.github.johnrengelman.shadow' version "5.2.0"
 	id 'fabric-loom' version '0.5-SNAPSHOT'
@@ -43,7 +41,6 @@ allprojects {
 		// Fabric Loader + Fabric API
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
 
 		// Transporter
 		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
@@ -95,13 +92,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 shadowJar {
 	configurations = [project.configurations.shadow]
 }
-
-task relocateShadowJar(type: ConfigureShadowRelocation) {
-	target = tasks.shadowJar
-	prefix = "physics"
-}
-
-tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
 jar {
 	from "LICENSE"

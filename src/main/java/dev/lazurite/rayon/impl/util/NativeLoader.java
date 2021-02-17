@@ -18,7 +18,7 @@ public class NativeLoader {
     public static void load() {
         File destination = new File(DEST_DIR);
 
-        if (!new File(DEST_DIR).exists()) {
+        if (!destination.exists()) {
             try {
                 destination.mkdirs();
                 Files.copy(Rayon.class.getResourceAsStream(INTERNAL_ZIP), Paths.get(DEST_DIR + NATIVE_ZIP), StandardCopyOption.REPLACE_EXISTING);
