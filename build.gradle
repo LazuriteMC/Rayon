@@ -64,6 +64,7 @@ allprojects {
 
 		// Zip4j + LibBulletJME
 		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"
+		shadow "net.lingala.zip4j:zip4j:${project.zip4j_version}"
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 	}
