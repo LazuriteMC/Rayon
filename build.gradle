@@ -53,7 +53,7 @@ allprojects {
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 
 		// Mod Menu + Cloth + Fiber
-		modImplementation ("com.terraformersmc:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		modApi ("com.terraformersmc:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
 		modApi ("me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric") { exclude(group: "net.fabricmc.fabric-api") }
 		include "me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric"
 		modApi "me.zeroeightsix:fiber:${project.fiber_version}"
