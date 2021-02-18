@@ -47,9 +47,8 @@ public abstract class EntityMixin {
                         body.getPhysicsRotation(new Quaternion())));
             }
 
-            // TODO optimize this better
             if (!world.isClient()) {
-                EntityElementMovementS2C.send(element);
+                EntityElementMovementS2C.send(element); // TODO optimize this to check for changes in position/rotation
                 ElementPropertiesS2C.send(element);
             }
 
