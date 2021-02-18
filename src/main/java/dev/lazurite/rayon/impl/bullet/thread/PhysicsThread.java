@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  * @see MinecraftSpace
  */
 public class PhysicsThread extends Thread implements ComponentV3 {
-    private static final long STEP_SIZE = 20L;
+    public static final long STEP_SIZE = 25L;
     private static int serverThreads;
 
     private final Queue<Consumer<MinecraftSpace>> tasks = new ConcurrentLinkedQueue<>();

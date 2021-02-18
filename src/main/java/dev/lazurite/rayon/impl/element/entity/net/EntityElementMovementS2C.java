@@ -55,7 +55,7 @@ public class EntityElementMovementS2C {
         VectorHelper.toBuffer(buf, rigidBody.getAngularVelocity(new Vector3f()));
 
         PlayerLookup.tracking(element.asEntity()).forEach(player -> {
-            if (!player.getUuid().equals(rigidBody.getPriorityPlayer())) {
+            if (!player.equals(rigidBody.getPriorityPlayer())) {
                 ServerPlayNetworking.send(player, PACKET_ID, buf);
             }
         });
