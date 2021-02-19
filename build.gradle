@@ -27,9 +27,7 @@ allprojects {
 	group = project.maven_group
 
 	repositories {
-		maven { url = "https://maven.terraformersmc.com/releases/" }
 		maven { url = "https://dl.bintray.com/ladysnake/libs" }
-		maven { url = "https://maven.shedaniel.me/" }
 		maven { url = "https://jitpack.io" }
 	}
 
@@ -53,9 +51,9 @@ allprojects {
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 
 		// Mod Menu + Cloth + Fiber
-		modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-		modApi ("me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric") { exclude(group: "net.fabricmc.fabric-api") }
-		include "me.shedaniel.cloth:cloth-config:${project.cloth_version}:fabric"
+		modImplementation ("io.github.prospector:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		modApi ("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 		modApi "me.zeroeightsix:fiber:${project.fiber_version}"
 		include "me.zeroeightsix:fiber:${project.fiber_version}"
 
