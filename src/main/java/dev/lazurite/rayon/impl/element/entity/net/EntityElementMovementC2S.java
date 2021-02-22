@@ -44,7 +44,7 @@ public class EntityElementMovementC2S {
             if (entity instanceof PhysicsElement) {
                 ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
 
-                if (rigidBody.getPriorityPlayer().equals(player)) {
+                if (player.equals(rigidBody.getPriorityPlayer())) {
                     rigidBody.setPhysicsRotation(rotation);
                     rigidBody.setPhysicsLocation(location);
                     rigidBody.setLinearVelocity(linearVelocity);
