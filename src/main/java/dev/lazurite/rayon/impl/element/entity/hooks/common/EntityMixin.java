@@ -115,7 +115,7 @@ public abstract class EntityMixin {
             Rayon.THREAD.get(world).execute(space -> {
                 ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
 
-                if (!body.isInWorld()) {
+                if (body.isInWorld()) {
                     space.removeCollisionObject(body);
                 }
             });
