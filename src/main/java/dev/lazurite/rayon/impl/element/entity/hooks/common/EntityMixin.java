@@ -54,9 +54,6 @@ public abstract class EntityMixin {
 
             Vector3f pos = body.getPhysicsLocation(new Vector3f());
             updatePosition(pos.x, pos.y, pos.z);
-
-            yaw = QuaternionHelper.getYaw(body.getPhysicsRotation(new Quaternion()));
-            pitch = QuaternionHelper.getPitch(body.getPhysicsRotation(new Quaternion()));
         }
     }
 
