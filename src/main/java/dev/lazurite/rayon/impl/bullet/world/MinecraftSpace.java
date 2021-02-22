@@ -48,6 +48,7 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
     private final Clock clock;
     private boolean destroyed;
     private int presimSteps;
+    private int maxSubSteps = 5;
 
     public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
         super(broadphase);
@@ -108,7 +109,7 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
 
             /* Step Simulation */
             if (presimSteps > MAX_PRESIM_STEPS) {
-                update(delta);
+                update(delta, maxSubSteps);
             } else ++presimSteps;
         } else {
             this.clock.reset();
@@ -160,6 +161,12 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
 
     public World getWorld() {
         return this.world;
+    }
+
+    public void setMaxSubSteps(int maxSubSteps) {
+        if (this.maxSubSteps < maxSubSteps) {
+            this.maxSubSteps = maxSubSteps;
+        }
     }
 
     /**

@@ -24,17 +24,17 @@ import java.util.function.Consumer;
  * @see MinecraftSpace
  */
 public class PhysicsThread extends Thread implements ComponentV3 {
-    public static final long STEP_SIZE = 25L;
+    public static final float STEP_SIZE = 1f / 60f; // in seconds
     private static int serverThreads;
 
     private final Queue<Consumer<MinecraftSpace>> tasks = new ConcurrentLinkedQueue<>();
-    private final World world;
     private MinecraftSpace space;
+    private final World world;
     private long nextStep;
 
     public PhysicsThread(World world) {
         this.world = world;
-        this.nextStep = Util.getMeasuringTimeMs() + STEP_SIZE;
+        this.nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
 
         if (world.isClient()) {
             this.setName("Client Physics Thread");
@@ -49,12 +49,12 @@ public class PhysicsThread extends Thread implements ComponentV3 {
     @Override
     public void run() {
         this.space = new MinecraftSpace(this, world);
-        this.space.setAccuracy(STEP_SIZE * 0.001f);
+        this.space.setAccuracy(STEP_SIZE);
         PhysicsSpaceEvents.LOAD.invoker().onLoad(space);
 
         while (!space.isDestroyed()) {
             if (Util.getMeasuringTimeMs() > nextStep) {
-                nextStep = Util.getMeasuringTimeMs() + STEP_SIZE;
+                nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
 
                 while (!tasks.isEmpty()) {
                     tasks.poll().accept(space);
@@ -75,11 +75,9 @@ public class PhysicsThread extends Thread implements ComponentV3 {
 
     @Override
     public void readFromNbt(CompoundTag compoundTag) {
-
     }
 
     @Override
     public void writeToNbt(CompoundTag compoundTag) {
-
     }
 }

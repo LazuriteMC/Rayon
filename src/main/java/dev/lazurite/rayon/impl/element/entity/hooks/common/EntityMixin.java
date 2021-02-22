@@ -8,10 +8,12 @@ import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
-import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,9 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class EntityMixin {
     @Shadow public World world;
-    @Shadow public float yaw;
-    @Shadow public float pitch;
-
     @Shadow public abstract void updatePosition(double x, double y, double z);
 
     @Inject(method = "tick", at = @At("HEAD"))
@@ -57,12 +56,31 @@ public abstract class EntityMixin {
         }
     }
 
+    @Inject(method = "addVelocity", at = @At("HEAD"))
+    public void addVelocity(double x, double y, double z, CallbackInfo info) {
+        if (this instanceof PhysicsElement) {
+            Rayon.THREAD.get(world).execute(space -> {
+                PhysicsElement element = (PhysicsElement) this;
+                Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass()).multLocal(1.5f);
+                element.getRigidBody().applyCentralImpulse(force);
+            });
+        }
+    }
+
+    @Inject(method = "move", at = @At("HEAD"))
+    public void move(MovementType type, Vec3d movement, CallbackInfo info) {
+        if (this instanceof PhysicsElement && (type.equals(MovementType.PISTON) || type.equals(MovementType.SHULKER) || type.equals(MovementType.SHULKER_BOX))) {
+            Rayon.THREAD.get(world).execute(space -> {
+                PhysicsElement element = (PhysicsElement) this;
+                Vector3f force = VectorHelper.vec3dToVector3f(movement).multLocal(20).multLocal(element.getRigidBody().getMass()).multLocal(0.75f);
+                element.getRigidBody().applyCentralImpulse(force);
+            });
+        }
+    }
+
     @Inject(
             method = "toTag",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V"
-            )
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V")
     )
     public void toTag(CompoundTag tag, CallbackInfoReturnable<CompoundTag> info) {
         if (this instanceof PhysicsElement) {
@@ -79,7 +97,9 @@ public abstract class EntityMixin {
     )
     public void fromTag(CompoundTag tag, CallbackInfo info) {
         if (this instanceof PhysicsElement) {
-            ((PhysicsElement) this).getRigidBody().fromTag(tag);
+            Rayon.THREAD.get(world).execute(space -> {
+                ((PhysicsElement) this).getRigidBody().fromTag(tag);
+            });
         }
     }
 
@@ -92,12 +112,13 @@ public abstract class EntityMixin {
     @Inject(method = "remove", at = @At("HEAD"))
     public synchronized void remove(CallbackInfo info) {
         if (this instanceof PhysicsElement) {
-            ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
+            Rayon.THREAD.get(world).execute(space -> {
+                ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
 
-            if (body.isInWorld()) {
-                Rayon.THREAD.get(((Entity) (Object) this).getEntityWorld())
-                        .execute(space -> space.removeCollisionObject(body));
-            }
+                if (!body.isInWorld()) {
+                    space.removeCollisionObject(body);
+                }
+            });
         }
     }
 }

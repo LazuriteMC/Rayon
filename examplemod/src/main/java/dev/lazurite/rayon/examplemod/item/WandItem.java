@@ -29,7 +29,6 @@ public class WandItem extends Item {
 //            RectangularPrismEntity entity = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
             LivingCubeEntity entity = new LivingCubeEntity(ExampleMod.LIVING_CUBE_ENTITY, world);
             entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-            entity.getRigidBody().prioritize(user);
             world.spawnEntity(entity);
             return TypedActionResult.success(itemStack);
         }

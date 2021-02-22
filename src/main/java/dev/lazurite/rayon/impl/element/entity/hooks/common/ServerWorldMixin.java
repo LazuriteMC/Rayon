@@ -21,9 +21,11 @@ public class ServerWorldMixin {
     @Inject(method = "loadEntityUnchecked", at = @At("HEAD"))
     private void loadEntityUnchecked(Entity entity, CallbackInfo info) {
         if (entity instanceof PhysicsElement) {
-            ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
-            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos()));
-            Rayon.THREAD.get(this).execute(space -> space.addCollisionObject(rigidBody));
+            Rayon.THREAD.get(this).execute(space -> {
+                ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+                rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos()));
+                space.addCollisionObject(rigidBody);
+            });
         }
     }
 }

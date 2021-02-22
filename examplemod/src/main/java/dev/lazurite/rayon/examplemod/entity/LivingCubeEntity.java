@@ -5,6 +5,7 @@ import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -12,6 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -25,7 +27,10 @@ public class LivingCubeEntity extends LivingEntity implements PhysicsElement {
 
     @Override
     public void step(MinecraftSpace space) {
+    }
 
+    @Override
+    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
     }
 
     @Override
