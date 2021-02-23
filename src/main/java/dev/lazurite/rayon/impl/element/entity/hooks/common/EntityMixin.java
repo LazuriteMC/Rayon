@@ -10,7 +10,6 @@ import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
-import net.fabricmc.loader.util.sat4j.core.Vec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
@@ -51,7 +50,6 @@ public abstract class EntityMixin {
 
             if (!world.isClient()) {
                 if (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
-                    System.out.println("SEND");
                     EntityElementMovementS2C.send(element);
                 }
 
