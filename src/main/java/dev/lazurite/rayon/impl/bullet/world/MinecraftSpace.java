@@ -12,7 +12,7 @@ import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.body.type.AirDragBody;
+import dev.lazurite.rayon.impl.bullet.body.type.FluidDragBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.util.thread.Clock;
@@ -70,7 +70,7 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      * <ul>
      *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
-     *     <li>Applies air drag force to all {@link AirDragBody}s.</li>
+     *     <li>Applies air drag force to all {@link FluidDragBody}s.</li>
      *     <li>Loads blocks into the simulation around {@link TerrainLoadingBody}s using {@link TerrainManager}.</li>
      *     <li>Sets gravity to the value stored in {@link Config}.</li>
      *     <li>Triggers all collision events (queues up tasks in server thread).</li>
@@ -93,8 +93,8 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
             /* Steppp */
             getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> body.getElement().step(this));
 
-            /* Air Resistance */
-            getRigidBodiesByClass(AirDragBody.class).forEach(AirDragBody::applyAirDrag);
+            /* Fluid Resistance */
+            getRigidBodiesByClass(FluidDragBody.class).forEach(body -> body.applyDrag(world));
 
             /* Terrain Loading */
             getTerrainManager().load(getRigidBodiesByClass(TerrainLoadingBody.class));

@@ -24,7 +24,8 @@ public class ConfigS2C {
                 Config config = new Config(
                         buf.readFloat(),
                         buf.readFloat(),
-                        buf.readBoolean()
+                        buf.readFloat(),
+                        buf.readFloat()
                 );
 
                 client.execute(() -> Config.setRemote(config));
@@ -36,7 +37,8 @@ public class ConfigS2C {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeFloat(config.getGravity());
         buf.writeFloat(config.getAirDensity());
-        buf.writeBoolean(config.isAirResistanceEnabled());
+        buf.writeFloat(config.getWaterDensity());
+        buf.writeFloat(config.getLavaDensity());
         ServerPlayNetworking.send(player, PACKET_ID, buf);
     }
 }

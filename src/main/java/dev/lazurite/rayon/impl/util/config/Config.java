@@ -31,16 +31,22 @@ public final class Config {
     private float airDensity;
 
     @Setting
-    private boolean airResistanceEnabled;
+    @Setting.Constrain.Range(min = 0.0f)
+    private float waterDensity;
 
-    public Config(float gravity, float airDensity, boolean airResistanceEnabled) {
+    @Setting
+    @Setting.Constrain.Range(min = 0.0f)
+    private float lavaDensity;
+
+    public Config(float gravity, float airDensity, float waterDensity, float lavaDensity) {
         this.gravity = gravity;
         this.airDensity = airDensity;
-        this.airResistanceEnabled = airResistanceEnabled;
+        this.waterDensity = waterDensity;
+        this.lavaDensity = lavaDensity;
     }
 
     public Config() {
-        this(-9.81f, 1.2f, true);
+        this(-9.81f, 1.2f, 997f, 3100f);
     }
 
     public static Config getInstance() {
@@ -91,8 +97,12 @@ public final class Config {
         this.airDensity = airDensity;
     }
 
-    public void setAirResistanceEnabled(boolean doAirResistance) {
-        this.airResistanceEnabled = doAirResistance;
+    public void setWaterDensity(float waterDensity) {
+        this.waterDensity = waterDensity;
+    }
+
+    public void setLavaDensity(float lavaDensity) {
+        this.lavaDensity = lavaDensity;
     }
 
     public float getGravity() {
@@ -103,7 +113,11 @@ public final class Config {
         return this.airDensity;
     }
 
-    public boolean isAirResistanceEnabled() {
-        return this.airResistanceEnabled;
+    public float  getWaterDensity() {
+        return this.waterDensity;
+    }
+
+    public float getLavaDensity() {
+        return this.lavaDensity;
     }
 }

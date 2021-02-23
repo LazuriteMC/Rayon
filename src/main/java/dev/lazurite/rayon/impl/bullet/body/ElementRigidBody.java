@@ -8,7 +8,7 @@ import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.bullet.body.type.AirDragBody;
+import dev.lazurite.rayon.impl.bullet.body.type.FluidDragBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.debug.DebugLayer;
@@ -43,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
  * @see PhysicsElement
  * @see MinecraftSpace
  */
-public class ElementRigidBody extends PhysicsRigidBody implements AirDragBody, TerrainLoadingBody, DebuggableBody {
+public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody, TerrainLoadingBody, DebuggableBody {
     private final PhysicsElement element;
     private float dragCoefficient;
     private PlayerEntity priorityPlayer;

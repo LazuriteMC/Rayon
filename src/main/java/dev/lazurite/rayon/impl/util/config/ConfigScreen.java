@@ -46,12 +46,32 @@ public class ConfigScreen implements ModMenuApi {
         if (!Config.getInstance().isRemote()) {
             /* Air Density */
             category.addEntry(builder.entryBuilder().startFloatField(
-                    new TranslatableText("config.rayon.option.air_density"), Config.getInstance().getAirDensity())
+                    new TranslatableText("config.rayon.option.fluid.air.density"), Config.getInstance().getAirDensity())
                     .setDefaultValue(1.2f)
                     .setTooltip(
-                            new TranslatableText("config.rayon.option.air_density.tooltip"),
+                            new TranslatableText("config.rayon.option.fluid.air.density.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
                     .setSaveConsumer(newValue -> Config.getInstance().setAirDensity(newValue))
+                    .build());
+
+            /* Water Density */
+            category.addEntry(builder.entryBuilder().startFloatField(
+                    new TranslatableText("config.rayon.option.fluid.water.density"), Config.getInstance().getWaterDensity())
+                    .setDefaultValue(997f)
+                    .setTooltip(
+                            new TranslatableText("config.rayon.option.fluid.water.density.tooltip"),
+                            new TranslatableText("config.rayon.option.performance.low"))
+                    .setSaveConsumer(newValue -> Config.getInstance().setWaterDensity(newValue))
+                    .build());
+
+            /* Lava Density */
+            category.addEntry(builder.entryBuilder().startFloatField(
+                    new TranslatableText("config.rayon.option.fluid.lava.density"), Config.getInstance().getLavaDensity())
+                    .setDefaultValue(3100f)
+                    .setTooltip(
+                            new TranslatableText("config.rayon.option.fluid.lava.density.tooltip"),
+                            new TranslatableText("config.rayon.option.performance.low"))
+                    .setSaveConsumer(newValue -> Config.getInstance().setLavaDensity(newValue))
                     .build());
 
             /* Gravity */
@@ -62,16 +82,6 @@ public class ConfigScreen implements ModMenuApi {
                             new TranslatableText("config.rayon.option.gravity.tooltip"),
                             new TranslatableText("config.rayon.option.performance.low"))
                     .setSaveConsumer(newValue -> Config.getInstance().setGravity(newValue))
-                    .build());
-
-            /* Air Resistance */
-            category.addEntry(builder.entryBuilder().startBooleanToggle(
-                    new TranslatableText("config.rayon.option.air_resistance_enabled"), Config.getInstance().isAirResistanceEnabled())
-                    .setDefaultValue(true)
-                    .setTooltip(
-                            new TranslatableText("config.rayon.option.air_resistance_enabled.tooltip"),
-                            new TranslatableText("config.rayon.option.performance.low"))
-                    .setSaveConsumer(newValue -> Config.getInstance().setAirResistanceEnabled(newValue))
                     .build());
         }
 
