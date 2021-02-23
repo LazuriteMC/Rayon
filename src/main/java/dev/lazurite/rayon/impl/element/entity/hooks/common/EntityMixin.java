@@ -25,9 +25,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
+    @Shadow public int age;
     @Shadow public World world;
-    @Shadow public abstract void updatePosition(double x, double y, double z);
     @Unique private int tickCounter;
+    @Shadow public abstract void updatePosition(double x, double y, double z);
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {
@@ -49,7 +50,7 @@ public abstract class EntityMixin {
             }
 
             if (!world.isClient()) {
-                if (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
+                if (this.age < 20 || body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
                     EntityElementMovementS2C.send(element);
                 }
 
@@ -67,12 +68,21 @@ public abstract class EntityMixin {
         }
     }
 
+    /**
+     * Translates minecraft's "add velocity" code into "add force" code. Basically
+     * calculates impulse (change in momentum) using the rigid body's mass and then
+     * applies a central impulse to the object.
+     * @param x velocity to add x
+     * @param y velocity to add y
+     * @param z velocity to add z
+     * @param info required by every mixin injection
+     */
     @Inject(method = "addVelocity", at = @At("HEAD"))
     public void addVelocity(double x, double y, double z, CallbackInfo info) {
         if (this instanceof PhysicsElement) {
             Rayon.THREAD.get(world).execute(space -> {
                 PhysicsElement element = (PhysicsElement) this;
-                Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass()).multLocal(1.5f);
+                Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass());
                 element.getRigidBody().applyCentralImpulse(force);
             });
         }
@@ -80,10 +90,10 @@ public abstract class EntityMixin {
 
     @Inject(method = "move", at = @At("HEAD"))
     public void move(MovementType type, Vec3d movement, CallbackInfo info) {
-        if (this instanceof PhysicsElement && (type.equals(MovementType.PISTON) || type.equals(MovementType.SHULKER) || type.equals(MovementType.SHULKER_BOX))) {
+        if (this instanceof PhysicsElement && (type.equals(MovementType.PISTON))) {// || type.equals(MovementType.SHULKER) || type.equals(MovementType.SHULKER_BOX))) {
             Rayon.THREAD.get(world).execute(space -> {
                 PhysicsElement element = (PhysicsElement) this;
-                Vector3f force = VectorHelper.vec3dToVector3f(movement).multLocal(20).multLocal(element.getRigidBody().getMass()).multLocal(0.75f);
+                Vector3f force = VectorHelper.vec3dToVector3f(movement).multLocal(20).multLocal(element.getRigidBody().getMass());
                 element.getRigidBody().applyCentralImpulse(force);
             });
         }

@@ -24,11 +24,9 @@ public class ClientWorldMixin {
     @Inject(method = "addEntity", at = @At("HEAD"))
     public void addEntity(int id, Entity entity, CallbackInfo info) {
         if (entity instanceof PhysicsElement) {
-            Rayon.THREAD.get(this).execute(space -> {
-                ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
-                rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos()));
-                space.addCollisionObject(rigidBody);
-            });
+            ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos()));
+            Rayon.THREAD.get(this).execute(space -> space.addCollisionObject(rigidBody));
         }
     }
 }
