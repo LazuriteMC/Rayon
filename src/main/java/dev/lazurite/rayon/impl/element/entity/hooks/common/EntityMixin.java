@@ -10,6 +10,7 @@ import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
+import net.fabricmc.loader.util.sat4j.core.Vec;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin {
     @Shadow public World world;
     @Shadow public abstract void updatePosition(double x, double y, double z);
+    @Unique private int tickCounter;
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {
@@ -47,10 +50,20 @@ public abstract class EntityMixin {
             }
 
             if (!world.isClient()) {
-                EntityElementMovementS2C.send(element); // TODO optimize this to check for changes in position/rotation
-                ElementPropertiesS2C.send(element);
+                if (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
+                    System.out.println("SEND");
+                    EntityElementMovementS2C.send(element);
+                }
+
+                if (tickCounter > 20) {
+                    ElementPropertiesS2C.send(element);
+                    tickCounter = 0;
+                } else {
+                    ++tickCounter;
+                }
             }
 
+            /* Force the position of the entity to the rigid body's position */
             Vector3f pos = body.getPhysicsLocation(new Vector3f());
             updatePosition(pos.x, pos.y, pos.z);
         }

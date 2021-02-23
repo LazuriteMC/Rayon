@@ -16,6 +16,11 @@ import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
+/**
+ * This packet syncs rigid body information other than movement info from the server to the client.
+ * The reason this information isn't included in {@link EntityElementMovementS2C} is because this
+ * information should always be sent from the server to the client and not vice versa.
+ */
 public class ElementPropertiesS2C {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "element_properties_s2c");
 
