@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.impl.element.entity.hooks.common;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.Rayon;
@@ -64,7 +65,7 @@ public abstract class EntityMixin {
 
             /* Force the position of the entity to the rigid body's position */
             Vector3f pos = body.getPhysicsLocation(new Vector3f());
-            updatePosition(pos.x, pos.y, pos.z);
+            updatePosition(pos.x, pos.y - element.getRigidBody().boundingBox(new BoundingBox()).getYExtent(), pos.z);
         }
     }
 
@@ -85,6 +86,13 @@ public abstract class EntityMixin {
                 Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass());
                 element.getRigidBody().applyCentralImpulse(force);
             });
+        }
+    }
+
+    @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
+    public void pushAwayFrom(Entity entity, CallbackInfo info) {
+        if (this instanceof PhysicsElement && entity instanceof PhysicsElement) {
+            info.cancel();
         }
     }
 
@@ -118,9 +126,8 @@ public abstract class EntityMixin {
     )
     public void fromTag(CompoundTag tag, CallbackInfo info) {
         if (this instanceof PhysicsElement) {
-            Rayon.THREAD.get(world).execute(space -> {
-                ((PhysicsElement) this).getRigidBody().fromTag(tag);
-            });
+            Rayon.THREAD.get(world).execute(space ->
+                    ((PhysicsElement) this).getRigidBody().fromTag(tag));
         }
     }
 
