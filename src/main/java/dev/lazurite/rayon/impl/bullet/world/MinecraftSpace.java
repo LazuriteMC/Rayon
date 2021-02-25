@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
@@ -25,8 +24,6 @@ import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This is the physics simulation environment for all {@link BlockRigidBody}s and {@link ElementRigidBody}s. It runs
@@ -44,7 +41,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 30;
 
-    private final Queue<PhysicsCollisionObject> objectsToAdd = new ConcurrentLinkedQueue<>();
     private final TerrainManager terrainManager;
     private final ThreadExecutor<?> server;
     private final PhysicsThread thread;
@@ -72,7 +68,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
     /**
      * This method performs the following steps:
      * <ul>
-     *     <li>Adds queued collision objects.</li>
      *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
      *     <li>Applies air drag force to all {@link FluidDragBody}s.</li>
@@ -89,13 +84,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      * @see PhysicsSpaceEvents
      */
     public void step() {
-        /* Add any objects queued up. */
-        if (!isInPresim()) {
-            while (!objectsToAdd.isEmpty()) {
-                super.addCollisionObject(objectsToAdd.poll());
-            }
-        }
-
         if (!isPaused() && (!isEmpty() || isInPresim())) {
             float delta = this.clock.get();
 
@@ -179,11 +167,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         if (this.maxSubSteps < maxSubSteps) {
             this.maxSubSteps = maxSubSteps;
         }
-    }
-
-    @Override
-    public void addCollisionObject(PhysicsCollisionObject collisionObject) {
-        objectsToAdd.add(collisionObject);
     }
 
     /**

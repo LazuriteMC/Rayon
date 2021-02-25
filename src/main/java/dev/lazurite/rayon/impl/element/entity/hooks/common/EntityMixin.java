@@ -51,7 +51,7 @@ public abstract class EntityMixin {
 
             /* Send movement and property packets */
             if (!world.isClient()) {
-                if (this.age < 20 || body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
+                if (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
                     EntityElementMovementS2C.send(element);
                 }
 
@@ -127,6 +127,7 @@ public abstract class EntityMixin {
     public void fromTag(CompoundTag tag, CallbackInfo info) {
         if (this instanceof PhysicsElement) {
             ((PhysicsElement) this).getRigidBody().fromTag(tag);
+            ((Entity) (Object) this).setPos(((Entity) (Object) this).getX(), ((Entity) (Object) this).getY() + ((PhysicsElement) this).getRigidBody().boundingBox(new BoundingBox()).getYExtent()*3, ((Entity) (Object) this).getZ());
         }
     }
 

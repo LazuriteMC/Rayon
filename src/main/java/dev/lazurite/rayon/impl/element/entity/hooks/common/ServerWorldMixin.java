@@ -27,7 +27,7 @@ public class ServerWorldMixin {
             rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
 
             /* Add it to the world */
-            Rayon.THREAD.get(this).getSpace().addCollisionObject(rigidBody);
+            Rayon.THREAD.get(this).execute(space -> space.addCollisionObject(rigidBody));
         }
     }
 }

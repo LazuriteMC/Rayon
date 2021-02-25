@@ -7,6 +7,8 @@ import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
@@ -27,14 +29,14 @@ public interface FluidDragBody {
             PhysicsRigidBody rigidBody = (PhysicsRigidBody) this;
             float drag;
 
-            Block block = world.getBlockState(
+            Fluid fluid = world.getFluidState(
                     new BlockPos(VectorHelper.vector3fToVec3d(
                             rigidBody.boundingBox(new BoundingBox())
-                                    .getMax(new Vector3f())))).getBlock();
+                                    .getMax(new Vector3f())))).getFluid();
 
-            if (Blocks.LAVA.equals(block)) {
+            if (Fluids.LAVA.equals(fluid)) {
                 drag = Config.getInstance().getLavaDensity();
-            } else if (Blocks.WATER.equals(block)) {
+            } else if (Fluids.WATER.equals(fluid)) {
                 drag = Config.getInstance().getWaterDensity();
             } else {
                 drag = Config.getInstance().getAirDensity();

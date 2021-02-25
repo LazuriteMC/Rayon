@@ -31,7 +31,7 @@ public class ClientWorldMixin {
 //            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos()));
 
             /* Add it to the world */
-            Rayon.THREAD.get(this).getSpace().addCollisionObject(rigidBody);
+            Rayon.THREAD.get(this).execute(space -> space.addCollisionObject(rigidBody));
         }
     }
 }
