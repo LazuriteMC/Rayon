@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "common.EntityMixin",
+    "common.ExplosionMixin",
     "common.ServerWorldMixin"
   ],
   "client": [

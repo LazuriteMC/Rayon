@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.impl.element.entity.hooks.common;
 
+import com.jme3.bounding.BoundingBox;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
@@ -18,12 +19,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ServerWorld.class)
 public class ServerWorldMixin {
-    @Inject(method = "loadEntityUnchecked", at = @At("HEAD"))
+    @Inject(method = "loadEntityUnchecked", at = @At("TAIL"))
     private void loadEntityUnchecked(Entity entity, CallbackInfo info) {
         if (entity instanceof PhysicsElement) {
+            /* Set the position of the rigid body */
             ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
-            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos()));
-            Rayon.THREAD.get(this).execute(space -> space.addCollisionObject(rigidBody));
+            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
+
+            /* Add it to the world */
+            Rayon.THREAD.get(this).getSpace().addCollisionObject(rigidBody);
         }
     }
 }

@@ -43,6 +43,11 @@ public class PhysicsThread extends Thread implements ComponentV3 {
             this.setName("Server Physics Thread " + serverThreads);
         }
 
+        this.setUncaughtExceptionHandler((thread, throwable) -> {
+            System.err.println("Uncaught exception on " + thread.getName() + ": " + throwable);
+            throwable.printStackTrace();
+        });
+
         this.start();
     }
 

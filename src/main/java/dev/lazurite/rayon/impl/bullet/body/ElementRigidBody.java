@@ -47,20 +47,22 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     private final PhysicsElement element;
     private float dragCoefficient;
     private PlayerEntity priorityPlayer;
+    private boolean doFluidResistance;
     private int loadDistance;
     private Frame frame;
 
-    public ElementRigidBody(PhysicsElement element, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution) {
+    public ElementRigidBody(PhysicsElement element, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution, boolean doFluidResistance) {
         super(shape, mass);
         this.element = element;
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
+        this.doFluidResistance = doFluidResistance;
         this.loadDistance = calculateLoadDistance();
     }
 
     public ElementRigidBody(PhysicsElement element, CollisionShape shape) {
-        this(element, shape, 1.0f, 0.05f, 1.0f, 0.5f);
+        this(element, shape, 1.0f, 0.05f, 1.0f, 0.5f, true);
     }
 
     /**
@@ -88,7 +90,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     public void fromTag(CompoundTag tag) {
         /* Movement Info */
         setPhysicsRotation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
-        setPhysicsLocation(VectorHelper.fromTag(tag.getCompound("position")));
         setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
         setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
 
@@ -102,7 +103,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     public void toTag(CompoundTag tag) {
         /* Movement Info */
         tag.put("orientation", QuaternionHelper.toTag(getPhysicsRotation(new Quaternion())));
-        tag.put("position", VectorHelper.toTag(getPhysicsLocation(new Vector3f())));
         tag.put("linear_velocity", VectorHelper.toTag(getLinearVelocity(new Vector3f())));
         tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
 
@@ -142,6 +142,16 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     @Override
     public float getDragCoefficient() {
         return dragCoefficient;
+    }
+
+    @Override
+    public boolean shouldDoFluidResistance() {
+        return this.doFluidResistance;
+    }
+
+    @Override
+    public void setDoFluidResistance(boolean doFluidResistance) {
+        this.doFluidResistance = doFluidResistance;
     }
 
     @Override

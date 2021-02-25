@@ -9,7 +9,6 @@ import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
-import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
@@ -50,6 +49,7 @@ public abstract class EntityMixin {
                         body.getPhysicsRotation(new Quaternion())));
             }
 
+            /* Send movement and property packets */
             if (!world.isClient()) {
                 if (this.age < 20 || body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
                     EntityElementMovementS2C.send(element);
@@ -65,7 +65,7 @@ public abstract class EntityMixin {
 
             /* Force the position of the entity to the rigid body's position */
             Vector3f pos = body.getPhysicsLocation(new Vector3f());
-            updatePosition(pos.x, pos.y - element.getRigidBody().boundingBox(new BoundingBox()).getYExtent(), pos.z);
+            updatePosition(pos.x, pos.y - body.boundingBox(new BoundingBox()).getYExtent(), pos.z);
         }
     }
 
@@ -81,11 +81,11 @@ public abstract class EntityMixin {
     @Inject(method = "addVelocity", at = @At("HEAD"))
     public void addVelocity(double x, double y, double z, CallbackInfo info) {
         if (this instanceof PhysicsElement) {
-            Rayon.THREAD.get(world).execute(space -> {
-                PhysicsElement element = (PhysicsElement) this;
-                Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass());
-                element.getRigidBody().applyCentralImpulse(force);
-            });
+            PhysicsElement element = (PhysicsElement) this;
+            Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass());
+            Rayon.THREAD.get(world).execute(space ->
+                    element.getRigidBody().applyCentralImpulse(force)
+            );
         }
     }
 
@@ -99,11 +99,11 @@ public abstract class EntityMixin {
     @Inject(method = "move", at = @At("HEAD"))
     public void move(MovementType type, Vec3d movement, CallbackInfo info) {
         if (this instanceof PhysicsElement && (type.equals(MovementType.PISTON))) {// || type.equals(MovementType.SHULKER) || type.equals(MovementType.SHULKER_BOX))) {
-            Rayon.THREAD.get(world).execute(space -> {
-                PhysicsElement element = (PhysicsElement) this;
-                Vector3f force = VectorHelper.vec3dToVector3f(movement).multLocal(20).multLocal(element.getRigidBody().getMass());
-                element.getRigidBody().applyCentralImpulse(force);
-            });
+//            Rayon.THREAD.get(world).execute(space -> {
+//                PhysicsElement element = (PhysicsElement) this;
+//                Vector3f force = VectorHelper.vec3dToVector3f(movement).multLocal(20).multLocal(element.getRigidBody().getMass());
+//                element.getRigidBody().applyCentralImpulse(force);
+//            });
         }
     }
 
@@ -126,8 +126,7 @@ public abstract class EntityMixin {
     )
     public void fromTag(CompoundTag tag, CallbackInfo info) {
         if (this instanceof PhysicsElement) {
-            Rayon.THREAD.get(world).execute(space ->
-                    ((PhysicsElement) this).getRigidBody().fromTag(tag));
+            ((PhysicsElement) this).getRigidBody().fromTag(tag);
         }
     }
 
