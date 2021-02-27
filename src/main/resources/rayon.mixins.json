@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "config.PlayerManagerMixin",
+    "world.MinecraftServerMixin",
     "world.WorldMixin"
   ],
   "client": [

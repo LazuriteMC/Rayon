@@ -4,6 +4,7 @@ import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
@@ -23,66 +24,92 @@ import java.util.function.Consumer;
  * @see PhysicsSpaceEvents
  * @see MinecraftSpace
  */
-public class PhysicsThread extends Thread implements ComponentV3 {
+public class PhysicsThread extends Thread implements ComponentV3, CommonTickingComponent {
     public static final float STEP_SIZE = 1f / 60f; // in seconds
-    private static int serverThreads;
 
     private final Queue<Consumer<MinecraftSpace>> tasks = new ConcurrentLinkedQueue<>();
     private MinecraftSpace space;
     private final World world;
     private long nextStep;
+    private Throwable throwable;
 
     public PhysicsThread(World world) {
         this.world = world;
         this.nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
-
-        if (world.isClient()) {
-            this.setName("Client Physics Thread");
-        } else {
-            ++serverThreads;
-            this.setName("Server Physics Thread " + serverThreads);
-        }
-
-        this.setUncaughtExceptionHandler((thread, throwable) -> {
-            System.err.println("Uncaught exception on " + thread.getName() + ": " + throwable);
-            throwable.printStackTrace();
-        });
-
+        this.setName(world.isClient() ? "Client Physics Thread" : "Server Physics Thread - " + world.getRegistryKey().getValue());
+        this.setUncaughtExceptionHandler((thread, throwable) -> this.throwable = throwable);
         this.start();
+    }
+
+    /**
+     * This checks for any uncaught exception on the physics thread. This
+     * allows the error to be returned to the main thread and the game will
+     * crash in the usual way.
+     */
+    @Override
+    public void tick() {
+        if (throwable != null) {
+            throw new PhysicsThreadException(
+                    "Uncaught exception on " + getName() + ": " + throwable + ".",
+                    throwable);
+        }
     }
 
     @Override
     public void run() {
+        /* Create and load the physics space */
         this.space = new MinecraftSpace(this, world);
         this.space.setAccuracy(STEP_SIZE);
         PhysicsSpaceEvents.LOAD.invoker().onLoad(space);
 
+        /* Loop while it is still supposed to be running */
         while (!space.isDestroyed()) {
             if (Util.getMeasuringTimeMs() > nextStep) {
                 nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
 
+                /* Run all queued tasks */
                 while (!tasks.isEmpty()) {
                     tasks.poll().accept(space);
                 }
 
+                /* Step the physics space */
                 space.step();
             }
         }
     }
 
-    public void execute(Consumer<MinecraftSpace> consumer) {
-        tasks.add(consumer);
+    /**
+     * For queueing up tasks to be executed on this thread. A {@link MinecraftSpace}
+     * object is provided within the consumer.
+     * @param task the task to run
+     */
+    public void execute(Consumer<MinecraftSpace> task) {
+        tasks.add(task);
     }
 
+    /**
+     * Gets a reference to the {@link MinecraftSpace}. Only use this if you're
+     * going to read data from it or perform a thread safe operation. Else, you
+     * should use {@link PhysicsThread#execute} instead.
+     * @return the {@link MinecraftSpace} for this thread
+     */
     public MinecraftSpace getSpace() {
         return this.space;
     }
 
     @Override
-    public void readFromNbt(CompoundTag compoundTag) {
-    }
+    public void readFromNbt(CompoundTag compoundTag) { }
 
     @Override
-    public void writeToNbt(CompoundTag compoundTag) {
+    public void writeToNbt(CompoundTag compoundTag) { }
+
+    /**
+     * An exception used to crash the client or server whenever
+     * an exception occurs on the physics thread.
+     */
+    static class PhysicsThreadException extends RuntimeException {
+        public PhysicsThreadException(String message, Throwable throwable) {
+            super(message, throwable);
+        }
     }
 }

@@ -11,12 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * This mixin handles the joining of world physics threads
  * during the closing phase.
- * @see MinecraftSpace
  */
 @Mixin(World.class)
 public class WorldMixin {
-    @Inject(method = "close", at = @At("HEAD"))
-    public void close(CallbackInfo info) {
-        Rayon.THREAD.get((World) (Object) this).execute(MinecraftSpace::destroy);
-    }
+//    @Inject(method = "close", at = @At("HEAD"))
+//    public void close(CallbackInfo info) {
+//        Rayon.THREAD.get((World) (Object) this).execute(MinecraftSpace::destroy);
+//    }
 }
