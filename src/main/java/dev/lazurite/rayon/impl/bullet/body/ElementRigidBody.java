@@ -57,8 +57,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
+        this.setBlockLoadDistance(calculateLoadDistance());
         this.doFluidResistance = doFluidResistance;
-        this.loadDistance = calculateLoadDistance();
     }
 
     public ElementRigidBody(PhysicsElement element, CollisionShape shape) {
@@ -83,8 +83,16 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
      * on the size of the collision bounding box.
      * @return the max distance to load blocks from
      */
-    public int calculateLoadDistance() {
+    protected int calculateLoadDistance() {
         return (int) boundingBox(new BoundingBox()).getExtent(new Vector3f()).length() + 1;
+    }
+
+    public void setBlockLoadDistance(int loadDistance) {
+        this.loadDistance = loadDistance;
+    }
+
+    public int getBlockLoadDistance() {
+        return this.loadDistance;
     }
 
     public void fromTag(CompoundTag tag) {
@@ -116,7 +124,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     @Override
     public void setCollisionShape(CollisionShape collisionShape) {
         super.setCollisionShape(collisionShape);
-        this.loadDistance = calculateLoadDistance();
+        this.setBlockLoadDistance(calculateLoadDistance());
     }
 
     public void setFrame(Frame frame) {
