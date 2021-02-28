@@ -18,9 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ClientWorld.class)
 @Environment(EnvType.CLIENT)
-public class ClientWorldMixin {
+public abstract class ClientWorldMixin {
     @Inject(method = "disconnect", at = @At("HEAD"))
     public void disconnect(CallbackInfo info) {
-        Rayon.THREAD.get((World) (Object) this).execute(MinecraftSpace::destroy);
+        Rayon.THREAD.get((World) (Object) this).destroy();
     }
 }

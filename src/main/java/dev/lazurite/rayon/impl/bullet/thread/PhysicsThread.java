@@ -2,6 +2,7 @@ package dev.lazurite.rayon.impl.bullet.thread;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
@@ -32,6 +33,7 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
     private final World world;
     private long nextStep;
     private Throwable throwable;
+    private boolean running = true;
 
     public PhysicsThread(World world) {
         this.world = world;
@@ -63,7 +65,7 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
         PhysicsSpaceEvents.LOAD.invoker().onLoad(space);
 
         /* Loop while it is still supposed to be running */
-        while (!space.isDestroyed()) {
+        while (running) {
             if (Util.getMeasuringTimeMs() > nextStep) {
                 nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
 
@@ -85,6 +87,24 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
      */
     public void execute(Consumer<MinecraftSpace> task) {
         tasks.add(task);
+    }
+
+    /**
+     * @return whether or not the thread is running
+     */
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void destroy() {
+        this.running = false;
+
+        try {
+            this.join();
+        } catch (InterruptedException e) {
+            Rayon.LOGGER.error("Error joining " + getName());
+            e.printStackTrace();
+        }
     }
 
     /**

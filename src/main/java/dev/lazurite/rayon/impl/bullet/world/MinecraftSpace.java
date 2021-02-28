@@ -9,7 +9,6 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.type.FluidDragBody;
@@ -46,14 +45,14 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
     private final PhysicsThread thread;
     private final World world;
     private final Clock clock;
-    private boolean destroyed;
     private int presimSteps;
-    private int maxSubSteps = 5;
+    private int maxSubSteps;
 
-    public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
+    public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase, int maxSubSteps) {
         super(broadphase);
         this.thread = thread;
         this.world = world;
+        this.maxSubSteps = maxSubSteps;
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
         this.server = world.getServer();
@@ -62,7 +61,7 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
-        this(thread, world, BroadphaseType.DBVT);
+        this(thread, world, BroadphaseType.DBVT, 5);
     }
 
     /**
@@ -122,25 +121,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
 
     public boolean isInPresim() {
         return presimSteps < MAX_PRESIM_STEPS;
-    }
-
-    public boolean isDestroyed() {
-        return this.destroyed;
-    }
-
-    /**
-     * Ends the {@link PhysicsThread} loop and joins
-     * it back into the main thread.
-     */
-    public void destroy() {
-        this.destroyed = true;
-
-        try {
-            getThread().join();
-        } catch (InterruptedException e) {
-            Rayon.LOGGER.error("Error joining physics thread.");
-            e.printStackTrace();
-        }
     }
 
     public <T> List<T> getRigidBodiesByClass(Class<T> type) {

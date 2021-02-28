@@ -7,10 +7,9 @@ import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
 /**
  * Any {@link PhysicsRigidBody} with this interface assigned will be subject
@@ -22,21 +21,27 @@ public interface FluidDragBody {
     boolean shouldDoFluidResistance();
     void setDoFluidResistance(boolean doFluidResistance);
 
-    default void applyDrag(BlockView world) {
+    default void applyDrag(World world) {
         assert this instanceof PhysicsRigidBody : "Drag body must be rigid body.";
 
         if (shouldDoFluidResistance()) {
             PhysicsRigidBody rigidBody = (PhysicsRigidBody) this;
             float drag;
 
-            Fluid fluid = world.getFluidState(
-                    new BlockPos(VectorHelper.vector3fToVec3d(
-                            rigidBody.boundingBox(new BoundingBox())
-                                    .getMax(new Vector3f())))).getFluid();
+            BlockPos blockPos= new BlockPos(VectorHelper.vector3fToVec3d(
+                    rigidBody.boundingBox(new BoundingBox())
+                            .getMax(new Vector3f())));
 
-            if (Fluids.LAVA.equals(fluid)) {
+            BlockView chunk = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+            Block block = Blocks.AIR;
+
+            if (chunk != null) {
+                block = chunk.getBlockState(blockPos).getBlock();
+            }
+
+            if (Blocks.LAVA.equals(block)) {
                 drag = Config.getInstance().getLavaDensity();
-            } else if (Fluids.WATER.equals(fluid)) {
+            } else if (Blocks.WATER.equals(block)) {
                 drag = Config.getInstance().getWaterDensity();
             } else {
                 drag = Config.getInstance().getAirDensity();
