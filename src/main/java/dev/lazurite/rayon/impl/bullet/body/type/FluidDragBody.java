@@ -57,7 +57,7 @@ public interface FluidDragBody {
                     .multLocal(-rigidBody.getLinearVelocity(new Vector3f()).lengthSquared())
                     .multLocal(k);
 
-            if (force.y > -gravitationalForce) {
+            if (drag != Config.getInstance().getAirDensity() && force.y > -gravitationalForce) {
                 /* Makes the object stop when it collides with a more dense liquid */
                 rigidBody.applyCentralImpulse(rigidBody.getLinearVelocity(new Vector3f()).multLocal(-rigidBody.getMass()));
             } else {

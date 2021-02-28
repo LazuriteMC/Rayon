@@ -30,6 +30,7 @@ public abstract class EntityMixin {
     @Unique private int tickCounter;
     @Shadow public abstract void updatePosition(double x, double y, double z);
 
+
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {
         if (this instanceof PhysicsElement) {
@@ -51,7 +52,7 @@ public abstract class EntityMixin {
 
             /* Send movement and property packets */
             if (!world.isClient()) {
-                if (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
+                if (age < 5 && body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
                     EntityElementMovementS2C.send(element);
                 }
 
@@ -98,13 +99,11 @@ public abstract class EntityMixin {
 
     @Inject(method = "move", at = @At("HEAD"))
     public void move(MovementType type, Vec3d movement, CallbackInfo info) {
-        if (this instanceof PhysicsElement && (type.equals(MovementType.PISTON))) {// || type.equals(MovementType.SHULKER) || type.equals(MovementType.SHULKER_BOX))) {
-//            Rayon.THREAD.get(world).execute(space -> {
-//                PhysicsElement element = (PhysicsElement) this;
-//                Vector3f force = VectorHelper.vec3dToVector3f(movement).multLocal(20).multLocal(element.getRigidBody().getMass());
-//                element.getRigidBody().applyCentralImpulse(force);
-//            });
-        }
+//        if (this instanceof PhysicsElement && (type.equals(MovementType.PISTON))) {// || type.equals(MovementType.SHULKER) || type.equals(MovementType.SHULKER_BOX))) {
+//            PhysicsElement element = (PhysicsElement) this;
+//            Vector3f force = VectorHelper.vec3dToVector3f(movement).multLocal(20).multLocal(element.getRigidBody().getMass());
+//            Rayon.THREAD.get(world).execute(space -> element.getRigidBody().applyCentralImpulse(force));
+//        }
     }
 
     @Inject(

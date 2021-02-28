@@ -2,15 +2,12 @@ package dev.lazurite.rayon.impl.bullet.world;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.TypedPattern;
