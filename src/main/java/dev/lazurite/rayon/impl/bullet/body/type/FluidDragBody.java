@@ -3,6 +3,7 @@ package dev.lazurite.rayon.impl.bullet.body.type;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.impl.util.RayonException;
 import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.block.Block;
@@ -22,7 +23,9 @@ public interface FluidDragBody {
     void setDoFluidResistance(boolean doFluidResistance);
 
     default void applyDrag(World world) {
-        assert this instanceof PhysicsRigidBody : "Drag body must be rigid body.";
+        if (!(this instanceof PhysicsRigidBody)) {
+            throw new RayonException("Drag body must be rigid body");
+        }
 
         if (shouldDoFluidResistance()) {
             PhysicsRigidBody rigidBody = (PhysicsRigidBody) this;

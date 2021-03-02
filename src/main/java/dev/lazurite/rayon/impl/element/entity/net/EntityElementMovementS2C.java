@@ -6,6 +6,7 @@ import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.element.entity.hooks.common.EntityMixin;
+import dev.lazurite.rayon.impl.util.RayonException;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -50,7 +51,9 @@ public class EntityElementMovementS2C {
     }
 
     public static void send(PhysicsElement element) {
-        assert element instanceof Entity : "Element must be an entity.";
+        if (!(element instanceof Entity)) {
+            throw new RayonException("Element must be an entity");
+        }
 
         ElementRigidBody rigidBody = element.getRigidBody();
         PacketByteBuf buf = PacketByteBufs.create();
