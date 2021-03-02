@@ -51,7 +51,7 @@ public abstract class CommonEntityMixin {
 
             /* Send movement and property packets */
             if (!world.isClient()) {
-                if (age < 20 || body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
+                if (body.getPriorityPlayer() != null && (age < 20 || body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged())) {
                     EntityElementMovementS2C.send(element);
                 }
 
