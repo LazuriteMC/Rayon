@@ -17,7 +17,8 @@ public class QuaternionHelper {
      */
     public static Quaternion rotateX(Quaternion quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
-        return quat.mult(new Quaternion((float) Math.sin(radHalfAngle), 0, 0, (float) Math.cos(radHalfAngle)));
+        quat.set(quat.mult(new Quaternion((float) Math.sin(radHalfAngle), 0, 0, (float) Math.cos(radHalfAngle))));
+        return quat;
     }
 
     /**
@@ -27,7 +28,8 @@ public class QuaternionHelper {
      */
     public static Quaternion rotateY(Quaternion quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
-        return quat.mult(new Quaternion(0, (float) Math.sin(radHalfAngle), 0, (float) Math.cos(radHalfAngle)));
+        quat.set(quat.mult(new Quaternion(0, (float) Math.sin(radHalfAngle), 0, (float) Math.cos(radHalfAngle))));
+        return quat;
     }
 
     /**
@@ -37,7 +39,8 @@ public class QuaternionHelper {
      */
     public static Quaternion rotateZ(Quaternion quat, double deg) {
         double radHalfAngle = Math.toRadians(deg) / 2.0;
-        return quat.mult(new Quaternion(0, 0, (float) Math.sin(radHalfAngle), (float) Math.cos(radHalfAngle)));
+        quat.set(quat.mult(new Quaternion(0, 0, (float) Math.sin(radHalfAngle), (float) Math.cos(radHalfAngle))));
+        return quat;
     }
 
     /**

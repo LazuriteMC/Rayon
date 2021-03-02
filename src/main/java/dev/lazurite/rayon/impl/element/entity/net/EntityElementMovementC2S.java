@@ -5,7 +5,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.element.entity.hooks.common.EntityMixin;
+import dev.lazurite.rayon.impl.element.entity.hooks.CommonEntityMixin;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -25,7 +25,7 @@ import net.minecraft.world.World;
  * packet that's only used when an element has a <i>priority player</i> stored. The stored
  * priority player is responsible for sending movement updates to the server using this packet.
  * @see EntityElementMovementS2C
- * @see EntityMixin
+ * @see CommonEntityMixin
  */
 public class EntityElementMovementC2S {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "entity_element_movement_c2s");

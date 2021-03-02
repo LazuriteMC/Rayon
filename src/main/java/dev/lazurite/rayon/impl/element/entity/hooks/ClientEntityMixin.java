@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.hooks.client;
+package dev.lazurite.rayon.impl.element.entity.hooks;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * This mixin is for the client only. It syncs movement data with the
  * server if the priority player is set.
- * @see dev.lazurite.rayon.impl.element.entity.hooks.common.EntityMixin
+ * @see CommonEntityMixin
  */
 @Mixin(Entity.class)
 @Environment(EnvType.CLIENT)
-public class EntityMixin {
+public class ClientEntityMixin {
     @Shadow public World world;
 
     @Inject(method = "tick", at = @At("HEAD"))

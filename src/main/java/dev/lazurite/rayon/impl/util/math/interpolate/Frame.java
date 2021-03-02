@@ -3,7 +3,7 @@ package dev.lazurite.rayon.impl.util.math.interpolate;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.element.entity.hooks.common.EntityMixin;
+import dev.lazurite.rayon.impl.element.entity.hooks.CommonEntityMixin;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 
@@ -11,7 +11,7 @@ import dev.lazurite.rayon.impl.util.math.VectorHelper;
  * A {@link Frame} can be used for interpolation on the render thread.
  * {@link Frame}s are stored in {@link PhysicsElement}s and are updated
  * each tick.
- * @see EntityMixin
+ * @see CommonEntityMixin
  */
 public class Frame {
     private final Vector3f prevLocation;

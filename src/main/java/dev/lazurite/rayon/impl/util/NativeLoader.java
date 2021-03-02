@@ -10,6 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+/**
+ * This class copies and then loads native files stored within the rayon jar file.
+ * Upon first launch, rayon will make a copy of the native library files within the
+ * .minecraft/natives/[version] folder.
+ */
 public class NativeLoader {
     public static final String DEST_DIR = "natives/10.1.0/";
     public static final String NATIVE_ZIP = "natives.zip";

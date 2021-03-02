@@ -50,13 +50,6 @@ allprojects {
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 
-		// Mod Menu + Cloth + Fiber
-		modImplementation ("io.github.prospector:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
-		modApi ("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
-		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
-		modApi "me.zeroeightsix:fiber:${project.fiber_version}"
-		include "me.zeroeightsix:fiber:${project.fiber_version}"
-
 		// Zip4j + LibBulletJME
 		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"
 		shadow "net.lingala.zip4j:zip4j:${project.zip4j_version}"

@@ -48,25 +48,6 @@ public class VectorHelper {
     }
 
     /**
-     * Clamps the first argument between the second and third (min and max).
-     * @param clamp the vector to clamp
-     * @param min the minimum allowed vector
-     * @param max the maximum allowed vector
-     * @return the clamped vector
-     */
-    public static Vector3f clamp(Vector3f clamp, Vector3f min, Vector3f max) {
-        clamp.x = Math.min(clamp.x, max.x);
-        clamp.y = Math.min(clamp.y, max.y);
-        clamp.z = Math.min(clamp.z, max.z);
-
-        clamp.x = Math.max(clamp.x, min.x);
-        clamp.y = Math.max(clamp.y, min.y);
-        clamp.z = Math.max(clamp.z, min.z);
-
-        return clamp;
-    }
-
-    /**
      * Lerps two bullet {@link Vector3f} objects using minecraft tick delta.
      * @param vec1 the first vector
      * @param vec2 the second vector

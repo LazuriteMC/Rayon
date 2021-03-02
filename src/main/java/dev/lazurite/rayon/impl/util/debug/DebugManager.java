@@ -13,7 +13,6 @@ import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.mixin.debug.KeyboardMixin;
 import dev.lazurite.rayon.impl.mixin.debug.DebugRendererMixin;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;
@@ -40,7 +39,6 @@ import java.util.List;
  * {@link BlockRigidBody} are {@link DebuggableBody}s, they can both be rendered
  * to the screen as debug objects with their own respective layers and colors.
  *
- * @see Config
  * @see DebugLayer
  * @see KeyboardMixin
  * @see DebugRendererMixin

@@ -7,7 +7,6 @@ import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
-import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.TypedPattern;
@@ -25,11 +24,8 @@ import java.util.*;
  * This class is used primarily by {@link MinecraftSpace} in order
  * to load and unload blocks from the simulation. The reason not every block is loaded is
  * because it is too resource intensive to track thousands of blocks within the physics
- * simulation. Instead, only a set amount are available within the world at a time. This
- * value is controlled in the {@link Config} class as the blockDistance
- * integer value.
+ * simulation. Instead, only a set amount are made available within the world at a time.
  * @see MinecraftSpace
- * @see Config
  */
 public class TerrainManager {
     private final List<BlockRigidBody> toKeep = Lists.newArrayList();

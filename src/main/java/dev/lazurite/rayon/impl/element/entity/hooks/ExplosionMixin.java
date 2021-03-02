@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.hooks.common;
+package dev.lazurite.rayon.impl.element.entity.hooks;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;

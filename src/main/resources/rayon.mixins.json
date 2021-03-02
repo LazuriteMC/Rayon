@@ -4,7 +4,6 @@
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "config.PlayerManagerMixin",
     "world.WorldMixin"
   ],
   "client": [

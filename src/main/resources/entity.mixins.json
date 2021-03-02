@@ -4,16 +4,16 @@
   "package": "dev.lazurite.rayon.impl.element.entity.hooks",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "common.EntityMixin",
-    "common.ExplosionMixin",
-    "common.ServerWorldMixin"
+    "CommonEntityMixin",
+    "ExplosionMixin",
+    "spawn.ServerWorldMixin"
   ],
   "client": [
-    "client.ClientPlayNetworkHandlerMixin",
-    "client.ClientWorldMixin",
-    "client.EntityMixin",
-    "client.EntityRenderDispatcherMixin",
-    "client.WorldRendererMixin"
+    "ClientEntityMixin",
+    "net.ClientPlayNetworkHandlerMixin",
+    "render.EntityRenderDispatcherMixin",
+    "render.WorldRendererMixin",
+    "spawn.ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -4,6 +4,7 @@ import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.util.RayonException;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
 import net.minecraft.nbt.CompoundTag;
@@ -51,7 +52,7 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
     @Override
     public void tick() {
         if (throwable != null) {
-            throw new PhysicsThreadException(
+            throw new RayonException(
                     "Uncaught exception on " + getName() + ": " + throwable + ".",
                     throwable);
         }
@@ -122,14 +123,4 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
 
     @Override
     public void writeToNbt(CompoundTag compoundTag) { }
-
-    /**
-     * An exception used to crash the client or server whenever
-     * an exception occurs on the physics thread.
-     */
-    static class PhysicsThreadException extends RuntimeException {
-        public PhysicsThreadException(String message, Throwable throwable) {
-            super(message, throwable);
-        }
-    }
 }

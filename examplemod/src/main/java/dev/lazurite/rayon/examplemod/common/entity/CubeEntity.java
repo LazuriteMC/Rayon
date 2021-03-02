@@ -1,10 +1,8 @@
-package dev.lazurite.rayon.examplemod.entity;
+package dev.lazurite.rayon.examplemod.common.entity;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -18,20 +16,18 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
-public class LivingCubeEntity extends LivingEntity implements PhysicsElement {
+public class CubeEntity extends LivingEntity implements PhysicsElement {
     private final ElementRigidBody rigidBody = new ElementRigidBody(this);
 
-    public LivingCubeEntity(EntityType<? extends LivingEntity> entityType, World world) {
+    public CubeEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 
     @Override
-    public void step(MinecraftSpace space) {
-    }
+    public void step(MinecraftSpace space) { }
 
     @Override
-    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
-    }
+    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) { }
 
     @Override
     public boolean damage(DamageSource source, float amount) {
@@ -48,12 +44,6 @@ public class LivingCubeEntity extends LivingEntity implements PhysicsElement {
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
-    public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
-        return true;
-    }
-
-    @Override
     public Iterable<ItemStack> getArmorItems() {
         return new ArrayList<>();
     }
@@ -64,9 +54,7 @@ public class LivingCubeEntity extends LivingEntity implements PhysicsElement {
     }
 
     @Override
-    public void equipStack(EquipmentSlot slot, ItemStack stack) {
-
-    }
+    public void equipStack(EquipmentSlot slot, ItemStack stack) { }
 
     @Override
     public Arm getMainArm() {

@@ -4,8 +4,6 @@ import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementC2S;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.impl.util.NativeLoader;
-import dev.lazurite.rayon.impl.util.config.Config;
-import dev.lazurite.rayon.impl.util.config.ConfigS2C;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
@@ -20,8 +18,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The main entrypoint for Rayon. Mainly contains packet registrations and also
- * contains the load call for {@link Config} and bullet natives.
+ * The main entrypoint for Rayon. Mainly contains packet
+ * registrations and the loading of bullet natives.
+ * @see NativeLoader
  */
 public class Rayon implements ModInitializer, ClientModInitializer, WorldComponentInitializer {
 	public static final String MODID = "rayon";
@@ -31,7 +30,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 	@Override
 	public void onInitialize() {
 		NativeLoader.load();
-		Config.getInstance().load();
 		ServerPlayNetworking.registerGlobalReceiver(EntityElementMovementC2S.PACKET_ID, EntityElementMovementC2S::accept);
 	}
 
@@ -39,7 +37,6 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 	public void onInitializeClient() {
 		ClientPlayNetworking.registerGlobalReceiver(ElementPropertiesS2C.PACKET_ID, ElementPropertiesS2C::accept);
 		ClientPlayNetworking.registerGlobalReceiver(EntityElementMovementS2C.PACKET_ID, EntityElementMovementS2C::accept);
-		ClientPlayNetworking.registerGlobalReceiver(ConfigS2C.PACKET_ID, ConfigS2C::accept);
 	}
 
 	/**

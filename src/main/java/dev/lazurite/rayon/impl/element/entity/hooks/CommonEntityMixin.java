@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.hooks.common;
+package dev.lazurite.rayon.impl.element.entity.hooks;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
@@ -24,12 +24,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin {
+public abstract class CommonEntityMixin {
     @Shadow public int age;
     @Shadow public World world;
     @Unique private int tickCounter;
     @Shadow public abstract void updatePosition(double x, double y, double z);
-
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {

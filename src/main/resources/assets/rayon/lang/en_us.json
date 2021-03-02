@@ -1,20 +1,5 @@
 {
   "debug.rayon.layer.entity": "Rigid Body Hitboxes: entities",
   "debug.rayon.layer.block": "Rigid Body Hitboxes: entities + blocks",
-  "debug.rayon.off": "Rigid Body Hitboxes: hidden",
-
-  "config.rayon.title": "Physics Simulation Settings",
-
-  "config.rayon.option.fluid.air.density": "Air Density",
-  "config.rayon.option.fluid.air.density.tooltip": "The air density used by the fluid resistance simulation.",
-  "config.rayon.option.fluid.water.density": "Water Density",
-  "config.rayon.option.fluid.water.density.tooltip": "The water density used by the fluid resistance simulation.",
-  "config.rayon.option.fluid.lava.density": "Lava Density",
-  "config.rayon.option.fluid.lava.density.tooltip": "The lava density used by the fluid resistance simulation.",
-  "config.rayon.option.gravity": "Gravity",
-  "config.rayon.option.gravity.tooltip": "The amount of gravity used by the physics simulation.",
-
-  "config.rayon.option.performance.low": "Performance Impact: Low",
-  "config.rayon.option.performance.medium": "Performance Impact: Medium",
-  "config.rayon.option.performance.high": "Performance Impact: High"
+  "debug.rayon.off": "Rigid Body Hitboxes: hidden"
 }

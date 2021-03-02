@@ -1,8 +1,7 @@
-package dev.lazurite.rayon.examplemod.item;
+package dev.lazurite.rayon.examplemod.common.item;
 
 import dev.lazurite.rayon.examplemod.ExampleMod;
-import dev.lazurite.rayon.examplemod.entity.LivingCubeEntity;
-import dev.lazurite.rayon.examplemod.entity.RectangularPrismEntity;
+import dev.lazurite.rayon.examplemod.common.entity.CubeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,7 +12,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 /**
- * This is just meant as a test item that spawns a {@link RectangularPrismEntity}
+ * This is just meant as a test item that spawns a {@link CubeEntity}
  */
 public class WandItem extends Item {
     public WandItem(Settings settings) {
@@ -26,9 +25,14 @@ public class WandItem extends Item {
         HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 
         if (!world.isClient()) {
-//            RectangularPrismEntity entity = new RectangularPrismEntity(ExampleMod.RECTANGULAR_PRISM_ENTITY, world);
-            LivingCubeEntity entity = new LivingCubeEntity(ExampleMod.LIVING_CUBE_ENTITY, world);
+            CubeEntity entity = new CubeEntity(ExampleMod.CUBE_ENTITY, world);
             entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+
+            /* Set the physics element to be prioritized if the player is sneaking while right clicking with the wand. */
+            if (user.isSneaking()) {
+                entity.getRigidBody().prioritize(user);
+            }
+
             world.spawnEntity(entity);
             return TypedActionResult.success(itemStack);
         }

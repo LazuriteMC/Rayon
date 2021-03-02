@@ -3,8 +3,8 @@ package dev.lazurite.rayon.impl.bullet.body.type;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.RayonException;
-import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -22,12 +22,13 @@ public interface FluidDragBody {
     boolean shouldDoFluidResistance();
     void setDoFluidResistance(boolean doFluidResistance);
 
-    default void applyDrag(World world) {
+    default void applyDrag(MinecraftSpace space) {
         if (!(this instanceof PhysicsRigidBody)) {
             throw new RayonException("Drag body must be rigid body");
         }
 
         if (shouldDoFluidResistance()) {
+            World world = space.getWorld();
             PhysicsRigidBody rigidBody = (PhysicsRigidBody) this;
             float drag;
 
@@ -43,15 +44,15 @@ public interface FluidDragBody {
             }
 
             if (Blocks.LAVA.equals(block)) {
-                drag = Config.getInstance().getLavaDensity();
+                drag = space.getLavaDensity();
             } else if (Blocks.WATER.equals(block)) {
-                drag = Config.getInstance().getWaterDensity();
+                drag = space.getWaterDensity();
             } else {
-                drag = Config.getInstance().getAirDensity();
+                drag = space.getAirDensity();
             }
 
             float dragCoefficient = getDragCoefficient();
-            float gravitationalForce = rigidBody.getMass() * Config.getInstance().getGravity();
+            float gravitationalForce = rigidBody.getMass() * space.getGravity(new Vector3f()).length();
             float area = (float) Math.pow(rigidBody.boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
             float k = (drag * dragCoefficient * area) / 2.0f;
 
@@ -60,7 +61,7 @@ public interface FluidDragBody {
                     .multLocal(-rigidBody.getLinearVelocity(new Vector3f()).lengthSquared())
                     .multLocal(k);
 
-            if (drag != Config.getInstance().getAirDensity() && force.y > -gravitationalForce) {
+            if (drag != space.getAirDensity() && force.y > -gravitationalForce) {
                 /* Makes the object stop when it collides with a more dense liquid */
                 rigidBody.applyCentralImpulse(rigidBody.getLinearVelocity(new Vector3f()).multLocal(-rigidBody.getMass()));
             } else {

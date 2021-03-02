@@ -15,7 +15,6 @@ import dev.lazurite.rayon.impl.bullet.body.type.FluidDragBody;
 import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.util.thread.Clock;
-import dev.lazurite.rayon.impl.util.config.Config;
 import dev.lazurite.rayon.impl.util.thread.Pausable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -48,6 +47,10 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
     private int presimSteps;
     private int maxSubSteps;
 
+    private float airDensity;
+    private float waterDensity;
+    private float lavaDensity;
+
     public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase, int maxSubSteps) {
         super(broadphase);
         this.thread = thread;
@@ -56,8 +59,13 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
         this.server = world.getServer();
-        this.setGravity(new Vector3f(0, Config.getInstance().getGravity(), 0));
         this.addCollisionListener(this);
+
+        this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
+        this.setAirDensity(1.2f); // kg/m^3
+        this.setWaterDensity(997f); // kg/m^3
+        this.setLavaDensity(3100f); // kg/m^3
+
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
@@ -71,7 +79,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      *     <li>Steps {@link ElementRigidBody}s.</li>
      *     <li>Applies air drag force to all {@link FluidDragBody}s.</li>
      *     <li>Loads blocks into the simulation around {@link TerrainLoadingBody}s using {@link TerrainManager}.</li>
-     *     <li>Sets gravity to the value stored in {@link Config}.</li>
      *     <li>Triggers all collision events (queues up tasks in server thread).</li>
      *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
      * </ul>
@@ -93,13 +100,10 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
             getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> body.getElement().step(this));
 
             /* Fluid Resistance */
-            getRigidBodiesByClass(FluidDragBody.class).forEach(body -> body.applyDrag(world));
+            getRigidBodiesByClass(FluidDragBody.class).forEach(body -> body.applyDrag(this));
 
             /* Terrain Loading */
             getTerrainManager().load(getRigidBodiesByClass(TerrainLoadingBody.class));
-
-            /* Gravity */
-            setGravity(new Vector3f(0, Config.getInstance().getGravity(), 0));
 
             /* Collision Events */
             if (!getWorld().isClient()) {
@@ -147,6 +151,30 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         if (this.maxSubSteps < maxSubSteps) {
             this.maxSubSteps = maxSubSteps;
         }
+    }
+
+    public void setAirDensity(float airDensity) {
+        this.airDensity = airDensity;
+    }
+
+    public void setWaterDensity(float waterDensity) {
+        this.waterDensity = waterDensity;
+    }
+
+    public void setLavaDensity(float lavaDensity) {
+        this.lavaDensity = lavaDensity;
+    }
+
+    public float getAirDensity() {
+        return this.airDensity;
+    }
+
+    public float getWaterDensity() {
+        return this.waterDensity;
+    }
+
+    public float getLavaDensity() {
+        return this.lavaDensity;
     }
 
     /**
