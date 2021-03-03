@@ -39,11 +39,8 @@ dependencies {
 More information can be found on [our wiki](https://docs.lazurite.dev/rayon/getting-started).
 
 ## Special Thanks
-Rayon wouldn't be possible without the following Fabric libraries:
+Rayon wouldn't be possible without the following Fabric library:
 * [OnyxStudios/Cardinal-Components-API](https://github.com/OnyxStudios/Cardinal-Components-API)
-* [FabLabsMc/Fiber](https://github.com/FabLabsMC/fiber)
-* [shedaniel/Cloth-Config](https://github.com/shedaniel/cloth-config)
-* [TerraformersMC/ModMenu](https://github.com/TerraformersMC/ModMenu)
 
 ## Community
 If you need help with Rayon or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P). We also have a [trello board](https://trello.com/b/SNaD9BVr/rayon).
