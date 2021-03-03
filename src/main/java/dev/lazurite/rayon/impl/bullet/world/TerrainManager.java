@@ -42,9 +42,11 @@ public class TerrainManager {
      * @see TerrainManager#load(Box)
      */
     public void load(List<TerrainLoadingBody> terrainLoadingBodies) {
-        terrainLoadingBodies.forEach(body ->
-            load(new Box(body.getBlockPos()).expand(body.getLoadDistance()))
-        );
+        terrainLoadingBodies.forEach(body -> {
+            if (!body.isInNoClip()) {
+                load(new Box(body.getBlockPos()).expand(body.getLoadDistance()));
+            }
+        });
 
         purge();
     }

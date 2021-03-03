@@ -174,6 +174,11 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     }
 
     @Override
+    public boolean isInNoClip() {
+        return getElement().isInNoClip();
+    }
+
+    @Override
     public Vector3f getOutlineColor() {
         return new Vector3f(1.0f, 0.6f, 0);
     }

@@ -21,4 +21,9 @@ public interface TerrainLoadingBody {
      * @return the max distance at which to load blocks in the {@link MinecraftSpace}
      */
     int getLoadDistance();
+
+    /**
+     * Whether or not the rigid body is in noclip mode.
+     */
+    boolean isInNoClip();
 }

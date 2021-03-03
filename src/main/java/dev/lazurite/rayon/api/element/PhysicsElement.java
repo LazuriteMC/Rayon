@@ -46,6 +46,15 @@ public interface PhysicsElement {
     ElementRigidBody getRigidBody();
 
     /**
+     * If you would like to allow physics elements to enter noclip mode, simply override
+     * this method and handle the switching between modes however you like.
+     * @return whether or not this physics element is in noclip mode
+     */
+    default boolean isInNoClip() {
+        return false;
+    }
+
+    /**
      * Mainly used for lerping within your renderer, this method returns
      * a lerped location vector based on the provided tick delta.
      * @param store any vector to store the output in
