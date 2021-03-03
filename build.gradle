@@ -1,13 +1,7 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
-
 plugins {
 	id 'com.github.johnrengelman.shadow' version "5.2.0"
 	id 'fabric-loom' version '0.5-SNAPSHOT'
 	id 'maven-publish'
-}
-
-minecraft {
-	accessWidener "src/main/resources/rayon.accesswidener"
 }
 
 subprojects {
@@ -15,14 +9,9 @@ subprojects {
 	archivesBaseName = rootProject.archives_base_name + "-" + project.name
 	group = rootProject.maven_group + "." + rootProject.archives_base_name
 
-	repositories {
-		maven { url 'https://jitpack.io' }
-	}
-
 	dependencies {
 		compile rootProject.sourceSets.main.output
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-		modImplementation "com.github.joaoh1:OkZoomer:4.0.0-alpha.4.1.16.1"
 	}
 }
 
@@ -38,10 +27,8 @@ allprojects {
 	group = project.maven_group
 
 	repositories {
-		maven {
-			name = "Ladysnake Libs"
-			url = "https://dl.bintray.com/ladysnake/libs"
-		}
+		maven { url = "https://dl.bintray.com/ladysnake/libs" }
+		maven { url = "https://jitpack.io" }
 	}
 
 	dependencies {
@@ -53,28 +40,21 @@ allprojects {
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-		// Mod Menu
-		modImplementation("io.github.prospector:modmenu:${project.modmenu_version}") { exclude(group: "net.fabricmc.fabric-api") }
+		// Transporter
+		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
+		include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 
 		// Cardinal Components
 		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
-		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cca_version}"
+		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
 
-		// Fiber
-		modApi "me.zeroeightsix:fiber:${project.fiber_version}"
-		include "me.zeroeightsix:fiber:${project.fiber_version}"
-
-		// Cloth
-		modApi ("me.shedaniel.cloth:config-2:${project.cloth_version}") { exclude(group: "net.fabricmc.fabric-api") }
-		include "me.shedaniel.cloth:config-2:${project.cloth_version}"
-
-		// JBullet
-		implementation "cz.advel.jbullet:jbullet:${project.jbullet_version}"
-		shadow "cz.advel.jbullet:jbullet:${project.jbullet_version}"
+		// Zip4j + LibBulletJME
+		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"
+		shadow "net.lingala.zip4j:zip4j:${project.zip4j_version}"
+		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 	}
 
 	processResources {
@@ -103,13 +83,6 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 shadowJar {
 	configurations = [project.configurations.shadow]
 }
-
-task relocateShadowJar(type: ConfigureShadowRelocation) {
-	target = tasks.shadowJar
-	prefix = "physics"
-}
-
-tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
 jar {
 	from "LICENSE"

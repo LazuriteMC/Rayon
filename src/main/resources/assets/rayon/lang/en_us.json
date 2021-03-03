@@ -1,26 +1,5 @@
 {
-  "debug.rayon.on": "Rigid Body Hitboxes: shown",
-  "debug.rayon.off": "Rigid Body Hitboxes: hidden",
-
-  "config.rayon.title": "Phyiscs Simulation Settings",
-
-  "config.rayon.option.block_distance": "Block Distance",
-  "config.rayon.option.block_distance.tooltip": "The distance from an entity at which blocks are loaded.",
-
-  "config.rayon.option.step_rate": "Step Rate",
-  "config.rayon.option.step_rate.tooltip": "The rate at which the simulation is stepped.",
-  "config.rayon.option.step_rate.max": "Unlimited",
-
-  "config.rayon.option.air_density": "Air Density",
-  "config.rayon.option.air_density.tooltip": "The air density used by the air resistance simulation.",
-
-  "config.rayon.option.gravity": "Gravity",
-  "config.rayon.option.gravity.tooltip": "The amount of gravity used by the physics simulation.",
-
-  "config.rayon.option.air_resistance_enabled": "Enable Air Resistance",
-  "config.rayon.option.air_resistance_enabled.tooltip": "Whether or not to simulate air resistance.",
-
-  "config.rayon.option.performance.low": "Performance Impact: Low",
-  "config.rayon.option.performance.medium": "Performance Impact: Medium",
-  "config.rayon.option.performance.high": "Performance Impact: High"
+  "debug.rayon.layer.entity": "Rigid Body Hitboxes: entities",
+  "debug.rayon.layer.block": "Rigid Body Hitboxes: entities + blocks",
+  "debug.rayon.off": "Rigid Body Hitboxes: hidden"
 }

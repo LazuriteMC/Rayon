@@ -14,17 +14,15 @@
 
   "license": "MIT",
   "icon": "assets/rayon/icon.png",
-  "accessWidener": "rayon.accesswidener",
   "environment": "*",
 
   "entrypoints": {
-    "main": [ "dev.lazurite.rayon.Rayon" ],
-    "client": [ "dev.lazurite.rayon.Rayon" ],
-    "cardinal-components-entity": [ "dev.lazurite.rayon.Rayon" ],
-    "cardinal-components-world": [ "dev.lazurite.rayon.Rayon" ],
-    "modmenu": [ "dev.lazurite.rayon.util.config.ModMenuEntry" ]
+    "main": [ "dev.lazurite.rayon.impl.Rayon" ],
+    "client": [ "dev.lazurite.rayon.impl.Rayon" ],
+    "cardinal-components-world": [ "dev.lazurite.rayon.impl.Rayon" ]
   },
-  "mixins": [ "rayon.mixins.json" ],
+
+  "mixins": [ "rayon.mixins.json", "entity.mixins.json" ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
@@ -35,10 +33,12 @@
   "suggests": { "flamingo": "*" },
 
   "custom": {
-    "modmenu:api": true,
+    "modmenu": {
+      "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" },
+      "badges": [ "library" ]
+    },
     "cardinal-components": [
-      "rayon:dynamic_body_entity",
-      "rayon:dynamics_world"
+      "rayon:thread"
     ]
   }
 }
