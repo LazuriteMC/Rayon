@@ -9,15 +9,18 @@ import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
+import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -28,8 +31,13 @@ public abstract class CommonEntityMixin {
     @Unique private int tickCounter;
     @Shadow public abstract void updatePosition(double x, double y, double z);
 
+    @Shadow public abstract boolean isAlive();
+
+    @Shadow public abstract double getRandomBodyY();
+
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {
+
         if (this instanceof PhysicsElement) {
             PhysicsElement element = (PhysicsElement) this;
             ElementRigidBody body = element.getRigidBody();
@@ -118,6 +126,29 @@ public abstract class CommonEntityMixin {
             ((Entity) (Object) this).setPos(((Entity) (Object) this).getX(), ((Entity) (Object) this).getY() + ((PhysicsElement) this).getRigidBody().boundingBox(new BoundingBox()).getYExtent()*3, ((Entity) (Object) this).getZ());
         }
     }
+
+// TODO flowing fluid experiments
+//    @Redirect(
+//            method = "updateMovementInFluid",
+//            at = @At(
+//                    value = "INVOKE",
+//                    target = "Lnet/minecraft/util/math/Vec3d;add(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;",
+//                    ordinal = 0
+//            )
+//    )
+//    public Vec3d add(Vec3d vec3d, Vec3d toAdd) {
+//        if (this instanceof PhysicsElement) {
+//            ElementRigidBody rigidBody = ((PhysicsElement) this).getRigidBody();
+//            Vector3f force = VectorHelper.vec3dToVector3f(toAdd).multLocal(20).multLocal(rigidBody.getMass()).multLocal(100);
+//            System.out.println(force);
+//
+//            Rayon.THREAD.get(world).execute(space ->
+//                rigidBody.applyCentralImpulse(force)
+//            );
+//        }
+//
+//        return vec3d.add(toAdd);
+//    }
 
     /**
      * This method cleans up after the {@link MinecraftSpace}

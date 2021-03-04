@@ -21,6 +21,7 @@ public class CubeEntity extends LivingEntity implements PhysicsElement {
 
     public CubeEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
+        getRigidBody().setAngularDamping(0.25f);
     }
 
     @Override
