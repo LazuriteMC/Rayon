@@ -97,15 +97,15 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
 
     public void fromTag(CompoundTag tag) {
         /* Movement Info */
-        setPhysicsRotation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
-        setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
-        setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
+//        setPhysicsRotation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
+//        setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
+//        setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
 
         /* Properties */
-        setDragCoefficient(tag.getFloat("drag_coefficient"));
-        setMass(tag.getFloat("mass"));
-        setFriction(tag.getFloat("friction"));
-        setRestitution(tag.getFloat("restitution"));
+//        setDragCoefficient(tag.getFloat("drag_coefficient"));
+//        setMass(tag.getFloat("mass"));
+//        setFriction(tag.getFloat("friction"));
+//        setRestitution(tag.getFloat("restitution"));
     }
 
     public void toTag(CompoundTag tag) {

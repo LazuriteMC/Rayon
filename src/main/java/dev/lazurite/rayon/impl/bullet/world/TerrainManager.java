@@ -11,6 +11,7 @@ import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.TypedPattern;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -97,7 +98,14 @@ public class TerrainManager {
                         MatrixStack transformation = new MatrixStack();
                         transformation.scale(0.95f, 0.95f, 0.95f);
                         transformation.translate(-0.5f, -0.5f, -0.5f);
-                        pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+
+                        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+
+                        if (blockEntity != null) {
+                            pattern = Disassembler.getBlockEntity(blockEntity, transformation);
+                        } else {
+                            pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+                        }
                     } else {
                         pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
                     }
