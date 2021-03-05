@@ -14,11 +14,10 @@ Rayon isn't a rewrite of Minecraft's physics. Rather, it runs alongside Minecraf
 and simulates the motion of custom entities using [JBullet](http://jbullet.advel.cz/).
 
 ## Features
-* Register a custom entity to become a rigid body
-* Contains event callbacks such as block collision events for implementing custom behavior
+* Create custom rigid body entities
+* Contains event callbacks such as block and rigid body collisions
 * Ability to add custom collision shapes
 * Server-Client compatibility (i.e. multiplayer support)
-* Customizable config settings to control simulation performance and preferences
 * Debugging tools (F3 + r)
 
 ## How do I use it in my mod?
@@ -43,4 +42,4 @@ Rayon wouldn't be possible without the following Fabric library:
 * [OnyxStudios/Cardinal-Components-API](https://github.com/OnyxStudios/Cardinal-Components-API)
 
 ## Community
-If you need help with Rayon or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P). We also have a [trello board](https://trello.com/b/SNaD9BVr/rayon).
+If you need help with Rayon or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P).
