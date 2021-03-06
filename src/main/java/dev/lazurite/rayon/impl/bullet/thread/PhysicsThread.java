@@ -24,18 +24,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see MinecraftSpace
  */
 public class PhysicsThread extends Thread {
-    public static final float STEP_SIZE = 1f / 60f; // in seconds
-
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
     private final Map<World, MinecraftSpace> spaces = Maps.newConcurrentMap();
     private final ThreadExecutor<? extends Runnable> executor;
+    private float stepRate = 1f / 30f;
     private Throwable throwable;
     private boolean running = true;
     private long nextStep;
 
     public PhysicsThread(ThreadExecutor<? extends Runnable> executor, String name) {
         this.executor = executor;
-        this.nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
+        this.nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
         this.setUncaughtExceptionHandler((thread, throwable) -> this.throwable = throwable);
         this.setName(name);
         this.start();
@@ -58,7 +57,7 @@ public class PhysicsThread extends Thread {
     public void run() {
         while (running) {
             if (Util.getMeasuringTimeMs() > nextStep) {
-                nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
+                nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
 
                 /* Run all queued tasks */
                 while (!tasks.isEmpty()) {
@@ -77,6 +76,14 @@ public class PhysicsThread extends Thread {
      */
     public void execute(Runnable task) {
         tasks.add(task);
+    }
+
+    public void setStepRate(int stepsPerSecond) {
+        this.stepRate = 1 / (float) stepsPerSecond;
+    }
+
+    public float getStepRate() {
+        return this.stepRate;
     }
 
     /**
