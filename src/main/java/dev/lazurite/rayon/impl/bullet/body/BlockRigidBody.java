@@ -19,8 +19,6 @@ public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     private final BlockState blockState;
     private final BlockPos blockPos;
 
-    // TODO experiment with chunk rigid bodies
-
     public BlockRigidBody(BlockState blockState, BlockPos blockPos, @Nullable CollisionShape shape, float friction, float restitution) {
         super(shape == null ? new BoundingBoxShape(new Box(-0.5, -0.5, -0.5, 1, 1, 1)) : shape, PhysicsRigidBody.massForStatic);
         this.blockState = blockState;

@@ -3,10 +3,11 @@ package dev.lazurite.rayon.impl.bullet.world;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
-import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.TypedPattern;
@@ -39,13 +40,14 @@ public class TerrainManager {
     /**
      * Load every block within a set distance from the given entities. The distance is defined
      * earlier during execution and converted into a {@link Box} area parameter.
-     * @param terrainLoadingBodies the {@link List} of {@link TerrainLoadingBody} objects
+     * @param terrainLoadingBodies the {@link List} of {@link ElementRigidBody} objects
      * @see TerrainManager#load(Box)
      */
-    public void load(List<TerrainLoadingBody> terrainLoadingBodies) {
+    public void load(List<ElementRigidBody> terrainLoadingBodies) {
         terrainLoadingBodies.forEach(body -> {
             if (!body.isInNoClip()) {
-                load(new Box(body.getBlockPos()).expand(body.getLoadDistance()));
+                Vector3f pos = body.getPhysicsLocation(new Vector3f());
+                load(new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getBlockLoadDistance()));
             }
         });
 

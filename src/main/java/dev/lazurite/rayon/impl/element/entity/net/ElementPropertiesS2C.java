@@ -32,6 +32,8 @@ public class ElementPropertiesS2C {
             float dragCoefficient = buf.readFloat();
             float friction = buf.readFloat();
             float restitution = buf.readFloat();
+            int blockDistance = buf.readInt();
+            boolean doFluidResistance = buf.readBoolean();
             UUID priorityPlayer = buf.readUuid();
 
             Rayon.SPACE.get(client.world).getThread().execute(() -> {
@@ -45,6 +47,8 @@ public class ElementPropertiesS2C {
                     rigidBody.setDragCoefficient(dragCoefficient);
                     rigidBody.setFriction(friction);
                     rigidBody.setRestitution(restitution);
+                    rigidBody.setBlockLoadDistance(blockDistance);
+                    rigidBody.setDoFluidResistance(doFluidResistance);
                     rigidBody.prioritize(player);
                 }
             });
@@ -64,6 +68,8 @@ public class ElementPropertiesS2C {
         buf.writeFloat(rigidBody.getDragCoefficient());
         buf.writeFloat(rigidBody.getFriction());
         buf.writeFloat(rigidBody.getRestitution());
+        buf.writeInt(rigidBody.getBlockLoadDistance());
+        buf.writeBoolean(rigidBody.shouldDoFluidResistance());
 
         if (rigidBody.getPriorityPlayer() == null) {
             buf.writeUuid(new UUID(0, 0));

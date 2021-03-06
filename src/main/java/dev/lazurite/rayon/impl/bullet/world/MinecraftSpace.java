@@ -12,8 +12,6 @@ import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.body.type.FluidDragBody;
-import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.thread.Pausable;
@@ -77,8 +75,8 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
      * <ul>
      *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
-     *     <li>Applies air drag force to all {@link FluidDragBody}s.</li>
-     *     <li>Loads blocks into the simulation around {@link TerrainLoadingBody}s using {@link TerrainManager}.</li>
+     *     <li>Applies air drag force to all {@link ElementRigidBody}s.</li>
+     *     <li>Loads blocks into the simulation around {@link ElementRigidBody}s using {@link TerrainManager}.</li>
      *     <li>Triggers all collision events (queues up tasks in server thread).</li>
      *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
      * </ul>
@@ -96,14 +94,17 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
             /* World Step Event */
             PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
-            /* Steppp */
-            getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> body.getElement().step(this));
+            /* Step and Fluid Resistance */
+            getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
+                body.getElement().step(this);
 
-            /* Fluid Resistance */
-            getRigidBodiesByClass(FluidDragBody.class).forEach(body -> body.applyDrag(this));
+                if (body.shouldDoFluidResistance()) {
+                    body.applyDrag();
+                }
+            });
 
             /* Terrain Loading */
-            getTerrainManager().load(getRigidBodiesByClass(TerrainLoadingBody.class));
+            getTerrainManager().load(getRigidBodiesByClass(ElementRigidBody.class));
 
             /* Collision Events */
             if (!getWorld().isClient()) {
