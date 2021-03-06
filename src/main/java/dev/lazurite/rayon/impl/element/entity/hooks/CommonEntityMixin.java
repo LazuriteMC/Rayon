@@ -9,18 +9,14 @@ import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
-import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -28,12 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class CommonEntityMixin {
     @Shadow public int age;
     @Shadow public World world;
-    @Unique private int tickCounter;
     @Shadow public abstract void updatePosition(double x, double y, double z);
-
-    @Shadow public abstract boolean isAlive();
-
-    @Shadow public abstract double getRandomBodyY();
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {
@@ -57,15 +48,13 @@ public abstract class CommonEntityMixin {
 
             /* Send movement and property packets */
             if (!world.isClient()) {
-                if (body.getPriorityPlayer() == null && (age < 20 || body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged())) {
+                if (body.getPriorityPlayer() == null && (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged())) {
                     EntityElementMovementS2C.send(element);
                 }
 
-                if (tickCounter > 20) {
+                if (body.arePropertiesDirty()) {
                     ElementPropertiesS2C.send(element);
-                    tickCounter = 0;
-                } else {
-                    ++tickCounter;
+                    body.setPropertiesDirty(false);
                 }
             }
 

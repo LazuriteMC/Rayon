@@ -5,6 +5,7 @@ import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
@@ -25,6 +26,7 @@ public class ServerWorldMixin {
             /* Set the position of the rigid body */
             ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
             rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
+            EntityElementMovementS2C.send((PhysicsElement) entity);
 
             /* Add it to the world */
             MinecraftSpace space = Rayon.SPACE.get(this);

@@ -49,6 +49,7 @@ import org.jetbrains.annotations.Nullable;
 public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody {
     private final PhysicsElement element;
     private final MinecraftSpace space;
+    private boolean propertiesDirty;
     private int loadDistance;
     private float dragCoefficient;
     private boolean doFluidResistance;
@@ -79,10 +80,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this((PhysicsElement) entity, Rayon.SPACE.get(entity.getEntityWorld()), new BoundingBoxShape(entity.getBoundingBox()));
     }
 
-    public void prioritize(@Nullable PlayerEntity player) {
-        priorityPlayer = player;
-    }
-
     /**
      * Calculates the distance away blocks should be loaded based
      * on the size of the collision bounding box.
@@ -90,10 +87,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
      */
     protected int calculateLoadDistance() {
         return (int) boundingBox(new BoundingBox()).getExtent(new Vector3f()).length() + 1;
-    }
-
-    public void setBlockLoadDistance(int loadDistance) {
-        this.loadDistance = loadDistance;
     }
 
     public void fromTag(CompoundTag tag) {
@@ -134,16 +127,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.frame = frame;
     }
 
-    public void setDragCoefficient(float dragCoefficient) {
-        this.dragCoefficient = dragCoefficient;
-    }
-
     public Frame getFrame() {
         return this.frame;
-    }
-
-    public PlayerEntity getPriorityPlayer() {
-        return this.priorityPlayer;
     }
 
     public PhysicsElement getElement() {
@@ -154,24 +139,16 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return this.space;
     }
 
-    public float getDragCoefficient() {
-        return dragCoefficient;
-    }
-
-    public int getBlockLoadDistance() {
-        return this.loadDistance;
-    }
-
-    public void setDoFluidResistance(boolean doFluidResistance) {
-        this.doFluidResistance = doFluidResistance;
-    }
-
-    public boolean shouldDoFluidResistance() {
-        return this.doFluidResistance;
-    }
-
     public boolean isInNoClip() {
         return getElement().isInNoClip();
+    }
+
+    public void setPropertiesDirty(boolean propertiesDirty) {
+        this.propertiesDirty = propertiesDirty;
+    }
+
+    public boolean arePropertiesDirty() {
+        return this.propertiesDirty;
     }
 
     @Override
@@ -225,5 +202,68 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
                 applyCentralForce(force);
             }
         }
+    }
+
+    /* Property Setters */
+
+    @Override
+    public void setMass(float mass) {
+        super.setMass(mass);
+        this.setPropertiesDirty(true);
+    }
+
+    public void setDragCoefficient(float dragCoefficient) {
+        this.dragCoefficient = dragCoefficient;
+        this.setPropertiesDirty(true);
+    }
+
+    @Override
+    public void setFriction(float friction) {
+        super.setFriction(friction);
+        this.setPropertiesDirty(true);
+    }
+
+    @Override
+    public void setRestitution(float restitution) {
+        super.setRestitution(restitution);
+        this.setPropertiesDirty(true);
+    }
+
+    public void setBlockLoadDistance(int loadDistance) {
+        this.loadDistance = loadDistance;
+        this.setPropertiesDirty(true);
+    }
+
+    public void setDoFluidResistance(boolean doFluidResistance) {
+        this.doFluidResistance = doFluidResistance;
+        this.setPropertiesDirty(true);
+    }
+
+    public void prioritize(@Nullable PlayerEntity player) {
+        priorityPlayer = player;
+        this.setPropertiesDirty(true);
+    }
+
+    /*
+     * Property Getters
+     *     getMass()
+     *     getFriction()
+     *     getRestitution()
+     */
+
+    public PlayerEntity getPriorityPlayer() {
+        return this.priorityPlayer;
+    }
+
+    public float getDragCoefficient() {
+        return dragCoefficient;
+    }
+
+    public int getBlockLoadDistance() {
+        return this.loadDistance;
+    }
+
+    public boolean shouldDoFluidResistance() {
+        return this.doFluidResistance;
     }
 }
