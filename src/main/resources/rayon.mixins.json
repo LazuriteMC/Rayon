@@ -3,13 +3,9 @@
   "minVersion": "0.8",
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "world.WorldMixin"
-  ],
   "client": [
-    "debug.DebugRendererMixin",
-    "debug.KeyboardMixin",
-    "world.ClientWorldMixin"
+    "DebugRendererMixin",
+    "KeyboardMixin"
   ],
   "injectors": {
     "defaultRequire": 1

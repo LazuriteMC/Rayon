@@ -36,7 +36,7 @@ public class EntityElementMovementS2C {
             Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
             Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-            Rayon.THREAD.get(client.world).execute(space -> {
+            Rayon.SPACE.get(client.world).getThread().execute(() -> {
                 Entity entity = client.world.getEntityById(entityId);
 
                 if (entity instanceof PhysicsElement) {

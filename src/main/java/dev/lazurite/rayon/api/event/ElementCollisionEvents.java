@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
  *     <li><b>Block Collision:</b> Element on Block</li>
  *     <li><b>Element Collision:</b> Element on Element</li>
  * </ul>
- * <b>Note:</b> All the events listed here run on the server thread <i>only!</i>
+ * <b>Note:</b> All the events listed here run on the server thread or the client thread (not the physics thread).
  * @see MinecraftSpace#collision
  */
 public class ElementCollisionEvents {

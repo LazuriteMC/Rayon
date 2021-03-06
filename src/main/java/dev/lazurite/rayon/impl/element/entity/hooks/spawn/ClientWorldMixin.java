@@ -30,7 +30,8 @@ public class ClientWorldMixin {
             rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
 
             /* Add it to the world */
-            Rayon.THREAD.get(this).execute(space -> space.addCollisionObject(rigidBody));
+            MinecraftSpace space = Rayon.SPACE.get(this);
+            space.getThread().execute(() -> space.addCollisionObject(rigidBody));
         }
     }
 }

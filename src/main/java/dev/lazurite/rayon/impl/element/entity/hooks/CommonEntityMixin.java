@@ -89,10 +89,7 @@ public abstract class CommonEntityMixin {
         if (this instanceof PhysicsElement) {
             PhysicsElement element = (PhysicsElement) this;
             Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass());
-
-            Rayon.THREAD.get(world).execute(space ->
-                    element.getRigidBody().applyCentralImpulse(force)
-            );
+            Rayon.SPACE.get(world).getThread().execute(() -> element.getRigidBody().applyCentralImpulse(force));
         }
     }
 
@@ -127,29 +124,6 @@ public abstract class CommonEntityMixin {
         }
     }
 
-// TODO flowing fluid experiments
-//    @Redirect(
-//            method = "updateMovementInFluid",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/util/math/Vec3d;add(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;",
-//                    ordinal = 0
-//            )
-//    )
-//    public Vec3d add(Vec3d vec3d, Vec3d toAdd) {
-//        if (this instanceof PhysicsElement) {
-//            ElementRigidBody rigidBody = ((PhysicsElement) this).getRigidBody();
-//            Vector3f force = VectorHelper.vec3dToVector3f(toAdd).multLocal(20).multLocal(rigidBody.getMass()).multLocal(100);
-//            System.out.println(force);
-//
-//            Rayon.THREAD.get(world).execute(space ->
-//                rigidBody.applyCentralImpulse(force)
-//            );
-//        }
-//
-//        return vec3d.add(toAdd);
-//    }
-
     /**
      * This method cleans up after the {@link MinecraftSpace}
      * by removing any {@link ElementRigidBody}s that have had
@@ -159,7 +133,9 @@ public abstract class CommonEntityMixin {
     @Inject(method = "remove", at = @At("HEAD"))
     public synchronized void remove(CallbackInfo info) {
         if (this instanceof PhysicsElement) {
-            Rayon.THREAD.get(world).execute(space -> {
+            MinecraftSpace space = Rayon.SPACE.get(world);
+
+            space.getThread().execute(() -> {
                 ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
 
                 if (body.isInWorld()) {

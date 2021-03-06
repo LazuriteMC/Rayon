@@ -38,7 +38,7 @@
       "badges": [ "library" ]
     },
     "cardinal-components": [
-      "rayon:thread"
+      "rayon:space"
     ]
   }
 }

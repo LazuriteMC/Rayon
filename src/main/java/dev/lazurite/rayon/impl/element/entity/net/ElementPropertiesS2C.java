@@ -34,7 +34,7 @@ public class ElementPropertiesS2C {
             float restitution = buf.readFloat();
             UUID priorityPlayer = buf.readUuid();
 
-            Rayon.THREAD.get(client.world).execute(space -> {
+            Rayon.SPACE.get(client.world).getThread().execute(() -> {
                 Entity entity = client.world.getEntityById(entityId);
 
                 if (entity instanceof PhysicsElement) {

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.debug;
+package dev.lazurite.rayon.impl.mixin;
 
 import dev.lazurite.rayon.impl.util.debug.DebugManager;
 import net.fabricmc.api.EnvType;

@@ -9,6 +9,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.type.FluidDragBody;
@@ -16,9 +17,10 @@ import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.thread.Pausable;
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -27,20 +29,19 @@ import java.util.List;
  * This is the physics simulation environment for all {@link BlockRigidBody}s and {@link ElementRigidBody}s. It runs
  * on a separate thread from the rest of the game using {@link PhysicsThread}. Users shouldn't have to interact with
  * this object too much.<br>
- * To gain access to the world's {@link MinecraftSpace}, you can either call {@link PhysicsThread#execute}, register
- * a step event in {@link PhysicsSpaceEvents}, or call {@link PhysicsThread#getSpace()}. As a rule of thumb, if you
- * need to modify information in the physics world (e.g. add a rigid body) then you should always perform operations
- * on the same thread. {@link PhysicsSpaceEvents} and {@link PhysicsThread#execute} both get you onto the physics thread
- * while {@link PhysicsThread#getSpace()} does not. If you only need to read information from the physics world,
- * {@link PhysicsThread#getSpace()} is ok to use but should be considered a last resort.
+ * To gain access to the world's {@link MinecraftSpace}, you can call {@link Rayon}.SPACE.get() or register
+ * a step event in {@link PhysicsSpaceEvents}. As a rule of thumb, if you need to modify information in the physics
+ * environment (e.g. add a rigid body or apply a force) then you should always perform those operations on the same
+ * thread. The easiest way to get onto the physics thread is to queue a task using {@link PhysicsThread#execute(Runnable)}.
+ * The {@link PhysicsThread} can be accessed using {@link MinecraftSpace#getThread()}. If you only need to read information
+ * from the physics world, you don't need to queue a task on the physics thread.
  * @see PhysicsThread
  * @see PhysicsSpaceEvents
  */
-public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCollisionListener {
+public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausable, PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
-    private final ThreadExecutor<?> server;
     private final PhysicsThread thread;
     private final World world;
     private final Clock clock;
@@ -58,7 +59,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         this.maxSubSteps = maxSubSteps;
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
-        this.server = world.getServer();
         this.addCollisionListener(this);
 
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
@@ -184,7 +184,7 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      */
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        server.execute(() -> {
+        getThread().getThreadExecutor().execute(() -> {
             if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof ElementRigidBody) {
                 PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
                 PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
@@ -204,4 +204,10 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
             }
         });
     }
+
+    @Override
+    public void readFromNbt(CompoundTag compoundTag) { }
+
+    @Override
+    public void writeToNbt(CompoundTag compoundTag) { }
 }

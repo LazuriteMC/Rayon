@@ -10,8 +10,8 @@ import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.mixin.debug.KeyboardMixin;
-import dev.lazurite.rayon.impl.mixin.debug.DebugRendererMixin;
+import dev.lazurite.rayon.impl.mixin.KeyboardMixin;
+import dev.lazurite.rayon.impl.mixin.DebugRendererMixin;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
@@ -85,7 +85,7 @@ public final class DebugManager {
         World world = MinecraftClient.getInstance().world;
 
         if (isEnabled()) {
-            MinecraftSpace space = Rayon.THREAD.get(world).getSpace();
+            MinecraftSpace space = Rayon.SPACE.get(world);
             List<PhysicsCollisionObject> collisionObjects = Lists.newArrayList();
             collisionObjects.addAll(space.getRigidBodyList());
             collisionObjects.addAll(space.getGhostObjectList());

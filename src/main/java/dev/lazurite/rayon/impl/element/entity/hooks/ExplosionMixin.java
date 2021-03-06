@@ -27,7 +27,7 @@ public class ExplosionMixin {
         if (entity instanceof PhysicsElement) {
             ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
 
-            Rayon.THREAD.get(entity.getEntityWorld()).execute(space ->
+            Rayon.SPACE.get(entity.getEntityWorld()).getThread().execute(() ->
                 rigidBody.applyCentralImpulse(VectorHelper.vec3dToVector3f(velocity).multLocal(rigidBody.getMass()).multLocal(100))
             );
         }
