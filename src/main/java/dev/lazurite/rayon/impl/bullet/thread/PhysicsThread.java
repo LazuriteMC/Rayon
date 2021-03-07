@@ -101,6 +101,10 @@ public class PhysicsThread extends Thread {
         return space;
     }
 
+    public void clearSpaces() {
+        this.spaces.clear();
+    }
+
     /**
      * @return the thread executor for the original thread (e.g. client or server).
      */

@@ -101,6 +101,8 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
                 if (body.shouldDoFluidResistance()) {
                     body.applyDrag();
                 }
+
+//                System.out.println("active? " + body.isActive());
             });
 
             /* Terrain Loading */

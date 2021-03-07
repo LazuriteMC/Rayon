@@ -30,7 +30,7 @@ public class ClientEntityMixin {
             ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
 
             if (MinecraftClient.getInstance().player.equals(body.getPriorityPlayer())) {
-                if (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged()) {
+                if (body.isActive()) {
                     EntityElementMovementC2S.send((PhysicsElement) this);
                 }
             }

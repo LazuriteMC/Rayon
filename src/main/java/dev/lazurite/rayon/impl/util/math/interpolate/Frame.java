@@ -43,29 +43,4 @@ public class Frame {
         store.set(QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta));
         return store;
     }
-
-    public boolean hasLocationChanged() {
-        return !tickLocation.equals(prevLocation);
-    }
-
-    /**
-     * Rounds the quaternions to the nearest thousandth and then proceeds
-     * to compare the tickRotation and prevRotation.
-     * @return whether or not the rotation has changed
-     */
-    public boolean hasRotationChanged() {
-        Quaternion q1 = new Quaternion(
-                Math.round(tickRotation.getX() * 1000f) / 1000f,
-                Math.round(tickRotation.getY() * 1000f) / 1000f,
-                Math.round(tickRotation.getZ() * 1000) / 1000f,
-                Math.round(tickRotation.getW() * 1000) / 1000f);
-
-        Quaternion q2 = new Quaternion(
-                Math.round(prevRotation.getX() * 1000f) / 1000f,
-                Math.round(prevRotation.getY() * 1000f) / 1000f,
-                Math.round(prevRotation.getZ() * 1000) / 1000f,
-                Math.round(prevRotation.getW() * 1000) / 1000f);
-
-        return !q1.equals(q2);
-    }
 }

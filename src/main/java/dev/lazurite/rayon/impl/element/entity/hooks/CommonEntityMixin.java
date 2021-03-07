@@ -6,7 +6,6 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
@@ -22,13 +21,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class CommonEntityMixin {
-    @Shadow public int age;
     @Shadow public World world;
     @Shadow public abstract void updatePosition(double x, double y, double z);
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo info) {
-
         if (this instanceof PhysicsElement) {
             PhysicsElement element = (PhysicsElement) this;
             ElementRigidBody body = element.getRigidBody();
@@ -48,7 +45,7 @@ public abstract class CommonEntityMixin {
 
             /* Send movement and property packets */
             if (!world.isClient()) {
-                if (body.getPriorityPlayer() == null && (body.getFrame().hasLocationChanged() || body.getFrame().hasRotationChanged())) {
+                if (body.getPriorityPlayer() == null && body.isActive()) {
                     EntityElementMovementS2C.send(element);
                 }
 
@@ -110,27 +107,6 @@ public abstract class CommonEntityMixin {
         if (this instanceof PhysicsElement) {
             ((PhysicsElement) this).getRigidBody().fromTag(tag);
             ((Entity) (Object) this).setPos(((Entity) (Object) this).getX(), ((Entity) (Object) this).getY() + ((PhysicsElement) this).getRigidBody().boundingBox(new BoundingBox()).getYExtent()*3, ((Entity) (Object) this).getZ());
-        }
-    }
-
-    /**
-     * This method cleans up after the {@link MinecraftSpace}
-     * by removing any {@link ElementRigidBody}s that have had
-     * their entity removed.
-     * {@link Entity} removed from the world.
-     */
-    @Inject(method = "remove", at = @At("HEAD"))
-    public synchronized void remove(CallbackInfo info) {
-        if (this instanceof PhysicsElement) {
-            MinecraftSpace space = Rayon.SPACE.get(world);
-
-            space.getThread().execute(() -> {
-                ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
-
-                if (body.isInWorld()) {
-                    space.removeCollisionObject(body);
-                }
-            });
         }
     }
 }

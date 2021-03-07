@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin;
+package dev.lazurite.rayon.impl.mixin.debug;
 
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;

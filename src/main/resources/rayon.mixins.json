@@ -4,8 +4,9 @@
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "DebugRendererMixin",
-    "KeyboardMixin"
+    "debug.DebugRendererMixin",
+    "debug.KeyboardMixin",
+    "world.ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

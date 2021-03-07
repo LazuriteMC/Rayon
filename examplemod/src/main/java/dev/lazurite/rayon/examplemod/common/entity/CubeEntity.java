@@ -3,6 +3,8 @@ package dev.lazurite.rayon.examplemod.common.entity;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -52,6 +54,12 @@ public class CubeEntity extends LivingEntity implements PhysicsElement {
     @Override
     public ItemStack getEquippedStack(EquipmentSlot slot) {
         return new ItemStack(Items.AIR);
+    }
+
+    @Override
+    @Environment(EnvType.CLIENT)
+    public boolean shouldRender(double distance) {
+        return true;
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 /**
  * This mixin automatically adds entities assigned
@@ -32,6 +33,21 @@ public class ClientWorldMixin {
             /* Add it to the world */
             MinecraftSpace space = Rayon.SPACE.get(this);
             space.getThread().execute(() -> space.addCollisionObject(rigidBody));
+        }
+    }
+
+    @Inject(
+            method = "removeEntity",
+            at = @At("TAIL"),
+            locals = LocalCapture.CAPTURE_FAILHARD
+    )
+    public void removeEntity(int entityId, CallbackInfo info, Entity entity) {
+        if (entity instanceof PhysicsElement) {
+            MinecraftSpace space = Rayon.SPACE.get(this);
+
+            space.getThread().execute(() ->
+                    space.removeCollisionObject(((PhysicsElement) entity).getRigidBody())
+            );
         }
     }
 }
