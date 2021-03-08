@@ -137,33 +137,6 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
         }
     }
 
-    public void addElement(PhysicsElement element) {
-        if (!getRigidBodyList().contains(element.getRigidBody())) {
-            /* Set the position of the rigid body */
-            ElementRigidBody rigidBody = element.getRigidBody();
-            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(element.asEntity().getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
-            rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -element.asEntity().yaw));
-
-            /* Send a sync packet */
-            if (!getWorld().isClient()) {
-                ElementMovementS2C.send(element);
-            }
-
-            /* Add it to the world */
-            getThread().execute(() -> {
-                if (!getRigidBodyList().contains(rigidBody)) {
-                    addCollisionObject(rigidBody);
-                }
-            });
-        }
-    }
-
-    public void removeElement(PhysicsElement element) {
-        if (getRigidBodyList().contains(element.getRigidBody())) {
-            getThread().execute(() -> removeCollisionObject(element.getRigidBody()));
-        }
-    }
-
     public TerrainManager getTerrainManager() {
         return this.terrainManager;
     }

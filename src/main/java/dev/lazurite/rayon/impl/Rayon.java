@@ -1,12 +1,17 @@
 package dev.lazurite.rayon.impl;
 
+import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.api.element.PhysicsElement;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.net.ElementMovementC2S;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.bullet.body.net.ElementMovementS2C;
 import dev.lazurite.rayon.impl.util.NativeLoader;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
@@ -50,19 +55,40 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
-				SPACE.get(world).addElement((PhysicsElement) entity);
+				/* Set the position of the rigid body */
+				ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+				rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
+				rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
+
+				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
+				SERVER_THREAD.execute(() -> {
+					if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
+						space.addCollisionObject(((PhysicsElement) entity).getRigidBody());
+					}
+				});
 			}
 		});
 
 		EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
 			if (entity instanceof PhysicsElement) {
-				SPACE.get(entity.getEntityWorld()).addElement((PhysicsElement) entity);
+				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
+				ElementMovementS2C.send((PhysicsElement) entity);
+
+				SERVER_THREAD.execute(() -> {
+					if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
+						space.addCollisionObject(((PhysicsElement) entity).getRigidBody());
+					}
+				});
 			}
 		});
 
 		EntityTrackingEvents.STOP_TRACKING.register((entity, player) -> {
 			if (entity instanceof PhysicsElement && PlayerLookup.tracking(entity).isEmpty()) {
-				SPACE.get(entity.getEntityWorld()).removeElement((PhysicsElement) entity);
+				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
+
+				if (space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
+					SERVER_THREAD.execute(() -> space.removeCollisionObject(((PhysicsElement) entity).getRigidBody()));
+				}
 			}
 		});
 	}
@@ -77,13 +103,23 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 
 		ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
-				SPACE.get(world).addElement((PhysicsElement) entity);
+				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
+
+				CLIENT_THREAD.execute(() -> {
+					if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
+						space.addCollisionObject(((PhysicsElement) entity).getRigidBody());
+					}
+				});
 			}
 		});
 
 		ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
-				SPACE.get(entity.getEntityWorld()).removeElement((PhysicsElement) entity);
+				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
+
+				if (space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
+					CLIENT_THREAD.execute(() -> space.removeCollisionObject(((PhysicsElement) entity).getRigidBody()));
+				}
 			}
 		});
 	}
