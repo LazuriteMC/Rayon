@@ -1,46 +1,42 @@
 package dev.lazurite.rayon.impl.bullet.thread;
 
+import com.google.common.collect.Maps;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.RayonException;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
-import dev.onyxstudios.cca.api.v3.component.tick.CommonTickingComponent;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
+import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Consumer;
 
 /**
  * In order to access an instance of this, all you need is a {@link World} object. The main way to execute
  * tasks on the physics thread is by called {@link PhysicsThread#execute} which gives you access to the
  * {@link MinecraftSpace} object. There are several other ways to execute on the physics thread including
  * registering an event callback in {@link PhysicsSpaceEvents} or inserting code into your
- * {@link PhysicsElement#step} method. It is also possible to retrieve the {@link MinecraftSpace} without
- * switching to the physics thread using {@link PhysicsThread#getSpace()} but this is generally discouraged
- * since thread safety becomes an issue if you attempt to modify data within it.
+ * {@link PhysicsElement#step} method.
  * @see PhysicsSpaceEvents
  * @see MinecraftSpace
  */
-public class PhysicsThread extends Thread implements ComponentV3, CommonTickingComponent {
-    public static final float STEP_SIZE = 1f / 60f; // in seconds
-
-    private final Queue<Consumer<MinecraftSpace>> tasks = new ConcurrentLinkedQueue<>();
-    private MinecraftSpace space;
-    private final World world;
-    private long nextStep;
+public class PhysicsThread extends Thread {
+    private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
+    private final Map<World, MinecraftSpace> spaces = Maps.newConcurrentMap();
+    private final ThreadExecutor<? extends Runnable> executor;
+    private float stepRate = 1f / 60f;
     private Throwable throwable;
     private boolean running = true;
+    private long nextStep;
 
-    public PhysicsThread(World world) {
-        this.world = world;
-        this.nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
-        this.setName(world.isClient() ? "Client Physics Thread" : "Server Physics Thread - " + world.getRegistryKey().getValue());
+    public PhysicsThread(ThreadExecutor<? extends Runnable> executor, String name) {
+        this.executor = executor;
+        this.nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
         this.setUncaughtExceptionHandler((thread, throwable) -> this.throwable = throwable);
+        this.setName(name);
         this.start();
     }
 
@@ -49,7 +45,6 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
      * allows the error to be returned to the main thread and the game will
      * crash in the usual way.
      */
-    @Override
     public void tick() {
         if (throwable != null) {
             throw new RayonException(
@@ -60,23 +55,16 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
 
     @Override
     public void run() {
-        /* Create and load the physics space */
-        this.space = new MinecraftSpace(this, world);
-        this.space.setAccuracy(STEP_SIZE);
-        PhysicsSpaceEvents.LOAD.invoker().onLoad(space);
-
-        /* Loop while it is still supposed to be running */
         while (running) {
             if (Util.getMeasuringTimeMs() > nextStep) {
-                nextStep = Util.getMeasuringTimeMs() + (long) (STEP_SIZE * 1000);
+                nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
 
                 /* Run all queued tasks */
                 while (!tasks.isEmpty()) {
-                    tasks.poll().accept(space);
+                    tasks.poll().run();
                 }
 
-                /* Step the physics space */
-                space.step();
+                spaces.values().forEach(MinecraftSpace::step);
             }
         }
     }
@@ -86,17 +74,47 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
      * object is provided within the consumer.
      * @param task the task to run
      */
-    public void execute(Consumer<MinecraftSpace> task) {
+    public void execute(Runnable task) {
         tasks.add(task);
     }
 
-    /**
-     * @return whether or not the thread is running
-     */
-    public boolean isRunning() {
-        return running;
+    public void setStepRate(int stepsPerSecond) {
+        this.stepRate = 1 / (float) stepsPerSecond;
     }
 
+    public float getStepRate() {
+        return this.stepRate;
+    }
+
+    /**
+     * Creates a new {@link MinecraftSpace} to be stepped on this thread.
+     * @param world the world to base the {@link MinecraftSpace} around
+     * @return the newly created {@link MinecraftSpace}
+     */
+    public MinecraftSpace createSpace(World world) {
+        if (world.isClient()) {
+            spaces.clear();
+        }
+
+        MinecraftSpace space = new MinecraftSpace(this, world);
+        spaces.put(world, space);
+        return space;
+    }
+
+    public void clearSpaces() {
+        this.spaces.clear();
+    }
+
+    /**
+     * @return the thread executor for the original thread (e.g. client or server).
+     */
+    public ThreadExecutor<? extends Runnable> getThreadExecutor() {
+        return this.executor;
+    }
+
+    /**
+     * Join the thread when the game closes.
+     */
     public void destroy() {
         this.running = false;
 
@@ -107,20 +125,4 @@ public class PhysicsThread extends Thread implements ComponentV3, CommonTickingC
             e.printStackTrace();
         }
     }
-
-    /**
-     * Gets a reference to the {@link MinecraftSpace}. Only use this if you're
-     * going to read data from it or perform a thread safe operation. Else, you
-     * should use {@link PhysicsThread#execute} instead.
-     * @return the {@link MinecraftSpace} for this thread
-     */
-    public MinecraftSpace getSpace() {
-        return this.space;
-    }
-
-    @Override
-    public void readFromNbt(CompoundTag compoundTag) { }
-
-    @Override
-    public void writeToNbt(CompoundTag compoundTag) { }
 }

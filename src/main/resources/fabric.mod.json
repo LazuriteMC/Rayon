@@ -22,7 +22,7 @@
     "cardinal-components-world": [ "dev.lazurite.rayon.impl.Rayon" ]
   },
 
-  "mixins": [ "rayon.mixins.json", "entity.mixins.json" ],
+  "mixins": [ "rayon.mixins.json" ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
@@ -38,7 +38,7 @@
       "badges": [ "library" ]
     },
     "cardinal-components": [
-      "rayon:thread"
+      "rayon:space"
     ]
   }
 }

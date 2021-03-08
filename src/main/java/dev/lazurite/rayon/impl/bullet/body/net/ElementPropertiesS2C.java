@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.net;
+package dev.lazurite.rayon.impl.bullet.body.net;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 /**
  * This packet syncs rigid body information other than movement info from the server to the client.
- * The reason this information isn't included in {@link EntityElementMovementS2C} is because this
+ * The reason this information isn't included in {@link ElementMovementS2C} is because this
  * information should always be sent from the server to the client and not vice versa.
  */
 public class ElementPropertiesS2C {
@@ -32,9 +32,11 @@ public class ElementPropertiesS2C {
             float dragCoefficient = buf.readFloat();
             float friction = buf.readFloat();
             float restitution = buf.readFloat();
+            int blockDistance = buf.readInt();
+            boolean doFluidResistance = buf.readBoolean();
             UUID priorityPlayer = buf.readUuid();
 
-            Rayon.THREAD.get(client.world).execute(space -> {
+            Rayon.SPACE.get(client.world).getThread().execute(() -> {
                 Entity entity = client.world.getEntityById(entityId);
 
                 if (entity instanceof PhysicsElement) {
@@ -45,6 +47,8 @@ public class ElementPropertiesS2C {
                     rigidBody.setDragCoefficient(dragCoefficient);
                     rigidBody.setFriction(friction);
                     rigidBody.setRestitution(restitution);
+                    rigidBody.setEnvironmentLoadDistance(blockDistance);
+                    rigidBody.setDoFluidResistance(doFluidResistance);
                     rigidBody.prioritize(player);
                 }
             });
@@ -64,6 +68,8 @@ public class ElementPropertiesS2C {
         buf.writeFloat(rigidBody.getDragCoefficient());
         buf.writeFloat(rigidBody.getFriction());
         buf.writeFloat(rigidBody.getRestitution());
+        buf.writeInt(rigidBody.getEnvironmentLoadDistance());
+        buf.writeBoolean(rigidBody.shouldDoFluidResistance());
 
         if (rigidBody.getPriorityPlayer() == null) {
             buf.writeUuid(new UUID(0, 0));

@@ -5,7 +5,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.bullet.world.TerrainManager;
+import dev.lazurite.rayon.impl.bullet.world.environment.TerrainManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -18,8 +18,6 @@ import org.jetbrains.annotations.Nullable;
 public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     private final BlockState blockState;
     private final BlockPos blockPos;
-
-    // TODO experiment with chunk rigid bodies
 
     public BlockRigidBody(BlockState blockState, BlockPos blockPos, @Nullable CollisionShape shape, float friction, float restitution) {
         super(shape == null ? new BoundingBoxShape(new Box(-0.5, -0.5, -0.5, 1, 1, 1)) : shape, PhysicsRigidBody.massForStatic);
@@ -46,7 +44,7 @@ public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof BlockRigidBody) {
-            return ((BlockRigidBody) obj).getBlockPos().equals(this.blockPos);
+            return ((BlockRigidBody) obj).getBlockPos().equals(getBlockPos());
         }
 
         return false;

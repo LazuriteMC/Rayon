@@ -1,11 +1,11 @@
-package dev.lazurite.rayon.impl.element.entity.net;
+package dev.lazurite.rayon.impl.bullet.body.net;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.element.entity.hooks.CommonEntityMixin;
+import dev.lazurite.rayon.impl.mixin.common.EntityMixin;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -20,14 +20,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 /**
- * This packet is very similar to {@link EntityElementMovementS2C} with the main difference
+ * This packet is very similar to {@link ElementMovementS2C} with the main difference
  * of this packet sends information from the <b>client</b> to the <b>server</b>. It's a reverse
  * packet that's only used when an element has a <i>priority player</i> stored. The stored
  * priority player is responsible for sending movement updates to the server using this packet.
- * @see EntityElementMovementS2C
- * @see CommonEntityMixin
+ * @see ElementMovementS2C
+ * @see EntityMixin
  */
-public class EntityElementMovementC2S {
+public class ElementMovementC2S {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "entity_element_movement_c2s");
 
     public static void accept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
@@ -38,7 +38,7 @@ public class EntityElementMovementC2S {
         Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
         Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-        Rayon.THREAD.get(world).execute(space -> {
+        Rayon.SPACE.get(world).getThread().execute(() -> {
             Entity entity = world.getEntityById(entityId);
 
             if (entity instanceof PhysicsElement) {

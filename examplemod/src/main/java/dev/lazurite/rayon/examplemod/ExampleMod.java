@@ -34,6 +34,7 @@ public class ExampleMod implements ModInitializer {
                         .spawnGroup(SpawnGroup.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
                         .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
+                        .trackRangeBlocks(80)
                         .build()
         );
 

@@ -3,22 +3,26 @@ package dev.lazurite.rayon.impl.bullet.body;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.api.element.PhysicsElement;
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.bullet.body.type.FluidDragBody;
-import dev.lazurite.rayon.impl.bullet.body.type.TerrainLoadingBody;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.debug.DebugLayer;
+import dev.lazurite.rayon.impl.util.environment.Clump;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -43,39 +47,39 @@ import org.jetbrains.annotations.Nullable;
  * @see PhysicsElement
  * @see MinecraftSpace
  */
-public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody, TerrainLoadingBody, DebuggableBody {
+public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody {
     private final PhysicsElement element;
+    private final MinecraftSpace space;
+    private boolean propertiesDirty;
+    private int envLoadDistance;
     private float dragCoefficient;
-    private PlayerEntity priorityPlayer;
     private boolean doFluidResistance;
-    private int loadDistance;
+    private PlayerEntity priorityPlayer;
     private Frame frame;
+    private Clump clump;
 
-    public ElementRigidBody(PhysicsElement element, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution, boolean doFluidResistance) {
+    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution, boolean doFluidResistance) {
         super(shape, mass);
         this.element = element;
+        this.space = space;
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
-        this.setBlockLoadDistance(calculateLoadDistance());
-        this.doFluidResistance = doFluidResistance;
+        this.setEnvironmentLoadDistance(calculateLoadDistance());
+        this.setDoFluidResistance(doFluidResistance);
     }
 
-    public ElementRigidBody(PhysicsElement element, CollisionShape shape) {
-        this(element, shape, 1.0f, 0.05f, 1.0f, 0.5f, true);
+    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape) {
+        this(element, space, shape, 1.0f, 0.05f, 1.0f, 0.5f, true);
     }
 
     /**
      * The simplest way to create a new {@link ElementRigidBody}.
      * Only works if the {@link PhysicsElement} is an {@link Entity}.
-     * @param element the element to base this body around
+     * @param entity the element to base this body around
      */
-    public ElementRigidBody(PhysicsElement element) {
-        this(element, new BoundingBoxShape(element.asEntity().getBoundingBox()));
-    }
-
-    public void prioritize(@Nullable PlayerEntity player) {
-        priorityPlayer = player;
+    public ElementRigidBody(Entity entity) {
+        this((PhysicsElement) entity, Rayon.SPACE.get(entity.getEntityWorld()), new BoundingBoxShape(entity.getBoundingBox()));
     }
 
     /**
@@ -85,14 +89,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
      */
     protected int calculateLoadDistance() {
         return (int) boundingBox(new BoundingBox()).getExtent(new Vector3f()).length() + 1;
-    }
-
-    public void setBlockLoadDistance(int loadDistance) {
-        this.loadDistance = loadDistance;
-    }
-
-    public int getBlockLoadDistance() {
-        return this.loadDistance;
     }
 
     public void fromTag(CompoundTag tag) {
@@ -126,58 +122,43 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     @Override
     public void setCollisionShape(CollisionShape collisionShape) {
         super.setCollisionShape(collisionShape);
-        this.setBlockLoadDistance(calculateLoadDistance());
+        this.setEnvironmentLoadDistance(calculateLoadDistance());
     }
 
     public void setFrame(Frame frame) {
         this.frame = frame;
     }
 
-    public void setDragCoefficient(float dragCoefficient) {
-        this.dragCoefficient = dragCoefficient;
-    }
-
     public Frame getFrame() {
         return this.frame;
-    }
-
-    public PlayerEntity getPriorityPlayer() {
-        return this.priorityPlayer;
     }
 
     public PhysicsElement getElement() {
         return this.element;
     }
 
-    @Override
-    public float getDragCoefficient() {
-        return dragCoefficient;
+    public MinecraftSpace getSpace() {
+        return this.space;
     }
 
-    @Override
-    public boolean shouldDoFluidResistance() {
-        return this.doFluidResistance;
-    }
-
-    @Override
-    public void setDoFluidResistance(boolean doFluidResistance) {
-        this.doFluidResistance = doFluidResistance;
-    }
-
-    @Override
-    public int getLoadDistance() {
-        return this.loadDistance;
-    }
-
-    @Override
-    public BlockPos getBlockPos() {
-        Vector3f pos = getPhysicsLocation(new Vector3f());
-        return new BlockPos(pos.x, pos.y, pos.z);
-    }
-
-    @Override
     public boolean isInNoClip() {
         return getElement().isInNoClip();
+    }
+
+    public void setPropertiesDirty(boolean propertiesDirty) {
+        this.propertiesDirty = propertiesDirty;
+    }
+
+    public boolean arePropertiesDirty() {
+        return this.propertiesDirty;
+    }
+
+    public Clump getClump() {
+        return this.clump;
+    }
+
+    public void setClump(Clump clump) {
+        this.clump = clump;
     }
 
     @Override
@@ -188,5 +169,111 @@ public class ElementRigidBody extends PhysicsRigidBody implements FluidDragBody,
     @Override
     public DebugLayer getDebugLayer() {
         return DebugLayer.ENTITY;
+    }
+
+    public void applyDrag() {
+        if (shouldDoFluidResistance()) {
+            World world = getSpace().getWorld();
+            float drag;
+
+            BlockPos blockPos = new BlockPos(VectorHelper.vector3fToVec3d(
+                    boundingBox(new BoundingBox())
+                            .getMax(new Vector3f())));
+
+            BlockView chunk = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+            Block block = Blocks.AIR;
+
+            if (chunk != null) {
+                block = chunk.getBlockState(blockPos).getBlock();
+            }
+
+            if (Blocks.LAVA.equals(block)) {
+                drag = space.getLavaDensity();
+            } else if (Blocks.WATER.equals(block)) {
+                drag = space.getWaterDensity();
+            } else {
+                drag = space.getAirDensity();
+            }
+
+            float dragCoefficient = getDragCoefficient();
+            float gravitationalForce = getMass() * space.getGravity(new Vector3f()).length();
+            float area = (float) Math.pow(boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
+            float k = (drag * dragCoefficient * area) / 2.0f;
+
+            Vector3f force = new Vector3f()
+                    .set(getLinearVelocity(new Vector3f()))
+                    .multLocal(-getLinearVelocity(new Vector3f()).lengthSquared())
+                    .multLocal(k);
+
+            if (drag != space.getAirDensity() && force.y > -gravitationalForce) {
+                /* Makes the object stop when it collides with a more dense liquid */
+                applyCentralImpulse(getLinearVelocity(new Vector3f()).multLocal(-getMass()));
+            } else if (Float.isFinite(force.length()) && force.length() > 0.1f) {
+                applyCentralForce(force);
+            }
+        }
+    }
+
+    /* Property Setters */
+
+    @Override
+    public void setMass(float mass) {
+        super.setMass(mass);
+        this.setPropertiesDirty(true);
+    }
+
+    public void setDragCoefficient(float dragCoefficient) {
+        this.dragCoefficient = dragCoefficient;
+        this.setPropertiesDirty(true);
+    }
+
+    @Override
+    public void setFriction(float friction) {
+        super.setFriction(friction);
+        this.setPropertiesDirty(true);
+    }
+
+    @Override
+    public void setRestitution(float restitution) {
+        super.setRestitution(restitution);
+        this.setPropertiesDirty(true);
+    }
+
+    public void setEnvironmentLoadDistance(int envLoadDistance) {
+        this.envLoadDistance = envLoadDistance;
+        this.setPropertiesDirty(true);
+    }
+
+    public void setDoFluidResistance(boolean doFluidResistance) {
+        this.doFluidResistance = doFluidResistance;
+        this.setPropertiesDirty(true);
+    }
+
+    public void prioritize(@Nullable PlayerEntity player) {
+        priorityPlayer = player;
+        this.setPropertiesDirty(true);
+    }
+
+    /*
+     * Property Getters
+     *     getMass()
+     *     getFriction()
+     *     getRestitution()
+     */
+
+    public PlayerEntity getPriorityPlayer() {
+        return this.priorityPlayer;
+    }
+
+    public float getDragCoefficient() {
+        return dragCoefficient;
+    }
+
+    public int getEnvironmentLoadDistance() {
+        return this.envLoadDistance;
+    }
+
+    public boolean shouldDoFluidResistance() {
+        return this.doFluidResistance;
     }
 }

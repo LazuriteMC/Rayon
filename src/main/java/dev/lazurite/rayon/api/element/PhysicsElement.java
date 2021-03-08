@@ -51,7 +51,7 @@ public interface PhysicsElement {
      * @return whether or not this physics element is in noclip mode
      */
     default boolean isInNoClip() {
-        return false;
+        return asEntity().noClip;
     }
 
     /**

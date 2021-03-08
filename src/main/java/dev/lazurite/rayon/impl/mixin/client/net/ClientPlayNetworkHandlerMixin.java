@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.hooks.net;
+package dev.lazurite.rayon.impl.mixin.client.net;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
