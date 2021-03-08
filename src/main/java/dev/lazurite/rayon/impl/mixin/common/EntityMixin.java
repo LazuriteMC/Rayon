@@ -29,35 +29,38 @@ public abstract class EntityMixin {
         if (this instanceof PhysicsElement) {
             PhysicsElement element = (PhysicsElement) this;
             ElementRigidBody body = element.getRigidBody();
-            Frame prevFrame = body.getFrame();
 
             /* Update frame information for lerping */
-            if (prevFrame == null) {
-                body.setFrame(new Frame(
-                        body.getPhysicsLocation(new Vector3f()),
-                        body.getPhysicsRotation(new Quaternion())));
-            } else {
-                body.setFrame(new Frame(
-                        prevFrame,
-                        body.getPhysicsLocation(new Vector3f()),
-                        body.getPhysicsRotation(new Quaternion())));
-            }
+            if (body.isInWorld()) {
+                Frame prevFrame = body.getFrame();
 
-            /* Send movement and property packets */
-            if (!world.isClient()) {
-                if (body.getPriorityPlayer() == null && body.isActive()) {
-                    ElementMovementS2C.send(element);
+                if (prevFrame == null) {
+                    body.setFrame(new Frame(
+                            body.getPhysicsLocation(new Vector3f()),
+                            body.getPhysicsRotation(new Quaternion())));
+                } else {
+                    body.setFrame(new Frame(
+                            prevFrame,
+                            body.getPhysicsLocation(new Vector3f()),
+                            body.getPhysicsRotation(new Quaternion())));
                 }
 
-                if (body.arePropertiesDirty()) {
-                    ElementPropertiesS2C.send(element);
-                    body.setPropertiesDirty(false);
+                /* Force the position of the entity to the rigid body's position */
+                Vector3f pos = body.getPhysicsLocation(new Vector3f());
+                updatePosition(pos.x, pos.y - body.boundingBox(new BoundingBox()).getYExtent(), pos.z);
+
+                /* Send movement and property packets */
+                if (!world.isClient()) {
+                    if (body.getPriorityPlayer() == null && body.isActive()) {
+                        ElementMovementS2C.send(element);
+                    }
+
+                    if (body.arePropertiesDirty()) {
+                        ElementPropertiesS2C.send(element);
+                        body.setPropertiesDirty(false);
+                    }
                 }
             }
-
-            /* Force the position of the entity to the rigid body's position */
-            Vector3f pos = body.getPhysicsLocation(new Vector3f());
-            updatePosition(pos.x, pos.y - body.boundingBox(new BoundingBox()).getYExtent(), pos.z);
         }
     }
 

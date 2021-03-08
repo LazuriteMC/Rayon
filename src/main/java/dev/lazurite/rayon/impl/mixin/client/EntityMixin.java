@@ -30,7 +30,7 @@ public class EntityMixin {
             ElementRigidBody body = ((PhysicsElement) this).getRigidBody();
 
             if (MinecraftClient.getInstance().player.equals(body.getPriorityPlayer())) {
-                if (body.isActive()) {
+                if (body.isActive() && body.isInWorld()) {
                     ElementMovementC2S.send((PhysicsElement) this);
                 }
             }

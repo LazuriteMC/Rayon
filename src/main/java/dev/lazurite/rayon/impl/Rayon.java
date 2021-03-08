@@ -55,16 +55,19 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
+				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
+
 				/* Set the position of the rigid body */
 				ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
 				rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
 				rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
 
-				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
 				SERVER_THREAD.execute(() -> {
 					if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
 						space.addCollisionObject(((PhysicsElement) entity).getRigidBody());
 					}
+
+					((PhysicsElement) entity).getRigidBody().activate();
 				});
 			}
 		});
@@ -72,12 +75,13 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 		EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
 			if (entity instanceof PhysicsElement) {
 				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
-				ElementMovementS2C.send((PhysicsElement) entity);
 
 				SERVER_THREAD.execute(() -> {
 					if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
 						space.addCollisionObject(((PhysicsElement) entity).getRigidBody());
 					}
+
+					((PhysicsElement) entity).getRigidBody().activate();
 				});
 			}
 		});
@@ -104,10 +108,15 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 		ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
 				MinecraftSpace space = SPACE.get(entity.getEntityWorld());
+				ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+				rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
+				rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
 
 				CLIENT_THREAD.execute(() -> {
 					if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
 						space.addCollisionObject(((PhysicsElement) entity).getRigidBody());
+					} else {
+						((PhysicsElement) entity).getRigidBody().activate();
 					}
 				});
 			}
