@@ -11,8 +11,7 @@
     "ClientEntityMixin",
     "net.ClientPlayNetworkHandlerMixin",
     "render.EntityRenderDispatcherMixin",
-    "render.WorldRendererMixin",
-    "spawn.ClientWorldMixin"
+    "render.WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

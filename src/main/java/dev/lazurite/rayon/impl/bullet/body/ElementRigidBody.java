@@ -66,9 +66,9 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setEnvironmentLoadDistance(calculateLoadDistance());
         this.setDoFluidResistance(doFluidResistance);
 
-        this.setEnableSleep(false);
+        this.setEnableSleep(true);
         this.setSleepingThresholds(20, 20);
-//        this.setDeactivationTime(2);
+        this.setDeactivationTime(1);
     }
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape) {

@@ -48,17 +48,15 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
     private final World world;
     private final Clock clock;
     private int presimSteps;
-    private int maxSubSteps;
 
     private float airDensity;
     private float waterDensity;
     private float lavaDensity;
 
-    public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase, int maxSubSteps) {
+    public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
         super(broadphase);
         this.thread = thread;
         this.world = world;
-        this.maxSubSteps = maxSubSteps;
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
         this.entityManager = new EntityManager(this);
@@ -68,11 +66,10 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
         this.setAirDensity(1.2f); // kg/m^3
         this.setWaterDensity(997f); // kg/m^3
         this.setLavaDensity(3100f); // kg/m^3
-
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
-        this(thread, world, BroadphaseType.DBVT, 5);
+        this(thread, world, BroadphaseType.DBVT);
     }
 
     /**
@@ -129,7 +126,7 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
 
             /* Step Simulation */
             if (presimSteps > MAX_PRESIM_STEPS) {
-                update(delta, maxSubSteps);
+                update(delta, 5);
             } else ++presimSteps;
         } else {
             this.clock.reset();
@@ -166,12 +163,6 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
 
     public World getWorld() {
         return this.world;
-    }
-
-    public void setMaxSubSteps(int maxSubSteps) {
-        if (this.maxSubSteps < maxSubSteps) {
-            this.maxSubSteps = maxSubSteps;
-        }
     }
 
     public void setAirDensity(float airDensity) {
