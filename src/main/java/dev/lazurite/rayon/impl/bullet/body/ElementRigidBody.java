@@ -50,7 +50,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
     private final PhysicsElement element;
     private final MinecraftSpace space;
     private boolean propertiesDirty;
-    private int loadDistance;
+    private int envLoadDistance;
     private float dragCoefficient;
     private boolean doFluidResistance;
     private PlayerEntity priorityPlayer;
@@ -63,11 +63,12 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
-        this.setBlockLoadDistance(calculateLoadDistance());
+        this.setEnvironmentLoadDistance(calculateLoadDistance());
         this.setDoFluidResistance(doFluidResistance);
 
-        this.setEnableSleep(true);
-        this.setDeactivationTime(2);
+        this.setEnableSleep(false);
+        this.setSleepingThresholds(20, 20);
+//        this.setDeactivationTime(2);
     }
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape) {
@@ -123,7 +124,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
     @Override
     public void setCollisionShape(CollisionShape collisionShape) {
         super.setCollisionShape(collisionShape);
-        this.setBlockLoadDistance(calculateLoadDistance());
+        this.setEnvironmentLoadDistance(calculateLoadDistance());
     }
 
     public void setFrame(Frame frame) {
@@ -232,8 +233,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setPropertiesDirty(true);
     }
 
-    public void setBlockLoadDistance(int loadDistance) {
-        this.loadDistance = loadDistance;
+    public void setEnvironmentLoadDistance(int envLoadDistance) {
+        this.envLoadDistance = envLoadDistance;
         this.setPropertiesDirty(true);
     }
 
@@ -262,8 +263,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return dragCoefficient;
     }
 
-    public int getBlockLoadDistance() {
-        return this.loadDistance;
+    public int getEnvironmentLoadDistance() {
+        return this.envLoadDistance;
     }
 
     public boolean shouldDoFluidResistance() {

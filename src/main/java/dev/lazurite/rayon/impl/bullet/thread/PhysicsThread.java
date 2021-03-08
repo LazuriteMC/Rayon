@@ -27,7 +27,7 @@ public class PhysicsThread extends Thread {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
     private final Map<World, MinecraftSpace> spaces = Maps.newConcurrentMap();
     private final ThreadExecutor<? extends Runnable> executor;
-    private float stepRate = 1f / 30f;
+    private float stepRate = 1f / 60f;
     private Throwable throwable;
     private boolean running = true;
     private long nextStep;

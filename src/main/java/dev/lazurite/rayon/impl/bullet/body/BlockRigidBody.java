@@ -5,7 +5,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.bullet.world.TerrainManager;
+import dev.lazurite.rayon.impl.bullet.world.environment.TerrainManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -44,7 +44,7 @@ public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof BlockRigidBody) {
-            return ((BlockRigidBody) obj).getBlockPos().equals(this.blockPos);
+            return ((BlockRigidBody) obj).getBlockPos().equals(getBlockPos());
         }
 
         return false;

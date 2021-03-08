@@ -13,12 +13,15 @@ import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.impl.bullet.world.environment.EntityManager;
+import dev.lazurite.rayon.impl.bullet.world.environment.TerrainManager;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.thread.Pausable;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -40,6 +43,7 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
+    private final EntityManager entityManager;
     private final PhysicsThread thread;
     private final World world;
     private final Clock clock;
@@ -57,6 +61,7 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
         this.maxSubSteps = maxSubSteps;
         this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
+        this.entityManager = new EntityManager(this);
         this.addCollisionListener(this);
 
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
@@ -102,11 +107,20 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
                     body.applyDrag();
                 }
 
-//                System.out.println("active? " + body.isActive());
+                System.out.println("active? " + body.isActive());
+
+                /* Environment Loading */
+                if (!body.isInNoClip()) {
+                    Vector3f pos = body.getPhysicsLocation(new Vector3f());
+                    Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
+
+                    getTerrainManager().load(box);
+//                    getEntityManager().load(box);
+                }
             });
 
-            /* Terrain Loading */
-            getTerrainManager().load(getRigidBodiesByClass(ElementRigidBody.class));
+            getTerrainManager().purge();
+//            getEntityManager().purge();
 
             /* Collision Events */
             if (!getWorld().isClient()) {
@@ -124,6 +138,10 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
 
     public TerrainManager getTerrainManager() {
         return this.terrainManager;
+    }
+
+    public EntityManager getEntityManager() {
+        return this.entityManager;
     }
 
     public boolean isInPresim() {

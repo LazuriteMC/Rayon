@@ -47,7 +47,7 @@ public class ElementPropertiesS2C {
                     rigidBody.setDragCoefficient(dragCoefficient);
                     rigidBody.setFriction(friction);
                     rigidBody.setRestitution(restitution);
-                    rigidBody.setBlockLoadDistance(blockDistance);
+                    rigidBody.setEnvironmentLoadDistance(blockDistance);
                     rigidBody.setDoFluidResistance(doFluidResistance);
                     rigidBody.prioritize(player);
                 }
@@ -68,7 +68,7 @@ public class ElementPropertiesS2C {
         buf.writeFloat(rigidBody.getDragCoefficient());
         buf.writeFloat(rigidBody.getFriction());
         buf.writeFloat(rigidBody.getRestitution());
-        buf.writeInt(rigidBody.getBlockLoadDistance());
+        buf.writeInt(rigidBody.getEnvironmentLoadDistance());
         buf.writeBoolean(rigidBody.shouldDoFluidResistance());
 
         if (rigidBody.getPriorityPlayer() == null) {

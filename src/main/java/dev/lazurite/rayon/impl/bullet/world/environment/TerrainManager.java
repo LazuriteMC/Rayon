@@ -1,13 +1,12 @@
-package dev.lazurite.rayon.impl.bullet.world;
+package dev.lazurite.rayon.impl.bullet.world.environment;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
+import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.TypedPattern;
@@ -29,41 +28,23 @@ import java.util.*;
  * simulation. Instead, only a set amount are made available within the world at a time.
  * @see MinecraftSpace
  */
-public class TerrainManager {
+public final class TerrainManager {
     private final List<BlockRigidBody> toKeep = Lists.newArrayList();
-    private final MinecraftSpace dynamicsWorld;
+    private final MinecraftSpace space;
 
-    public TerrainManager(MinecraftSpace dynamicsWorld) {
-        this.dynamicsWorld = dynamicsWorld;
+    public TerrainManager(MinecraftSpace space) {
+        this.space = space;
     }
 
     /**
-     * Load every block within a set distance from the given entities. The distance is defined
-     * earlier during execution and converted into a {@link Box} area parameter.
-     * @param terrainLoadingBodies the {@link List} of {@link ElementRigidBody} objects
-     * @see TerrainManager#load(Box)
-     */
-    public void load(List<ElementRigidBody> terrainLoadingBodies) {
-        terrainLoadingBodies.forEach(body -> {
-            if (!body.isInNoClip()) {
-                Vector3f pos = body.getPhysicsLocation(new Vector3f());
-                load(new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getBlockLoadDistance()));
-            }
-        });
-
-        purge();
-    }
-
-    /**
-     * Loads an individual entity's block area into the physics simulation. This
+     * Loads an individual element's block area into the physics simulation. This
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
-     * @param area the {@link Box} area around the entity to search for blocks within
-     * @see TerrainManager#load(List)
+     * @param box the {@link Box} area around the element to search for blocks within
      */
-    public void load(Box area) {
-        World world = dynamicsWorld.getWorld();
-        Map<BlockPos, BlockState> blockList = getBlockList(world, area);
+    public void load(Box box) {
+        World world = space.getWorld();
+        Map<BlockPos, BlockState> blockList = getBlockList(world, box);
 
         blockList.forEach((blockPos, blockState) -> {
             float friction = 1.5f;
@@ -139,8 +120,8 @@ public class TerrainManager {
                     }
                 }
 
-                if (!dynamicsWorld.getRigidBodyList().contains(body)) {
-                    dynamicsWorld.addCollisionObject(body);
+                if (!space.getRigidBodyList().contains(body)) {
+                    space.addCollisionObject(body);
                 }
 
                 toKeep.add(body);
@@ -152,27 +133,27 @@ public class TerrainManager {
      * Prune out any unnecessary blocks from the world during each call
      * to {@link MinecraftSpace#step}. The purpose is to prevent
      * any trailing or residual blocks from being left over from a
-     * previous {@link TerrainManager#load(List)} call.
-     * <b>Note:</b> This method should only be called after every entity
+     * previous {@link TerrainManager#load} call.
+     * <b>Note:</b> This method should only be called after every element
      * has been passed through the loading process. Otherwise, blocks will
      * be removed from the simulation prematurely and cause you a headache.
-     * @see TerrainManager#load(List)
+     * @see TerrainManager#load
      */
     public void purge() {
         List<BlockRigidBody> toRemove = Lists.newArrayList();
 
-        dynamicsWorld.getRigidBodiesByClass(BlockRigidBody.class).forEach(body -> {
+        space.getRigidBodiesByClass(BlockRigidBody.class).forEach(body -> {
             if (!toKeep.contains(body)) {
                 toRemove.add(body);
             }
         });
 
-        toRemove.forEach(dynamicsWorld::removeCollisionObject);
+        toRemove.forEach(space::removeCollisionObject);
         toKeep.clear();
     }
 
     public BlockRigidBody findBlockAtPos(BlockPos blockPos) {
-        for (BlockRigidBody body : dynamicsWorld.getRigidBodiesByClass(BlockRigidBody.class)) {
+        for (BlockRigidBody body : space.getRigidBodiesByClass(BlockRigidBody.class)) {
             if (body.getBlockPos().equals(blockPos)) {
                 return body;
             }
