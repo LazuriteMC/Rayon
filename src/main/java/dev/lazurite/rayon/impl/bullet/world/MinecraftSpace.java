@@ -5,6 +5,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -149,13 +150,17 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
             }
 
             /* Add it to the world */
-            addCollisionObject(rigidBody);
+            getThread().execute(() -> {
+                if (!getRigidBodyList().contains(rigidBody)) {
+                    addCollisionObject(rigidBody);
+                }
+            });
         }
     }
 
     public void removeElement(PhysicsElement element) {
         if (getRigidBodyList().contains(element.getRigidBody())) {
-            removeCollisionObject(element.getRigidBody());
+            getThread().execute(() -> removeCollisionObject(element.getRigidBody()));
         }
     }
 

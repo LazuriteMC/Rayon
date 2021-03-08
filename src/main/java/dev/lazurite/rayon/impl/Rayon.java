@@ -50,19 +50,19 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
-				SERVER_THREAD.execute(() -> Rayon.SPACE.get(world).addElement((PhysicsElement) entity));
+				SPACE.get(world).addElement((PhysicsElement) entity);
 			}
 		});
 
 		EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
 			if (entity instanceof PhysicsElement) {
-				SERVER_THREAD.execute(() -> Rayon.SPACE.get(entity.getEntityWorld()).addElement((PhysicsElement) entity));
+				SPACE.get(entity.getEntityWorld()).addElement((PhysicsElement) entity);
 			}
 		});
 
 		EntityTrackingEvents.STOP_TRACKING.register((entity, player) -> {
 			if (entity instanceof PhysicsElement && PlayerLookup.tracking(entity).isEmpty()) {
-				SERVER_THREAD.execute(() -> Rayon.SPACE.get(entity.getEntityWorld()).removeElement((PhysicsElement) entity));
+				SPACE.get(entity.getEntityWorld()).removeElement((PhysicsElement) entity);
 			}
 		});
 	}
@@ -77,13 +77,13 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 
 		ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
-				CLIENT_THREAD.execute(() -> Rayon.SPACE.get(world).addElement((PhysicsElement) entity));
+				SPACE.get(world).addElement((PhysicsElement) entity);
 			}
 		});
 
 		ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
-				CLIENT_THREAD.execute(() -> Rayon.SPACE.get(entity.getEntityWorld()).removeElement((PhysicsElement) entity));
+				SPACE.get(entity.getEntityWorld()).removeElement((PhysicsElement) entity);
 			}
 		});
 	}
