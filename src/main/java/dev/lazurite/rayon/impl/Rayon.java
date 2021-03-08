@@ -22,7 +22,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -57,6 +56,23 @@ public class Rayon implements ModInitializer, ClientModInitializer, WorldCompone
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof PhysicsElement) {
 				MinecraftSpace space = Rayon.SPACE.get(world);
+
+				if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
+					/* Set the position of the rigid body */
+					ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+					rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
+					rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
+					EntityElementMovementS2C.send((PhysicsElement) entity);
+
+					/* Add it to the world */
+					space.getThread().execute(() -> space.addCollisionObject(rigidBody));
+				}
+			}
+		});
+
+		EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
+			if (entity instanceof PhysicsElement) {
+				MinecraftSpace space = Rayon.SPACE.get(entity.getEntityWorld());
 
 				if (!space.getRigidBodyList().contains(((PhysicsElement) entity).getRigidBody())) {
 					/* Set the position of the rigid body */

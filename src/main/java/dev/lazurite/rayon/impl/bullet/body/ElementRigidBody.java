@@ -65,10 +65,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setRestitution(restitution);
         this.setEnvironmentLoadDistance(calculateLoadDistance());
         this.setDoFluidResistance(doFluidResistance);
-
-        this.setEnableSleep(true);
-        this.setSleepingThresholds(20, 20);
-        this.setDeactivationTime(1);
     }
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape) {
@@ -202,7 +198,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
             if (drag != space.getAirDensity() && force.y > -gravitationalForce) {
                 /* Makes the object stop when it collides with a more dense liquid */
                 applyCentralImpulse(getLinearVelocity(new Vector3f()).multLocal(-getMass()));
-            } else if (Float.isFinite(force.length())) {
+            } else if (Float.isFinite(force.length()) && force.length() > 0.1f) {
                 applyCentralForce(force);
             }
         }

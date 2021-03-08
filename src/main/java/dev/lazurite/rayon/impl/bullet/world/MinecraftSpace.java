@@ -104,13 +104,14 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
                     body.applyDrag();
                 }
 
-                System.out.println("active? " + body.isActive());
+                System.out.println("active: " + body.isActive());
 
                 /* Environment Loading */
-                if (!body.isInNoClip()) {
+                if (!body.isInNoClip() && body.isActive()) {
                     Vector3f pos = body.getPhysicsLocation(new Vector3f());
                     Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
 
+                    // TODO check for block updates
                     getTerrainManager().load(box);
 //                    getEntityManager().load(box);
                 }
