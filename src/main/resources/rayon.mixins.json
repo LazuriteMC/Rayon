@@ -3,10 +3,18 @@
   "minVersion": "0.8",
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "common.EntityMixin",
+    "common.ExplosionMixin"
+  ],
   "client": [
-    "debug.DebugRendererMixin",
-    "debug.KeyboardMixin",
-    "world.ClientWorldMixin"
+    "client.EntityMixin",
+    "client.KeyboardMixin",
+    "client.net.ClientPlayNetworkHandlerMixin",
+    "client.render.DebugRendererMixin",
+    "client.render.EntityRenderDispatcherMixin",
+    "client.render.WorldRendererMixin",
+    "client.world.ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

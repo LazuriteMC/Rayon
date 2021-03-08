@@ -1,8 +1,8 @@
-package dev.lazurite.rayon.impl.element.entity.hooks;
+package dev.lazurite.rayon.impl.mixin.client;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementC2S;
+import dev.lazurite.rayon.impl.bullet.body.net.ElementMovementC2S;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * This mixin is for the client only. It syncs movement data with the
  * server if the priority player is set.
- * @see CommonEntityMixin
+ * @see dev.lazurite.rayon.impl.mixin.common.EntityMixin
  */
 @Mixin(Entity.class)
 @Environment(EnvType.CLIENT)
-public class ClientEntityMixin {
+public class EntityMixin {
     @Shadow public World world;
 
     @Inject(method = "tick", at = @At("HEAD"))
@@ -31,7 +31,7 @@ public class ClientEntityMixin {
 
             if (MinecraftClient.getInstance().player.equals(body.getPriorityPlayer())) {
                 if (body.isActive()) {
-                    EntityElementMovementC2S.send((PhysicsElement) this);
+                    ElementMovementC2S.send((PhysicsElement) this);
                 }
             }
         }

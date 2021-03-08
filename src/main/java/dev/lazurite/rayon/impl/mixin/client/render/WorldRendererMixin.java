@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.hooks.render;
+package dev.lazurite.rayon.impl.mixin.client.render;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;

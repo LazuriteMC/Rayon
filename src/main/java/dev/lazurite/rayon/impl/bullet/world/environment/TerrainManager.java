@@ -1,12 +1,13 @@
 package dev.lazurite.rayon.impl.bullet.world.environment;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.shape.PatternShape;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.util.environment.Clump;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.TypedPattern;
@@ -16,7 +17,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -40,93 +40,104 @@ public final class TerrainManager {
      * Loads an individual element's block area into the physics simulation. This
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
+     * @param rigidBody the rigid body to be loaded
      * @param box the {@link Box} area around the element to search for blocks within
      */
-    public void load(Box box) {
+    public void load(ElementRigidBody rigidBody, Box box) {
         World world = space.getWorld();
-        Map<BlockPos, BlockState> blockList = getBlockList(world, box);
+        Clump clump = new Clump(world, box);
 
-        blockList.forEach((blockPos, blockState) -> {
-            float friction = 1.5f;
+        if (rigidBody.isActive()) {
+            clump.getData().forEach(blockInfo -> {
+                BlockPos blockPos = blockInfo.getBlockPos();
+                BlockState blockState = blockInfo.getBlockState();
+                float friction = 1.5f;
 
-            if (blockState.getBlock() instanceof IceBlock) {
-                friction = 0.05F;
-            } else if (!(blockState.getBlock() instanceof HoneyBlock) && !(blockState.getBlock() instanceof SlimeBlock) && !(blockState.getBlock() instanceof SoulSandBlock)) {
-                friction = 0.9F;
-            }
-
-            /* Check if the block is solid or not */
-            if (!blockState.getBlock().canMobSpawnInside()) {
-                BlockRigidBody body = findBlockAtPos(blockPos);
-
-                /* Make a new rigid body if there isn't already one */
-                if (body == null) {
-                    VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
-                    CollisionShape shape;
-
-                    if (!voxel.isEmpty()) {
-                        shape = new BoundingBoxShape(voxel.getBoundingBox());
-                    } else {
-                        shape = new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
-                    }
-
-                    body = new BlockRigidBody(blockState, blockPos, shape, friction, 0.25f);
+                if (blockState.getBlock() instanceof IceBlock) {
+                    friction = 0.05F;
+                } else if (!(blockState.getBlock() instanceof HoneyBlock) && !(blockState.getBlock() instanceof SlimeBlock) && !(blockState.getBlock() instanceof SoulSandBlock)) {
+                    friction = 0.9F;
                 }
 
-                /* Make a pattern shape if applicable */
-                if (!blockState.isFullCube(world, blockPos)) {
-                    TypedPattern<BlockPos> pattern;
+                /* Check if the block is solid or not */
+                if (!blockState.getBlock().canMobSpawnInside()) {
+                    BlockRigidBody body = findBlockAtPos(blockPos);
 
-                    if (world.isClient()) {
-                        MatrixStack transformation = new MatrixStack();
-                        transformation.scale(0.95f, 0.95f, 0.95f);
-                        transformation.translate(-0.5f, -0.5f, -0.5f);
+                    /* Make a new rigid body if there isn't already one */
+                    if (body == null) {
+                        VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
+                        CollisionShape shape;
 
-                        BlockEntity blockEntity = world.getBlockEntity(blockPos);
-
-                        if (blockEntity != null) {
-                            pattern = Disassembler.getBlockEntity(blockEntity, transformation);
+                        if (!voxel.isEmpty()) {
+                            shape = new BoundingBoxShape(voxel.getBoundingBox());
                         } else {
-                            pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+                            shape = new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
                         }
-                    } else {
-                        pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
+
+                        body = new BlockRigidBody(blockState, blockPos, shape, friction, 0.25f);
                     }
 
-                    if (pattern != null) {
-                        if (body.getCollisionShape() instanceof PatternShape) {
-                            if (!pattern.equals(((PatternShape) body.getCollisionShape()).getPattern())) {
+                    /* Make a pattern shape if applicable */
+                    if (!blockState.isFullCube(world, blockPos)) {
+                        TypedPattern<BlockPos> pattern;
+
+                        if (world.isClient()) {
+                            MatrixStack transformation = new MatrixStack();
+                            transformation.scale(0.95f, 0.95f, 0.95f);
+                            transformation.translate(-0.5f, -0.5f, -0.5f);
+
+                            BlockEntity blockEntity = world.getBlockEntity(blockPos);
+
+                            if (blockEntity != null) {
+                                pattern = Disassembler.getBlockEntity(blockEntity, transformation);
+                            } else {
+                                pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+                            }
+                        } else {
+                            pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
+                        }
+
+                        if (pattern != null) {
+                            if (body.getCollisionShape() instanceof PatternShape) {
+                                if (!pattern.equals(((PatternShape) body.getCollisionShape()).getPattern())) {
+                                    body.setCollisionShape(new PatternShape(pattern));
+
+                                    if (world.isClient()) {
+                                        PatternBuffer.getBlockBuffer(world).put(pattern);
+                                    }
+                                }
+                            } else {
                                 body.setCollisionShape(new PatternShape(pattern));
 
                                 if (world.isClient()) {
                                     PatternBuffer.getBlockBuffer(world).put(pattern);
                                 }
                             }
-                        } else {
-                            body.setCollisionShape(new PatternShape(pattern));
+                        }
+                    } else if (body.getCollisionShape() instanceof PatternShape) {
+                        VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
 
-                            if (world.isClient()) {
-                                PatternBuffer.getBlockBuffer(world).put(pattern);
-                            }
+                        if (!voxel.isEmpty()) {
+                            body.setCollisionShape(new BoundingBoxShape(voxel.getBoundingBox()));
+                        } else {
+                            body.setCollisionShape(new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f)));
                         }
                     }
-                } else if (body.getCollisionShape() instanceof PatternShape) {
-                    VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
 
-                    if (!voxel.isEmpty()) {
-                        body.setCollisionShape(new BoundingBoxShape(voxel.getBoundingBox()));
-                    } else {
-                        body.setCollisionShape(new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f)));
+                    if (!space.getRigidBodyList().contains(body)) {
+                        space.addCollisionObject(body);
                     }
-                }
 
-                if (!space.getRigidBodyList().contains(body)) {
-                    space.addCollisionObject(body);
+                    toKeep.add(body);
                 }
+            });
+        }
 
-                toKeep.add(body);
-            }
-        });
+        if (!clump.equals(rigidBody.getClump())) {
+            rigidBody.activate();
+        }
+
+        rigidBody.setClump(clump);
     }
 
     /**
@@ -160,32 +171,5 @@ public final class TerrainManager {
         }
 
         return null;
-    }
-
-    /**
-     * Simply returns a basic {@link Map} of {@link BlockPos} and {@link BlockState}
-     * objects representing the blocks that make up the {@link Box} area parameter.
-     * @param world the {@link World} to retrieve block info from
-     * @param area  the {@link Box} area within the world to retrieve block info from
-     * @return the {@link Map} of {@link BlockPos} and {@link BlockState} objects
-     * @see TerrainManager#load(Box)
-     */
-    public static Map<BlockPos, BlockState> getBlockList(World world, Box area) {
-        Map<BlockPos, BlockState> map = Maps.newHashMap();
-
-        for (int i = (int) area.minX; i < area.maxX; i++) {
-            for (int j = (int) area.minY; j < area.maxY; j++) {
-                for (int k = (int) area.minZ; k < area.maxZ; k++) {
-                    BlockPos blockPos = new BlockPos(i, j, k);
-                    BlockView chunk = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
-
-                    if (chunk != null) {
-                        map.put(blockPos, chunk.getBlockState(blockPos));
-                    }
-                }
-            }
-        }
-
-        return map;
     }
 }

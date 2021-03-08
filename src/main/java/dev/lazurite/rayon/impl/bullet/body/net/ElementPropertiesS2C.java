@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.net;
+package dev.lazurite.rayon.impl.bullet.body.net;
 
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;
@@ -19,7 +19,7 @@ import java.util.UUID;
 
 /**
  * This packet syncs rigid body information other than movement info from the server to the client.
- * The reason this information isn't included in {@link EntityElementMovementS2C} is because this
+ * The reason this information isn't included in {@link ElementMovementS2C} is because this
  * information should always be sent from the server to the client and not vice versa.
  */
 public class ElementPropertiesS2C {

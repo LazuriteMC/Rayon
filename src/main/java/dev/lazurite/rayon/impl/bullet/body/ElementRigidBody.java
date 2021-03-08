@@ -11,6 +11,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.debug.DebugLayer;
+import dev.lazurite.rayon.impl.util.environment.Clump;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
@@ -55,6 +56,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
     private boolean doFluidResistance;
     private PlayerEntity priorityPlayer;
     private Frame frame;
+    private Clump clump;
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution, boolean doFluidResistance) {
         super(shape, mass);
@@ -149,6 +151,14 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
 
     public boolean arePropertiesDirty() {
         return this.propertiesDirty;
+    }
+
+    public Clump getClump() {
+        return this.clump;
+    }
+
+    public void setClump(Clump clump) {
+        this.clump = clump;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.element.entity.hooks;
+package dev.lazurite.rayon.impl.mixin.common;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
@@ -6,8 +6,8 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.element.entity.net.ElementPropertiesS2C;
-import dev.lazurite.rayon.impl.element.entity.net.EntityElementMovementS2C;
+import dev.lazurite.rayon.impl.bullet.body.net.ElementPropertiesS2C;
+import dev.lazurite.rayon.impl.bullet.body.net.ElementMovementS2C;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public abstract class CommonEntityMixin {
+public abstract class EntityMixin {
     @Shadow public World world;
     @Shadow public abstract void updatePosition(double x, double y, double z);
 
@@ -46,7 +46,7 @@ public abstract class CommonEntityMixin {
             /* Send movement and property packets */
             if (!world.isClient()) {
                 if (body.getPriorityPlayer() == null && body.isActive()) {
-                    EntityElementMovementS2C.send(element);
+                    ElementMovementS2C.send(element);
                 }
 
                 if (body.arePropertiesDirty()) {

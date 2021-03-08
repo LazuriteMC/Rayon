@@ -1,10 +1,12 @@
 package dev.lazurite.rayon.impl.bullet.world;
 
 import com.google.common.collect.Lists;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.ElementCollisionEvents;
@@ -15,6 +17,9 @@ import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.bullet.world.environment.EntityManager;
 import dev.lazurite.rayon.impl.bullet.world.environment.TerrainManager;
+import dev.lazurite.rayon.impl.bullet.body.net.ElementMovementS2C;
+import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.thread.Pausable;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
@@ -104,15 +109,12 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
                     body.applyDrag();
                 }
 
-                System.out.println("active: " + body.isActive());
-
                 /* Environment Loading */
-                if (!body.isInNoClip() && body.isActive()) {
+                if (!body.isInNoClip()) {
                     Vector3f pos = body.getPhysicsLocation(new Vector3f());
                     Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
 
-                    // TODO check for block updates
-                    getTerrainManager().load(box);
+                    getTerrainManager().load(body, box);
 //                    getEntityManager().load(box);
                 }
             });
@@ -131,6 +133,29 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
             } else ++presimSteps;
         } else {
             this.clock.reset();
+        }
+    }
+
+    public void addElement(PhysicsElement element) {
+        if (!getRigidBodyList().contains(element.getRigidBody())) {
+            /* Set the position of the rigid body */
+            ElementRigidBody rigidBody = element.getRigidBody();
+            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(element.asEntity().getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
+            rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -element.asEntity().yaw));
+
+            /* Send a sync packet */
+            if (!getWorld().isClient()) {
+                ElementMovementS2C.send(element);
+            }
+
+            /* Add it to the world */
+            addCollisionObject(rigidBody);
+        }
+    }
+
+    public void removeElement(PhysicsElement element) {
+        if (getRigidBodyList().contains(element.getRigidBody())) {
+            removeCollisionObject(element.getRigidBody());
         }
     }
 

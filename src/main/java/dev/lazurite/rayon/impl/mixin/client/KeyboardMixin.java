@@ -1,7 +1,8 @@
-package dev.lazurite.rayon.impl.mixin.debug;
+package dev.lazurite.rayon.impl.mixin.client;
 
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.mixin.client.render.DebugRendererMixin;
 import dev.lazurite.rayon.impl.util.debug.DebugManager;
 import dev.lazurite.rayon.impl.util.debug.DebugLayer;
 import net.fabricmc.api.EnvType;

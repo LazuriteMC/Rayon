@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.world;
+package dev.lazurite.rayon.impl.mixin.client.world;
 
 import dev.lazurite.rayon.impl.Rayon;
 import net.fabricmc.api.EnvType;

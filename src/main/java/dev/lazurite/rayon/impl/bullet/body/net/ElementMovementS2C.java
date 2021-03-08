@@ -1,11 +1,11 @@
-package dev.lazurite.rayon.impl.element.entity.net;
+package dev.lazurite.rayon.impl.bullet.body.net;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.element.entity.hooks.CommonEntityMixin;
+import dev.lazurite.rayon.impl.mixin.common.EntityMixin;
 import dev.lazurite.rayon.impl.util.RayonException;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
@@ -22,10 +22,10 @@ import net.minecraft.util.Identifier;
 /**
  * This packet syncs movement information from the server to all tracking clients.
  * This way, all players see the same movement from physics objects.
- * @see EntityElementMovementS2C
- * @see CommonEntityMixin
+ * @see ElementMovementS2C
+ * @see EntityMixin
  */
-public class EntityElementMovementS2C {
+public class ElementMovementS2C {
     public static final Identifier PACKET_ID = new Identifier(Rayon.MODID, "entity_element_movement_s2c");
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
