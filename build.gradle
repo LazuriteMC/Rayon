@@ -28,6 +28,7 @@ allprojects {
 
 	repositories {
 		maven { url = "https://jitpack.io" }
+		maven { url = "https://hephaestus.dev/release" }
 	}
 
 	dependencies {
@@ -42,6 +43,9 @@ allprojects {
 		// Transporter
 		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 		include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
+
+		// Hermes
+		modImplementation "dev.inkwell:hermes:${project.hermes_version}"
 
 		// Zip4j (shadowed)
 		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"

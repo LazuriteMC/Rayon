@@ -75,7 +75,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         this.addCollisionListener(this);
 
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
-        this.setGravity(new Vector3f());
         this.setAirDensity(1.2f); // kg/m^3
         this.setWaterDensity(997f); // kg/m^3
         this.setLavaDensity(3100f); // kg/m^3
