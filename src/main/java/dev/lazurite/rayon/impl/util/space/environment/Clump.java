@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.util.environment;
+package dev.lazurite.rayon.impl.util.space.environment;
 
 import com.google.common.collect.Lists;
 import net.minecraft.block.BlockState;

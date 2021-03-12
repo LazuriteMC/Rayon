@@ -3,6 +3,7 @@ package dev.lazurite.rayon.impl.bullet.body.net;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.RayonException;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -27,6 +28,8 @@ public class ElementPropertiesS2C {
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         if (client.world != null) {
+            MinecraftSpace space = MinecraftSpace.get(client.world);
+
             int entityId = buf.readInt();
             float mass = buf.readFloat();
             float dragCoefficient = buf.readFloat();
@@ -36,22 +39,24 @@ public class ElementPropertiesS2C {
             boolean doFluidResistance = buf.readBoolean();
             UUID priorityPlayer = buf.readUuid();
 
-            Rayon.SPACE.get(client.world).getThread().execute(() -> {
-                Entity entity = client.world.getEntityById(entityId);
+            if (space != null) {
+                space.getThread().execute(() -> {
+                    Entity entity = client.world.getEntityById(entityId);
 
-                if (entity instanceof PhysicsElement) {
-                    ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
-                    PlayerEntity player = client.world.getPlayerByUuid(priorityPlayer);
+                    if (entity instanceof PhysicsElement) {
+                        ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+                        PlayerEntity player = client.world.getPlayerByUuid(priorityPlayer);
 
-                    rigidBody.setMass(mass);
-                    rigidBody.setDragCoefficient(dragCoefficient);
-                    rigidBody.setFriction(friction);
-                    rigidBody.setRestitution(restitution);
-                    rigidBody.setEnvironmentLoadDistance(blockDistance);
-                    rigidBody.setDoFluidResistance(doFluidResistance);
-                    rigidBody.prioritize(player);
-                }
-            });
+                        rigidBody.setMass(mass);
+                        rigidBody.setDragCoefficient(dragCoefficient);
+                        rigidBody.setFriction(friction);
+                        rigidBody.setRestitution(restitution);
+                        rigidBody.setEnvironmentLoadDistance(blockDistance);
+                        rigidBody.setDoFluidResistance(doFluidResistance);
+                        rigidBody.prioritize(player);
+                    }
+                });
+            }
         }
     }
 

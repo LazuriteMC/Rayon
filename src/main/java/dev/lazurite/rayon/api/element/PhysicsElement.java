@@ -2,7 +2,7 @@ package dev.lazurite.rayon.api.element;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
 import net.fabricmc.api.EnvType;

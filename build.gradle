@@ -27,7 +27,6 @@ allprojects {
 	group = project.maven_group
 
 	repositories {
-		maven { url = "https://dl.bintray.com/ladysnake/libs" }
 		maven { url = "https://jitpack.io" }
 	}
 
@@ -36,7 +35,7 @@ allprojects {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
 		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 
-		// Fabric Loader + Fabric API
+		// Fabric Loader + FAPI
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
 		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
@@ -44,15 +43,11 @@ allprojects {
 		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 		include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 
-		// Cardinal Components
-		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cca_version}"
-		modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
-		include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cca_version}"
-
-		// Zip4j + LibBulletJME
+		// Zip4j (shadowed)
 		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"
 		shadow "net.lingala.zip4j:zip4j:${project.zip4j_version}"
+
+		// LibBulletJME (shadowed)
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 	}

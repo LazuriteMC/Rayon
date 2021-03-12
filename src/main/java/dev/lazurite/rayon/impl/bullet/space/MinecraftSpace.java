@@ -1,31 +1,27 @@
-package dev.lazurite.rayon.impl.bullet.world;
+package dev.lazurite.rayon.impl.bullet.space;
 
 import com.google.common.collect.Lists;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.BlockRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
-import dev.lazurite.rayon.impl.bullet.world.environment.EntityManager;
-import dev.lazurite.rayon.impl.bullet.world.environment.TerrainManager;
-import dev.lazurite.rayon.impl.bullet.body.net.ElementMovementS2C;
+import dev.lazurite.rayon.impl.bullet.space.environment.EntityManager;
+import dev.lazurite.rayon.impl.bullet.space.environment.TerrainManager;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
+import dev.lazurite.rayon.impl.util.space.SpaceStorage;
 import dev.lazurite.rayon.impl.util.thread.Clock;
 import dev.lazurite.rayon.impl.util.thread.Pausable;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -36,7 +32,7 @@ import java.util.List;
  * This is the physics simulation environment for all {@link BlockRigidBody}s and {@link ElementRigidBody}s. It runs
  * on a separate thread from the rest of the game using {@link PhysicsThread}. Users shouldn't have to interact with
  * this object too much.<br>
- * To gain access to the world's {@link MinecraftSpace}, you can call {@link Rayon}.SPACE.get() or register
+ * To gain access to the world's {@link MinecraftSpace}, you can call {@link MinecraftSpace#get(World)} or register
  * a step event in {@link PhysicsSpaceEvents}. As a rule of thumb, if you need to modify information in the physics
  * environment (e.g. add a rigid body or apply a force) then you should always perform those operations on the same
  * thread. The easiest way to get onto the physics thread is to queue a task using {@link PhysicsThread#execute(Runnable)}.
@@ -45,7 +41,7 @@ import java.util.List;
  * @see PhysicsThread
  * @see PhysicsSpaceEvents
  */
-public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausable, PhysicsCollisionListener {
+public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
@@ -59,6 +55,16 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
     private float waterDensity;
     private float lavaDensity;
 
+    /**
+     * Allows users to retrieve the {@link MinecraftSpace} associated
+     * with any given {@link World} object (client or server).
+     * @param world the world to get the physics space from
+     * @return the {@link MinecraftSpace}
+     */
+    public static MinecraftSpace get(World world) {
+        return ((SpaceStorage) world).getSpace();
+    }
+
     public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
         super(broadphase);
         this.thread = thread;
@@ -69,6 +75,7 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
         this.addCollisionListener(this);
 
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
+        this.setGravity(new Vector3f());
         this.setAirDensity(1.2f); // kg/m^3
         this.setWaterDensity(997f); // kg/m^3
         this.setLavaDensity(3100f); // kg/m^3
@@ -134,6 +141,24 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
             } else ++presimSteps;
         } else {
             this.clock.reset();
+        }
+    }
+
+    public void load(PhysicsElement element) {
+        ElementRigidBody rigidBody = element.getRigidBody();
+
+        if (!getRigidBodyList().contains(rigidBody)) {
+            rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(element.asEntity().getPos().add(0, rigidBody.boundingBox(new BoundingBox()).getYExtent(), 0)));
+            rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -element.asEntity().yaw));
+            addCollisionObject(rigidBody);
+        }
+
+        rigidBody.activate();
+    }
+
+    public void unload(PhysicsElement element) {
+        if (getRigidBodyList().contains(element.getRigidBody())) {
+            removeCollisionObject(element.getRigidBody());
         }
     }
 
@@ -220,10 +245,4 @@ public class MinecraftSpace extends PhysicsSpace implements ComponentV3, Pausabl
             }
         });
     }
-
-    @Override
-    public void readFromNbt(CompoundTag compoundTag) { }
-
-    @Override
-    public void writeToNbt(CompoundTag compoundTag) { }
 }

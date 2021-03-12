@@ -5,6 +5,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.mixin.common.EntityMixin;
 import dev.lazurite.rayon.impl.util.RayonException;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
@@ -30,23 +31,27 @@ public class ElementMovementS2C {
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         if (client.world != null) {
+            MinecraftSpace space = MinecraftSpace.get(client.world);
+
             int entityId = buf.readInt();
             Quaternion rotation = QuaternionHelper.fromBuffer(buf);
             Vector3f location = VectorHelper.fromBuffer(buf);
             Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
             Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-            Rayon.SPACE.get(client.world).getThread().execute(() -> {
-                Entity entity = client.world.getEntityById(entityId);
+            if (space != null) {
+                space.getThread().execute(() -> {
+                    Entity entity = client.world.getEntityById(entityId);
 
-                if (entity instanceof PhysicsElement) {
-                    ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
-                    rigidBody.setPhysicsRotation(rotation);
-                    rigidBody.setPhysicsLocation(location);
-                    rigidBody.setLinearVelocity(linearVelocity);
-                    rigidBody.setAngularVelocity(angularVelocity);
-                }
-            });
+                    if (entity instanceof PhysicsElement) {
+                        ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+                        rigidBody.setPhysicsRotation(rotation);
+                        rigidBody.setPhysicsLocation(location);
+                        rigidBody.setLinearVelocity(linearVelocity);
+                        rigidBody.setAngularVelocity(angularVelocity);
+                    }
+                });
+            }
         }
     }
 

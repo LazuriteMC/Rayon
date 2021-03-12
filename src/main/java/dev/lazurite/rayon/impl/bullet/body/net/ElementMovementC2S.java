@@ -5,6 +5,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.mixin.common.EntityMixin;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
@@ -38,7 +39,7 @@ public class ElementMovementC2S {
         Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
         Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-        Rayon.SPACE.get(world).getThread().execute(() -> {
+        MinecraftSpace.get(world).getThread().execute(() -> {
             Entity entity = world.getEntityById(entityId);
 
             if (entity instanceof PhysicsElement) {

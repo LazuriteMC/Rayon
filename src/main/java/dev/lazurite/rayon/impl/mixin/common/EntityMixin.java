@@ -4,10 +4,10 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.body.net.ElementPropertiesS2C;
 import dev.lazurite.rayon.impl.bullet.body.net.ElementMovementS2C;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
@@ -78,7 +78,7 @@ public abstract class EntityMixin {
         if (this instanceof PhysicsElement) {
             PhysicsElement element = (PhysicsElement) this;
             Vector3f force = new Vector3f((float) x, (float) y, (float) z).multLocal(20).multLocal(element.getRigidBody().getMass());
-            Rayon.SPACE.get(world).getThread().execute(() -> element.getRigidBody().applyCentralImpulse(force));
+            MinecraftSpace.get(world).getThread().execute(() -> element.getRigidBody().applyCentralImpulse(force));
         }
     }
 

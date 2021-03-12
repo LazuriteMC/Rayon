@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.impl.util.thread;
 
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 
 /**
  * A simple clock for keeping track of delta time in milliseconds and microseconds.

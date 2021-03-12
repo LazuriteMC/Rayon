@@ -18,8 +18,7 @@
 
   "entrypoints": {
     "main": [ "dev.lazurite.rayon.impl.Rayon" ],
-    "client": [ "dev.lazurite.rayon.impl.Rayon" ],
-    "cardinal-components-world": [ "dev.lazurite.rayon.impl.Rayon" ]
+    "client": [ "dev.lazurite.rayon.impl.Rayon" ]
   },
 
   "mixins": [ "rayon.mixins.json" ],
@@ -36,9 +35,6 @@
     "modmenu": {
       "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" },
       "badges": [ "library" ]
-    },
-    "cardinal-components": [
-      "rayon:space"
-    ]
+    }
   }
 }

@@ -5,7 +5,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
-import dev.lazurite.rayon.impl.bullet.world.environment.TerrainManager;
+import dev.lazurite.rayon.impl.bullet.space.environment.TerrainManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;

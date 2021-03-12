@@ -1,11 +1,11 @@
-package dev.lazurite.rayon.impl.bullet.world.environment;
+package dev.lazurite.rayon.impl.bullet.space.environment;
 
 import com.google.common.collect.Lists;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.body.EntityRigidBody;
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;

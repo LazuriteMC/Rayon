@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import dev.lazurite.rayon.api.element.PhysicsElement;
 import dev.lazurite.rayon.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.Rayon;
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.RayonException;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.ThreadExecutor;

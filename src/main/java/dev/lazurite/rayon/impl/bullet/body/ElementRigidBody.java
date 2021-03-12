@@ -3,15 +3,14 @@ package dev.lazurite.rayon.impl.bullet.body;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.impl.bullet.body.type.DebuggableBody;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.bullet.world.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.util.debug.DebugLayer;
-import dev.lazurite.rayon.impl.util.environment.Clump;
+import dev.lazurite.rayon.impl.util.space.environment.Clump;
 import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.impl.util.math.interpolate.Frame;
@@ -79,7 +78,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
      * @param entity the element to base this body around
      */
     public ElementRigidBody(Entity entity) {
-        this((PhysicsElement) entity, Rayon.SPACE.get(entity.getEntityWorld()), new BoundingBoxShape(entity.getBoundingBox()));
+        this((PhysicsElement) entity, MinecraftSpace.get(entity.getEntityWorld()), new BoundingBoxShape(entity.getBoundingBox()));
     }
 
     /**
