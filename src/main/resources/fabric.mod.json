@@ -16,15 +16,6 @@
   "icon": "assets/rayon/icon.png",
   "environment": "*",
 
-  "entrypoints": {
-    "main": [ "dev.lazurite.rayon.impl.entry.ModEntry" ],
-    "client": [ "dev.lazurite.rayon.impl.entry.ClientModEntry" ]
-  },
-
-  "mixins": [
-    "rayon-core.mixins.json"
-  ],
-
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",

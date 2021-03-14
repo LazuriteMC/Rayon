@@ -7,13 +7,13 @@ plugins {
 
 subprojects {
 	apply plugin: 'fabric-loom'
+	apply plugin: 'java-library'
 	archivesBaseName = project.name
 	group = "${rootProject.group}.${rootProject.archivesBaseName}"
 }
 
 allprojects {
 	apply plugin: 'com.github.johnrengelman.shadow'
-	apply plugin: 'java-library'
 	apply plugin: 'fabric-loom'
 
 	sourceCompatibility = JavaVersion.VERSION_1_8
@@ -55,13 +55,6 @@ allprojects {
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 
 //		modImplementation ('com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:1.16-SNAPSHOT')
-
-		afterEvaluate {
-			subprojects.each {
-				api it
-				include it
-			}
-		}
 	}
 
 	processResources {
@@ -83,7 +76,11 @@ allprojects {
 }
 
 dependencies {
-
+	afterEvaluate {
+		subprojects.each {
+			api it
+		}
+	}
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -102,6 +99,13 @@ jar {
 remapJar {
 	dependsOn shadowJar
 	input.set shadowJar.archiveFile.get()
+}
+
+sourceSets {
+	testmod {
+		compileClasspath += main.compileClasspath
+		runtimeClasspath += main.runtimeClasspath
+	}
 }
 
 publishing {

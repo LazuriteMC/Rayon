@@ -2,7 +2,7 @@ package dev.lazurite.rayon.core.impl.bullet.body;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
-import dev.lazurite.rayon.core.api.element.PhysicsElement;
+import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.util.space.environment.Clump;
 import dev.lazurite.rayon.core.impl.bullet.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.core.impl.bullet.body.type.DebuggableBody;

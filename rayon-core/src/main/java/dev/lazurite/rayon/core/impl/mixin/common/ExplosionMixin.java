@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.impl.mixin.common;
 
-import dev.lazurite.rayon.core.api.element.PhysicsElement;
+import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;

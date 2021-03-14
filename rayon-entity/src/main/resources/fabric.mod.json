@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "rayon",
+  "id": "rayon-entity",
   "version": "${version}",
-  "name": "Rayon (Entities)",
+  "name": "Rayon (Entity)",
   "description": "A physics API for Fabric.",
   "authors": [ "The Lazurite Team" ],
 

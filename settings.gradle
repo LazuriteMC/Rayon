@@ -13,4 +13,4 @@ rootProject.name = 'Rayon'
 
 include "rayon-core"
 include "rayon-entity"
-include "rayon-example"
+include "rayon-particle"

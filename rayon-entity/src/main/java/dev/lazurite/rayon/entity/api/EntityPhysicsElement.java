@@ -2,7 +2,7 @@ package dev.lazurite.rayon.entity.api;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
-import dev.lazurite.rayon.core.api.element.PhysicsElement;
+import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;

@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.lazurite.rayon.particle.impl.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.api.element;
+package dev.lazurite.rayon.core.api;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
