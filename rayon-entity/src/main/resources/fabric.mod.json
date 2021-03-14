@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "rayon",
   "version": "${version}",
-  "name": "Rayon",
+  "name": "Rayon (Entities)",
   "description": "A physics API for Fabric.",
   "authors": [ "The Lazurite Team" ],
 
@@ -13,17 +13,15 @@
   },
 
   "license": "MIT",
-  "icon": "assets/rayon/icon.png",
   "environment": "*",
+  "icon": "assets/rayon/icon.png",
+  "mixins": [ "rayon-entity.mixins.json" ],
 
   "entrypoints": {
-    "main": [ "dev.lazurite.rayon.impl.entry.ModEntry" ],
-    "client": [ "dev.lazurite.rayon.impl.entry.ClientModEntry" ]
+    "main": [ "dev.lazurite.rayon.entity.impl.RayonEntity" ],
+    "client": [ "dev.lazurite.rayon.entity.impl.RayonEntityClient" ]
   },
 
-  "mixins": [
-    "rayon-core.mixins.json"
-  ],
 
   "depends": {
     "fabricloader": ">=0.7.4",

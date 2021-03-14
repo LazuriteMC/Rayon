@@ -1,5 +1,0 @@
-{
-  "debug.rayon.layer.entity": "Rigid Body Hitboxes: entities",
-  "debug.rayon.layer.block": "Rigid Body Hitboxes: entities + blocks",
-  "debug.rayon.off": "Rigid Body Hitboxes: hidden"
-}

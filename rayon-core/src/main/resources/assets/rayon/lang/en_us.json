@@ -1,0 +1,5 @@
+{
+  "debug.rayon.layer.body": "Rigid Body Hitboxes: shown",
+  "debug.rayon.layer.block": "Rigid Body Hitboxes: blocks shown",
+  "debug.rayon.off": "Rigid Body Hitboxes: hidden"
+}

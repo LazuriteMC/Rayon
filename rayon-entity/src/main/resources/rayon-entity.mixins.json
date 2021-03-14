@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.lazurite.rayon.entity.impl.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "common.EntityMixin",
+    "common.EntityTrackerEntryMixin",
+    "common.ServerWorldMixin"
+  ],
+  "client": [
+    "client.ClientPlayNetworkHandlerMixin",
+    "client.render.EntityRenderDispatcherMixin",
+    "client.render.WorldRendererMixin",
+    "client.world.ClientWorldMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.lazurite.rayon.core.impl.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "common.ExplosionMixin",
+    "common.WorldMixin"
+  ],
+  "client": [
+    "client.input.KeyboardMixin",
+    "client.ClientPlayNetworkHandlerMixin",
+    "client.render.DebugRendererMixin",
+    "client.world.ClientWorldMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

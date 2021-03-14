@@ -1,0 +1,4 @@
+dependencies {
+    api project(":rayon-core")
+    api project(":rayon-entity")
+}

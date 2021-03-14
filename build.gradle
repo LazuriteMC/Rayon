@@ -2,21 +2,18 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version "5.2.0"
 	id 'fabric-loom' version '0.5-SNAPSHOT'
 	id 'maven-publish'
+	id 'java-library'
 }
 
 subprojects {
 	apply plugin: 'fabric-loom'
-	archivesBaseName = rootProject.archives_base_name + "-" + project.name
-	group = rootProject.maven_group + "." + rootProject.archives_base_name
-
-	dependencies {
-		compile rootProject.sourceSets.main.output
-		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	}
+	archivesBaseName = project.name
+	group = "${rootProject.group}.${rootProject.archivesBaseName}"
 }
 
 allprojects {
 	apply plugin: 'com.github.johnrengelman.shadow'
+	apply plugin: 'java-library'
 	apply plugin: 'fabric-loom'
 
 	sourceCompatibility = JavaVersion.VERSION_1_8
@@ -38,7 +35,9 @@ allprojects {
 
 		// Fabric Loader + FAPI
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+		modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
+		modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
+		modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
 
 		// Transporter
 		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
@@ -54,6 +53,15 @@ allprojects {
 		// LibBulletJME (shadowed)
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+
+//		modImplementation ('com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:1.16-SNAPSHOT')
+
+		afterEvaluate {
+			subprojects.each {
+				api it
+				include it
+			}
+		}
 	}
 
 	processResources {
@@ -72,6 +80,10 @@ allprojects {
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
 	}
+}
+
+dependencies {
+
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
