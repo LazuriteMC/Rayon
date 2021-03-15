@@ -15,10 +15,12 @@ public final class ServerWorldSupplier implements WorldSupplier {
         this.server = server;
     }
 
+    @Override
     public List<World> getWorlds() {
         return new ArrayList<>((Collection<? extends World>) server.getWorlds());
     }
 
+    @Override
     public World getWorld(RegistryKey<World> key) {
         return server.getWorld(key);
     }

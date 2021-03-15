@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.core.impl.thread.supplier;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -7,6 +9,7 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public final class ClientWorldSupplier implements WorldSupplier {
     private final MinecraftClient client;
 
@@ -14,6 +17,7 @@ public final class ClientWorldSupplier implements WorldSupplier {
         this.client = client;
     }
 
+    @Override
     public List<World> getWorlds() {
         ArrayList<World> out = new ArrayList<>();
 
@@ -24,6 +28,7 @@ public final class ClientWorldSupplier implements WorldSupplier {
         return out;
     }
 
+    @Override
     public World getWorld(RegistryKey<World> key) {
         if (client.world != null && client.world.getRegistryKey().equals(key)) {
             return client.world;
