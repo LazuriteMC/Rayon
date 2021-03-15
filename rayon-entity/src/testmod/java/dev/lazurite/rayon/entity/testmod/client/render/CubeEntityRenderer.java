@@ -1,11 +1,11 @@
-package dev.lazurite.rayon.examplemod.client.render;
+package dev.lazurite.rayon.entity.testmod.client.render;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
-import dev.lazurite.rayon.examplemod.ExampleMod;
-import dev.lazurite.rayon.examplemod.common.entity.CubeEntity;
-import dev.lazurite.rayon.examplemod.client.render.model.CubeEntityModel;
+import dev.lazurite.rayon.entity.testmod.client.render.model.CubeEntityModel;
+import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.EntityTestMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
@@ -19,7 +19,7 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class CubeEntityRenderer extends EntityRenderer<CubeEntity> {
-    public static final Identifier texture = new Identifier(ExampleMod.MODID, "textures/entity/cube.png");
+    public static final Identifier texture = new Identifier(EntityTestMod.MODID, "textures/entity/cube.png");
     private final CubeEntityModel model = new CubeEntityModel();
 
     public CubeEntityRenderer(EntityRenderDispatcher dispatcher) {

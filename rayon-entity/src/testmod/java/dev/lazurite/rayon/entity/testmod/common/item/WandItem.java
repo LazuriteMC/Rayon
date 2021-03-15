@@ -1,7 +1,7 @@
-package dev.lazurite.rayon.examplemod.common.item;
+package dev.lazurite.rayon.entity.testmod.common.item;
 
-import dev.lazurite.rayon.examplemod.ExampleMod;
-import dev.lazurite.rayon.examplemod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.EntityTestMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -25,7 +25,7 @@ public class WandItem extends Item {
         HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 
         if (!world.isClient()) {
-            CubeEntity entity = new CubeEntity(ExampleMod.CUBE_ENTITY, world);
+            CubeEntity entity = new CubeEntity(EntityTestMod.CUBE_ENTITY, world);
             entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 
             /* Set the physics element to be prioritized if the player is sneaking while right clicking with the wand. */

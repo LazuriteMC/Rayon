@@ -18,7 +18,7 @@ import java.nio.file.StandardCopyOption;
 public class NativeLoader {
     public static final String DEST_DIR = "natives/10.1.0/";
     public static final String NATIVE_ZIP = "natives.zip";
-    public static final String INTERNAL_ZIP = "/assets/rayon/natives/natives.zip";
+    public static final String INTERNAL_ZIP = "/assets/rayon-core/natives/natives.zip";
 
     public static void load() {
         File destination = new File(DEST_DIR);

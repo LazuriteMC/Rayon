@@ -1,8 +1,8 @@
-package dev.lazurite.rayon.examplemod;
+package dev.lazurite.rayon.entity.testmod;
 
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
-import dev.lazurite.rayon.examplemod.common.entity.CubeEntity;
-import dev.lazurite.rayon.examplemod.common.item.WandItem;
+import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.common.item.WandItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.block.Blocks;
@@ -17,9 +17,9 @@ import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ExampleMod implements ModInitializer {
-    public static final String MODID = "examplemod";
-    public static final Logger LOGGER = LogManager.getLogger("Rayon Example Mod");
+public class EntityTestMod implements ModInitializer {
+    public static final String MODID = "testmod";
+    public static final Logger LOGGER = LogManager.getLogger("Rayon Test Mod");
 
     public static EntityType<CubeEntity> CUBE_ENTITY;
     public static WandItem WAND_ITEM;

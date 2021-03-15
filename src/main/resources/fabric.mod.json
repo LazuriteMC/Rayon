@@ -22,8 +22,6 @@
     "minecraft": "1.16.x"
   },
 
-  "suggests": { "flamingo": "*" },
-
   "custom": {
     "hermes": true,
     "modmenu": {

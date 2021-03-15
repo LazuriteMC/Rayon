@@ -2,35 +2,29 @@
   "schemaVersion": 1,
   "id": "rayon-particle",
   "version": "${version}",
-  "name": "Rayon (Particle)",
-  "description": "A physics API for Fabric.",
+  "name": "Rayon Particle API",
+  "description": "The particle API for Rayon.",
   "authors": [ "The Lazurite Team" ],
+  "license": "MIT",
+  "environment": "*",
+  "icon": "assets/rayon-particle/icon.png",
+  "mixins": [ "rayon-particle.mixins.json" ],
+
+  "entrypoints": {
+    "client": [ "dev.lazurite.rayon.particle.impl.RayonParticleClient" ]
+  },
+
+  "depends": {
+    "minecraft": "1.16.x",
+    "fabricloader": ">=0.7.4",
+    "fabric": "*"
+  },
 
   "contact": {
     "homepage": "https://lazurite.dev",
     "sources": "https://github.com/lazuritemc/Rayon",
     "issues": "https://github.com/LazuriteMC/Rayon/issues"
   },
-
-  "license": "MIT",
-  "environment": "*",
-  "icon": "assets/rayon/icon.png",
-  "mixins": [
-    "rayon-particle.mixins.json"
-  ],
-
-  "entrypoints": {
-    "client": [ "dev.lazurite.rayon.particle.impl.RayonParticleClient" ]
-  },
-
-
-  "depends": {
-    "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": "1.16.x"
-  },
-
-  "suggests": { "flamingo": "*" },
 
   "custom": {
     "hermes": true,

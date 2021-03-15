@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "rayon-particle-testmod",
+  "version": "${version}",
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {},
+
+  "depends": {
+    "minecraft": "1.16.x",
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "rayon-particle": "*"
+  }
+}

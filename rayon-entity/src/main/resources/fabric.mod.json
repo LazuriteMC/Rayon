@@ -2,19 +2,13 @@
   "schemaVersion": 1,
   "id": "rayon-entity",
   "version": "${version}",
-  "name": "Rayon (Entity)",
-  "description": "A physics API for Fabric.",
+  "name": "Rayon Entity API",
+  "description": "The entity API for Rayon.",
   "authors": [ "The Lazurite Team" ],
-
-  "contact": {
-    "homepage": "https://lazurite.dev",
-    "sources": "https://github.com/lazuritemc/Rayon",
-    "issues": "https://github.com/LazuriteMC/Rayon/issues"
-  },
 
   "license": "MIT",
   "environment": "*",
-  "icon": "assets/rayon/icon.png",
+  "icon": "assets/rayon-entity/icon.png",
   "mixins": [ "rayon-entity.mixins.json" ],
 
   "entrypoints": {
@@ -22,14 +16,17 @@
     "client": [ "dev.lazurite.rayon.entity.impl.RayonEntityClient" ]
   },
 
-
   "depends": {
+    "minecraft": "1.16.x",
     "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": "1.16.x"
+    "fabric": "*"
   },
 
-  "suggests": { "flamingo": "*" },
+  "contact": {
+    "homepage": "https://lazurite.dev",
+    "sources": "https://github.com/lazuritemc/Rayon",
+    "issues": "https://github.com/LazuriteMC/Rayon/issues"
+  },
 
   "custom": {
     "hermes": true,

@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.examplemod.client.render.model;
+package dev.lazurite.rayon.entity.testmod.client.render.model;
 
-import dev.lazurite.rayon.examplemod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;

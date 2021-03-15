@@ -2,19 +2,12 @@
   "schemaVersion": 1,
   "id": "rayon-core",
   "version": "${version}",
-  "name": "Rayon (Core)",
-  "description": "A physics API for Fabric.",
+  "name": "Rayon Core API",
+  "description": "The core API for Rayon.",
   "authors": [ "The Lazurite Team" ],
-
-  "contact": {
-    "homepage": "https://lazurite.dev",
-    "sources": "https://github.com/lazuritemc/Rayon",
-    "issues": "https://github.com/LazuriteMC/Rayon/issues"
-  },
-
   "license": "MIT",
   "environment": "*",
-  "icon": "assets/rayon/icon.png",
+  "icon": "assets/rayon-core/icon.png",
   "mixins": [ "rayon-core.mixins.json" ],
 
   "entrypoints": {
@@ -23,12 +16,16 @@
   },
 
   "depends": {
+    "minecraft": "1.16.x",
     "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": "1.16.x"
+    "fabric": "*"
   },
 
-  "suggests": { "flamingo": "*" },
+  "contact": {
+    "homepage": "https://lazurite.dev",
+    "sources": "https://github.com/lazuritemc/Rayon",
+    "issues": "https://github.com/LazuriteMC/Rayon/issues"
+  },
 
   "custom": {
     "hermes": true,

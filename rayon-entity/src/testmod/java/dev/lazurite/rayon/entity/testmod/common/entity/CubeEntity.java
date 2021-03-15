@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.examplemod.common.entity;
+package dev.lazurite.rayon.entity.testmod.common.entity;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;

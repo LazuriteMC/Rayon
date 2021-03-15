@@ -1,26 +1,19 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "rayon-entity-testmod",
   "version": "${version}",
-
-  "name": "Rayon Example Mod",
-  "description": "Example mod for Rayon.",
-  "authors": [ "The Lazurite Team" ],
-
   "license": "MIT",
   "environment": "*",
+
   "entrypoints": {
-    "main": [ "dev.lazurite.rayon.examplemod.ExampleMod" ],
-    "client": [ "dev.lazurite.rayon.examplemod.client.ExampleModClient" ]
+    "main": [ "dev.lazurite.rayon.entity.testmod.EntityTestMod" ],
+    "client": [ "dev.lazurite.rayon.entity.testmod.client.EntityTestModClient" ]
   },
 
   "depends": {
+    "minecraft": "1.16.x",
     "fabricloader": ">=0.7.4",
     "fabric": "*",
-    "minecraft": "1.16.x"
-  },
-
-  "suggests": {
-    "flamingo": "*"
+    "rayon-entity": "*"
   }
 }
