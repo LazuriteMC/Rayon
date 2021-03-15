@@ -1,10 +1,12 @@
-package dev.lazurite.rayon.core.impl.bullet.thread;
+package dev.lazurite.rayon.core.impl.thread;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCore;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.thread.supplier.WorldSupplier;
 import dev.lazurite.rayon.core.impl.util.RayonException;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
@@ -24,14 +26,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PhysicsThread extends Thread {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
     private final ThreadExecutor<? extends Runnable> executor;
+    private final WorldSupplier worldSupplier;
     private float stepRate = 1f / 60f;
     private long nextStep;
 
     private volatile boolean running = true;
     private volatile Throwable throwable;
 
-    public PhysicsThread(ThreadExecutor<? extends Runnable> executor, String name) {
+    public PhysicsThread(ThreadExecutor<? extends Runnable> executor, WorldSupplier worldSupplier, String name) {
         this.executor = executor;
+        this.worldSupplier = worldSupplier;
         this.nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
         this.setUncaughtExceptionHandler((thread, throwable) -> {
             this.throwable = throwable;
@@ -65,8 +69,11 @@ public class PhysicsThread extends Thread {
                     tasks.poll().run();
                 }
 
-                // world supplier
-//                spaces.values().forEach(MinecraftSpace::step);
+                for (World world : worldSupplier.getWorlds()) {
+                    if (((SpaceStorage) world).getSpace() != null) {
+                        ((SpaceStorage) world).getSpace().step();
+                    }
+                }
             }
         }
     }

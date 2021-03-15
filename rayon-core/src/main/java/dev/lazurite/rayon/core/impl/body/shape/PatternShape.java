@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.bullet.body.shape;
+package dev.lazurite.rayon.core.impl.body.shape;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.collision.shapes.CompoundCollisionShape;

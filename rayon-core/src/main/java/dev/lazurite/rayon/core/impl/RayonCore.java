@@ -1,9 +1,10 @@
 package dev.lazurite.rayon.core.impl;
 
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.thread.supplier.ServerWorldSupplier;
 import dev.lazurite.rayon.core.impl.util.NativeLoader;
-import dev.lazurite.rayon.core.impl.util.space.SpaceStorage;
+import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -28,7 +29,7 @@ public class RayonCore implements ModInitializer {
 
 		/* Thread Events */
 		AtomicReference<PhysicsThread> thread = new AtomicReference<>();
-		ServerLifecycleEvents.SERVER_STARTING.register(server -> thread.set(new PhysicsThread(server, "Server Physics Thread")));
+		ServerLifecycleEvents.SERVER_STARTING.register(server -> thread.set(new PhysicsThread(server, new ServerWorldSupplier(server),  "Server Physics Thread")));
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> thread.get().destroy());
 		ServerTickEvents.END_SERVER_TICK.register(server -> thread.get().tick());
 

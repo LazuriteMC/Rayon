@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.core.impl.util.debug;
+package dev.lazurite.rayon.core.impl.debug;
 
-import dev.lazurite.rayon.core.impl.bullet.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.body.type.DebuggableBody;
 
 /**
  * The set of layers used in {@link DebugManager} and {@link DebuggableBody} objects.

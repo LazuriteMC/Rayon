@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.bullet.space;
+package dev.lazurite.rayon.core.impl.space;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
@@ -9,12 +9,13 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.util.space.SpaceStorage;
-import dev.lazurite.rayon.core.impl.util.thread.Clock;
-import dev.lazurite.rayon.core.impl.util.thread.Pausable;
+import dev.lazurite.rayon.core.impl.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.space.manager.TerrainManager;
+import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.thread.util.Clock;
+import dev.lazurite.rayon.core.impl.thread.util.Pausable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;

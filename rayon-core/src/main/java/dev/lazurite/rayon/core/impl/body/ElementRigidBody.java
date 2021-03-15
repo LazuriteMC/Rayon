@@ -1,24 +1,21 @@
-package dev.lazurite.rayon.core.impl.bullet.body;
+package dev.lazurite.rayon.core.impl.body;
 
 import com.jme3.bounding.BoundingBox;
-import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.util.space.environment.Clump;
-import dev.lazurite.rayon.core.impl.bullet.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.bullet.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.body.shape.BoundingBoxShape;
+import dev.lazurite.rayon.core.impl.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.space.util.Clump;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.util.debug.DebugLayer;
-import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.core.impl.debug.DebugLayer;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.core.impl.util.math.interpolate.Frame;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -87,34 +84,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
      */
     protected int calculateLoadDistance() {
         return (int) boundingBox(new BoundingBox()).getExtent(new Vector3f()).length() + 1;
-    }
-
-    public void fromTag(CompoundTag tag) {
-        if (tag.getFloat("mass") == 0.0f) return;
-
-        /* Movement Info */
-        setPhysicsRotation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
-        setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
-        setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
-
-        /* Properties */
-        setDragCoefficient(tag.getFloat("drag_coefficient"));
-        setMass(tag.getFloat("mass"));
-        setFriction(tag.getFloat("friction"));
-        setRestitution(tag.getFloat("restitution"));
-    }
-
-    public void toTag(CompoundTag tag) {
-        /* Movement Info */
-        tag.put("orientation", QuaternionHelper.toTag(getPhysicsRotation(new Quaternion())));
-        tag.put("linear_velocity", VectorHelper.toTag(getLinearVelocity(new Vector3f())));
-        tag.put("angular_velocity", VectorHelper.toTag(getAngularVelocity(new Vector3f())));
-
-        /* Properties */
-        tag.putFloat("drag_coefficient", getDragCoefficient());
-        tag.putFloat("mass", getMass());
-        tag.putFloat("friction", getFriction());
-        tag.putFloat("restitution", getRestitution());
     }
 
     @Override

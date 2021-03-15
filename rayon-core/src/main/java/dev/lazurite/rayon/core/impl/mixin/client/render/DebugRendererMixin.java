@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.impl.mixin.client.render;
 
-import dev.lazurite.rayon.core.impl.util.debug.DebugManager;
+import dev.lazurite.rayon.core.impl.debug.DebugManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.*;

@@ -1,12 +1,13 @@
-package dev.lazurite.rayon.core.impl.bullet.space;
+package dev.lazurite.rayon.core.impl.space.manager;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import dev.lazurite.rayon.core.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.bullet.body.shape.PatternShape;
-import dev.lazurite.rayon.core.impl.util.space.environment.Clump;
+import dev.lazurite.rayon.core.impl.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.body.shape.BoundingBoxShape;
+import dev.lazurite.rayon.core.impl.body.shape.PatternShape;
+import dev.lazurite.rayon.core.impl.space.util.Clump;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.TypedPattern;

@@ -3,7 +3,7 @@ package dev.lazurite.rayon.entity.impl.mixin.client.world;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
 import dev.lazurite.rayon.entity.impl.net.ElementMovementC2S;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;

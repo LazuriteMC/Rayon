@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.impl.mixin.common;
 
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.util.space.SpaceStorage;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

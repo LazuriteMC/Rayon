@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity.impl.mixin.common;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
 import dev.lazurite.rayon.entity.impl.net.ElementMovementS2C;
 import dev.lazurite.rayon.entity.impl.net.ElementPropertiesS2C;
 import net.minecraft.entity.Entity;

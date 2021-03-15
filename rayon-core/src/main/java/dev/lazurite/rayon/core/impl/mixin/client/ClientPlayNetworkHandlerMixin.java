@@ -23,7 +23,14 @@ public class ClientPlayNetworkHandlerMixin {
      * Invokes the game join event.
      * @see BetterClientLifecycleEvents
      */
-    @Inject(method = "onGameJoin", at = @At("TAIL"))
+    @Inject(
+            method = "onGameJoin",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V",
+                    shift = At.Shift.AFTER
+            )
+    )
     public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
         BetterClientLifecycleEvents.GAME_JOIN.invoker().onGameJoin(client, world, client.player);
     }

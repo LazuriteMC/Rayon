@@ -2,7 +2,7 @@ package dev.lazurite.rayon.entity.impl;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.net.ElementMovementC2S;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;

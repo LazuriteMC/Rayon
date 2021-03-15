@@ -2,12 +2,13 @@ package dev.lazurite.rayon.core.impl;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.thread.supplier.ClientWorldSupplier;
 import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
 import dev.lazurite.rayon.core.impl.util.math.interpolate.Frame;
-import dev.lazurite.rayon.core.impl.util.space.SpaceStorage;
+import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
@@ -18,7 +19,7 @@ public class RayonCoreClient implements ClientModInitializer {
     public void onInitializeClient() {
         /* Thread Events */
         AtomicReference<PhysicsThread> thread = new AtomicReference<>();
-        BetterClientLifecycleEvents.GAME_JOIN.register((client, world, player) -> thread.set(new PhysicsThread(client, "Client Physics Thread")));
+        BetterClientLifecycleEvents.GAME_JOIN.register((client, world, player) -> thread.set(new PhysicsThread(client, new ClientWorldSupplier(client), "Client Physics Thread")));
         BetterClientLifecycleEvents.DISCONNECT.register((client, world) -> thread.get().destroy());
         ClientTickEvents.END_CLIENT_TICK.register(client -> { if (thread.get() != null) thread.get().tick(); });
 

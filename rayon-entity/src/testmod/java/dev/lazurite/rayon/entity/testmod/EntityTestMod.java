@@ -18,8 +18,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EntityTestMod implements ModInitializer {
-    public static final String MODID = "testmod";
-    public static final Logger LOGGER = LogManager.getLogger("Rayon Test Mod");
+    public static final String MODID = "rayon-entity-testmod";
+    public static final Logger LOGGER = LogManager.getLogger("Rayon Entity Test Mod");
 
     public static EntityType<CubeEntity> CUBE_ENTITY;
     public static WandItem WAND_ITEM;

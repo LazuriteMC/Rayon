@@ -3,7 +3,7 @@ package dev.lazurite.rayon.entity.impl;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.net.ElementMovementS2C;
 import dev.lazurite.rayon.entity.impl.net.ElementPropertiesS2C;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

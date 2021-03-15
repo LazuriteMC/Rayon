@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.entity.impl.net;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.util.RayonException;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;

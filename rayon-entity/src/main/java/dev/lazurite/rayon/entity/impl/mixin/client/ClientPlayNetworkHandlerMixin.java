@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity.impl.mixin.client;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
