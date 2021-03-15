@@ -24,7 +24,6 @@ public class RayonCore implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("LOADING RAYON CORE");
 		NativeLoader.load();
 
 		/* Thread Events */

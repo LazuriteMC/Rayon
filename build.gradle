@@ -5,13 +5,6 @@ plugins {
 	id 'java-library'
 }
 
-subprojects {
-	apply plugin: 'fabric-loom'
-	apply plugin: 'java-library'
-	archivesBaseName = project.name
-	group = "${rootProject.group}.${rootProject.archivesBaseName}"
-}
-
 allprojects {
 	apply plugin: 'com.github.johnrengelman.shadow'
 	apply plugin: 'fabric-loom'
@@ -24,8 +17,8 @@ allprojects {
 	group = project.maven_group
 
 	repositories {
-		maven { url = "https://jitpack.io" }
-		maven { url = "https://hephaestus.dev/release" }
+		maven { url "https://jitpack.io" }
+		maven { url "https://hephaestus.dev/release" }
 	}
 
 	dependencies {
@@ -46,15 +39,22 @@ allprojects {
 		// Hermes
 		modImplementation "dev.inkwell:hermes:${project.hermes_version}"
 
-		// Zip4j (shadowed)
+		// Zip4j
 		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"
 		shadow "net.lingala.zip4j:zip4j:${project.zip4j_version}"
 
-		// LibBulletJME (shadowed)
+		// LibBulletJME
 		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 
 //		modImplementation ('com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:1.16-SNAPSHOT')
+	}
+
+	sourceSets {
+		testmod {
+			compileClasspath += main.compileClasspath
+			runtimeClasspath += main.runtimeClasspath
+		}
 	}
 
 	processResources {
@@ -79,6 +79,7 @@ dependencies {
 	afterEvaluate {
 		subprojects.each {
 			api it
+			include it
 		}
 	}
 }
@@ -101,10 +102,14 @@ remapJar {
 	input.set shadowJar.archiveFile.get()
 }
 
-sourceSets {
-	testmod {
-		compileClasspath += main.compileClasspath
-		runtimeClasspath += main.runtimeClasspath
+subprojects {
+	apply plugin: 'fabric-loom'
+	apply plugin: 'java-library'
+	archivesBaseName = project.name
+	group = "${rootProject.group}.${rootProject.archivesBaseName}"
+
+	dependencies {
+		testmodCompile sourceSets.main.output
 	}
 }
 

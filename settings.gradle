@@ -9,7 +9,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'Rayon'
+rootProject.name = 'rayon'
 
 include "rayon-core"
 include "rayon-entity"
