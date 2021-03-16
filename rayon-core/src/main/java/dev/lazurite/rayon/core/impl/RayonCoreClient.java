@@ -37,7 +37,7 @@ public class RayonCoreClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> { if (thread.get() != null) thread.get().tick(); });
 
         /* World Events */
-        BetterClientLifecycleEvents.LOAD_WORLD.register((client, world) -> ((SpaceStorage) world).setSpace(new MinecraftSpace(thread.get(), world)));
+        BetterClientLifecycleEvents.LOAD_WORLD.register((client, world) -> ((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(world)));
         ClientTickEvents.END_WORLD_TICK.register(world ->
             MinecraftSpace.get(world).getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
                 Frame prevFrame = body.getFrame();

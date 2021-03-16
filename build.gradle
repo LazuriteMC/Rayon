@@ -19,15 +19,23 @@ allprojects {
 	repositories {
 		maven { url "https://jitpack.io" }
 		maven { url "https://hephaestus.dev/release" }
+		maven { url "https://maven.shedaniel.me/" }
+		maven { url "http://maven.fabricmc.net/" }
+	}
+
+	sourceSets {
+		testmod {
+			compileClasspath += main.compileClasspath
+			runtimeClasspath += main.runtimeClasspath
+		}
 	}
 
 	dependencies {
-		// Minecraft + Yarn
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
 		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-
-		// Fabric Loader + FAPI
 		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
+
+		// Fabric API
 		modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
 		modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
 		modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
@@ -51,6 +59,9 @@ allprojects {
 		modImplementation('com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:1.16-SNAPSHOT') {
 			exclude(group: "net.fabricmc.fabric-api")
 		}
+//		modImplementation('com.github.qouteall:ImmersivePortalsMod:1.16-SNAPSHOT') {
+//			exclude(group: "net.fabricmc.fabric-api")
+//		}
 	}
 
 	processResources {
@@ -69,38 +80,32 @@ allprojects {
 	tasks.withType(JavaCompile) {
 		options.encoding = "UTF-8"
 	}
-}
 
-sourceSets {
-	testmod {
-		compileClasspath += main.compileClasspath
-		runtimeClasspath += main.runtimeClasspath
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		classifier = "sources"
+		from sourceSets.main.allSource
 	}
-}
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
-	from sourceSets.main.allSource
-}
+	shadowJar {
+		configurations = [project.configurations.shadow]
+	}
 
-shadowJar {
-	configurations = [project.configurations.shadow]
-}
+	jar {
+		from "LICENSE"
+	}
 
-jar {
-	from "LICENSE"
-}
-
-remapJar {
-	dependsOn shadowJar
-	input.set shadowJar.archiveFile.get()
+	remapJar {
+		dependsOn shadowJar
+		input.set shadowJar.archiveFile.get()
+	}
 }
 
 dependencies {
 	afterEvaluate {
 		subprojects.each {
-			api it
-			include it
+			api project(":${it.name}")
+			include project("${it.name}:")
+			testmodCompile project("${it.name}:").sourceSets.testmod.output
 		}
 	}
 }
@@ -112,7 +117,7 @@ subprojects {
 	group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
 	dependencies {
-		compile sourceSets.main.output
+		testmodCompile project.sourceSets.main.output
 	}
 }
 

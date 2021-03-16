@@ -9,6 +9,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.space.manager.TerrainManager;
@@ -17,6 +18,7 @@ import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
 import dev.lazurite.rayon.core.impl.thread.util.Clock;
 import dev.lazurite.rayon.core.impl.thread.util.Pausable;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -37,12 +39,13 @@ import java.util.List;
  * @see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCollisionListener {
+    public static final Identifier MAIN = new Identifier(RayonCore.MODID, "main");
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
-    private final PhysicsThread thread;
     private final World world;
     private final Clock clock;
+    private PhysicsThread thread;
     private int presimSteps;
 
     private float airDensity;
@@ -56,10 +59,10 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      * @return the {@link MinecraftSpace}
      */
     public static MinecraftSpace get(World world) {
-        return ((SpaceStorage) world).getSpace();
+        return ((SpaceStorage) world).getSpace(MAIN);
     }
 
-    public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
+    public MinecraftSpace(World world, BroadphaseType broadphase) {
         super(broadphase);
         this.thread = thread;
         this.world = world;
@@ -73,8 +76,8 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         this.setLavaDensity(3100f); // kg/m^3
     }
 
-    public MinecraftSpace(PhysicsThread thread, World world) {
-        this(thread, world, BroadphaseType.DBVT);
+    public MinecraftSpace(World world) {
+        this(world, BroadphaseType.DBVT);
     }
 
     /**
@@ -171,6 +174,10 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         }
 
         return out;
+    }
+
+    public void setThread(PhysicsThread thread) {
+        this.thread = thread;
     }
 
     public PhysicsThread getThread() {

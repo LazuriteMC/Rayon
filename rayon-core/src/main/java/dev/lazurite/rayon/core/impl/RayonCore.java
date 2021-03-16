@@ -34,6 +34,6 @@ public class RayonCore implements ModInitializer {
 		ServerTickEvents.END_SERVER_TICK.register(server -> thread.get().tick());
 
 		/* World Events */
-		ServerWorldEvents.LOAD.register((server, world) -> ((SpaceStorage) world).setSpace(new MinecraftSpace(thread.get(), world)));
+		ServerWorldEvents.LOAD.register((server, world) -> ((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(world)));
 	}
 }

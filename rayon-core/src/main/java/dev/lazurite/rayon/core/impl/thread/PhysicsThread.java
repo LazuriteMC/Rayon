@@ -70,8 +70,14 @@ public class PhysicsThread extends Thread {
                 }
 
                 for (World world : worldSupplier.getWorlds()) {
-                    if (((SpaceStorage) world).getSpace() != null) {
-                        ((SpaceStorage) world).getSpace().step();
+                    for (MinecraftSpace space : ((SpaceStorage) world).getSpaces()) {
+                        if (space != null) {
+                            if (space.getThread() == null) {
+                                space.setThread(this);
+                            }
+
+                            space.step();
+                        }
                     }
                 }
             }
