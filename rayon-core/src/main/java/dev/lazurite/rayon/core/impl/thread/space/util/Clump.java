@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.space.util;
+package dev.lazurite.rayon.core.impl.thread.space.util;
 
 import com.google.common.collect.Lists;
 import net.minecraft.block.BlockState;

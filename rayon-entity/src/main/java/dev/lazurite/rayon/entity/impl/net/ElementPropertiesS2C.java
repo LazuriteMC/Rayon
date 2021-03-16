@@ -1,9 +1,9 @@
 package dev.lazurite.rayon.entity.impl.net;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.RayonCore;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.util.RayonException;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -20,11 +20,11 @@ import java.util.UUID;
 
 /**
  * This packet syncs rigid body information other than movement info from the server to the client.
- * The reason this information isn't included in {@link ElementMovementS2C} is because this
+ * The reason this information isn't included in {@link EntityElementMovementS2C} is because this
  * information should always be sent from the server to the client and not vice versa.
  */
 public class ElementPropertiesS2C {
-    public static final Identifier PACKET_ID = new Identifier(RayonCore.MODID, "element_properties_s2c");
+    public static final Identifier PACKET_ID = new Identifier(RayonCoreCommon.MODID, "element_properties_s2c");
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         if (client.world != null) {

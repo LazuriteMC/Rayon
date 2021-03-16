@@ -2,8 +2,8 @@ package dev.lazurite.rayon.core.api;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.interpolate.Frame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

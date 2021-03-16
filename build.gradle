@@ -56,7 +56,7 @@ allprojects {
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 
 		// Immersive Portals
-		modImplementation('com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:1.16-SNAPSHOT') {
+		modImplementation("com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:${project.immersive_portals_version}") {
 			exclude(group: "net.fabricmc.fabric-api")
 		}
 //		modImplementation('com.github.qouteall:ImmersivePortalsMod:1.16-SNAPSHOT') {
@@ -113,8 +113,6 @@ dependencies {
 subprojects {
 	apply plugin: 'fabric-loom'
 	apply plugin: 'java-library'
-	archivesBaseName = project.name
-	group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
 	dependencies {
 		testmodCompile project.sourceSets.main.output

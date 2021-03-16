@@ -1,11 +1,11 @@
-package dev.lazurite.rayon.core.impl.body;
+package dev.lazurite.rayon.core.impl.thread.space.body;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.body.type.DebuggableBody;
-import dev.lazurite.rayon.core.impl.space.manager.TerrainManager;
+import dev.lazurite.rayon.core.impl.thread.space.body.shape.BoundingBoxShape;
+import dev.lazurite.rayon.core.impl.thread.space.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.thread.space.manager.TerrainManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;

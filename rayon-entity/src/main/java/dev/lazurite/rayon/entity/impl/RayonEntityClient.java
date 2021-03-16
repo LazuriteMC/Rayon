@@ -1,9 +1,9 @@
 package dev.lazurite.rayon.entity.impl;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.entity.impl.net.ElementMovementS2C;
+import dev.lazurite.rayon.entity.impl.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.entity.impl.net.ElementPropertiesS2C;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,7 +12,7 @@ public class RayonEntityClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(ElementPropertiesS2C.PACKET_ID, ElementPropertiesS2C::accept);
-        ClientPlayNetworking.registerGlobalReceiver(ElementMovementS2C.PACKET_ID, ElementMovementS2C::accept);
+        ClientPlayNetworking.registerGlobalReceiver(EntityElementMovementS2C.PACKET_ID, EntityElementMovementS2C::accept);
 
         ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (entity instanceof EntityPhysicsElement) {

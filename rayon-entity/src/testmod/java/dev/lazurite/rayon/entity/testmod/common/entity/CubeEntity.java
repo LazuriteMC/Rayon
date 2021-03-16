@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.entity.testmod.common.entity;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;

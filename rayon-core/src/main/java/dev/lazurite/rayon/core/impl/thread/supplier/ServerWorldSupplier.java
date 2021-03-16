@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class ServerWorldSupplier implements WorldSupplier {
+public class ServerWorldSupplier implements WorldSupplier {
     private final MinecraftServer server;
 
     public ServerWorldSupplier(MinecraftServer server) {

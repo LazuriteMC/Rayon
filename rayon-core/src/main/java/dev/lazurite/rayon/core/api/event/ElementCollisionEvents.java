@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.api.event;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.block.BlockState;

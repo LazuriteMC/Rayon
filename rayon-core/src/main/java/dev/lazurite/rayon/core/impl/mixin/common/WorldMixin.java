@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.core.impl.mixin.common;
 
 import com.google.common.collect.Maps;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;

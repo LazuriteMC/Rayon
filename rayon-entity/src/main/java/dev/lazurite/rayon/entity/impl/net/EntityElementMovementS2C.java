@@ -2,11 +2,11 @@ package dev.lazurite.rayon.entity.impl.net;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.RayonCore;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.RayonException;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -22,10 +22,10 @@ import net.minecraft.util.Identifier;
 /**
  * This packet syncs movement information from the server to all tracking clients.
  * This way, all players see the same movement from physics objects.
- * @see ElementMovementS2C
+ * @see EntityElementMovementS2C
  */
-public class ElementMovementS2C {
-    public static final Identifier PACKET_ID = new Identifier(RayonCore.MODID, "entity_element_movement_s2c");
+public class EntityElementMovementS2C {
+    public static final Identifier PACKET_ID = new Identifier(RayonCoreCommon.MODID, "entity_element_movement_s2c");
 
     public static void accept(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         if (client.world != null) {

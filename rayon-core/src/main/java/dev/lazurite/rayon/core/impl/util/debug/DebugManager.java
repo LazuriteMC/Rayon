@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.debug;
+package dev.lazurite.rayon.core.impl.util.debug;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
@@ -6,12 +6,12 @@ import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.lazurite.rayon.core.impl.body.BlockRigidBody;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.thread.space.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.body.type.DebuggableBody;
 import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
 import dev.lazurite.rayon.core.impl.mixin.client.render.DebugRendererMixin;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;

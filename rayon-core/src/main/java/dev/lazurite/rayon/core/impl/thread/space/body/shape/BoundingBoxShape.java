@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.body.shape;
+package dev.lazurite.rayon.core.impl.thread.space.body.shape;
 
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.math.Vector3f;

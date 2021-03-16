@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
-public final class ClientWorldSupplier implements WorldSupplier {
+public class ClientWorldSupplier implements WorldSupplier {
     private final MinecraftClient client;
 
     public ClientWorldSupplier(MinecraftClient client) {

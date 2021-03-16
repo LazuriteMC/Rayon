@@ -2,10 +2,12 @@ package dev.lazurite.rayon.core.impl.thread;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.RayonCore;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.thread.supplier.WorldSupplier;
+import dev.lazurite.rayon.core.impl.thread.util.Clock;
+import dev.lazurite.rayon.core.impl.thread.util.Pausable;
 import dev.lazurite.rayon.core.impl.util.RayonException;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.ThreadExecutor;
@@ -23,10 +25,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see PhysicsSpaceEvents
  * @see MinecraftSpace
  */
-public class PhysicsThread extends Thread {
+public class PhysicsThread extends Thread implements Pausable {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
     private final ThreadExecutor<? extends Runnable> executor;
     private final WorldSupplier worldSupplier;
+    private final Clock clock = new Clock();
     private float stepRate = 1f / 60f;
     private long nextStep;
 
@@ -64,19 +67,19 @@ public class PhysicsThread extends Thread {
             if (Util.getMeasuringTimeMs() > nextStep) {
                 nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
 
-                /* Run all queued tasks */
-                while (!tasks.isEmpty()) {
-                    tasks.poll().run();
-                }
+                if (!isPaused()) {
+                    /* Run all queued tasks */
+                    while (!tasks.isEmpty()) {
+                        tasks.poll().run();
+                    }
 
-                for (World world : worldSupplier.getWorlds()) {
-                    for (MinecraftSpace space : ((SpaceStorage) world).getSpaces()) {
-                        if (space != null) {
-                            if (space.getThread() == null) {
-                                space.setThread(this);
+                    for (World world : worldSupplier.getWorlds()) {
+                        for (MinecraftSpace space : ((SpaceStorage) world).getSpaces()) {
+                            if (!space.isEmpty() || space.isInPresim()) {
+                                space.step(clock.get());
+                            } else {
+                                this.clock.reset();
                             }
-
-                            space.step();
                         }
                     }
                 }
@@ -101,6 +104,10 @@ public class PhysicsThread extends Thread {
         return this.stepRate;
     }
 
+    public Clock getClock() {
+        return this.clock;
+    }
+
     /**
      * @return the thread executor for the original thread (e.g. client or server).
      */
@@ -117,7 +124,7 @@ public class PhysicsThread extends Thread {
         try {
             this.join();
         } catch (InterruptedException e) {
-            RayonCore.LOGGER.error("Error joining " + getName());
+            RayonCoreCommon.LOGGER.error("Error joining " + getName());
             e.printStackTrace();
         }
     }

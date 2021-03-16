@@ -1,3 +1,6 @@
+archivesBaseName = "rayon-entity"
+group = "${rootProject.group}.${rootProject.archivesBaseName}"
+
 dependencies {
     api project(":rayon-core")
 }

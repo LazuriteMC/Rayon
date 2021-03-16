@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.space;
+package dev.lazurite.rayon.core.impl.thread.space;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
@@ -9,14 +9,12 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.RayonCore;
-import dev.lazurite.rayon.core.impl.body.BlockRigidBody;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.space.manager.TerrainManager;
-import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.thread.space.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.manager.TerrainManager;
+import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.thread.util.Clock;
-import dev.lazurite.rayon.core.impl.thread.util.Pausable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -38,14 +36,13 @@ import java.util.List;
  * @see PhysicsThread
  * @see PhysicsSpaceEvents
  */
-public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCollisionListener {
-    public static final Identifier MAIN = new Identifier(RayonCore.MODID, "main");
+public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
+    public static final Identifier MAIN = new Identifier(RayonCoreCommon.MODID, "main");
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
+    private final PhysicsThread thread;
     private final World world;
-    private final Clock clock;
-    private PhysicsThread thread;
     private int presimSteps;
 
     private float airDensity;
@@ -62,11 +59,10 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         return ((SpaceStorage) world).getSpace(MAIN);
     }
 
-    public MinecraftSpace(World world, BroadphaseType broadphase) {
+    public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
         super(broadphase);
         this.thread = thread;
         this.world = world;
-        this.clock = new Clock();
         this.terrainManager = new TerrainManager(this);
         this.addCollisionListener(this);
 
@@ -74,10 +70,12 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         this.setAirDensity(1.2f); // kg/m^3
         this.setWaterDensity(997f); // kg/m^3
         this.setLavaDensity(3100f); // kg/m^3
+
+        PhysicsSpaceEvents.INIT.invoker().onInit(thread, this);
     }
 
-    public MinecraftSpace(World world) {
-        this(world, BroadphaseType.DBVT);
+    public MinecraftSpace(PhysicsThread thread, World world) {
+        this(thread, world, BroadphaseType.DBVT);
     }
 
     /**
@@ -97,46 +95,40 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
      * @see TerrainManager
      * @see PhysicsSpaceEvents
      */
-    public void step() {
-        if (!isPaused() && (!isEmpty() || isInPresim())) {
-            float delta = this.clock.get();
+    public void step(float delta) {
+        /* World Step Event */
+        PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
-            /* World Step Event */
-            PhysicsSpaceEvents.STEP.invoker().onStep(this);
+        /* Step and Fluid Resistance */
+        getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
+            body.getElement().step(this);
 
-            /* Step and Fluid Resistance */
-            getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
-                body.getElement().step(this);
-
-                if (body.shouldDoFluidResistance()) {
-                    body.applyDrag();
-                }
-
-                /* Environment Loading */
-                if (!body.isInNoClip()) {
-                    Vector3f pos = body.getPhysicsLocation(new Vector3f());
-                    Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
-
-                    getTerrainManager().load(body, box);
-//                    getEntityManager().load(box);
-                }
-            });
-
-            getTerrainManager().purge();
-//            getEntityManager().purge();
-
-            /* Collision Events */
-            if (!getWorld().isClient()) {
-                distributeEvents();
+            if (body.shouldDoFluidResistance()) {
+                body.applyDrag();
             }
 
-            /* Step Simulation */
-            if (presimSteps > MAX_PRESIM_STEPS) {
-                update(delta, 5);
-            } else ++presimSteps;
-        } else {
-            this.clock.reset();
+            /* Environment Loading */
+            if (!body.isInNoClip()) {
+                Vector3f pos = body.getPhysicsLocation(new Vector3f());
+                Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
+
+                getTerrainManager().load(body, box);
+//                    getEntityManager().load(box);
+            }
+        });
+
+        getTerrainManager().purge();
+//            getEntityManager().purge();
+
+        /* Collision Events */
+        if (!getWorld().isClient()) {
+            distributeEvents();
         }
+
+        /* Step Simulation */
+        if (presimSteps > MAX_PRESIM_STEPS) {
+            update(delta, 5);
+        } else ++presimSteps;
     }
 
     public void load(PhysicsElement element) {
@@ -174,10 +166,6 @@ public class MinecraftSpace extends PhysicsSpace implements Pausable, PhysicsCol
         }
 
         return out;
-    }
-
-    public void setThread(PhysicsThread thread) {
-        this.thread = thread;
     }
 
     public PhysicsThread getThread() {

@@ -1,12 +1,12 @@
 package dev.lazurite.rayon.core.impl.thread.util;
 
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 
 /**
- * A pausable interface for {@link MinecraftSpace}. Mainly
+ * A pausable interface for {@link PhysicsThread}. Mainly
  * created since {@link MinecraftClient} cannot be included
  * directly in the server environment.
  */

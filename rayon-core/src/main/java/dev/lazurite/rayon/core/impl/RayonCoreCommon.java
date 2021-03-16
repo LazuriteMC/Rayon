@@ -1,10 +1,11 @@
 package dev.lazurite.rayon.core.impl;
 
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
 import dev.lazurite.rayon.core.impl.thread.supplier.ServerWorldSupplier;
 import dev.lazurite.rayon.core.impl.util.NativeLoader;
-import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * registrations and the loading of bullet natives.
  * @see NativeLoader
  */
-public class RayonCore implements ModInitializer {
+public class RayonCoreCommon implements ModInitializer {
 	public static final String MODID = "rayon-core";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Core");
 
@@ -29,11 +30,14 @@ public class RayonCore implements ModInitializer {
 
 		/* Thread Events */
 		AtomicReference<PhysicsThread> thread = new AtomicReference<>();
-		ServerLifecycleEvents.SERVER_STARTING.register(server -> thread.set(new PhysicsThread(server, new ServerWorldSupplier(server),  "Server Physics Thread")));
-		ServerLifecycleEvents.SERVER_STOPPING.register(server -> thread.get().destroy());
 		ServerTickEvents.END_SERVER_TICK.register(server -> thread.get().tick());
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> thread.get().destroy());
+		ServerLifecycleEvents.SERVER_STARTING.register(server -> thread.set(new PhysicsThread(server, new ServerWorldSupplier(server),  "Server Physics Thread")));
 
 		/* World Events */
-		ServerWorldEvents.LOAD.register((server, world) -> ((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(world)));
+		ServerWorldEvents.LOAD.register((server, world) -> {
+			PhysicsSpaceEvents.PREINIT.invoker().onPreInit(thread.get(), world);
+			((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(thread.get(), world));
+		});
 	}
 }

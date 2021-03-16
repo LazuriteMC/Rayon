@@ -3,9 +3,9 @@ package dev.lazurite.rayon.entity.impl.net;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.RayonCore;
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -20,14 +20,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 /**
- * This packet is very similar to {@link ElementMovementS2C} with the main difference
+ * This packet is very similar to {@link EntityElementMovementS2C} with the main difference
  * of this packet sends information from the <b>client</b> to the <b>server</b>. It's a reverse
  * packet that's only used when an element has a <i>priority player</i> stored. The stored
  * priority player is responsible for sending movement updates to the server using this packet.
- * @see ElementMovementS2C
+ * @see EntityElementMovementS2C
  */
-public class ElementMovementC2S {
-    public static final Identifier PACKET_ID = new Identifier(RayonCore.MODID, "entity_element_movement_c2s");
+public class EntityElementMovementC2S {
+    public static final Identifier PACKET_ID = new Identifier(RayonCoreCommon.MODID, "entity_element_movement_c2s");
 
     public static void accept(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         World world = player.getEntityWorld();

@@ -3,7 +3,7 @@ package dev.lazurite.rayon.entity.impl.mixin.common;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
@@ -38,10 +38,10 @@ public abstract class EntityMixin {
             tag.put("angular_velocity", VectorHelper.toTag(rigidBody.getAngularVelocity(new Vector3f())));
 
             /* Properties */
-            tag.putFloat("drag_coefficient", rigidBody.getDragCoefficient());
-            tag.putFloat("mass", rigidBody.getMass());
-            tag.putFloat("friction", rigidBody.getFriction());
-            tag.putFloat("restitution", rigidBody.getRestitution());
+//            tag.putFloat("drag_coefficient", rigidBody.getDragCoefficient());
+//            tag.putFloat("mass", rigidBody.getMass());
+//            tag.putFloat("friction", rigidBody.getFriction());
+//            tag.putFloat("restitution", rigidBody.getRestitution());
         }
     }
 
@@ -63,10 +63,10 @@ public abstract class EntityMixin {
             rigidBody.setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
 
             /* Properties */
-            rigidBody.setDragCoefficient(tag.getFloat("drag_coefficient"));
-            rigidBody.setMass(tag.getFloat("mass"));
-            rigidBody.setFriction(tag.getFloat("friction"));
-            rigidBody.setRestitution(tag.getFloat("restitution"));
+//            rigidBody.setDragCoefficient(tag.getFloat("drag_coefficient"));
+//            rigidBody.setMass(tag.getFloat("mass"));
+//            rigidBody.setFriction(tag.getFloat("friction"));
+//            rigidBody.setRestitution(tag.getFloat("restitution"));
             ((Entity) (Object) this).setPos(((Entity) (Object) this).getX(), ((Entity) (Object) this).getY() + ((EntityPhysicsElement) this).getRigidBody().boundingBox(new BoundingBox()).getYExtent()*3, ((Entity) (Object) this).getZ());
         }
     }

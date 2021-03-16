@@ -1,14 +1,16 @@
 package dev.lazurite.rayon.particle.impl;
 
-import dev.lazurite.rayon.core.impl.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.space.util.SpaceStorage;
-import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
+import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
+import dev.lazurite.rayon.particle.impl.space.ParticleSpace;
 import net.fabricmc.api.ClientModInitializer;
 
 public class RayonParticleClient implements ClientModInitializer {
+    public static final String MODID = "rayon-particle";
+
     @Override
     public void onInitializeClient() {
-        BetterClientLifecycleEvents.LOAD_WORLD.register((client, world) ->
-                ((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(world)));
+        PhysicsSpaceEvents.PREINIT.register((thread, world) ->
+                ((SpaceStorage) world).putSpace(ParticleSpace.PARTICLE, new ParticleSpace(thread, world)));
     }
 }

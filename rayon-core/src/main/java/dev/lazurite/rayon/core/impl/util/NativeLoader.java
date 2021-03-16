@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.impl.util;
 
 import com.jme3.system.NativeLibraryLoader;
-import dev.lazurite.rayon.core.impl.RayonCore;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import net.lingala.zip4j.ZipFile;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class NativeLoader {
         if (!destination.exists()) {
             try {
                 destination.mkdirs();
-                Files.copy(RayonCore.class.getResourceAsStream(INTERNAL_ZIP), Paths.get(DEST_DIR + NATIVE_ZIP), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(RayonCoreCommon.class.getResourceAsStream(INTERNAL_ZIP), Paths.get(DEST_DIR + NATIVE_ZIP), StandardCopyOption.REPLACE_EXISTING);
                 new ZipFile(DEST_DIR + NATIVE_ZIP).extractAll(DEST_DIR);
                 Files.delete(Paths.get(DEST_DIR + NATIVE_ZIP));
             } catch (IOException e) {
