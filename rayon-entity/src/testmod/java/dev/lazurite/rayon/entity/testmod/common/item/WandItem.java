@@ -28,7 +28,8 @@ public class WandItem extends Item {
         if (!world.isClient()) {
             CubeEntity entity = new CubeEntity(EntityTestMod.CUBE_ENTITY, world);
             entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
-            entity.getRigidBody().setLinearVelocity(VectorHelper.vec3dToVector3f(user.getPos().subtract(hitResult.getPos())).multLocal(-10));
+//            entity.updatePosition(user.getPos().x, user.getPos().y, user.getPos().z);
+//            entity.getRigidBody().setLinearVelocity(VectorHelper.vec3dToVector3f(user.getPos().subtract(hitResult.getPos()).normalize()).multLocal(-2));
 
             /* Set the physics element to be prioritized if the player is sneaking while right clicking with the wand. */
             if (user.isSneaking()) {

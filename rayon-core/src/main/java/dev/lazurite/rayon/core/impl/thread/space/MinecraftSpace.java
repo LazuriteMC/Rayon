@@ -111,19 +111,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             if (!body.isInNoClip()) {
                 Vector3f pos = body.getPhysicsLocation(new Vector3f());
                 Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
-
                 getTerrainManager().load(body, box);
-//                    getEntityManager().load(box);
             }
         });
 
         getTerrainManager().purge();
-//            getEntityManager().purge();
-
-        /* Collision Events */
-        if (!getWorld().isClient()) {
-            distributeEvents();
-        }
+        distributeEvents();
 
         /* Step Simulation */
         if (presimSteps > MAX_PRESIM_STEPS) {
@@ -211,19 +204,19 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof ElementRigidBody) {
                 PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
                 PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
-                ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(element1, element2);
+                ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(element1, element2, event.getAppliedImpulse());
 
             } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {
                 BlockPos blockPos = ((BlockRigidBody) event.getObjectA()).getBlockPos();
                 BlockState blockState = ((BlockRigidBody) event.getObjectA()).getBlockState();
                 PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState);
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState, event.getAppliedImpulse());
 
             } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof BlockRigidBody) {
                 BlockPos blockPos = ((BlockRigidBody) event.getObjectB()).getBlockPos();
                 BlockState blockState = ((BlockRigidBody) event.getObjectB()).getBlockState();
                 PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState);
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState, event.getAppliedImpulse());
             }
         });
     }

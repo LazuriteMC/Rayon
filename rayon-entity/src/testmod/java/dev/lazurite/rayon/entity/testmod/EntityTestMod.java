@@ -45,10 +45,10 @@ public class EntityTestMod implements ModInitializer {
 
 
         /* An example of a block collision event */
-        ElementCollisionEvents.BLOCK_COLLISION.register((element, blockPos, blockState) -> {
+        ElementCollisionEvents.BLOCK_COLLISION.register((element, blockPos, blockState, impulse) -> {
             if (element instanceof CubeEntity) {
                 if (blockState.getBlock().equals(Blocks.BRICKS)) {
-                    LOGGER.info("Touching bricks!!");
+                    LOGGER.info("Touching bricks!!" + impulse);
                     ((CubeEntity) element).kill();
                 }
             }

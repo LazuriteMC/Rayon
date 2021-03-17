@@ -17,15 +17,15 @@ import net.minecraft.util.math.BlockPos;
  * @see MinecraftSpace#collision
  */
 public class ElementCollisionEvents {
-    public static final Event<BlockCollision> BLOCK_COLLISION = EventFactory.createArrayBacked(BlockCollision.class, (callbacks) -> (element, blockPos, blockState) -> {
+    public static final Event<BlockCollision> BLOCK_COLLISION = EventFactory.createArrayBacked(BlockCollision.class, (callbacks) -> (element, blockPos, blockState, impulse) -> {
         for (BlockCollision event : callbacks) {
-            event.onCollide(element, blockPos, blockState);
+            event.onCollide(element, blockPos, blockState, impulse);
         }
     });
 
-    public static final Event<ElementCollision> ELEMENT_COLLISION = EventFactory.createArrayBacked(ElementCollision.class, (callbacks) -> (element1, element2) -> {
+    public static final Event<ElementCollision> ELEMENT_COLLISION = EventFactory.createArrayBacked(ElementCollision.class, (callbacks) -> (element1, element2, impulse) -> {
         for (ElementCollision event : callbacks) {
-            event.onCollide(element1, element2);
+            event.onCollide(element1, element2, impulse);
         }
     });
 
@@ -33,11 +33,11 @@ public class ElementCollisionEvents {
 
     @FunctionalInterface
     public interface BlockCollision {
-        void onCollide(PhysicsElement element, BlockPos blockPos, BlockState blockState);
+        void onCollide(PhysicsElement element, BlockPos blockPos, BlockState blockState, float impulse);
     }
 
     @FunctionalInterface
     public interface ElementCollision {
-        void onCollide(PhysicsElement element1, PhysicsElement element2);
+        void onCollide(PhysicsElement element1, PhysicsElement element2, float impulse);
     }
 }
