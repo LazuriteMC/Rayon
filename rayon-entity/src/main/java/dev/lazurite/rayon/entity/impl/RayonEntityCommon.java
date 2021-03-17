@@ -3,7 +3,6 @@ package dev.lazurite.rayon.entity.impl;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.net.EntityElementMovementC2S;
 import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
-import dev.lazurite.rayon.entity.impl.net.EntityElementMovementS2C;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
@@ -22,25 +21,20 @@ public class RayonEntityCommon implements ModInitializer {
 
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof EntityPhysicsElement && !PlayerLookup.tracking(entity).isEmpty()) {
-				System.out.println("NEW LOAD: " + world.getRegistryKey());
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
-				EntityElementMovementS2C.send((EntityPhysicsElement) entity);
 				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
 			}
 		});
 
 		EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
 			if (entity instanceof EntityPhysicsElement) {
-				System.out.println("NEW TRACK: " + entity.getEntityWorld().getRegistryKey());
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
-				EntityElementMovementS2C.send((EntityPhysicsElement) entity);
 				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
 			}
 		});
 
 		EntityTrackingEvents.STOP_TRACKING.register((entity, player) -> {
 			if (entity instanceof EntityPhysicsElement && PlayerLookup.tracking(entity).isEmpty()) {
-				System.out.println("END TRACK: " + entity.getEntityWorld().getRegistryKey());
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
 			}

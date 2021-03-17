@@ -8,9 +8,10 @@ import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.thread.supplier.WorldSupplier;
 import dev.lazurite.rayon.core.impl.thread.util.Clock;
 import dev.lazurite.rayon.core.impl.thread.util.Pausable;
+import dev.lazurite.rayon.core.impl.thread.util.ThreadStorage;
 import dev.lazurite.rayon.core.impl.util.RayonException;
 import net.minecraft.util.Util;
-import net.minecraft.util.thread.ThreadExecutor;
+import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
 
 import java.util.Queue;
@@ -27,7 +28,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class PhysicsThread extends Thread implements Pausable {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
-    private final ThreadExecutor<? extends Runnable> executor;
+    private final ReentrantThreadExecutor<? extends Runnable> executor;
     private final WorldSupplier worldSupplier;
     private final Clock clock = new Clock();
     private float stepRate = 1f / 60f;
@@ -36,7 +37,11 @@ public class PhysicsThread extends Thread implements Pausable {
     private volatile boolean running = true;
     private volatile Throwable throwable;
 
-    public PhysicsThread(ThreadExecutor<? extends Runnable> executor, WorldSupplier worldSupplier, String name) {
+    public static PhysicsThread get(ReentrantThreadExecutor<? extends Runnable> executor) {
+        return ((ThreadStorage) executor).getPhysicsThread();
+    }
+
+    public PhysicsThread(ReentrantThreadExecutor<? extends Runnable> executor, WorldSupplier worldSupplier, String name) {
         this.executor = executor;
         this.worldSupplier = worldSupplier;
         this.nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
@@ -111,7 +116,7 @@ public class PhysicsThread extends Thread implements Pausable {
     /**
      * @return the thread executor for the original thread (e.g. client or server).
      */
-    public ThreadExecutor<? extends Runnable> getThreadExecutor() {
+    public ReentrantThreadExecutor<? extends Runnable> getThreadExecutor() {
         return this.executor;
     }
 

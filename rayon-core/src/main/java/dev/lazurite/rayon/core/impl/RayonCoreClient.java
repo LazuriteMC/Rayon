@@ -8,6 +8,7 @@ import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
 import dev.lazurite.rayon.core.impl.thread.supplier.ClientWorldSupplier;
 import dev.lazurite.rayon.core.impl.thread.supplier.WorldSupplier;
+import dev.lazurite.rayon.core.impl.thread.util.ThreadStorage;
 import dev.lazurite.rayon.core.impl.util.compat.ImmersiveWorldSupplier;
 import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
 import dev.lazurite.rayon.core.impl.util.math.interpolate.Frame;
@@ -35,6 +36,7 @@ public class RayonCoreClient implements ClientModInitializer {
             }
 
             thread.set(new PhysicsThread(client, supplier, "Client Physics Thread"));
+            ((ThreadStorage) client).setPhysicsThread(thread.get());
         });
 
         /* World Events */

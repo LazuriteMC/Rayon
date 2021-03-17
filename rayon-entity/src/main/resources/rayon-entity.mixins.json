@@ -6,6 +6,7 @@
   "mixins": [
     "common.EntityMixin",
     "common.EntityTrackerEntryMixin",
+    "common.LivingEntityMixin",
     "common.ServerWorldMixin"
   ],
   "client": [

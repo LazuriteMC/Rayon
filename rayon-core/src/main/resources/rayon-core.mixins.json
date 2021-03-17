@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "common.ExplosionMixin",
+    "common.ReentrantThreadExecutorMixin",
     "common.WorldMixin"
   ],
   "client": [
