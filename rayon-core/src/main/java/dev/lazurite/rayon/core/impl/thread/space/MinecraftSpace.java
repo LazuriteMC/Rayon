@@ -116,12 +116,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         });
 
         getTerrainManager().purge();
-        distributeEvents();
 
         /* Step Simulation */
         if (presimSteps > MAX_PRESIM_STEPS) {
             update(delta, 5);
         } else ++presimSteps;
+
+        if (!getWorld().isClient) {
+            distributeEvents();
+        }
     }
 
     public void load(PhysicsElement element) {
