@@ -16,9 +16,11 @@ import dev.lazurite.rayon.core.impl.thread.space.manager.TerrainManager;
 import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
 import net.minecraft.block.BlockState;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -122,7 +124,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             update(delta, 5);
         } else ++presimSteps;
 
-        if (!getWorld().isClient) {
+        if (isServer()) {
             distributeEvents();
         }
     }
@@ -142,6 +144,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         if (element.getRigidBody().isInWorld()) {
             removeCollisionObject(element.getRigidBody());
         }
+    }
+
+    public boolean isServer() {
+        return getThread().getThreadExecutor() instanceof MinecraftServer;
     }
 
     public TerrainManager getTerrainManager() {
@@ -198,28 +204,31 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     /**
      * Trigger all collision events (e.g. block/element or element/element).
-     * Executed on the main thread rather than the physics thread.
      * @param event the event context
      */
     @Override
     public void collision(PhysicsCollisionEvent event) {
         getThread().getThreadExecutor().execute(() -> {
+            ReentrantThreadExecutor<? extends Runnable> thread = getThread().getThreadExecutor();
+            float impulse = event.getAppliedImpulse();
+
+            /* Element on Element */
             if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof ElementRigidBody) {
                 PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
                 PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
-                ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(element1, element2, event.getAppliedImpulse());
+                ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(thread, element1, element2, impulse);
 
+            /* Block on Element */
             } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {
-                BlockPos blockPos = ((BlockRigidBody) event.getObjectA()).getBlockPos();
-                BlockState blockState = ((BlockRigidBody) event.getObjectA()).getBlockState();
+                BlockRigidBody block = (BlockRigidBody) event.getObjectA();
                 PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState, event.getAppliedImpulse());
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
 
+            /* Element on Block */
             } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof BlockRigidBody) {
-                BlockPos blockPos = ((BlockRigidBody) event.getObjectB()).getBlockPos();
-                BlockState blockState = ((BlockRigidBody) event.getObjectB()).getBlockState();
+                BlockRigidBody block = (BlockRigidBody) event.getObjectB();
                 PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(element, blockPos, blockState, event.getAppliedImpulse());
+                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
             }
         });
     }
