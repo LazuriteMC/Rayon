@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.entity.impl;
 
+import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.net.EntityElementMovementC2S;
 import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
@@ -18,6 +19,10 @@ public class RayonEntityCommon implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ServerPlayNetworking.registerGlobalReceiver(EntityElementMovementC2S.PACKET_ID, EntityElementMovementC2S::accept);
+
+		PhysicsSpaceEvents.STEP.register(space -> {
+
+		});
 
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof EntityPhysicsElement && !PlayerLookup.tracking(entity).isEmpty()) {
