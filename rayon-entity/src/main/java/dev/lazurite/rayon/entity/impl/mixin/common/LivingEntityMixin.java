@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,12 +31,12 @@ public class LivingEntityMixin {
             buf.writeInt(entity.getEntityId());
             buf.writeUuid(entity.getUuid());
             buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(entity.getType()));
-            VectorHelper.toBuffer(buf, rigidBody.getPhysicsLocation(new Vector3f()));
+            VectorHelper.toBuffer(buf, VectorHelper.vec3dToVector3f(entity.getPos()));
             VectorHelper.toBuffer(buf, rigidBody.getLinearVelocity(new Vector3f()));
             VectorHelper.toBuffer(buf, rigidBody.getAngularVelocity(new Vector3f()));
             QuaternionHelper.toBuffer(buf, rigidBody.getPhysicsRotation(new Quaternion()));
 
-            info.setReturnValue(ServerPlayNetworking.createS2CPacket(new Identifier(RayonEntityCommon.MODID, "element_spawn_s2c"), buf));
+            info.setReturnValue(ServerPlayNetworking.createS2CPacket(RayonEntityCommon.ELEMENT_SPAWN, buf));
         }
     }
 }

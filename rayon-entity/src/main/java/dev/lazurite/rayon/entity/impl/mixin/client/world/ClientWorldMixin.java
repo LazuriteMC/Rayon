@@ -4,7 +4,6 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
-import dev.lazurite.rayon.entity.impl.net.EntityElementMovementC2S;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -28,8 +27,9 @@ public class ClientWorldMixin {
             ElementRigidBody body = ((EntityPhysicsElement) entity).getRigidBody();
 
             if (body.isInWorld()) {
-                if (body.isActive() && body.getPriorityPlayer() != null && body.getPriorityPlayer().equals(client.player)) {
-                    EntityElementMovementC2S.send((EntityPhysicsElement) entity);
+                if (body.isActive() && client.player.equals(body.getPriorityPlayer())) {
+                    System.out.println("MOVE CLIENT");
+                    ((EntityPhysicsElement) entity).sendMovementUpdate();
                 }
 
                 Vector3f pos = body.getPhysicsLocation(new Vector3f());

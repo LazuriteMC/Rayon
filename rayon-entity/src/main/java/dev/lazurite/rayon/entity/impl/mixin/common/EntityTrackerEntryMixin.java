@@ -2,7 +2,6 @@ package dev.lazurite.rayon.entity.impl.mixin.common;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
-import dev.lazurite.rayon.entity.impl.net.EntityElementMovementS2C;
 import dev.lazurite.rayon.entity.impl.net.ElementPropertiesS2C;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.EntityTrackerEntry;
@@ -29,7 +28,7 @@ public class EntityTrackerEntryMixin {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
 
             if (rigidBody.isActive() && rigidBody.getPriorityPlayer() == null) {
-                EntityElementMovementS2C.send((EntityPhysicsElement) entity);
+                ((EntityPhysicsElement) entity).sendMovementUpdate();
             }
 
             if (rigidBody.arePropertiesDirty()) {
