@@ -5,7 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "common.EntityMixin",
-    "common.EntityTrackerEntryMixin",
     "common.LivingEntityMixin",
     "common.ServerWorldMixin"
   ],

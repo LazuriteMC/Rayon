@@ -17,8 +17,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The main entrypoint for Rayon. Mainly contains packet
- * registrations and the loading of bullet natives.
+ * The common entrypoint for Rayon Core. Handles the server thread lifecycle,
+ * {@link MinecraftSpace} creation, and bullet native loading
+ * @see RayonCoreClient
  * @see NativeLoader
  */
 public class RayonCoreCommon implements ModInitializer {

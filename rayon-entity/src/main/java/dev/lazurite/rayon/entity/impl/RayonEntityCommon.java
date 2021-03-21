@@ -18,6 +18,11 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The common entrypoint for Rayon Entity. Handles entity loading/tracking as well
+ * as receiving {@link EntityPhysicsElement} movement updates from prioritized clients.
+ * @see RayonEntityClient
+ */
 public class RayonEntityCommon implements ModInitializer {
 	public static final String MODID = "rayon-entity";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Entity");

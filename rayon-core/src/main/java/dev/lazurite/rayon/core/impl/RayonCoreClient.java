@@ -14,11 +14,19 @@ import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
 import dev.lazurite.rayon.core.impl.util.math.interpolate.Frame;
 import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The client entrypoint for Rayon Core. Handles the lifecycle of the physics
+ * thread as well as the creation of {@link MinecraftSpace}s.
+ * @see RayonCoreCommon
+ */
+@Environment(EnvType.CLIENT)
 public class RayonCoreClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {

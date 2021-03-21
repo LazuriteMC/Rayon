@@ -17,6 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -24,6 +25,11 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.UUID;
 
+/**
+ * Handles the spawning of {@link EntityPhysicsElement}s. To use this with a
+ * non-{@link LivingEntity}, call {@link ElementSpawnS2C#create(EntityPhysicsElement)}
+ * within your {@link Entity#createSpawnPacket()} override.
+ */
 public class ElementSpawnS2C {
     public static final Identifier PACKET_ID = new Identifier(RayonCoreCommon.MODID, "element_spawn_s2c");
 

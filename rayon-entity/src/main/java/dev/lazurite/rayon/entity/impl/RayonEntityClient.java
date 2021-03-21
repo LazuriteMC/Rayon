@@ -15,8 +15,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.Entity;
 
+/**
+ * The client entry point for Rayon Entity. Handles the loading and unloading
+ * of entities into the {@link MinecraftSpace} as well as {@link EntityPhysicsElement}
+ * movement and property updates.
+ * @see RayonEntityCommon
+ */
 public class RayonEntityClient implements ClientModInitializer {
-
     @Override
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(ElementPropertiesS2C.PACKET_ID, ElementPropertiesS2C::accept);

@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
  * This mixin allows the entity to be rendered in the correct location by
  * replacing the position of the entity with the position of the rigid body
  * (which is slightly different).
+ * @see EntityRenderDispatcherMixin
  */
 @Mixin(WorldRenderer.class)
 @Environment(EnvType.CLIENT)

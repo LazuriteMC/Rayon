@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Makes it so the built-in hitbox renders in the correct position as well as shadows.
+ * Corrects the positions of shadows and debug hitboxes.
  * @see WorldRendererMixin
  */
 @Mixin(EntityRenderDispatcher.class)
