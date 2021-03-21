@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Mixin(World.class)
 public class WorldMixin implements SpaceStorage {
-    @Unique private Map<Identifier, MinecraftSpace> spaces = Maps.newConcurrentMap();
+    @Unique private final Map<Identifier, MinecraftSpace> spaces = Maps.newConcurrentMap();
 
     @Override
     public void putSpace(Identifier identifier, MinecraftSpace space) {

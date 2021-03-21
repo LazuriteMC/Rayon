@@ -4,7 +4,6 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.util.math.interpolate.Frame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -64,17 +63,11 @@ public interface PhysicsElement {
      * Mainly used for lerping within your renderer, this method returns
      * a lerped location vector based on the provided tick delta.
      * @param store any vector to store the output in
-     * @param tickDelta minecraft tick delta
      * @return the lerped vector
      */
     @Environment(EnvType.CLIENT)
-    default Vector3f getPhysicsLocation(Vector3f store, float tickDelta) {
-        Frame frame = getRigidBody().getFrame();
-
-        if (frame != null) {
-            store.set(frame.getLocation(new Vector3f(),  tickDelta));
-        }
-
+    default Vector3f getPhysicsLocation(Vector3f store) {
+        store.set(getRigidBody().getMotionState().getLocation(new Vector3f()));
         return store;
     }
 
@@ -82,17 +75,11 @@ public interface PhysicsElement {
      * Mainly used for lerping within your renderer, this method returns
      * a "slerped" rotation quaternion based on the provided tick delta.
      * @param store the quaternion to store the output in
-     * @param tickDelta minecraft tick delta
      * @return the "slerped" quaternion
      */
     @Environment(EnvType.CLIENT)
-    default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
-        Frame frame = getRigidBody().getFrame();
-
-        if (frame != null) {
-            store.set(frame.getRotation(new Quaternion(), tickDelta));
-        }
-
+    default Quaternion getPhysicsRotation(Quaternion store) {
+        store.set(getRigidBody().getMotionState().getOrientation(new Quaternion()));
         return store;
     }
 }

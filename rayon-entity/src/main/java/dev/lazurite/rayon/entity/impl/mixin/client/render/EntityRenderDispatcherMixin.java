@@ -28,7 +28,7 @@ public abstract class EntityRenderDispatcherMixin {
     )
     private static double renderShadowY(double e, MatrixStack stack, VertexConsumerProvider provider, Entity entity, float opacity, float tickDelta) {
         if (entity instanceof EntityPhysicsElement) {
-            return ((EntityPhysicsElement) entity).getPhysicsLocation(new Vector3f(), tickDelta).y;
+            return ((EntityPhysicsElement) entity).getPhysicsLocation(new Vector3f()).y;
         }
 
         return e;
