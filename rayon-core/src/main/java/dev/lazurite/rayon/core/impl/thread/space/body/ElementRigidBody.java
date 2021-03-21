@@ -138,6 +138,15 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return DebugLayer.BODY;
     }
 
+    public boolean needsMovementUpdate() {
+        if (getFrame() != null) {
+            return getFrame().getLocationDelta(new Vector3f()).length() > 0.1f ||
+                    getFrame().getRotationDelta(new Vector3f()).length() > 0.01f;
+        }
+
+        return false;
+    }
+
     public void applyDrag() {
         if (shouldDoFluidResistance()) {
             World world = getSpace().getWorld();

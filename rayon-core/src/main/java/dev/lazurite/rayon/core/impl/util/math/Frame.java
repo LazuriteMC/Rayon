@@ -39,4 +39,14 @@ public class Frame {
         store.set(QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta));
         return store;
     }
+
+    public Vector3f getLocationDelta(Vector3f store) {
+        store.set(tickLocation.subtract(prevLocation));
+        return store;
+    }
+
+    public Vector3f getRotationDelta(Vector3f store) {
+        store.set(QuaternionHelper.toEulerAngles(tickRotation).subtract(QuaternionHelper.toEulerAngles(prevRotation)));
+        return store;
+    }
 }

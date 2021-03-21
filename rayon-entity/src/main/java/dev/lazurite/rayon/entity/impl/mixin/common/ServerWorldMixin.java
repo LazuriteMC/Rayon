@@ -29,7 +29,8 @@ public class ServerWorldMixin {
             ElementRigidBody body = ((EntityPhysicsElement) entity).getRigidBody();
 
             if (body.isInWorld()) {
-                if (body.isActive() && body.getPriorityPlayer() == null) {
+                if (body.isActive() && body.getPriorityPlayer() == null && body.needsMovementUpdate()) {
+                    System.out.println("update");
                     ((EntityPhysicsElement) entity).sendMovementUpdate();
                 }
 

@@ -32,14 +32,13 @@ public class RayonCoreClient implements ClientModInitializer {
     public void onInitializeClient() {
         /* Thread Events */
         AtomicReference<PhysicsThread> thread = new AtomicReference<>();
+        BetterClientLifecycleEvents.DISCONNECT.register((client, world) -> thread.get().destroy());
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (thread.get() != null) {
                 thread.get().tick();
             }
         });
-
-        BetterClientLifecycleEvents.DISCONNECT.register((client, world) -> thread.get().destroy());
 
         BetterClientLifecycleEvents.GAME_JOIN.register((client, world, player) -> {
             WorldSupplier supplier;
