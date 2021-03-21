@@ -1,14 +1,16 @@
 package dev.lazurite.rayon.entity.impl.mixin.common;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,6 +25,13 @@ public abstract class EntityMixin {
     @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
     public void pushAwayFrom(Entity entity, CallbackInfo info) {
         if (this instanceof EntityPhysicsElement && entity instanceof EntityPhysicsElement) {
+            info.cancel();
+        }
+    }
+
+    @Inject(method = "move", at = @At("HEAD"), cancellable = true)
+    public void move(MovementType type, Vec3d movement, CallbackInfo info) {
+        if (this instanceof EntityPhysicsElement) {
             info.cancel();
         }
     }
@@ -54,7 +63,6 @@ public abstract class EntityMixin {
             rigidBody.setPhysicsRotation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
             rigidBody.setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
             rigidBody.setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
-            ((Entity) (Object) this).setPos(((Entity) (Object) this).getX(), ((Entity) (Object) this).getY() + ((EntityPhysicsElement) this).getRigidBody().boundingBox(new BoundingBox()).getYExtent()*3, ((Entity) (Object) this).getZ());
         }
     }
 }

@@ -28,7 +28,6 @@ public class ClientWorldMixin {
 
             if (body.isInWorld()) {
                 if (body.isActive() && client.player.equals(body.getPriorityPlayer())) {
-                    System.out.println("MOVE CLIENT");
                     ((EntityPhysicsElement) entity).sendMovementUpdate();
                 }
 

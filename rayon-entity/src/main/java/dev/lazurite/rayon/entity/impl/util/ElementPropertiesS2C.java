@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.entity.impl.net;
+package dev.lazurite.rayon.entity.impl.util;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;

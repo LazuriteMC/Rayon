@@ -2,7 +2,6 @@ package dev.lazurite.rayon.entity.impl;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -24,14 +23,9 @@ public class RayonEntityCommon implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Entity");
 
 	public static final Identifier MOVEMENT_UPDATE = new Identifier(MODID, "entity_movement_update");
-	public static final Identifier ELEMENT_SPAWN = new Identifier(RayonEntityCommon.MODID, "entity_spawn_s2c");
 
 	@Override
 	public void onInitialize() {
-		PhysicsSpaceEvents.STEP.register(space -> {
-
-		});
-
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof EntityPhysicsElement && !PlayerLookup.tracking(entity).isEmpty()) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
