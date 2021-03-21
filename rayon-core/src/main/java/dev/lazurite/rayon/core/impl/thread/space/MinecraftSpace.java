@@ -115,20 +115,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             if (!body.isInNoClip()) {
                 Vector3f pos = body.getPhysicsLocation(new Vector3f());
                 Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
-
                 terrainManager.load(body, box);
-                if (entityManager.load(box)) {
-                    body.activate();
-                }
             }
         });
 
         terrainManager.purge();
-        entityManager.purge();
 
         /* Step Simulation */
         if (presimSteps > MAX_PRESIM_STEPS) {
-            update(delta, 10);
+            update(delta, 5);
         } else ++presimSteps;
 
         distributeEvents();
@@ -201,6 +196,14 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     public float getLavaDensity() {
         return this.lavaDensity;
+    }
+
+    public TerrainManager getTerrainManager() {
+        return this.terrainManager;
+    }
+
+    public EntityManager getEntityManager() {
+        return this.entityManager;
     }
 
     /**

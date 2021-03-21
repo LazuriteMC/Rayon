@@ -32,8 +32,15 @@ public class RayonCoreClient implements ClientModInitializer {
     public void onInitializeClient() {
         /* Thread Events */
         AtomicReference<PhysicsThread> thread = new AtomicReference<>();
-        ClientTickEvents.END_CLIENT_TICK.register(client -> { if (thread.get() != null) thread.get().tick(); });
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (thread.get() != null) {
+                thread.get().tick();
+            }
+        });
+
         BetterClientLifecycleEvents.DISCONNECT.register((client, world) -> thread.get().destroy());
+
         BetterClientLifecycleEvents.GAME_JOIN.register((client, world, player) -> {
             WorldSupplier supplier;
 
@@ -53,20 +60,24 @@ public class RayonCoreClient implements ClientModInitializer {
             ((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(thread.get(), world));
         });
 
-        ClientTickEvents.END_WORLD_TICK.register(world ->
-                MinecraftSpace.get(world).getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
-                    Frame prevFrame = body.getFrame();
+        ClientTickEvents.END_WORLD_TICK.register(world -> {
+            MinecraftSpace space = MinecraftSpace.get(world);
+            space.getEntityManager().tick();
 
-                    if (prevFrame == null) {
-                        body.setFrame(new Frame(
-                                body.getPhysicsLocation(new Vector3f()),
-                                body.getPhysicsRotation(new Quaternion())));
-                    } else {
-                        body.setFrame(new Frame(
-                                prevFrame,
-                                body.getPhysicsLocation(new Vector3f()),
-                                body.getPhysicsRotation(new Quaternion())));
-                    }
-                }));
+            space.getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
+                Frame prevFrame = body.getFrame();
+
+                if (prevFrame == null) {
+                    body.setFrame(new Frame(
+                            body.getPhysicsLocation(new Vector3f()),
+                            body.getPhysicsRotation(new Quaternion())));
+                } else {
+                    body.setFrame(new Frame(
+                            prevFrame,
+                            body.getPhysicsLocation(new Vector3f()),
+                            body.getPhysicsRotation(new Quaternion())));
+                }
+            });
+        });
     }
 }

@@ -2,22 +2,38 @@ package dev.lazurite.rayon.core.impl.thread.space.environment;
 
 import com.google.common.collect.Lists;
 import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.thread.space.body.EntityRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
 import java.util.List;
 
 public final class EntityManager {
-    private final List<EntityRigidBody> toKeep = Lists.newArrayList();
+    private final List<Entity> toKeep = Lists.newArrayList();
     private final MinecraftSpace space;
 
     public EntityManager(MinecraftSpace space) {
         this.space = space;
+    }
+
+    public void tick() {
+        space.getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
+            Vector3f pos = rigidBody.getPhysicsLocation(new Vector3f());
+
+            if (load(new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance()))) {
+                space.getThread().execute(rigidBody::activate);
+            }
+        });
+
+        purge();
     }
 
     /**
@@ -28,24 +44,26 @@ public final class EntityManager {
      * @return whether or not to activate the rigid body
      */
     public boolean load(Box box) {
-        List<Entity> entities = space.getWorld().getEntitiesByClass(Entity.class, box, (entity -> !(entity instanceof PhysicsElement)));
+        List<Entity> entities = space.getWorld().getOtherEntities(null, box, entity -> !(entity instanceof PhysicsElement || entity instanceof ItemEntity));
 
         entities.forEach(entity -> {
-            EntityRigidBody rigidBody = findEntityRigidBody(entity);
+            space.getThread().execute(() -> {
+                EntityRigidBody rigidBody = findEntityRigidBody(space, entity);
 
-            if (rigidBody == null) {
-                rigidBody = new EntityRigidBody(entity);
+                if (rigidBody == null) {
+                    rigidBody = new EntityRigidBody(entity);
 
-                if (!space.getRigidBodyList().contains(rigidBody)) {
-                    space.addCollisionObject(rigidBody);
+                    if (!space.getRigidBodyList().contains(rigidBody)) {
+                        space.addCollisionObject(rigidBody);
+                    }
+                } else {
+                    /* Update its position and rotation if it already exists */
+                    rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength() / 2.0, 0)));
+                    rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
                 }
-            } else {
-                /* Update its position and rotation if it already exists */
-                rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength() / 2.0, 0)));
-                rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
-            }
+            });
 
-            toKeep.add(rigidBody);
+            toKeep.add(entity);
         });
 
         return !entities.isEmpty();
@@ -65,7 +83,7 @@ public final class EntityManager {
         List<EntityRigidBody> toRemove = Lists.newArrayList();
 
         space.getRigidBodiesByClass(EntityRigidBody.class).forEach(body -> {
-            if (!toKeep.contains(body)) {
+            if (!toKeep.contains(body.getEntity())) {
                 toRemove.add(body);
             }
         });
@@ -74,7 +92,7 @@ public final class EntityManager {
         toKeep.clear();
     }
 
-    public EntityRigidBody findEntityRigidBody(Entity entity) {
+    public static EntityRigidBody findEntityRigidBody(MinecraftSpace space, Entity entity) {
         for (EntityRigidBody body : space.getRigidBodiesByClass(EntityRigidBody.class)) {
             if (body.getEntity().equals(entity)) {
                 return body;

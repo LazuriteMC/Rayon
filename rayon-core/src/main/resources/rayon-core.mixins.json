@@ -9,8 +9,8 @@
     "common.WorldMixin"
   ],
   "client": [
-    "client.input.KeyboardMixin",
     "client.ClientPlayNetworkHandlerMixin",
+    "client.input.KeyboardMixin",
     "client.render.DebugRendererMixin",
     "client.world.ClientWorldMixin"
   ],

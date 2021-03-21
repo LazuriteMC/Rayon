@@ -32,10 +32,16 @@ public class RayonCoreCommon implements ModInitializer {
 
 		/* Thread Events */
 		AtomicReference<PhysicsThread> thread = new AtomicReference<>();
-		ServerTickEvents.END_SERVER_TICK.register(server -> thread.get().tick());
+
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			thread.get().tick();
+			server.getWorlds().forEach(world -> MinecraftSpace.get(world).getEntityManager().tick());
+		});
+
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> thread.get().destroy());
+
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-			thread.set(new PhysicsThread(server, new ServerWorldSupplier(server),  "Server Physics Thread"));
+			thread.set(new PhysicsThread(server, new ServerWorldSupplier(server), "Server Physics Thread"));
 			((ThreadStorage) server).setPhysicsThread(thread.get());
 		});
 

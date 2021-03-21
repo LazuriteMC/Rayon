@@ -61,7 +61,7 @@ public final class TerrainManager {
 
                 /* Check if the block is solid or not */
                 if (!blockState.getBlock().canMobSpawnInside()) {
-                    BlockRigidBody body = findBlockAtPos(blockPos);
+                    BlockRigidBody body = findBlockAtPos(space, blockPos);
 
                     /* Make a new rigid body if there isn't already one */
                     if (body == null) {
@@ -163,7 +163,7 @@ public final class TerrainManager {
         toKeep.clear();
     }
 
-    public BlockRigidBody findBlockAtPos(BlockPos blockPos) {
+    public static BlockRigidBody findBlockAtPos(MinecraftSpace space, BlockPos blockPos) {
         for (BlockRigidBody body : space.getRigidBodiesByClass(BlockRigidBody.class)) {
             if (body.getBlockPos().equals(blockPos)) {
                 return body;

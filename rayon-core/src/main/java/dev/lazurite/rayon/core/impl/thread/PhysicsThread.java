@@ -45,11 +45,13 @@ public class PhysicsThread extends Thread implements Pausable {
         this.executor = executor;
         this.worldSupplier = worldSupplier;
         this.nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
+        this.setName(name);
         this.setUncaughtExceptionHandler((thread, throwable) -> {
             this.throwable = throwable;
             this.running = false;
         });
-        this.setName(name);
+
+        RayonCoreCommon.LOGGER.info("Starting " + getName());
         this.start();
     }
 
@@ -82,11 +84,11 @@ public class PhysicsThread extends Thread implements Pausable {
                         for (MinecraftSpace space : ((SpaceStorage) world).getSpaces()) {
                             if (!space.isEmpty() || space.isInPresim()) {
                                 space.step(clock.get());
-                            } else {
-                                this.clock.reset();
                             }
                         }
                     }
+                } else {
+                    this.clock.reset();
                 }
             }
         }
@@ -99,10 +101,6 @@ public class PhysicsThread extends Thread implements Pausable {
      */
     public void execute(Runnable task) {
         tasks.add(task);
-    }
-
-    public void setStepRate(int stepsPerSecond) {
-        this.stepRate = 1 / (float) stepsPerSecond;
     }
 
     public float getStepRate() {
@@ -125,6 +123,7 @@ public class PhysicsThread extends Thread implements Pausable {
      */
     public void destroy() {
         this.running = false;
+        RayonCoreCommon.LOGGER.info("Stopping " + getName());
 
         try {
             this.join();
