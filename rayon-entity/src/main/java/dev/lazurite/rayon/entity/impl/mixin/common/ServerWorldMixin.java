@@ -30,7 +30,6 @@ public class ServerWorldMixin {
 
             if (body.isInWorld()) {
                 if (body.isActive() && body.getPriorityPlayer() == null && body.needsMovementUpdate()) {
-                    System.out.println("update");
                     ((EntityPhysicsElement) entity).sendMovementUpdate();
                 }
 

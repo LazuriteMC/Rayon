@@ -27,7 +27,7 @@ public class ClientWorldMixin {
             ElementRigidBody body = ((EntityPhysicsElement) entity).getRigidBody();
 
             if (body.isInWorld()) {
-                if (body.isActive() && client.player.equals(body.getPriorityPlayer())) {
+                if (body.isActive() && client.player.equals(body.getPriorityPlayer()) && body.needsMovementUpdate()) {
                     ((EntityPhysicsElement) entity).sendMovementUpdate();
                 }
 

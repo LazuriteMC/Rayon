@@ -12,7 +12,6 @@ import dev.lazurite.rayon.core.impl.util.NativeLoader;
 import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.util.math.Frame;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
