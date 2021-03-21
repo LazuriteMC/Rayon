@@ -29,7 +29,7 @@ public class CubeEntityRenderer extends EntityRenderer<CubeEntity> {
 
     public void render(CubeEntity cubeEntity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         Vector3f bounds = cubeEntity.getRigidBody().getCollisionShape().boundingBox(new Vector3f(), new com.jme3.math.Quaternion(), new BoundingBox()).getExtent(new Vector3f()).multLocal(-1);
-        Quaternion rot = QuaternionHelper.bulletToMinecraft(cubeEntity.getPhysicsRotation(new com.jme3.math.Quaternion()));
+        Quaternion rot = QuaternionHelper.bulletToMinecraft(cubeEntity.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
 
         matrixStack.push();
         matrixStack.multiply(rot);

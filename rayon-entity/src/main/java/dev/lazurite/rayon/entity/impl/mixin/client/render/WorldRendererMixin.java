@@ -30,7 +30,7 @@ public class WorldRendererMixin {
     )
     public void render(Args args) {
         if (args.get(0) instanceof EntityPhysicsElement) {
-            Vector3f location = ((EntityPhysicsElement) args.get(0)).getPhysicsLocation(new Vector3f());
+            Vector3f location = ((EntityPhysicsElement) args.get(0)).getPhysicsLocation(new Vector3f(), args.get(5));
             Vec3d cameraPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
             args.set(1, location.x - cameraPos.x);
             args.set(2, location.y - cameraPos.y);

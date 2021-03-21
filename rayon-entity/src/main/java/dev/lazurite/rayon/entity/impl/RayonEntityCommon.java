@@ -72,6 +72,7 @@ public class RayonEntityCommon implements ModInitializer {
 						rigidBody.setPhysicsLocation(location);
 						rigidBody.setLinearVelocity(linearVelocity);
 						rigidBody.setAngularVelocity(angularVelocity);
+						rigidBody.activate();
 					}
 				}
 			});

@@ -60,26 +60,31 @@ public interface PhysicsElement {
     }
 
     /**
-     * Mainly used for lerping within your renderer, this method returns
-     * a lerped location vector based on the provided tick delta.
+     * Mainly used for lerping within your renderer.
      * @param store any vector to store the output in
+     * @param tickDelta the delta time between ticks
      * @return the lerped vector
      */
     @Environment(EnvType.CLIENT)
-    default Vector3f getPhysicsLocation(Vector3f store) {
-        store.set(getRigidBody().getMotionState().getLocation(new Vector3f()));
+    default Vector3f getPhysicsLocation(Vector3f store, float tickDelta) {
+        if (getRigidBody().getFrame() != null) {
+            return getRigidBody().getFrame().getLocation(store, tickDelta);
+        }
+
         return store;
     }
 
     /**
-     * Mainly used for lerping within your renderer, this method returns
-     * a "slerped" rotation quaternion based on the provided tick delta.
+     * Mainly used for lerping within your renderer.
      * @param store the quaternion to store the output in
      * @return the "slerped" quaternion
      */
     @Environment(EnvType.CLIENT)
-    default Quaternion getPhysicsRotation(Quaternion store) {
-        store.set(getRigidBody().getMotionState().getOrientation(new Quaternion()));
+    default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
+        if (getRigidBody().getFrame() != null) {
+            return getRigidBody().getFrame().getRotation(store, tickDelta);
+        }
+
         return store;
     }
 }

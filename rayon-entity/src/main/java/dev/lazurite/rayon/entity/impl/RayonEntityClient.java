@@ -55,7 +55,10 @@ public class RayonEntityClient implements ClientModInitializer {
                             rigidBody.setPhysicsLocation(location);
                             rigidBody.setLinearVelocity(linearVelocity);
                             rigidBody.setAngularVelocity(angularVelocity);
-                            entity.updatePosition(location.x, location.y + rigidBody.boundingBox(new BoundingBox()).getYExtent(), location.z);
+                            rigidBody.activate();
+
+                            space.getThread().getThreadExecutor().execute(() ->
+                                entity.updatePosition(location.x, location.y + rigidBody.boundingBox(new BoundingBox()).getYExtent(), location.z));
                         }
                     });
                 }

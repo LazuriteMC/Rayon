@@ -12,7 +12,8 @@ import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.thread.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.thread.space.util.TerrainManager;
+import dev.lazurite.rayon.core.impl.thread.space.environment.EntityManager;
+import dev.lazurite.rayon.core.impl.thread.space.environment.TerrainManager;
 import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
 import net.minecraft.server.MinecraftServer;
@@ -42,6 +43,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private static final int MAX_PRESIM_STEPS = 30;
 
     private final TerrainManager terrainManager;
+    private final EntityManager entityManager;
     private final PhysicsThread thread;
     private final World world;
     private int presimSteps;
@@ -65,10 +67,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.thread = thread;
         this.world = world;
         this.terrainManager = new TerrainManager(this);
+        this.entityManager = new EntityManager(this);
         this.addCollisionListener(this);
 
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
-        this.setGravity(new Vector3f()); // m/s/s
         this.setAirDensity(1.2f); // kg/m^3
         this.setWaterDensity(997f); // kg/m^3
         this.setLavaDensity(3100f); // kg/m^3
@@ -113,20 +115,23 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             if (!body.isInNoClip()) {
                 Vector3f pos = body.getPhysicsLocation(new Vector3f());
                 Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
-                getTerrainManager().load(body, box);
+
+                terrainManager.load(body, box);
+                if (entityManager.load(box)) {
+                    body.activate();
+                }
             }
         });
 
-        getTerrainManager().purge();
+        terrainManager.purge();
+        entityManager.purge();
 
         /* Step Simulation */
         if (presimSteps > MAX_PRESIM_STEPS) {
-            update(delta, 5);
+            update(delta, 10);
         } else ++presimSteps;
 
-        if (isServer()) {
-            distributeEvents();
-        }
+        distributeEvents();
     }
 
     public void load(PhysicsElement element) {
@@ -148,10 +153,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     public boolean isServer() {
         return getThread().getThreadExecutor() instanceof MinecraftServer;
-    }
-
-    public TerrainManager getTerrainManager() {
-        return this.terrainManager;
     }
 
     public boolean isInPresim() {
@@ -208,28 +209,26 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      */
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        getThread().getThreadExecutor().execute(() -> {
-            ReentrantThreadExecutor<? extends Runnable> thread = getThread().getThreadExecutor();
-            float impulse = event.getAppliedImpulse();
+        ReentrantThreadExecutor<? extends Runnable> thread = getThread().getThreadExecutor();
+        float impulse = event.getAppliedImpulse();
 
-            /* Element on Element */
-            if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof ElementRigidBody) {
-                PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
-                PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
-                ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(thread, element1, element2, impulse);
+        /* Element on Element */
+        if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof ElementRigidBody) {
+            PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
+            PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
+            ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(thread, element1, element2, impulse);
 
-            /* Block on Element */
-            } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {
-                BlockRigidBody block = (BlockRigidBody) event.getObjectA();
-                PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
+        /* Block on Element */
+        } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {
+            BlockRigidBody block = (BlockRigidBody) event.getObjectA();
+            PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
+            ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
 
-            /* Element on Block */
-            } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof BlockRigidBody) {
-                BlockRigidBody block = (BlockRigidBody) event.getObjectB();
-                PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
-                ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
-            }
-        });
+        /* Element on Block */
+        } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof BlockRigidBody) {
+            BlockRigidBody block = (BlockRigidBody) event.getObjectB();
+            PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
+            ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
+        }
     }
 }
