@@ -1,6 +1,5 @@
 archivesBaseName = "rayon-particle"
-group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
 dependencies {
-    api project(":rayon-core")
+    modImplementation project(":rayon-core")
 }

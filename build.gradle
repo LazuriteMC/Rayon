@@ -1,13 +1,12 @@
 plugins {
-	id 'com.github.johnrengelman.shadow' version "5.2.0"
-	id 'fabric-loom' version '0.5-SNAPSHOT'
+	id 'fabric-loom' version '0.7-SNAPSHOT'
 	id 'maven-publish'
-	id 'java-library'
 }
 
-allprojects {
-	apply plugin: 'com.github.johnrengelman.shadow'
+allprojects { project ->
 	apply plugin: 'fabric-loom'
+	apply plugin: 'maven-publish'
+	apply plugin: 'java-library'
 
 	sourceCompatibility = JavaVersion.VERSION_1_8
 	targetCompatibility = JavaVersion.VERSION_1_8
@@ -23,45 +22,17 @@ allprojects {
 		maven { url "http://maven.fabricmc.net/" }
 	}
 
+	dependencies {
+		minecraft "com.mojang:minecraft:${project.minecraft_version}"
+		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
+	}
+
 	sourceSets {
 		testmod {
 			compileClasspath += main.compileClasspath
 			runtimeClasspath += main.runtimeClasspath
 		}
-	}
-
-	dependencies {
-		minecraft "com.mojang:minecraft:${project.minecraft_version}"
-		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-		modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-
-		// Fabric API
-		modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
-		modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
-		modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
-
-		// Transporter
-		modApi "com.github.LazuriteMC:Transporter:${project.transporter_version}"
-		include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
-
-		// Hermes
-		modImplementation "dev.inkwell:hermes:${project.hermes_version}"
-
-		// Zip4j
-		implementation "net.lingala.zip4j:zip4j:${project.zip4j_version}"
-		shadow "net.lingala.zip4j:zip4j:${project.zip4j_version}"
-
-		// LibBulletJME
-		compile "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
-		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
-
-		// Immersive Portals
-		modImplementation("com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:${project.immersive_portals_version}") {
-			exclude(group: "net.fabricmc.fabric-api")
-		}
-//		modImplementation('com.github.qouteall:ImmersivePortalsMod:1.16-SNAPSHOT') {
-//			exclude(group: "net.fabricmc.fabric-api")
-//		}
 	}
 
 	processResources {
@@ -86,52 +57,46 @@ allprojects {
 		from sourceSets.main.allSource
 	}
 
-	shadowJar {
-		configurations = [project.configurations.shadow]
-	}
-
 	jar {
 		from "LICENSE"
 	}
 
-	remapJar {
-		dependsOn shadowJar
-		input.set shadowJar.archiveFile.get()
-	}
-}
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				artifact(remapJar) {
+					builtBy remapJar
+				}
+				artifact(sourcesJar) {
+					builtBy remapSourcesJar
+				}
+			}
+		}
 
-dependencies {
-	afterEvaluate {
-		subprojects.each {
-			api project(":${it.name}")
-			include project("${it.name}:")
-			testmodCompile project("${it.name}:").sourceSets.testmod.output
+		repositories {
+			mavenLocal()
 		}
 	}
-}
-
-subprojects {
-	apply plugin: 'fabric-loom'
-	apply plugin: 'java-library'
 
 	dependencies {
 		testmodCompile project.sourceSets.main.output
 	}
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
+dependencies {
+	include project(":rayon-core")
+	include project(":rayon-entity")
+	include project(":rayon-particle")
+}
 
-	repositories {
-		mavenLocal()
+task publish(overwrite: true) {
+	subprojects {
+		publish
+	}
+}
+
+task publishToMavenLocal(overwrite: true) {
+	subprojects {
+		publishToMavenLocal
 	}
 }
