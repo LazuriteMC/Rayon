@@ -16,7 +16,7 @@ public class EntityRigidBody extends PhysicsRigidBody implements DebuggableBody 
     private final Entity entity;
 
     public EntityRigidBody(Entity entity) {
-        super(new BoundingBoxShape(entity.getBoundingBox().expand(0.25f)), PhysicsRigidBody.massForStatic);
+        super(new BoundingBoxShape(entity.getBoundingBox()), PhysicsRigidBody.massForStatic);
         this.entity = entity;
         this.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength() / 2.0, 0)));
         this.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));

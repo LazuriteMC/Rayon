@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.entity.impl.util;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
@@ -53,7 +52,7 @@ public class ElementSpawnS2C {
                 rigidBody.setLinearVelocity(linearVelocity);
                 rigidBody.setAngularVelocity(angularVelocity);
                 rigidBody.setPhysicsRotation(rotation);
-                entity.updatePosition(location.x, location.y + rigidBody.boundingBox(new BoundingBox()).getYExtent(), location.z);
+                entity.updatePosition(location.x, location.y, location.z);
 
                 client.world.addEntity(id, entity);
                 PhysicsThread.get(client).execute(() -> MinecraftSpace.get(client.world).load((EntityPhysicsElement) entity));
