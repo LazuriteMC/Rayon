@@ -5,11 +5,11 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "common.EntityMixin",
+    "common.EntityTrackerMixin",
     "common.LivingEntityMixin",
     "common.ServerWorldMixin"
   ],
   "client": [
-    "client.ClientPlayNetworkHandlerMixin",
     "client.render.EntityRenderDispatcherMixin",
     "client.render.WorldRendererMixin",
     "client.world.ClientWorldMixin"

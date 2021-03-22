@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.entity.impl;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
@@ -56,9 +55,6 @@ public class RayonEntityClient implements ClientModInitializer {
                             rigidBody.setLinearVelocity(linearVelocity);
                             rigidBody.setAngularVelocity(angularVelocity);
                             rigidBody.activate();
-
-                            space.getThread().getThreadExecutor().execute(() ->
-                                entity.updatePosition(location.x, location.y + rigidBody.boundingBox(new BoundingBox()).getYExtent(), location.z));
                         }
                     });
                 }

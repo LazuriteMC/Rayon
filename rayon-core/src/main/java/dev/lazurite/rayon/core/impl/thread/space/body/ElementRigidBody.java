@@ -140,8 +140,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
 
     public boolean needsMovementUpdate() {
         if (getFrame() != null) {
-            return getFrame().getLocationDelta(new Vector3f()).length() > 0.1f ||
-                    getFrame().getRotationDelta(new Vector3f()).length() > 0.01f;
+            return getFrame().getLocationDelta(new Vector3f()).length() > 0.25f ||
+                    getFrame().getRotationDelta(new Vector3f()).length() > 0.025f;
         }
 
         return false;
