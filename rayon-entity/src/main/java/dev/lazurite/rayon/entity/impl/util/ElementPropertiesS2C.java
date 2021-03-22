@@ -35,6 +35,8 @@ public class ElementPropertiesS2C {
             float restitution = buf.readFloat();
             int blockDistance = buf.readInt();
             boolean doFluidResistance = buf.readBoolean();
+            boolean doTerrainLoading = buf.readBoolean();
+            boolean doEntityLoading = buf.readBoolean();
             UUID priorityPlayer = buf.readUuid();
 
             if (space.getThread() != null) {
@@ -51,6 +53,8 @@ public class ElementPropertiesS2C {
                         rigidBody.setRestitution(restitution);
                         rigidBody.setEnvironmentLoadDistance(blockDistance);
                         rigidBody.setDoFluidResistance(doFluidResistance);
+                        rigidBody.setDoTerrainLoading(doTerrainLoading);
+                        rigidBody.setDoEntityLoading(doEntityLoading);
                         rigidBody.prioritize(player);
                     }
                 });
@@ -73,6 +77,8 @@ public class ElementPropertiesS2C {
         buf.writeFloat(rigidBody.getRestitution());
         buf.writeInt(rigidBody.getEnvironmentLoadDistance());
         buf.writeBoolean(rigidBody.shouldDoFluidResistance());
+        buf.writeBoolean(rigidBody.shouldDoTerrainLoading());
+        buf.writeBoolean(rigidBody.shouldDoEntityLoading());
 
         if (rigidBody.getPriorityPlayer() == null) {
             buf.writeUuid(new UUID(0, 0));

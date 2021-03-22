@@ -21,7 +21,27 @@ public class CubeEntity extends LivingEntity implements EntityPhysicsElement {
 
     public CubeEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
-        getRigidBody().setAngularDamping(0.25f);
+        getRigidBody().setDoEntityLoading(false);
+    }
+
+    @Override
+    public boolean isCollidable() {
+        return true;
+    }
+
+    @Override
+    public boolean canClimb() {
+        return false;
+    }
+
+    @Override
+    public boolean collides() {
+        return true;
+    }
+
+    @Override
+    public boolean isPushable() {
+        return true;
     }
 
     @Override

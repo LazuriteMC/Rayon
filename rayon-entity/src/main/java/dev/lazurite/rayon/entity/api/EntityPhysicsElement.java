@@ -21,11 +21,6 @@ public interface EntityPhysicsElement extends PhysicsElement {
         getRigidBody().setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -asEntity().yaw));
     }
 
-    @Override
-    default boolean isInNoClip() {
-        return asEntity().noClip;
-    }
-
     /**
      * Cast the {@link EntityPhysicsElement} as an {@link Entity}.
      * @return the entity

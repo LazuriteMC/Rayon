@@ -48,12 +48,16 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
     private boolean propertiesDirty;
     private int envLoadDistance;
     private float dragCoefficient;
-    private boolean doFluidResistance;
+
+    private boolean doFluidResistance = true;
+    private boolean doTerrainLoading = true;
+    private boolean doEntityLoading = true;
+
     private PlayerEntity priorityPlayer;
     private Frame frame;
     private Clump clump;
 
-    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution, boolean doFluidResistance) {
+    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(shape, mass);
         this.element = element;
         this.space = space;
@@ -61,11 +65,10 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setFriction(friction);
         this.setRestitution(restitution);
         this.setEnvironmentLoadDistance(calculateLoadDistance());
-        this.setDoFluidResistance(doFluidResistance);
     }
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape) {
-        this(element, space, shape, 1.0f, 0.05f, 1.0f, 0.5f, true);
+        this(element, space, shape, 1.0f, 0.05f, 1.0f, 0.5f);
     }
 
     /**
@@ -98,10 +101,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
 
     public MinecraftSpace getSpace() {
         return this.space;
-    }
-
-    public boolean isInNoClip() {
-        return getElement().isInNoClip();
     }
 
     public void setPropertiesDirty(boolean propertiesDirty) {
@@ -225,6 +224,16 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setPropertiesDirty(true);
     }
 
+    public void setDoTerrainLoading(boolean doTerrainLoading) {
+        this.doTerrainLoading = doTerrainLoading;
+        this.setPropertiesDirty(true);
+    }
+
+    public void setDoEntityLoading(boolean doEntityLoading) {
+        this.doEntityLoading = doEntityLoading;
+        this.setPropertiesDirty(true);
+    }
+
     public void prioritize(@Nullable PlayerEntity player) {
         priorityPlayer = player;
         this.setPropertiesDirty(true);
@@ -251,5 +260,13 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
 
     public boolean shouldDoFluidResistance() {
         return this.doFluidResistance;
+    }
+
+    public boolean shouldDoTerrainLoading() {
+        return this.doTerrainLoading;
+    }
+
+    public boolean shouldDoEntityLoading() {
+        return this.doEntityLoading;
     }
 }

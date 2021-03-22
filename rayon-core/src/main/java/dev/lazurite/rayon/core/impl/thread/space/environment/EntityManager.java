@@ -26,10 +26,12 @@ public final class EntityManager {
 
     public void tick() {
         space.getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
-            Vector3f pos = rigidBody.getPhysicsLocation(new Vector3f());
+            if (rigidBody.shouldDoEntityLoading()) {
+                Vector3f pos = rigidBody.getPhysicsLocation(new Vector3f());
 
-            if (load(new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance()))) {
-                space.getThread().execute(rigidBody::activate);
+                if (load(new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance()))) {
+                    space.getThread().execute(rigidBody::activate);
+                }
             }
         });
 
@@ -62,10 +64,9 @@ public final class EntityManager {
                     rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
                 }
             });
-
-            toKeep.add(entity);
         });
 
+        toKeep.addAll(entities);
         return !entities.isEmpty();
     }
 

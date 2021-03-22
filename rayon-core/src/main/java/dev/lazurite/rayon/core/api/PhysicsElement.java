@@ -53,13 +53,6 @@ public interface PhysicsElement {
     void reset();
 
     /**
-     * @return whether or not this physics element is in noclip mode
-     */
-    default boolean isInNoClip() {
-        return false;
-    }
-
-    /**
      * Mainly used for lerping within your renderer.
      * @param store any vector to store the output in
      * @param tickDelta the delta time between ticks

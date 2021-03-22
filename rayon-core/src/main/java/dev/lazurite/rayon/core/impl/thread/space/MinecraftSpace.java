@@ -112,7 +112,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             }
 
             /* Environment Loading */
-            if (!body.isInNoClip()) {
+            if (body.shouldDoTerrainLoading()) {
                 Vector3f pos = body.getPhysicsLocation(new Vector3f());
                 Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
                 terrainManager.load(body, box);
