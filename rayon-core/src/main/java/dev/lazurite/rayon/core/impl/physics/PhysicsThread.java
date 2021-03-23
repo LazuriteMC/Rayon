@@ -74,6 +74,7 @@ public class PhysicsThread extends Thread implements Pausable {
         while (running) {
             if (Util.getMeasuringTimeMs() > nextStep) {
                 nextStep = Util.getMeasuringTimeMs() + (long) (stepRate * 1000);
+                float delta = this.clock.getAndReset();
 
                 if (!isPaused()) {
                     /* Run all queued tasks */
@@ -84,13 +85,11 @@ public class PhysicsThread extends Thread implements Pausable {
                     for (World world : worldSupplier.getWorlds()) {
                         for (MinecraftSpace space : ((SpaceStorage) world).getSpaces()) {
                             if (!space.isEmpty() || space.isInPresim()) {
-                                space.step(clock.get());
+                                space.step(delta);
                             }
                         }
                     }
                 }
-
-                this.clock.reset();
             }
         }
     }

@@ -17,7 +17,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,13 +40,8 @@ public class RayonCoreClient implements ClientModInitializer {
         });
 
         BetterClientLifecycleEvents.GAME_JOIN.register((client, world, player) -> {
-            WorldSupplier supplier;
-
-            if (RayonCoreCommon.isImmersivePortalsInstalled()) {
-                supplier = new ImmersiveWorldSupplier(client);
-            } else {
-                supplier = new ClientWorldSupplier(client);
-            }
+            WorldSupplier supplier = RayonCoreCommon.isImmersivePortalsInstalled() ?
+                    new ImmersiveWorldSupplier(client) : new ClientWorldSupplier(client);
 
             thread.set(new PhysicsThread(client, supplier, "Client Physics Thread"));
             ((ThreadStorage) client).setPhysicsThread(thread.get());

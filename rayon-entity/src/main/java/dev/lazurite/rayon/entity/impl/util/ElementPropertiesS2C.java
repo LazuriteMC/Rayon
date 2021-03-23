@@ -39,26 +39,24 @@ public class ElementPropertiesS2C {
             boolean doEntityLoading = buf.readBoolean();
             UUID priorityPlayer = buf.readUuid();
 
-            if (space.getThread() != null) {
-                space.getThread().execute(() -> {
-                    Entity entity = client.world.getEntityById(entityId);
+            space.getThread().execute(() -> {
+                Entity entity = client.world.getEntityById(entityId);
 
-                    if (entity instanceof EntityPhysicsElement) {
-                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
-                        PlayerEntity player = client.world.getPlayerByUuid(priorityPlayer);
+                if (entity instanceof EntityPhysicsElement) {
+                    ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+                    PlayerEntity player = client.world.getPlayerByUuid(priorityPlayer);
 
-                        rigidBody.setMass(mass);
-                        rigidBody.setDragCoefficient(dragCoefficient);
-                        rigidBody.setFriction(friction);
-                        rigidBody.setRestitution(restitution);
-                        rigidBody.setEnvironmentLoadDistance(blockDistance);
-                        rigidBody.setDoFluidResistance(doFluidResistance);
-                        rigidBody.setDoTerrainLoading(doTerrainLoading);
-                        rigidBody.setDoEntityLoading(doEntityLoading);
-                        rigidBody.prioritize(player);
-                    }
-                });
-            }
+                    rigidBody.setMass(mass);
+                    rigidBody.setDragCoefficient(dragCoefficient);
+                    rigidBody.setFriction(friction);
+                    rigidBody.setRestitution(restitution);
+                    rigidBody.setEnvironmentLoadDistance(blockDistance);
+                    rigidBody.setDoFluidResistance(doFluidResistance);
+                    rigidBody.setDoTerrainLoading(doTerrainLoading);
+                    rigidBody.setDoEntityLoading(doEntityLoading);
+                    rigidBody.prioritize(player);
+                }
+            });
         }
     }
 

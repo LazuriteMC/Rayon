@@ -20,6 +20,12 @@ public class Clock {
         return getTimeMicroseconds() / 1000000F;
     }
 
+    public float getAndReset() {
+        float delta = get();
+        reset();
+        return delta;
+    }
+
     public void reset() {
         this.startTime = System.nanoTime();
     }

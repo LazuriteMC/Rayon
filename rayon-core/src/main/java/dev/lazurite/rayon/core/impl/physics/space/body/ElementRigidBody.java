@@ -151,24 +151,24 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
             World world = getSpace().getWorld();
             float drag;
 
-            BlockPos blockPos = new BlockPos(VectorHelper.vector3fToVec3d(
-                    boundingBox(new BoundingBox())
-                            .getMax(new Vector3f())));
-
-            BlockView chunk = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
-            Block block = Blocks.AIR;
-
-            if (chunk != null) {
-                block = chunk.getBlockState(blockPos).getBlock();
-            }
-
-            if (Blocks.LAVA.equals(block)) {
-                drag = space.getLavaDensity();
-            } else if (Blocks.WATER.equals(block)) {
-                drag = space.getWaterDensity();
-            } else {
+//            BlockPos blockPos = new BlockPos(VectorHelper.vector3fToVec3d(
+//                    boundingBox(new BoundingBox())
+//                            .getMax(new Vector3f())));
+//
+//            BlockView chunk = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+//            Block block = Blocks.AIR;
+//
+//            if (chunk != null) {
+//                block = chunk.getBlockState(blockPos).getBlock();
+//            }
+//
+//            if (Blocks.LAVA.equals(block)) {
+//                drag = space.getLavaDensity();
+//            } else if (Blocks.WATER.equals(block)) {
+//                drag = space.getWaterDensity();
+//            } else {
                 drag = space.getAirDensity();
-            }
+//            }
 
             float dragCoefficient = getDragCoefficient();
             float gravitationalForce = getMass() * space.getGravity(new Vector3f()).length();
