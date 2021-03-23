@@ -64,7 +64,6 @@ public class ElementSpawnS2C {
 
                 world.addEntity(id, entity);
                 PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).load((EntityPhysicsElement) entity));
-                System.out.println("CLIENT LOAD: " + world.getRegistryKey());
             }
         });
     }

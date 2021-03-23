@@ -30,7 +30,6 @@ public class RayonEntityClient implements ClientModInitializer {
             if (entity instanceof EntityPhysicsElement) {
                 MinecraftSpace space = MinecraftSpace.get(world);
                 space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
-                System.out.println("CLIENT UNLOAD: " + world.getRegistryKey());
             }
         });
 
@@ -56,8 +55,6 @@ public class RayonEntityClient implements ClientModInitializer {
                             rigidBody.setLinearVelocity(linearVelocity);
                             rigidBody.setAngularVelocity(angularVelocity);
                             rigidBody.activate();
-
-//                            entity.updateTrackedPositionAndAngles(location.x, location.y, location.z, QuaternionHelper.getYaw(rotation), QuaternionHelper.getPitch(rotation), 3, true);
                         }
                     });
                 }

@@ -43,7 +43,7 @@ public class RayonCoreClient implements ClientModInitializer {
         BetterClientLifecycleEvents.GAME_JOIN.register((client, world, player) -> {
             WorldSupplier supplier;
 
-            if (FabricLoader.getInstance().isModLoaded("immersive_portals")) {
+            if (RayonCoreCommon.isImmersivePortalsInstalled()) {
                 supplier = new ImmersiveWorldSupplier(client);
             } else {
                 supplier = new ClientWorldSupplier(client);

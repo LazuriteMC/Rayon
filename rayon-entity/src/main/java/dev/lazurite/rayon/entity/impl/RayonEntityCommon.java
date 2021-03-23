@@ -35,7 +35,6 @@ public class RayonEntityCommon implements ModInitializer {
 			if (entity instanceof EntityPhysicsElement && !PlayerLookup.tracking(entity).isEmpty()) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
-				System.out.println("SERVER LOAD: " + world.getRegistryKey());
 			}
 		});
 
@@ -43,7 +42,6 @@ public class RayonEntityCommon implements ModInitializer {
 			if (entity instanceof EntityPhysicsElement) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
-				System.out.println("START TRACKING: " + entity.getEntityWorld().getRegistryKey());
 			}
 		});
 
@@ -51,7 +49,6 @@ public class RayonEntityCommon implements ModInitializer {
 			if (entity instanceof EntityPhysicsElement && PlayerLookup.tracking(entity).isEmpty()) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
-				System.out.println("STOP TRACKING: " + entity.getEntityWorld().getRegistryKey());
 			}
 		});
 

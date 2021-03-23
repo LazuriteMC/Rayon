@@ -63,10 +63,6 @@ public class ElementPropertiesS2C {
     }
 
     public static void send(EntityPhysicsElement element) {
-        if (!(element instanceof Entity)) {
-            throw new RayonException("Element must be an entity");
-        }
-
         ElementRigidBody rigidBody = element.getRigidBody();
         PacketByteBuf buf = PacketByteBufs.create();
 

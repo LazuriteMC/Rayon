@@ -2,6 +2,8 @@ package dev.lazurite.rayon.entity.impl.mixin.common;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -25,6 +27,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin {
     @Shadow public World world;
 
+    @Inject(method = "getVelocity", at = @At("HEAD"), cancellable = true)
+    public void getVelocity(CallbackInfoReturnable<Vec3d> info) {
+        if (this instanceof EntityPhysicsElement && RayonCoreCommon.isImmersivePortalsInstalled()) {
+            info.setReturnValue(VectorHelper.vector3fToVec3d(
+                ((EntityPhysicsElement) this).getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.05f).multLocal(0.2f)
+            ));
+        }
+    }
+
     @Inject(method = "pushAwayFrom", at = @At("HEAD"), cancellable = true)
     public void pushAwayFrom(Entity entity, CallbackInfo info) {
         if (this instanceof EntityPhysicsElement && entity instanceof EntityPhysicsElement) {
@@ -39,10 +50,7 @@ public abstract class EntityMixin {
         }
     }
 
-    @Inject(
-            method = "toTag",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V")
-    )
+    @Inject(method = "toTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V"))
     public void toTag(CompoundTag tag, CallbackInfoReturnable<CompoundTag> info) {
         if (this instanceof EntityPhysicsElement) {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) this).getRigidBody();
@@ -52,13 +60,7 @@ public abstract class EntityMixin {
         }
     }
 
-    @Inject(
-            method = "fromTag",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V"
-            )
-    )
+    @Inject(method = "fromTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V"))
     public void fromTag(CompoundTag tag, CallbackInfo info) {
         if (this instanceof EntityPhysicsElement) {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) this).getRigidBody();

@@ -15,6 +15,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,5 +70,9 @@ public class RayonCoreCommon implements ModInitializer {
 				}
 			});
 		});
+	}
+
+	public static boolean isImmersivePortalsInstalled() {
+		return FabricLoader.getInstance().isModLoaded("immersive_portals");
 	}
 }
