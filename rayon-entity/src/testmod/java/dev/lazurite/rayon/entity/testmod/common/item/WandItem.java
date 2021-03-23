@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.entity.testmod.common.item;
 
+import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
+import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
 import dev.lazurite.rayon.entity.testmod.EntityTestMod;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -26,11 +29,13 @@ public class WandItem extends Item {
 
         if (!world.isClient()) {
             CubeEntity entity = new CubeEntity(EntityTestMod.CUBE_ENTITY, world);
-            entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 
-            /* Set the physics element to be prioritized if the player is sneaking while right clicking with the wand. */
             if (user.isSneaking()) {
-                entity.getRigidBody().prioritize(user);
+                Vec3d unit = hitResult.getPos().subtract(user.getPos()).normalize();
+                entity.updatePosition(user.getPos().x + unit.x, user.getPos().y + user.getStandingEyeHeight(), user.getPos().z + unit.z);
+                ((EntityPhysicsElement) entity).getRigidBody().setLinearVelocity(VectorHelper.vec3dToVector3f(unit).multLocal(10));
+            } else {
+                entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
             }
 
             world.spawnEntity(entity);
