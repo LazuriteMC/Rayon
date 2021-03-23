@@ -2,12 +2,12 @@ package dev.lazurite.rayon.entity.impl;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.util.ElementPropertiesS2C;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.entity.impl.util.ElementSpawnS2C;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -30,6 +30,7 @@ public class RayonEntityClient implements ClientModInitializer {
             if (entity instanceof EntityPhysicsElement) {
                 MinecraftSpace space = MinecraftSpace.get(world);
                 space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
+                System.out.println("CLIENT UNLOAD: " + world.getRegistryKey());
             }
         });
 
@@ -55,6 +56,8 @@ public class RayonEntityClient implements ClientModInitializer {
                             rigidBody.setLinearVelocity(linearVelocity);
                             rigidBody.setAngularVelocity(angularVelocity);
                             rigidBody.activate();
+
+//                            entity.updateTrackedPositionAndAngles(location.x, location.y, location.z, QuaternionHelper.getYaw(rotation), QuaternionHelper.getPitch(rotation), 3, true);
                         }
                     });
                 }

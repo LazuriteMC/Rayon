@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.impl.mixin.client.input;
 
-import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.thread.space.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.mixin.client.render.DebugRendererMixin;
 import dev.lazurite.rayon.core.impl.util.debug.DebugManager;
 import dev.lazurite.rayon.core.impl.util.debug.DebugLayer;

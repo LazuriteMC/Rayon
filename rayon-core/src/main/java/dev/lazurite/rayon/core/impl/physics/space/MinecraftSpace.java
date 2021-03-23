@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.thread.space;
+package dev.lazurite.rayon.core.impl.physics.space;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.PhysicsSpace;
@@ -10,12 +10,12 @@ import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
-import dev.lazurite.rayon.core.impl.thread.space.body.BlockRigidBody;
-import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.thread.space.environment.EntityManager;
-import dev.lazurite.rayon.core.impl.thread.space.environment.TerrainManager;
-import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
-import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.environment.EntityManager;
+import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
+import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;

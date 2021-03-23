@@ -11,8 +11,10 @@ dependencies {
     modImplementation "com.github.LazuriteMC:Transporter:${project.transporter_version}"
     include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 
+    // Bullet
     shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 
+    // Hermes
     modImplementation "dev.inkwell:hermes:${project.hermes_version}"
 
     // Immersive Portals

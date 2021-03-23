@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.thread.space.body.type;
+package dev.lazurite.rayon.core.impl.physics.space.body.type;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;

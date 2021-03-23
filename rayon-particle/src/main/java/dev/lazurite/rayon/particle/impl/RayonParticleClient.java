@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.particle.impl;
 
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import dev.lazurite.rayon.particle.impl.space.ParticleSpace;
 import net.fabricmc.api.ClientModInitializer;
 

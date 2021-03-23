@@ -1,7 +1,7 @@
-package dev.lazurite.rayon.core.impl.thread.space.util;
+package dev.lazurite.rayon.core.impl.physics.space.util;
 
 import dev.lazurite.rayon.core.impl.mixin.common.WorldMixin;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 

@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.thread.supplier;
+package dev.lazurite.rayon.core.impl.physics.util.supplier;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.registry.RegistryKey;

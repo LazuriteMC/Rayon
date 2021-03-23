@@ -1,10 +1,10 @@
-package dev.lazurite.rayon.core.impl.thread.space.body;
+package dev.lazurite.rayon.core.impl.physics.space.body;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.thread.space.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.thread.space.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;

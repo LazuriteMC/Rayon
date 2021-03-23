@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.entity.testmod.common.entity;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
@@ -21,31 +21,12 @@ public class CubeEntity extends LivingEntity implements EntityPhysicsElement {
 
     public CubeEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
-        getRigidBody().setDoEntityLoading(false);
     }
 
     @Override
-    public boolean isCollidable() {
-        return true;
-    }
+    public void step(MinecraftSpace space) {
 
-    @Override
-    public boolean canClimb() {
-        return false;
     }
-
-    @Override
-    public boolean collides() {
-        return true;
-    }
-
-    @Override
-    public boolean isPushable() {
-        return true;
-    }
-
-    @Override
-    public void step(MinecraftSpace space) { }
 
     @Override
     public boolean damage(DamageSource source, float amount) {

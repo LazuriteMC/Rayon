@@ -1,16 +1,16 @@
-package dev.lazurite.rayon.core.impl.thread.space.environment;
+package dev.lazurite.rayon.core.impl.physics.space.environment;
 
 import com.google.common.collect.Lists;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.thread.space.body.EntityRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.EntityRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
@@ -46,7 +46,7 @@ public final class EntityManager {
      * @return whether or not to activate the rigid body
      */
     public boolean load(Box box) {
-        List<Entity> entities = space.getWorld().getOtherEntities(null, box, entity -> !(entity instanceof PhysicsElement || entity instanceof ItemEntity));
+        List<Entity> entities = space.getWorld().getOtherEntities(null, box, entity -> !(entity instanceof PhysicsElement) && entity instanceof LivingEntity);
 
         entities.forEach(entity -> {
             space.getThread().execute(() -> {

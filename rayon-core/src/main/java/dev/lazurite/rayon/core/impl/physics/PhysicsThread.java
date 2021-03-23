@@ -1,15 +1,16 @@
-package dev.lazurite.rayon.core.impl.thread;
+package dev.lazurite.rayon.core.impl.physics;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.thread.space.util.SpaceStorage;
-import dev.lazurite.rayon.core.impl.thread.supplier.WorldSupplier;
-import dev.lazurite.rayon.core.impl.thread.util.Clock;
-import dev.lazurite.rayon.core.impl.thread.util.Pausable;
-import dev.lazurite.rayon.core.impl.thread.util.ThreadStorage;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.physics.util.supplier.WorldSupplier;
+import dev.lazurite.rayon.core.impl.physics.util.thread.Clock;
+import dev.lazurite.rayon.core.impl.physics.util.thread.Pausable;
+import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
 import dev.lazurite.rayon.core.impl.util.RayonException;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
@@ -87,9 +88,9 @@ public class PhysicsThread extends Thread implements Pausable {
                             }
                         }
                     }
-                } else {
-                    this.clock.reset();
                 }
+
+                this.clock.reset();
             }
         }
     }
@@ -111,8 +112,15 @@ public class PhysicsThread extends Thread implements Pausable {
         return this.clock;
     }
 
+    public WorldSupplier getWorldSupplier() {
+        return this.worldSupplier;
+    }
+
     /**
-     * @return the thread executor for the original thread (e.g. client or server).
+     * Gets the original thread executor. Useful for returning to the main thread,
+     * especially server-side where {@link MinecraftServer} isn't always readily
+     * available.
+     * @return the original {@link ReentrantThreadExecutor}.
      */
     public ReentrantThreadExecutor<? extends Runnable> getThreadExecutor() {
         return this.executor;

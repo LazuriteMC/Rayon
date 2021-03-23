@@ -2,11 +2,11 @@ package dev.lazurite.rayon.entity.impl;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.thread.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
@@ -35,6 +35,7 @@ public class RayonEntityCommon implements ModInitializer {
 			if (entity instanceof EntityPhysicsElement && !PlayerLookup.tracking(entity).isEmpty()) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
+				System.out.println("SERVER LOAD: " + world.getRegistryKey());
 			}
 		});
 
@@ -42,6 +43,7 @@ public class RayonEntityCommon implements ModInitializer {
 			if (entity instanceof EntityPhysicsElement) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
+				System.out.println("START TRACKING: " + entity.getEntityWorld().getRegistryKey());
 			}
 		});
 
@@ -49,6 +51,7 @@ public class RayonEntityCommon implements ModInitializer {
 			if (entity instanceof EntityPhysicsElement && PlayerLookup.tracking(entity).isEmpty()) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
+				System.out.println("STOP TRACKING: " + entity.getEntityWorld().getRegistryKey());
 			}
 		});
 

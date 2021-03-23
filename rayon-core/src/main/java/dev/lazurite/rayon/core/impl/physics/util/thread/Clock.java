@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.core.impl.thread.util;
+package dev.lazurite.rayon.core.impl.physics.util.thread;
 
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 
 /**
  * A simple clock for keeping track of delta time in milliseconds and microseconds.
@@ -17,9 +17,7 @@ public class Clock {
      * @return seconds since last called
      */
     public float get() {
-        float out = getTimeMicroseconds() / 1000000F;
-        this.reset();
-        return out;
+        return getTimeMicroseconds() / 1000000F;
     }
 
     public void reset() {

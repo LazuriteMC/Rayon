@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.core.impl.thread.util;
+package dev.lazurite.rayon.core.impl.physics.util.thread;
 
-import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;

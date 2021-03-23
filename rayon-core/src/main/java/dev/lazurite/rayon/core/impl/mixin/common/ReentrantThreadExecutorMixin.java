@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.impl.mixin.common;
 
-import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.thread.util.ThreadStorage;
+import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
+import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

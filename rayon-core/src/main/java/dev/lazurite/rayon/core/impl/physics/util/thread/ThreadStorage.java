@@ -1,6 +1,6 @@
-package dev.lazurite.rayon.core.impl.thread.util;
+package dev.lazurite.rayon.core.impl.physics.util.thread;
 
-import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 
 public interface ThreadStorage {
     void setPhysicsThread(PhysicsThread thread);

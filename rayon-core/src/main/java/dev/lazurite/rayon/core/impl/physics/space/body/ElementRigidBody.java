@@ -1,11 +1,11 @@
-package dev.lazurite.rayon.core.impl.thread.space.body;
+package dev.lazurite.rayon.core.impl.physics.space.body;
 
 import com.jme3.bounding.BoundingBox;
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.thread.space.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.thread.space.body.type.DebuggableBody;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.thread.space.util.Clump;
+import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;

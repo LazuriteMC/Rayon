@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.particle.impl.space;
 
-import dev.lazurite.rayon.core.impl.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.thread.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.particle.impl.RayonParticleClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
