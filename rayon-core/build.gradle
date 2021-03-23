@@ -5,12 +5,12 @@ plugins {
 archivesBaseName = "rayon-core"
 
 dependencies {
+    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
+
     // Transporter
     modImplementation "com.github.LazuriteMC:Transporter:${project.transporter_version}"
     include "com.github.LazuriteMC:Transporter:${project.transporter_version}"
 
-    // LibBulletJME
-    implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
     shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 
     modImplementation "dev.inkwell:hermes:${project.hermes_version}"

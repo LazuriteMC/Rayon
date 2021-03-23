@@ -1,5 +1,6 @@
 archivesBaseName = "rayon-particle"
 
 dependencies {
-    modImplementation project(":rayon-core")
+    implementation project(":rayon-core")
+    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
 }
