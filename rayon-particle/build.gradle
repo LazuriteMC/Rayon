@@ -1,6 +1,6 @@
 archivesBaseName = "rayon-particle"
-group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
 dependencies {
-    api project(":rayon-core")
+    implementation project(":rayon-core")
+    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
 }

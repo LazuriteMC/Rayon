@@ -1,6 +1,10 @@
 archivesBaseName = "rayon-entity"
-group = "${rootProject.group}.${rootProject.archivesBaseName}"
 
 dependencies {
-    api project(":rayon-core")
+    implementation project(":rayon-core")
+    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
+    modImplementation fabricApi.module("fabric-object-builder-api-v1", project.fabric_version)
+    modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
+    modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
+    modImplementation fabricApi.module("fabric-renderer-registries-v1", project.fabric_version)
 }
