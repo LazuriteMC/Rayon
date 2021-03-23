@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "rayon-entity-testmod",
+  "id": "entitytestmod",
   "version": "${version}",
   "license": "MIT",
   "environment": "*",
@@ -15,5 +15,18 @@
     "fabricloader": ">=0.7.4",
     "fabric": "*",
     "rayon-entity": "*"
+  },
+
+  "custom": {
+    "rayon": {
+      "blocks": [
+        {
+          "name": "blue_block",
+          "friction": 1.0,
+          "restitution": 0.25,
+          "collidable": true
+        }
+      ]
+    }
   }
 }

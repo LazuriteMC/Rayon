@@ -2,11 +2,13 @@ package dev.lazurite.rayon.core.impl.physics.space.environment;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.collision.shapes.CollisionShape;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.PatternShape;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.util.BlockProperties;
 import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
@@ -14,8 +16,10 @@ import dev.lazurite.transporter.api.pattern.TypedPattern;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
@@ -51,16 +55,40 @@ public final class TerrainManager {
             clump.getData().forEach(blockInfo -> {
                 BlockPos blockPos = blockInfo.getBlockPos();
                 BlockState blockState = blockInfo.getBlockState();
-                float friction = 1.5f;
+
+                float friction = 1.0f;
+                float restitution = 0.25f;
+                boolean collidable = !blockState.getBlock().canMobSpawnInside();
 
                 if (blockState.getBlock() instanceof IceBlock) {
                     friction = 0.05F;
-                } else if (!(blockState.getBlock() instanceof HoneyBlock) && !(blockState.getBlock() instanceof SlimeBlock) && !(blockState.getBlock() instanceof SoulSandBlock)) {
-                    friction = 0.9F;
+                } else if (blockState.getBlock() instanceof SlimeBlock) {
+                    friction = 3.0F;
+                    restitution = 3.0F;
+                } else if (blockState.getBlock() instanceof HoneyBlock || blockState.getBlock() instanceof SoulSandBlock) {
+                    friction = 3.0F;
+                }
+
+                /* Apply custom block properties */
+                Identifier blockId = Registry.BLOCK.getId(blockState.getBlock());
+                if (!blockId.getNamespace().equals("minecraft")) {
+                    BlockProperties props = RayonCoreCommon.getBlockProps().get(blockId);
+
+                    if (props != null) {
+                        collidable = props.isCollidable();
+
+                        if (props.getFriction() >= 0) {
+                            friction = props.getFriction();
+                        }
+
+                        if (props.getRestitution() >= 0) {
+                            restitution = props.getRestitution();
+                        }
+                    }
                 }
 
                 /* Check if the block is solid or not */
-                if (!blockState.getBlock().canMobSpawnInside()) {
+                if (collidable) {
                     BlockRigidBody body = findBlockAtPos(space, blockPos);
 
                     /* Make a new rigid body if there isn't already one */
@@ -74,7 +102,7 @@ public final class TerrainManager {
                             shape = new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
                         }
 
-                        body = new BlockRigidBody(blockState, blockPos, shape, friction, 0.25f);
+                        body = new BlockRigidBody(blockState, blockPos, shape, friction, restitution);
                     }
 
                     /* Make a pattern shape if applicable */
