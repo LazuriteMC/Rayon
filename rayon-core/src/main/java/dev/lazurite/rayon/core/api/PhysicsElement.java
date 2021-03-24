@@ -20,8 +20,9 @@ public interface PhysicsElement {
      * the {@link MinecraftSpace} in some way. If you need to perform some other
      * operation that doesn't have to do with physics {@link Entity#tick()} will suffice.
      * @param space the {@link MinecraftSpace} that the {@link ElementRigidBody} is in
+     * @param delta the delta time since last {@link MinecraftSpace} step.
      */
-    void step(MinecraftSpace space);
+    void step(MinecraftSpace space, float delta);
 
     /**
      * Gets {@link ElementRigidBody} object associated with this element. You should create and

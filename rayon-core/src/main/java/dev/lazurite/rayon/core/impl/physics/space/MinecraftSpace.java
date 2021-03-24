@@ -105,7 +105,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         /* Step and Fluid Resistance */
         getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
-            body.getElement().step(this);
+            body.getElement().step(this, delta);
 
             if (body.shouldDoFluidResistance()) {
                 body.applyDrag();

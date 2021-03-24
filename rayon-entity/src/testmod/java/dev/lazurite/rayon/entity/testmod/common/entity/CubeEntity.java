@@ -24,7 +24,7 @@ public class CubeEntity extends LivingEntity implements EntityPhysicsElement {
     }
 
     @Override
-    public void step(MinecraftSpace space) {
+    public void step(MinecraftSpace space, float delta) {
 
     }
 
