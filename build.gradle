@@ -18,7 +18,6 @@ allprojects { project ->
 	repositories {
 		maven { url "https://jitpack.io" }
 		maven { url "https://hephaestus.dev/release" }
-		maven { url "https://maven.shedaniel.me/" }
 		maven { url "http://maven.fabricmc.net/" }
 	}
 

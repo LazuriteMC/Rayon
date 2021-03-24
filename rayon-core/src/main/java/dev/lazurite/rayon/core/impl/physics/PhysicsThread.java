@@ -42,6 +42,10 @@ public class PhysicsThread extends Thread implements Pausable {
         return ((ThreadStorage) executor).getPhysicsThread();
     }
 
+    public static PhysicsThread get(World world) {
+        return MinecraftSpace.get(world).getThread();
+    }
+
     public PhysicsThread(ReentrantThreadExecutor<? extends Runnable> executor, WorldSupplier worldSupplier, String name) {
         this.executor = executor;
         this.worldSupplier = worldSupplier;
