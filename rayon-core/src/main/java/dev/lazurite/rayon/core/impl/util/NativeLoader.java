@@ -1,14 +1,14 @@
 package dev.lazurite.rayon.core.impl.util;
 
 import com.jme3.system.NativeLibraryLoader;
-import dev.lazurite.rayon.core.impl.RayonCore;
-import net.lingala.zip4j.ZipFile;
+import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  * This class copies and then loads native files stored within the rayon jar file.
@@ -16,25 +16,33 @@ import java.nio.file.StandardCopyOption;
  * .minecraft/natives/[version] folder.
  */
 public class NativeLoader {
-    public static final String DEST_DIR = "natives/10.1.0/";
-    public static final String NATIVE_ZIP = "natives.zip";
-    public static final String INTERNAL_ZIP = "/assets/rayon/natives/natives.zip";
+    public static final Path DEST_DIR = Paths.get("natives", "10.1.0");
 
     public static void load() {
-        File destination = new File(DEST_DIR);
+        Path destination = FabricLoader.getInstance().getGameDir().normalize().resolve(DEST_DIR);
 
-        if (!destination.exists()) {
-            try {
-                destination.mkdirs();
-                Files.copy(RayonCore.class.getResourceAsStream(INTERNAL_ZIP), Paths.get(DEST_DIR + NATIVE_ZIP), StandardCopyOption.REPLACE_EXISTING);
-                new ZipFile(DEST_DIR + NATIVE_ZIP).extractAll(DEST_DIR);
-                Files.delete(Paths.get(DEST_DIR + NATIVE_ZIP));
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Unable to extract bullet natives.");
+        try {
+            Path source = FabricLoader.getInstance().getModContainer("rayon-core")
+                    .get().getRootPath().resolve("assets").resolve("rayon-core").resolve("natives");
+
+            for (Path path : Files.walk(source).collect(Collectors.toList())) {
+                if (!Files.isDirectory(path)) {
+                    Path d = destination.resolve(source.relativize(path).getFileName().toString());
+
+                    if (!Files.exists(d)) {
+                        if (!Files.exists(d.getParent())) {
+                            Files.createDirectories(d.getParent());
+                        }
+
+                        Files.copy(path, d);
+                    }
+                }
             }
+        } catch (IOException | NoSuchElementException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Unable to extract bullet natives.");
         }
 
-        NativeLibraryLoader.loadLibbulletjme(true, destination, "Release", "Sp");
+        NativeLibraryLoader.loadLibbulletjme(true, destination.toFile(), "Release", "Sp");
     }
 }

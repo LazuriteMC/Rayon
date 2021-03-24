@@ -1,41 +1,62 @@
 package dev.lazurite.rayon.entity.impl.mixin.common;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.entity.impl.net.ElementMovementS2C;
-import dev.lazurite.rayon.entity.impl.net.ElementPropertiesS2C;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.EntityTrackerEntry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.util.function.Consumer;
+
+/**
+ * Prevents certain packets from being sent for {@link EntityPhysicsElement}s.
+ */
 @Mixin(EntityTrackerEntry.class)
 public class EntityTrackerEntryMixin {
     @Shadow @Final private Entity entity;
 
-    @Inject(
+    @Redirect(
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/network/EntityTrackerEntry;syncEntityData()V"
+                    target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V",
+                    ordinal = 1
             )
     )
-    public void sendMovementUpdates(CallbackInfo info) {
-        if (entity instanceof EntityPhysicsElement) {
-            ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+    public void rotate(Consumer consumer, Object object) {
+        if (!(entity instanceof EntityPhysicsElement)) {
+            consumer.accept(object);
+        }
+    }
 
-            if (rigidBody.isActive() && rigidBody.getPriorityPlayer() == null) {
-                ElementMovementS2C.send((EntityPhysicsElement) entity);
-            }
+    @Redirect(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V",
+                    ordinal = 2
+            )
+    )
+    public void velocity(Consumer consumer, Object object) {
+        if (!(entity instanceof EntityPhysicsElement)) {
+            consumer.accept(object);
+        }
+    }
 
-            if (rigidBody.arePropertiesDirty()) {
-                ElementPropertiesS2C.send((EntityPhysicsElement) entity);
-                rigidBody.setPropertiesDirty(false);
-            }
+    @Redirect(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V",
+                    ordinal = 3
+            )
+    )
+    public void multiple(Consumer consumer, Object object) {
+        if (!(entity instanceof EntityPhysicsElement)) {
+            consumer.accept(object);
         }
     }
 }

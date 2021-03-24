@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "rayon-particle",
+  "version": "${version}",
+  "name": "Rayon Particle API",
+  "description": "The particle API for Rayon.",
+  "authors": [ "The Lazurite Team" ],
+  "license": "MIT",
+  "environment": "*",
+  "icon": "assets/rayon-particle/icon.png",
+  "mixins": [ "rayon-particle.mixins.json" ],
+
+  "entrypoints": {
+    "client": [ "dev.lazurite.rayon.particle.impl.RayonParticleClient" ]
+  },
+
+  "depends": {
+    "minecraft": "1.16.x",
+    "fabricloader": ">=0.7.4",
+    "fabric-api-base": "*"
+  },
+
+  "contact": {
+    "homepage": "https://lazurite.dev",
+    "sources": "https://github.com/lazuritemc/Rayon",
+    "issues": "https://github.com/LazuriteMC/Rayon/issues"
+  },
+
+  "custom": {
+    "hermes": true,
+    "modmenu": {
+      "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" },
+      "badges": [ "library" ]
+    }
+  }
+}

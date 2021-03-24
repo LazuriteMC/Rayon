@@ -1,17 +1,16 @@
 package dev.lazurite.rayon.core.impl.util.debug;
 
-import com.google.common.collect.Lists;
-import com.jme3.bullet.collision.PhysicsCollisionObject;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.lazurite.rayon.core.impl.bullet.body.BlockRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
 import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
 import dev.lazurite.rayon.core.impl.mixin.client.render.DebugRendererMixin;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;
@@ -26,7 +25,6 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
-import java.util.List;
 
 /**
  * This class handles basically everything related to debug rendering on
@@ -84,11 +82,7 @@ public final class DebugManager {
         World world = MinecraftClient.getInstance().world;
 
         if (isEnabled()) {
-            MinecraftSpace space = MinecraftSpace.get(world);
-            List<PhysicsCollisionObject> collisionObjects = Lists.newArrayList();
-            collisionObjects.addAll(space.getRigidBodyList());
-            collisionObjects.addAll(space.getGhostObjectList());
-            for (PhysicsCollisionObject body : collisionObjects) {
+            for (PhysicsRigidBody body : MinecraftSpace.get(world).getRigidBodyList()) {
                 if (body instanceof DebuggableBody) {
                     if (((DebuggableBody) body).getDebugLayer().ordinal() <= debugLayer.ordinal()) {
                         if (VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f()))
@@ -101,7 +95,7 @@ public final class DebugManager {
         }
     }
 
-    private void renderBody(PhysicsCollisionObject body, Vector3f cameraPos) {
+    private void renderBody(PhysicsRigidBody body, Vector3f cameraPos) {
         RenderSystem.pushMatrix();
         RenderSystem.disableTexture();
         RenderSystem.depthMask(false);
@@ -113,10 +107,11 @@ public final class DebugManager {
         Vector3f color = ((DebuggableBody) body).getOutlineColor();
 
         Vector3f position = body.getPhysicsLocation(new Vector3f()).subtract(cameraPos);
+        Quaternion rotation = body.getPhysicsRotation(new Quaternion());
 
         builder.begin(GL11.GL_LINE_LOOP, VertexFormats.POSITION_COLOR);
         RenderSystem.translatef(position.x, position.y, position.z);
-        RenderSystem.multMatrix(new Matrix4f(QuaternionHelper.bulletToMinecraft(body.getPhysicsRotation(new Quaternion()))));
+        RenderSystem.multMatrix(new Matrix4f(QuaternionHelper.bulletToMinecraft(rotation)));
 
         while (buffer.hasRemaining()) {
             builder.vertex(buffer.get(), buffer.get(), buffer.get()).color(color.x, color.y, color.z, alpha).next();
