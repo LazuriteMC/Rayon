@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.entity.impl.mixin.common;
 
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.entity.impl.util.ElementSpawnS2C;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
@@ -20,7 +19,7 @@ public class LivingEntityMixin {
         LivingEntity entity = (LivingEntity) (Object) this;
 
         if (entity instanceof EntityPhysicsElement) {
-            info.setReturnValue(ElementSpawnS2C.create((EntityPhysicsElement) entity));
+            info.setReturnValue(((EntityPhysicsElement) this).getSpawnPacket());
         }
     }
 }

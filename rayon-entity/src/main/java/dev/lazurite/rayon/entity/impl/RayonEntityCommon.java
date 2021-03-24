@@ -2,6 +2,7 @@ package dev.lazurite.rayon.entity.impl;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -28,6 +29,8 @@ public class RayonEntityCommon implements ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Entity");
 
 	public static final Identifier MOVEMENT_UPDATE = new Identifier(MODID, "entity_movement_update");
+	public static final Identifier SPAWN = new Identifier(RayonCoreCommon.MODID, "element_spawn");
+	public static final Identifier PROPERTIES = new Identifier(RayonCoreCommon.MODID, "element_properties");
 
 	@Override
 	public void onInitialize() {

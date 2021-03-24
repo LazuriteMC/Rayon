@@ -4,7 +4,6 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.entity.impl.util.ElementPropertiesS2C;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,8 +33,7 @@ public class ServerWorldMixin {
                 }
 
                 if (body.arePropertiesDirty()) {
-                    ElementPropertiesS2C.send((EntityPhysicsElement) entity);
-                    body.setPropertiesDirty(false);
+                    ((EntityPhysicsElement) entity).sendProperties();
                 }
 
                 Vector3f pos = body.getPhysicsLocation(new Vector3f());

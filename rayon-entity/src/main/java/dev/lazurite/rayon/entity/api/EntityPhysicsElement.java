@@ -4,6 +4,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.impl.RayonEntityCommon;
@@ -12,7 +13,13 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
+
+import java.util.UUID;
 
 public interface EntityPhysicsElement extends PhysicsElement {
     @Override
@@ -51,5 +58,43 @@ public interface EntityPhysicsElement extends PhysicsElement {
                 }
             });
         }
+    }
+
+    default void sendProperties() {
+        ElementRigidBody rigidBody = getRigidBody();
+        PacketByteBuf buf = PacketByteBufs.create();
+
+        buf.writeInt(asEntity().getEntityId());
+        buf.writeFloat(rigidBody.getMass());
+        buf.writeFloat(rigidBody.getDragCoefficient());
+        buf.writeFloat(rigidBody.getFriction());
+        buf.writeFloat(rigidBody.getRestitution());
+        buf.writeInt(rigidBody.getEnvironmentLoadDistance());
+        buf.writeBoolean(rigidBody.shouldDoFluidResistance());
+        buf.writeBoolean(rigidBody.shouldDoTerrainLoading());
+        buf.writeBoolean(rigidBody.shouldDoEntityLoading());
+        buf.writeUuid(rigidBody.getPriorityPlayer() == null ? new UUID(0,  0) : rigidBody.getPriorityPlayer().getUuid());
+
+        PlayerLookup.tracking(asEntity()).forEach(player -> ServerPlayNetworking.send(player, RayonEntityCommon.PROPERTIES, buf));
+        rigidBody.setPropertiesDirty(false);
+    }
+
+    default Packet<?> getSpawnPacket() {
+        ElementRigidBody rigidBody = getRigidBody();
+        PacketByteBuf buf = PacketByteBufs.create();
+
+        buf.writeInt(asEntity().getEntityId());
+        buf.writeUuid(asEntity().getUuid());
+        buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(asEntity().getType()));
+
+        RegistryKey<World> worldKey = asEntity().getEntityWorld().getRegistryKey();
+        buf.writeIdentifier(worldKey.getValue());
+
+        VectorHelper.toBuffer(buf, VectorHelper.vec3dToVector3f(asEntity().getPos()));
+        VectorHelper.toBuffer(buf, rigidBody.getLinearVelocity(new Vector3f()));
+        VectorHelper.toBuffer(buf, rigidBody.getAngularVelocity(new Vector3f()));
+        QuaternionHelper.toBuffer(buf, rigidBody.getPhysicsRotation(new Quaternion()));
+
+        return ServerPlayNetworking.createS2CPacket(RayonEntityCommon.SPAWN, buf);
     }
 }
