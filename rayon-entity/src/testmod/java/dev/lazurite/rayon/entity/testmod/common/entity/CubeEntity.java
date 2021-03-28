@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("EntityConstructor")
 public class CubeEntity extends LivingEntity implements EntityPhysicsElement {
     private final ElementRigidBody rigidBody = new ElementRigidBody(this);
 
@@ -24,7 +25,7 @@ public class CubeEntity extends LivingEntity implements EntityPhysicsElement {
     }
 
     @Override
-    public void step(MinecraftSpace space, float delta) {
+    public void step(MinecraftSpace space) {
 
     }
 

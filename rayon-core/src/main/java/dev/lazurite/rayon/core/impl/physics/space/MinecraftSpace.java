@@ -20,10 +20,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * This is the physics simulation environment for all {@link BlockRigidBody}s and {@link ElementRigidBody}s. It runs
@@ -34,13 +34,13 @@ import java.util.List;
  * environment (e.g. add a rigid body or apply a force) then you should always perform those operations on the same
  * thread. The easiest way to get onto the physics thread is to queue a task using {@link PhysicsThread#execute(Runnable)}.
  * The {@link PhysicsThread} can be accessed using {@link MinecraftSpace#getThread()}. If you only need to read information
- * from the physics world, you don't need to queue a task on the physics thread.
+ * from the physics world, you don't need to queue a task.
  * @see PhysicsThread
  * @see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     public static final Identifier MAIN = new Identifier(RayonCoreCommon.MODID, "main");
-    private static final int MAX_PRESIM_STEPS = 30;
+    private static final int MAX_PRESIM_STEPS = 10;
 
     private final TerrainManager terrainManager;
     private final EntityManager entityManager;
@@ -75,7 +75,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.setWaterDensity(997f); // kg/m^3
         this.setLavaDensity(3100f); // kg/m^3
 
-        PhysicsSpaceEvents.INIT.invoker().onInit(thread, this);
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
@@ -99,13 +98,13 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * @see TerrainManager
      * @see PhysicsSpaceEvents
      */
-    public void step(float delta) {
+    public void step() {
         /* World Step Event */
         PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
         /* Step and Fluid Resistance */
         getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
-            body.getElement().step(this, delta);
+            body.getElement().step(this);
 
             if (body.shouldDoFluidResistance()) {
                 body.applyDrag();
@@ -123,7 +122,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         /* Step Simulation */
         if (presimSteps > MAX_PRESIM_STEPS) {
-            update(delta, 5);
+            update(1/20f, 5);
         } else ++presimSteps;
 
         distributeEvents();
@@ -212,7 +211,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      */
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        ReentrantThreadExecutor<? extends Runnable> thread = getThread().getThreadExecutor();
+        Executor thread = getThread().getThreadExecutor();
         float impulse = event.getAppliedImpulse();
 
         /* Element on Element */

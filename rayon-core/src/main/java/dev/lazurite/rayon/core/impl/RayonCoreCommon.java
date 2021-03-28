@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.core.impl;
 
 import com.google.common.collect.Maps;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
@@ -12,7 +13,6 @@ import dev.lazurite.rayon.core.impl.physics.util.supplier.ServerWorldSupplier;
 import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
 import dev.lazurite.rayon.core.impl.util.NativeLoader;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
-import dev.lazurite.rayon.core.impl.util.math.Frame;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -44,7 +44,6 @@ public class RayonCoreCommon implements ModInitializer {
 
 		/* Thread Events */
 		AtomicReference<PhysicsThread> thread = new AtomicReference<>();
-		ServerTickEvents.END_SERVER_TICK.register(server -> thread.get().tick());
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> thread.get().destroy());
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -53,29 +52,25 @@ public class RayonCoreCommon implements ModInitializer {
 		});
 
 		/* World Events */
-		ServerWorldEvents.LOAD.register((server, world) -> {
-			PhysicsSpaceEvents.PREINIT.invoker().onPreInit(thread.get(), world);
-			((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(thread.get(), world));
-		});
-
-		ServerTickEvents.END_WORLD_TICK.register(world -> {
+		ServerTickEvents.START_WORLD_TICK.register(world -> {
 			MinecraftSpace space = MinecraftSpace.get(world);
 			space.getEntityManager().tick();
 
-			space.getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
-				Frame prevFrame = body.getFrame();
+			space.getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody ->
+				rigidBody.getFrame().from(rigidBody.getFrame(),
+						rigidBody.getPhysicsLocation(new Vector3f()),
+						rigidBody.getPhysicsRotation(new Quaternion()),
+						rigidBody.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox())));
 
-				if (prevFrame == null) {
-					body.setFrame(new Frame(
-							body.getPhysicsLocation(new Vector3f()),
-							body.getPhysicsRotation(new Quaternion())));
-				} else {
-					body.setFrame(new Frame(
-							prevFrame,
-							body.getPhysicsLocation(new Vector3f()),
-							body.getPhysicsRotation(new Quaternion())));
-				}
-			});
+			if (!space.isEmpty() || space.isInPresim()) {
+				thread.get().execute(space::step);
+			}
+		});
+
+		ServerWorldEvents.LOAD.register((server, world) -> {
+			PhysicsSpaceEvents.PREINIT.invoker().onPreInit(thread.get(), world);
+			((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(thread.get(), world));
+			PhysicsSpaceEvents.INIT.invoker().onInit(thread.get(), MinecraftSpace.get(world));
 		});
 	}
 
@@ -112,7 +107,7 @@ public class RayonCoreCommon implements ModInitializer {
 		});
 	}
 
-	public static boolean isImmersivePortalsInstalled() {
+	public static boolean isImmersivePortalsPresent() {
 		return FabricLoader.getInstance().isModLoaded("immersive_portals");
 	}
 }

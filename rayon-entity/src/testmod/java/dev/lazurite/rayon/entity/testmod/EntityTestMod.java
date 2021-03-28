@@ -57,8 +57,8 @@ public class EntityTestMod implements ModInitializer {
                 new BlockItem(BLUE_BLOCK, new Item.Settings().group(ItemGroup.MISC)));
 
         /* An example of a block collision event */
-        ElementCollisionEvents.BLOCK_COLLISION.register((thread, element, block, impulse) -> {
-            thread.execute(() -> {
+        ElementCollisionEvents.BLOCK_COLLISION.register((executor, element, block, impulse) -> {
+            executor.execute(() -> {
                 if (element instanceof CubeEntity) {
                     if (block.getBlockState().getBlock().equals(Blocks.BRICKS)) {
                         LOGGER.info("Touching bricks!!" + impulse);

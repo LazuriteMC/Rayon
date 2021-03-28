@@ -5,6 +5,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.util.math.Frame;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.impl.RayonEntityCommon;
@@ -16,8 +17,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
 
 import java.util.UUID;
 
@@ -26,6 +25,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
     default void reset() {
         getRigidBody().setPhysicsLocation(VectorHelper.vec3dToVector3f(asEntity().getPos().add(0, getRigidBody().boundingBox(new BoundingBox()).getYExtent(), 0)));
         getRigidBody().setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -asEntity().yaw));
+        getRigidBody().getFrame().from(new Frame(getRigidBody().getPhysicsLocation(new Vector3f()), getRigidBody().getPhysicsRotation(new Quaternion()), getRigidBody().boundingBox(new BoundingBox())));
     }
 
     /**
@@ -44,6 +44,8 @@ public interface EntityPhysicsElement extends PhysicsElement {
         PacketByteBuf buf = PacketByteBufs.create();
 
         buf.writeInt(asEntity().getEntityId());
+        buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
+
         QuaternionHelper.toBuffer(buf, getRigidBody().getPhysicsRotation(new Quaternion()));
         VectorHelper.toBuffer(buf, getRigidBody().getPhysicsLocation(new Vector3f()));
         VectorHelper.toBuffer(buf, getRigidBody().getLinearVelocity(new Vector3f()));
@@ -65,6 +67,8 @@ public interface EntityPhysicsElement extends PhysicsElement {
         PacketByteBuf buf = PacketByteBufs.create();
 
         buf.writeInt(asEntity().getEntityId());
+        buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
+
         buf.writeFloat(rigidBody.getMass());
         buf.writeFloat(rigidBody.getDragCoefficient());
         buf.writeFloat(rigidBody.getFriction());
@@ -86,9 +90,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
         buf.writeInt(asEntity().getEntityId());
         buf.writeUuid(asEntity().getUuid());
         buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(asEntity().getType()));
-
-        RegistryKey<World> worldKey = asEntity().getEntityWorld().getRegistryKey();
-        buf.writeIdentifier(worldKey.getValue());
+        buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
 
         VectorHelper.toBuffer(buf, VectorHelper.vec3dToVector3f(asEntity().getPos()));
         VectorHelper.toBuffer(buf, rigidBody.getLinearVelocity(new Vector3f()));

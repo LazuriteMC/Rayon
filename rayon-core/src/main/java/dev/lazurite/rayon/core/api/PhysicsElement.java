@@ -20,9 +20,8 @@ public interface PhysicsElement {
      * the {@link MinecraftSpace} in some way. If you need to perform some other
      * operation that doesn't have to do with physics {@link Entity#tick()} will suffice.
      * @param space the {@link MinecraftSpace} that the {@link ElementRigidBody} is in
-     * @param delta the delta time since last {@link MinecraftSpace} step.
      */
-    void step(MinecraftSpace space, float delta);
+    void step(MinecraftSpace space);
 
     /**
      * Gets {@link ElementRigidBody} object associated with this element. You should create and
@@ -61,11 +60,7 @@ public interface PhysicsElement {
      */
     @Environment(EnvType.CLIENT)
     default Vector3f getPhysicsLocation(Vector3f store, float tickDelta) {
-        if (getRigidBody().getFrame() != null) {
-            return getRigidBody().getFrame().getLocation(store, tickDelta);
-        }
-
-        return store;
+        return getRigidBody().getFrame().getLocation(store, tickDelta);
     }
 
     /**
@@ -75,10 +70,6 @@ public interface PhysicsElement {
      */
     @Environment(EnvType.CLIENT)
     default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
-        if (getRigidBody().getFrame() != null) {
-            return getRigidBody().getFrame().getRotation(store, tickDelta);
-        }
-
-        return store;
+        return getRigidBody().getFrame().getRotation(store, tickDelta);
     }
 }

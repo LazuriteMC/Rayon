@@ -4,6 +4,7 @@
   "version": "${version}",
   "license": "MIT",
   "environment": "*",
+  "mixins": [ "rayon-entity-testmod.mixins.json" ],
 
   "entrypoints": {
     "main": [ "dev.lazurite.rayon.entity.testmod.EntityTestMod" ],

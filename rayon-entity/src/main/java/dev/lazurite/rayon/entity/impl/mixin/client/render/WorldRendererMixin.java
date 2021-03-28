@@ -6,10 +6,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 /**
@@ -37,4 +39,49 @@ public class WorldRendererMixin {
             args.set(3, location.z - cameraPos.z);
         }
     }
+
+//    @Redirect(
+//            method = "render",
+//            at = @At(
+//                    value = "INVOKE",
+//                    target = "Lnet/minecraft/entity/Entity;getX()D"
+//            )
+//    )
+//    public double getX(Entity entity) {
+//        if (entity instanceof EntityPhysicsElement) {
+//            return ((EntityPhysicsElement) entity).getRigidBody().getFrame().getLocation(new Vector3f()).x;
+//        }
+//
+//        return entity.getX();
+//    }
+//
+//    @Redirect(
+//            method = "render",
+//            at = @At(
+//                    value = "INVOKE",
+//                    target = "Lnet/minecraft/entity/Entity;getY()D"
+//            )
+//    )
+//    public double getY(Entity entity) {
+//        if (entity instanceof EntityPhysicsElement) {
+//            return ((EntityPhysicsElement) entity).getRigidBody().getFrame().getLocation(new Vector3f()).y;
+//        }
+//
+//        return entity.getY();
+//    }
+//
+//    @Redirect(
+//            method = "render",
+//            at = @At(
+//                    value = "INVOKE",
+//                    target = "Lnet/minecraft/entity/Entity;getZ()D"
+//            )
+//    )
+//    public double getZ(Entity entity) {
+//        if (entity instanceof EntityPhysicsElement) {
+//            return ((EntityPhysicsElement) entity).getRigidBody().getFrame().getLocation(new Vector3f()).z;
+//        }
+//
+//        return entity.getZ();
+//    }
 }

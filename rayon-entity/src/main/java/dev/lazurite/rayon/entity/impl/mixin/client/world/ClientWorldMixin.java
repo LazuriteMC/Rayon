@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.entity.impl.mixin.client.world;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
@@ -21,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ClientWorldMixin {
     @Shadow @Final private MinecraftClient client;
 
-    @Inject(method = "tickEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V"))
+    @Inject(method = "tickEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;tick()V", shift = At.Shift.AFTER))
     public void tickEntity(Entity entity, CallbackInfo info) {
         if (entity instanceof EntityPhysicsElement) {
             ElementRigidBody body = ((EntityPhysicsElement) entity).getRigidBody();
@@ -31,8 +32,14 @@ public class ClientWorldMixin {
                     ((EntityPhysicsElement) entity).sendMovementUpdate();
                 }
 
-                Vector3f pos = body.getPhysicsLocation(new Vector3f());
-                entity.updatePosition(pos.x, pos.y - body.boundingBox(new BoundingBox()).getYExtent(), pos.z);
+                Vector3f location = body.getFrame().getLocation(new Vector3f(), 1.0f);
+                float offset = body.getFrame().getBox(new BoundingBox(), 1.0f).getYExtent();
+                entity.updatePosition(location.x, location.y - offset, location.z);
+
+//                body.getFrame().from(body.getFrame(),
+//                        body.getPhysicsLocation(new Vector3f()),
+//                        body.getPhysicsRotation(new Quaternion()),
+//                        body.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
             }
         }
     }

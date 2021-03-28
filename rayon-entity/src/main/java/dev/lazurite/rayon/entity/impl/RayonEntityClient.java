@@ -32,39 +32,75 @@ public class RayonEntityClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
             if (entity instanceof EntityPhysicsElement) {
-                MinecraftSpace space = MinecraftSpace.get(world);
-                space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
+                PhysicsThread.get(world).execute(() -> MinecraftSpace.get(world).unload((EntityPhysicsElement) entity));
             }
         });
 
         ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.MOVEMENT_UPDATE, (client, handler, buf, sender) -> {
-            if (client.world != null) {
-                MinecraftSpace space = MinecraftSpace.get(client.world);
+            int entityId = buf.readInt();
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 
-                int entityId = buf.readInt();
-                Quaternion rotation = QuaternionHelper.fromBuffer(buf);
-                Vector3f location = VectorHelper.fromBuffer(buf);
-                Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
-                Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
+            Quaternion rotation = QuaternionHelper.fromBuffer(buf);
+            Vector3f location = VectorHelper.fromBuffer(buf);
+            Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
+            Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-                if (space.getThread() != null) {
-                    space.getThread().execute(() -> {
-                        Entity entity = client.world.getEntityById(entityId);
+            PhysicsThread.get(client).execute(() -> {
+                ClientWorld world = (ClientWorld) PhysicsThread.get(client).getWorldSupplier().getWorld(worldKey);
 
-                        if (entity instanceof EntityPhysicsElement) {
-                            ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+                if (world != null) {
+                    Entity entity = world.getEntityById(entityId);
 
-                            rigidBody.setPhysicsRotation(rotation);
-                            rigidBody.setPhysicsLocation(location);
-                            rigidBody.setLinearVelocity(linearVelocity);
-                            rigidBody.setAngularVelocity(angularVelocity);
-                            rigidBody.activate();
-                        }
-                    });
+                    if (entity instanceof EntityPhysicsElement) {
+                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+
+                        rigidBody.setPhysicsRotation(rotation);
+                        rigidBody.setPhysicsLocation(location);
+                        rigidBody.setLinearVelocity(linearVelocity);
+                        rigidBody.setAngularVelocity(angularVelocity);
+                        rigidBody.activate();
+                    }
                 }
-            }
+            });
         });
 
+        ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.PROPERTIES, (client, handler, buf, sender) -> {
+            int entityId = buf.readInt();
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+
+            float mass = buf.readFloat();
+            float dragCoefficient = buf.readFloat();
+            float friction = buf.readFloat();
+            float restitution = buf.readFloat();
+            int blockDistance = buf.readInt();
+            boolean doFluidResistance = buf.readBoolean();
+            boolean doTerrainLoading = buf.readBoolean();
+            boolean doEntityLoading = buf.readBoolean();
+            UUID priorityPlayer = buf.readUuid();
+
+            PhysicsThread.get(client).execute(() -> {
+                ClientWorld world = (ClientWorld) PhysicsThread.get(client).getWorldSupplier().getWorld(worldKey);
+
+                if (world != null) {
+                    Entity entity = world.getEntityById(entityId);
+
+                    if (entity != null) {
+                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+                        PlayerEntity player = world.getPlayerByUuid(priorityPlayer);
+
+                        rigidBody.setMass(mass);
+                        rigidBody.setDragCoefficient(dragCoefficient);
+                        rigidBody.setFriction(friction);
+                        rigidBody.setRestitution(restitution);
+                        rigidBody.setEnvironmentLoadDistance(blockDistance);
+                        rigidBody.setDoFluidResistance(doFluidResistance);
+                        rigidBody.setDoTerrainLoading(doTerrainLoading);
+                        rigidBody.setDoEntityLoading(doEntityLoading);
+                        rigidBody.prioritize(player);
+                    }
+                }
+            });
+        });
 
         ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.SPAWN, (client, handler, buf, sender) -> {
             int id = buf.readInt();
@@ -97,42 +133,6 @@ public class RayonEntityClient implements ClientModInitializer {
                     PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).load((EntityPhysicsElement) entity));
                 }
             });
-        });
-
-        ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.PROPERTIES, (client, handler, buf, sender) -> {
-            if (client.world != null) {
-                MinecraftSpace space = MinecraftSpace.get(client.world);
-
-                int entityId = buf.readInt();
-                float mass = buf.readFloat();
-                float dragCoefficient = buf.readFloat();
-                float friction = buf.readFloat();
-                float restitution = buf.readFloat();
-                int blockDistance = buf.readInt();
-                boolean doFluidResistance = buf.readBoolean();
-                boolean doTerrainLoading = buf.readBoolean();
-                boolean doEntityLoading = buf.readBoolean();
-                UUID priorityPlayer = buf.readUuid();
-
-                space.getThread().execute(() -> {
-                    Entity entity = client.world.getEntityById(entityId);
-
-                    if (entity instanceof EntityPhysicsElement) {
-                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
-                        PlayerEntity player = client.world.getPlayerByUuid(priorityPlayer);
-
-                        rigidBody.setMass(mass);
-                        rigidBody.setDragCoefficient(dragCoefficient);
-                        rigidBody.setFriction(friction);
-                        rigidBody.setRestitution(restitution);
-                        rigidBody.setEnvironmentLoadDistance(blockDistance);
-                        rigidBody.setDoFluidResistance(doFluidResistance);
-                        rigidBody.setDoTerrainLoading(doTerrainLoading);
-                        rigidBody.setDoEntityLoading(doEntityLoading);
-                        rigidBody.prioritize(player);
-                    }
-                });
-            }
         });
     }
 }

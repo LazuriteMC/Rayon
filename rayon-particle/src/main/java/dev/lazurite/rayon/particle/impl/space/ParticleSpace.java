@@ -14,8 +14,7 @@ public class ParticleSpace extends MinecraftSpace {
     }
 
     @Override
-    public void step(float delta) {
-
-        super.step(delta);
+    public void step() {
+        super.step();
     }
 }

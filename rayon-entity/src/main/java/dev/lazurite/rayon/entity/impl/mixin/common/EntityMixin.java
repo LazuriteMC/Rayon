@@ -3,7 +3,6 @@ package dev.lazurite.rayon.entity.impl.mixin.common;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
-import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -12,9 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,11 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(Entity.class)
 public abstract class EntityMixin {
-    @Shadow public World world;
-
     @Inject(method = "getVelocity", at = @At("HEAD"), cancellable = true)
     public void getVelocity(CallbackInfoReturnable<Vec3d> info) {
-        if (this instanceof EntityPhysicsElement && RayonCoreCommon.isImmersivePortalsInstalled()) {
+        if (this instanceof EntityPhysicsElement && RayonCoreCommon.isImmersivePortalsPresent()) {
             info.setReturnValue(VectorHelper.vector3fToVec3d(
                 ((EntityPhysicsElement) this).getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.05f).multLocal(0.2f)
             ));

@@ -3,6 +3,7 @@ package dev.lazurite.rayon.entity.impl;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -15,6 +16,8 @@ import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,15 +62,16 @@ public class RayonEntityCommon implements ModInitializer {
 			World world = player.getEntityWorld();
 
 			int entityId = buf.readInt();
+			RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+
 			Quaternion rotation = QuaternionHelper.fromBuffer(buf);
 			Vector3f location = VectorHelper.fromBuffer(buf);
 			Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
 			Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-			MinecraftSpace.get(world).getThread().execute(() -> {
-				Entity entity = world.getEntityById(entityId);
-
-				if (entity instanceof EntityPhysicsElement) {
+			PhysicsThread.get(server).execute(() -> {
+				if (world.getRegistryKey().equals(worldKey)) {
+					Entity entity = world.getEntityById(entityId);
 					ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
 
 					if (player.equals(rigidBody.getPriorityPlayer())) {

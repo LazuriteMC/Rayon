@@ -11,14 +11,8 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.util.debug.DebugLayer;
 import dev.lazurite.rayon.core.impl.util.math.Frame;
-import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -54,7 +48,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
     private boolean doEntityLoading = true;
 
     private PlayerEntity priorityPlayer;
-    private Frame frame;
+    private final Frame frame = new Frame();
+    private final Frame nextFrame = new Frame();
     private Clump clump;
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution) {
@@ -111,8 +106,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return this.propertiesDirty;
     }
 
-    public void setFrame(Frame frame) {
-        this.frame = frame;
+    public Frame getNextFrame() {
+        return this.nextFrame;
     }
 
     public Frame getFrame() {
@@ -148,44 +143,14 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
 
     public void applyDrag() {
         if (shouldDoFluidResistance()) {
-            World world = getSpace().getWorld();
-            float drag;
-
-//            BlockPos blockPos = new BlockPos(VectorHelper.vector3fToVec3d(
-//                    boundingBox(new BoundingBox())
-//                            .getMax(new Vector3f())));
-//
-//            BlockView chunk = world.getChunkManager().getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
-//            Block block = Blocks.AIR;
-//
-//            if (chunk != null) {
-//                block = chunk.getBlockState(blockPos).getBlock();
-//            }
-//
-//            if (Blocks.LAVA.equals(block)) {
-//                drag = space.getLavaDensity();
-//            } else if (Blocks.WATER.equals(block)) {
-//                drag = space.getWaterDensity();
-//            } else {
-                drag = space.getAirDensity();
-//            }
-
             float dragCoefficient = getDragCoefficient();
-            float gravitationalForce = getMass() * space.getGravity(new Vector3f()).length();
             float area = (float) Math.pow(boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
-            float k = (drag * dragCoefficient * area) / 2.0f;
+            float k = (space.getAirDensity() * dragCoefficient * area) / 2.0f;
 
-            Vector3f force = new Vector3f()
+            applyCentralForce(new Vector3f()
                     .set(getLinearVelocity(new Vector3f()))
                     .multLocal(-getLinearVelocity(new Vector3f()).lengthSquared())
-                    .multLocal(k);
-
-            if (drag != space.getAirDensity() && force.y > -gravitationalForce) {
-                /* Makes the object stop when it collides with a more dense liquid */
-                applyCentralImpulse(getLinearVelocity(new Vector3f()).multLocal(-getMass()));
-            } else if (Float.isFinite(force.length()) && force.length() > 0.1f) {
-                applyCentralForce(force);
-            }
+                    .multLocal(k));
         }
     }
 

@@ -1,8 +1,10 @@
 package dev.lazurite.rayon.core.impl.util.math;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.
@@ -10,33 +12,50 @@ import dev.lazurite.rayon.core.api.PhysicsElement;
  * each tick.
  */
 public class Frame {
-    private final Vector3f prevLocation;
-    private final Vector3f tickLocation;
-    private final Quaternion prevRotation;
-    private final Quaternion tickRotation;
+    private Vector3f prevLocation;
+    private Vector3f tickLocation;
+    private Quaternion prevRotation;
+    private Quaternion tickRotation;
+    private BoundingBox prevBox;
+    private BoundingBox tickBox;
 
-    public Frame(Vector3f prevLocation, Vector3f tickLocation, Quaternion prevRotation, Quaternion tickRotation) {
+    public Frame() {
+        this(new Vector3f(), new Quaternion(), new BoundingBox());
+    }
+
+    public Frame(Vector3f location, Quaternion rotation, BoundingBox box) {
+        this.set(location, location, rotation, rotation, box, box);
+    }
+
+    public void set(Vector3f prevLocation, Vector3f tickLocation, Quaternion prevRotation, Quaternion tickRotation, BoundingBox prevBox, BoundingBox tickBox) {
         this.prevLocation = prevLocation;
         this.tickLocation = tickLocation;
         this.prevRotation = prevRotation;
         this.tickRotation = tickRotation;
+        this.prevBox = prevBox;
+        this.tickBox = tickBox;
     }
 
-    public Frame(Vector3f location, Quaternion rotation) {
-        this(location, location, rotation, rotation);
+    public void from(Frame frame) {
+        this.set(frame.prevLocation, frame.tickLocation, frame.prevRotation, frame.tickRotation, frame.prevBox, frame.tickBox);
     }
 
-    public Frame(Frame frame, Vector3f location, Quaternion rotation) {
-        this(frame.tickLocation, location, frame.tickRotation, rotation);
+    public void from(Frame prevFrame, Vector3f tickLocation, Quaternion tickRotation, BoundingBox tickBox) {
+        this.set(prevFrame.tickLocation, tickLocation, prevFrame.tickRotation, tickRotation, prevFrame.tickBox, tickBox);
     }
 
     public Vector3f getLocation(Vector3f store, float tickDelta) {
-        store.set(VectorHelper.lerp(prevLocation, tickLocation, tickDelta));
-        return store;
+        return store.set(VectorHelper.lerp(prevLocation, tickLocation, tickDelta));
     }
 
     public Quaternion getRotation(Quaternion store, float tickDelta) {
-        store.set(QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta));
+        return store.set(QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta));
+    }
+
+    public BoundingBox getBox(BoundingBox store, float tickDelta) {
+        store.setXExtent(MathHelper.lerp(tickDelta, prevBox.getXExtent(), tickBox.getXExtent()));
+        store.setYExtent(MathHelper.lerp(tickDelta, prevBox.getYExtent(), tickBox.getYExtent()));
+        store.setZExtent(MathHelper.lerp(tickDelta, prevBox.getZExtent(), tickBox.getZExtent()));
         return store;
     }
 

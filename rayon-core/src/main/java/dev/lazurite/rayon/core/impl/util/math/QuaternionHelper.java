@@ -12,6 +12,7 @@ import net.minecraft.network.PacketByteBuf;
 public class QuaternionHelper {
     /**
      * Rotate the given {@link Quaternion} by the given number of degrees on the X axis.
+     *
      * @param quat the {@link Quaternion} to perform the operation on
      * @param deg  number of degrees to rotate by
      */
@@ -23,6 +24,7 @@ public class QuaternionHelper {
 
     /**
      * Rotate the given {@link Quaternion} by the given number of degrees on the Y axis.
+     *
      * @param quat the {@link Quaternion} to perform the operation on
      * @param deg  number of degrees to rotate by
      */
@@ -34,6 +36,7 @@ public class QuaternionHelper {
 
     /**
      * Rotate the given {@link Quaternion} by the given number of degrees on the Z axis.
+     *
      * @param quat the {@link Quaternion} to perform the operation on
      * @param deg  number of degrees to rotate by
      */
@@ -46,6 +49,7 @@ public class QuaternionHelper {
     /**
      * Converts the given {@link Quaternion} to a vector containing three axes of rotation in degrees.
      * The order is (roll, pitch, yaw).
+     *
      * @param quat the {@link Quaternion} to extract the euler angles from
      * @return a new vector containing three rotations in degrees
      */
@@ -77,6 +81,7 @@ public class QuaternionHelper {
 
     /**
      * Converts a {@link net.minecraft.util.math.Quaternion} to a {@link Quaternion}.
+     *
      * @param quat the {@link net.minecraft.util.math.Quaternion} to convert
      * @return the new {@link Quaternion}
      */
@@ -86,6 +91,7 @@ public class QuaternionHelper {
 
     /**
      * Converts a {@link Quaternion} to a {@link net.minecraft.util.math.Quaternion}.
+     *
      * @param quat the {@link Quaternion} to convert
      * @return the new {@link net.minecraft.util.math.Quaternion}
      */
@@ -95,6 +101,7 @@ public class QuaternionHelper {
 
     /**
      * Stores the given {@link Quaternion} into a new {@link CompoundTag}.
+     *
      * @param quat the {@link Quaternion} to store
      * @return the new {@link CompoundTag}
      */
@@ -109,6 +116,7 @@ public class QuaternionHelper {
 
     /**
      * Retrieves a {@link Quaternion} from the given {@link CompoundTag}.
+     *
      * @param tag the {@link CompoundTag} to retrieve the {@link Quaternion} from
      * @return the new {@link Quaternion}
      */
@@ -118,7 +126,8 @@ public class QuaternionHelper {
 
     /**
      * Serializes the given {@link Quaternion} into a {@link PacketByteBuf}.
-     * @param buf the {@link PacketByteBuf} to store the {@link Quaternion} in
+     *
+     * @param buf  the {@link PacketByteBuf} to store the {@link Quaternion} in
      * @param quat the {@link Quaternion} to store
      */
     public static void toBuffer(PacketByteBuf buf, Quaternion quat) {
@@ -130,6 +139,7 @@ public class QuaternionHelper {
 
     /**
      * Deserializes the given {@link PacketByteBuf} into a new {@link Quaternion}.
+     *
      * @param buf the {@link PacketByteBuf} to retrieve the {@link Quaternion} from
      * @return the new {@link Quaternion}
      */
@@ -159,9 +169,10 @@ public class QuaternionHelper {
 
     /**
      * Lerp, but for spherical stuffs (hence Slerp).
+     *
      * @param q1 the first {@link net.minecraft.util.math.Quaternion} to slerp
      * @param q2 the second {@link net.minecraft.util.math.Quaternion} to slerp
-     * @param t the delta time
+     * @param t  the delta time
      * @return the slerped {@link net.minecraft.util.math.Quaternion}
      */
     public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
@@ -197,5 +208,34 @@ public class QuaternionHelper {
                 (scale0 * q1.getW()) + (scale1 * q2.getW()));
         out.normalizeLocal();
         return out;
+    }
+
+    public static float dot(Quaternion q1, Quaternion q2) {
+        return q1.getX() * q2.getX() +
+                q1.getY() * q2.getY() +
+                q1.getZ() * q2.getZ() +
+                q1.getW() * q2.getW();
+    }
+
+    public static Quaternion nlerp(Quaternion q1, Quaternion q2, float blend) {
+        float dot = dot(q1, q2);
+        float blendI = 1.0f - blend;
+        Quaternion q = new Quaternion();
+
+        if (dot < 0.0f) {
+            q.set(
+                blendI * q1.getX() - blend * q2.getX(),
+                blendI * q1.getY() - blend * q2.getY(),
+                blendI * q1.getZ() - blend * q2.getZ(),
+                blendI * q1.getW() - blend * q2.getW());
+        } else {
+            q.set(
+                blendI * q1.getX()+ blend * q2.getX(),
+                blendI * q1.getY() + blend * q2.getY(),
+                blendI * q1.getZ() + blend * q2.getZ(),
+                blendI * q1.getW() + blend * q2.getW());
+        }
+
+        return q.normalizeLocal();
     }
 }
