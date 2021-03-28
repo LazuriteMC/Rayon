@@ -5,11 +5,12 @@ import com.jme3.bullet.util.DebugShapeFactory;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.lazurite.rayon.core.impl.mixin.client.render.WorldRendererMixin;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.EntityRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
 import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
-import dev.lazurite.rayon.core.impl.mixin.client.render.DebugRendererMixin;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -38,7 +39,7 @@ import java.nio.FloatBuffer;
  *
  * @see DebugLayer
  * @see KeyboardMixin
- * @see DebugRendererMixin
+ * @see WorldRendererMixin
  */
 @Environment(EnvType.CLIENT)
 public final class DebugManager {
@@ -77,25 +78,18 @@ public final class DebugManager {
         return this.debugLayer;
     }
 
-    public void render() {
-        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-        World world = MinecraftClient.getInstance().world;
-
-        if (isEnabled()) {
-            for (PhysicsRigidBody body : MinecraftSpace.get(world).getRigidBodyList()) {
-                if (body instanceof DebuggableBody) {
-                    if (((DebuggableBody) body).getDebugLayer().ordinal() <= debugLayer.ordinal()) {
-                        if (VectorHelper.vector3fToVec3d(body.getPhysicsLocation(new Vector3f()))
-                                .distanceTo(camera.getPos()) < MinecraftClient.getInstance().options.viewDistance * 16) {
-                            renderBody(body, VectorHelper.vec3dToVector3f(camera.getPos()));
-                        }
-                    }
+    public void render(World world, Camera camera, float tickDelta) {
+        for (DebuggableBody body : MinecraftSpace.get(world).getRigidBodiesByClass(DebuggableBody.class)) {
+            if (body instanceof PhysicsRigidBody && body.getDebugLayer().ordinal() <= debugLayer.ordinal()) {
+                if (VectorHelper.vector3fToVec3d(((PhysicsRigidBody) body).getPhysicsLocation(new Vector3f()))
+                        .distanceTo(camera.getPos()) < MinecraftClient.getInstance().options.viewDistance * 16) {
+                    renderBody((PhysicsRigidBody) body, VectorHelper.vec3dToVector3f(camera.getPos()), tickDelta);
                 }
             }
         }
     }
 
-    private void renderBody(PhysicsRigidBody body, Vector3f cameraPos) {
+    private void renderBody(PhysicsRigidBody body, Vector3f cameraPos, float tickDelta) {
         RenderSystem.pushMatrix();
         RenderSystem.disableTexture();
         RenderSystem.depthMask(false);
@@ -106,8 +100,21 @@ public final class DebugManager {
         float alpha = ((DebuggableBody) body).getOutlineAlpha();
         Vector3f color = ((DebuggableBody) body).getOutlineColor();
 
-        Vector3f position = body.getPhysicsLocation(new Vector3f()).subtract(cameraPos);
-        Quaternion rotation = body.getPhysicsRotation(new Quaternion());
+        Vector3f position;
+        Quaternion rotation;
+
+        if (body instanceof ElementRigidBody) {
+            position = ((ElementRigidBody) body).getElement().getPhysicsLocation(new Vector3f(), tickDelta);
+            rotation = ((ElementRigidBody) body).getElement().getPhysicsRotation(new Quaternion(), tickDelta);
+        } else if (body instanceof EntityRigidBody) {
+            position = ((EntityRigidBody) body).getDebugFrame().getLocation(new Vector3f(), tickDelta);
+            rotation = ((EntityRigidBody) body).getDebugFrame().getRotation(new Quaternion(), tickDelta);
+        } else {
+            position = body.getPhysicsLocation(new Vector3f());
+            rotation = body.getPhysicsRotation(new Quaternion());
+        }
+
+        position.set(position.subtract(cameraPos));
 
         builder.begin(GL11.GL_LINE_LOOP, VertexFormats.POSITION_COLOR);
         RenderSystem.translatef(position.x, position.y, position.z);

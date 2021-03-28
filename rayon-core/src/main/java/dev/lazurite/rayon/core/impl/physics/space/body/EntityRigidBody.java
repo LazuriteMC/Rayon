@@ -5,14 +5,18 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.util.math.Frame;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 
 /**
  * A basic {@link PhysicsRigidBody} class representing a regular entity.
  */
 public class EntityRigidBody extends PhysicsRigidBody implements DebuggableBody {
+    private final Frame debugFrame = new Frame();
     private final Entity entity;
 
     public EntityRigidBody(Entity entity) {
@@ -24,6 +28,11 @@ public class EntityRigidBody extends PhysicsRigidBody implements DebuggableBody 
 
     public Entity getEntity() {
         return this.entity;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public Frame getDebugFrame() {
+        return this.debugFrame;
     }
 
     @Override

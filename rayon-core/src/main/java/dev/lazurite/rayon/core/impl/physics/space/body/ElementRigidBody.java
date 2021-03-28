@@ -49,7 +49,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
 
     private PlayerEntity priorityPlayer;
     private final Frame frame = new Frame();
-    private final Frame nextFrame = new Frame();
     private Clump clump;
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution) {
@@ -104,10 +103,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
 
     public boolean arePropertiesDirty() {
         return this.propertiesDirty;
-    }
-
-    public Frame getNextFrame() {
-        return this.nextFrame;
     }
 
     public Frame getFrame() {

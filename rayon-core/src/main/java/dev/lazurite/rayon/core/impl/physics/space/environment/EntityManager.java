@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.core.impl.physics.space.environment;
 
 import com.google.common.collect.Lists;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
@@ -62,6 +63,7 @@ public final class EntityManager {
                     /* Update its position and rotation if it already exists */
                     rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength() / 2.0, 0)));
                     rigidBody.setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -entity.yaw));
+                    rigidBody.getDebugFrame().from(rigidBody.getDebugFrame(), rigidBody.getPhysicsLocation(new Vector3f()), rigidBody.getPhysicsRotation(new Quaternion()), rigidBody.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
                 }
             });
         });
