@@ -84,7 +84,7 @@ public class RayonEntityClient implements ClientModInitializer {
                 if (world != null) {
                     Entity entity = world.getEntityById(entityId);
 
-                    if (entity != null) {
+                    if (entity instanceof EntityPhysicsElement) {
                         ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
                         PlayerEntity player = world.getPlayerByUuid(priorityPlayer);
 
@@ -118,19 +118,22 @@ public class RayonEntityClient implements ClientModInitializer {
 
                 if (world != null) {
                     Entity entity = type.create(world);
-                    ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
 
-                    entity.setEntityId(id);
-                    entity.setUuid(uuid);
+                    if (entity instanceof EntityPhysicsElement) {
+                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
 
-                    rigidBody.setPhysicsLocation(location);
-                    rigidBody.setLinearVelocity(linearVelocity);
-                    rigidBody.setAngularVelocity(angularVelocity);
-                    rigidBody.setPhysicsRotation(rotation);
-                    entity.updatePosition(location.x, location.y, location.z);
+                        entity.setEntityId(id);
+                        entity.setUuid(uuid);
 
-                    world.addEntity(id, entity);
-                    PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).load((EntityPhysicsElement) entity));
+                        rigidBody.setPhysicsLocation(location);
+                        rigidBody.setLinearVelocity(linearVelocity);
+                        rigidBody.setAngularVelocity(angularVelocity);
+                        rigidBody.setPhysicsRotation(rotation);
+                        entity.updatePosition(location.x, location.y, location.z);
+
+                        world.addEntity(id, entity);
+                        PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).load((EntityPhysicsElement) entity));
+                    }
                 }
             });
         });
