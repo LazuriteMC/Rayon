@@ -42,6 +42,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
     private boolean propertiesDirty;
     private int envLoadDistance;
     private float dragCoefficient;
+    public int movementCooldown;
 
     private boolean doFluidResistance = true;
     private boolean doTerrainLoading = true;

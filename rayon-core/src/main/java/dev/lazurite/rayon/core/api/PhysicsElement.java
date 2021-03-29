@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.core.api;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
@@ -66,10 +67,22 @@ public interface PhysicsElement {
     /**
      * Mainly used for lerping within your renderer.
      * @param store the quaternion to store the output in
+     * @param tickDelta the delta time between ticks
      * @return the "slerped" quaternion
      */
     @Environment(EnvType.CLIENT)
     default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
         return getRigidBody().getFrame().getRotation(store, tickDelta);
+    }
+
+    /**
+     * Mainly used for lerping within your renderer.
+     * @param store the bounding box to store the output in
+     * @param tickDelta the delta time between ticks
+     * @return the lerped bounding box
+     */
+    @Environment(EnvType.CLIENT)
+    default BoundingBox getPhysicsBoundingBox(BoundingBox store, float tickDelta) {
+        return getRigidBody().getFrame().getBox(store, tickDelta);
     }
 }

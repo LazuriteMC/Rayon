@@ -7,7 +7,9 @@
     "common.EntityMixin",
     "common.EntityTrackerEntryMixin",
     "common.LivingEntityMixin",
-    "common.ServerWorldMixin"
+    "common.ServerWorldMixin",
+    "compat.McHelperMixin",
+    "compat.PortalMixin"
   ],
   "client": [
     "client.render.EntityRenderDispatcherMixin",

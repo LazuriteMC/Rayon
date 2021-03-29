@@ -35,11 +35,6 @@ public class ClientWorldMixin {
                 Vector3f location = body.getFrame().getLocation(new Vector3f(), 1.0f);
                 float offset = body.getFrame().getBox(new BoundingBox(), 1.0f).getYExtent();
                 entity.updatePosition(location.x, location.y - offset, location.z);
-
-//                body.getFrame().from(body.getFrame(),
-//                        body.getPhysicsLocation(new Vector3f()),
-//                        body.getPhysicsRotation(new Quaternion()),
-//                        body.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
             }
         }
     }

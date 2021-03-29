@@ -47,6 +47,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final PhysicsThread thread;
     private final World world;
     private int presimSteps;
+    private boolean stepping;
 
     private float airDensity;
     private float waterDensity;
@@ -99,6 +100,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * @see PhysicsSpaceEvents
      */
     public void step() {
+        stepping = true;
+
         /* World Step Event */
         PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
@@ -126,6 +129,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         } else ++presimSteps;
 
         distributeEvents();
+        stepping = false;
     }
 
     public void load(PhysicsElement element) {
@@ -147,6 +151,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     public boolean isServer() {
         return getThread().getThreadExecutor() instanceof MinecraftServer;
+    }
+
+    public boolean isStepping() {
+        return this.stepping;
     }
 
     public boolean isInPresim() {

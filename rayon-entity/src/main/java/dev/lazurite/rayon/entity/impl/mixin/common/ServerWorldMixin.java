@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.entity.impl.mixin.common;
 
 import com.jme3.bounding.BoundingBox;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
@@ -30,18 +29,13 @@ public class ServerWorldMixin {
             ElementRigidBody body = ((EntityPhysicsElement) entity).getRigidBody();
 
             if (body.isInWorld()) {
-                if (body.isActive() && body.getPriorityPlayer() == null && body.needsMovementUpdate()) {
+                if (body.isActive() && body.needsMovementUpdate()) {
                     ((EntityPhysicsElement) entity).sendMovementUpdate();
                 }
 
                 if (body.arePropertiesDirty()) {
                     ((EntityPhysicsElement) entity).sendProperties();
                 }
-
-//                body.getFrame().from(body.getFrame(),
-//                        body.getPhysicsLocation(new Vector3f()),
-//                        body.getPhysicsRotation(new Quaternion()),
-//                        body.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
 
                 Vector3f location = body.getFrame().getLocation(new Vector3f(), 1.0f);
                 float offset = body.getFrame().getBox(new BoundingBox(), 1.0f).getYExtent();

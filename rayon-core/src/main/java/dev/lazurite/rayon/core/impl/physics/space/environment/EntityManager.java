@@ -12,6 +12,8 @@ import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
@@ -47,7 +49,7 @@ public final class EntityManager {
      * @return whether or not to activate the rigid body
      */
     public boolean load(Box box) {
-        List<Entity> entities = space.getWorld().getOtherEntities(null, box, entity -> !(entity instanceof PhysicsElement) && entity instanceof LivingEntity);
+        List<Entity> entities = space.getWorld().getOtherEntities(null, box, EntityManager::canCollideWith);
 
         entities.forEach(entity -> {
             space.getThread().execute(() -> {
@@ -103,5 +105,9 @@ public final class EntityManager {
         }
 
         return null;
+    }
+
+    public static boolean canCollideWith(Entity entity) {
+        return (entity instanceof BoatEntity || entity instanceof MinecartEntity || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement);
     }
 }

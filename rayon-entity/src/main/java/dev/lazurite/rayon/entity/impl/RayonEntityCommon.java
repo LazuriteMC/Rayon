@@ -72,14 +72,17 @@ public class RayonEntityCommon implements ModInitializer {
 			PhysicsThread.get(server).execute(() -> {
 				if (world.getRegistryKey().equals(worldKey)) {
 					Entity entity = world.getEntityById(entityId);
-					ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
 
-					if (player.equals(rigidBody.getPriorityPlayer())) {
-						rigidBody.setPhysicsRotation(rotation);
-						rigidBody.setPhysicsLocation(location);
-						rigidBody.setLinearVelocity(linearVelocity);
-						rigidBody.setAngularVelocity(angularVelocity);
-						rigidBody.activate();
+					if (entity instanceof EntityPhysicsElement) {
+						ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+
+						if (player.equals(rigidBody.getPriorityPlayer())) {
+							rigidBody.setPhysicsRotation(rotation);
+							rigidBody.setPhysicsLocation(location);
+							rigidBody.setLinearVelocity(linearVelocity);
+							rigidBody.setAngularVelocity(angularVelocity);
+							rigidBody.activate();
+						}
 					}
 				}
 			});

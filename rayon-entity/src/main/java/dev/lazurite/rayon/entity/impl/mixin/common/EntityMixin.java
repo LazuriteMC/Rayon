@@ -12,6 +12,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(Entity.class)
 public abstract class EntityMixin {
+    @Shadow protected abstract Vec3d adjustMovementForCollisions(Vec3d movement);
+
     @Inject(method = "getVelocity", at = @At("HEAD"), cancellable = true)
     public void getVelocity(CallbackInfoReturnable<Vec3d> info) {
         if (this instanceof EntityPhysicsElement && RayonCoreCommon.isImmersivePortalsPresent()) {
@@ -41,9 +44,17 @@ public abstract class EntityMixin {
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MovementType type, Vec3d movement, CallbackInfo info) {
         if (this instanceof EntityPhysicsElement) {
+            this.adjustMovementForCollisions(movement);
             info.cancel();
         }
     }
+
+//    @Inject(method = "getStandingEyeHeight", at = @At("HEAD"), cancellable = true)
+//    public void getStandingEyeHeight(CallbackInfoReturnable<Float> info) {
+//        if (this instanceof EntityPhysicsElement) {
+//            info.setReturnValue(0.0f);
+//        }
+//    }
 
     @Inject(method = "toTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V"))
     public void toTag(CompoundTag tag, CallbackInfoReturnable<CompoundTag> info) {
