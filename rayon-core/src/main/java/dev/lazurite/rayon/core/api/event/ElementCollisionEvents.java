@@ -3,9 +3,9 @@ package dev.lazurite.rayon.core.api.event;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.EntityRigidBody;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.util.thread.ReentrantThreadExecutor;
 
 import java.util.concurrent.Executor;
 
@@ -13,6 +13,7 @@ import java.util.concurrent.Executor;
  * The events available through this class are:
  * <ul>
  *     <li><b>Block Collision:</b> Element on Block</li>
+ *     <li><b>Entity Collision:</b> Element on Entity</li>
  *     <li><b>Element Collision:</b> Element on Element</li>
  * </ul>
  * <b>Note:</b> All the events listed here run on the physics thread but include an {@link Executor} object to allow for thread changing.
@@ -22,6 +23,12 @@ public class ElementCollisionEvents {
     public static final Event<BlockCollision> BLOCK_COLLISION = EventFactory.createArrayBacked(BlockCollision.class, (callbacks) -> (executor, element, block, impulse) -> {
         for (BlockCollision event : callbacks) {
             event.onCollide(executor, element, block, impulse);
+        }
+    });
+
+    public static final Event<EntityCollision> ENTITY_COLLISION = EventFactory.createArrayBacked(EntityCollision.class, (callbacks) -> (executor, element, entity, impulse) -> {
+        for (EntityCollision event : callbacks) {
+            event.onCollide(executor, element, entity, impulse);
         }
     });
 
@@ -36,6 +43,11 @@ public class ElementCollisionEvents {
     @FunctionalInterface
     public interface BlockCollision {
         void onCollide(Executor executor, PhysicsElement element, BlockRigidBody block, float impulse);
+    }
+
+    @FunctionalInterface
+    public interface EntityCollision {
+        void onCollide(Executor executor, PhysicsElement element, EntityRigidBody entity, float impulse);
     }
 
     @FunctionalInterface

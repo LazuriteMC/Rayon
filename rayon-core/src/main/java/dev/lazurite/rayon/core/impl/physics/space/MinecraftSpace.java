@@ -12,6 +12,7 @@ import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.EntityRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.environment.EntityManager;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
@@ -227,6 +228,18 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
             PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
             ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(thread, element1, element2, impulse);
+
+        /* Entity on Element */
+        } else if (event.getObjectA() instanceof EntityRigidBody && event.getObjectB() instanceof ElementRigidBody) {
+            EntityRigidBody entity = (EntityRigidBody) event.getObjectA();
+            PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
+            ElementCollisionEvents.ENTITY_COLLISION.invoker().onCollide(thread, element, entity, impulse);
+
+        /* Element on Entity */
+        } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof EntityRigidBody) {
+            EntityRigidBody entity = (EntityRigidBody) event.getObjectB();
+            PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
+            ElementCollisionEvents.ENTITY_COLLISION.invoker().onCollide(thread, element, entity, impulse);
 
         /* Block on Element */
         } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {
