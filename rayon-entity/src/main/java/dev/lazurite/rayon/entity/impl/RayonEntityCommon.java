@@ -83,6 +83,8 @@ public class RayonEntityCommon implements ModInitializer {
 							rigidBody.setAngularVelocity(angularVelocity);
 							rigidBody.activate();
 						}
+
+						((EntityPhysicsElement) entity).sendMovementUpdate();
 					}
 				}
 			});
