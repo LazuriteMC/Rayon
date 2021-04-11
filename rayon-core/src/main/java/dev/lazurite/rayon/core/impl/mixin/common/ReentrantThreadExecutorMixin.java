@@ -6,6 +6,9 @@ import net.minecraft.util.thread.ReentrantThreadExecutor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+/**
+ * Ducks {@link ThreadStorage} into all {@link ReentrantThreadExecutor} objects.
+ */
 @Mixin(ReentrantThreadExecutor.class)
 public class ReentrantThreadExecutorMixin implements ThreadStorage {
     @Unique private PhysicsThread thread;

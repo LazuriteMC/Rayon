@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.impl.mixin.client.render;
 
-import dev.lazurite.rayon.core.impl.util.debug.DebugManager;
+import dev.lazurite.rayon.core.impl.physics.debug.DebugManager;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * This enables the {@link DebugManager} to render.
+ */
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
     @Shadow private ClientWorld world;

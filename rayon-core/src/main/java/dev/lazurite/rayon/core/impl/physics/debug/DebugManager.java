@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.util.debug;
+package dev.lazurite.rayon.core.impl.physics.debug;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.bullet.util.DebugShapeFactory;
@@ -8,7 +8,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.core.impl.mixin.client.render.WorldRendererMixin;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.body.EntityRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
 import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
@@ -106,9 +105,6 @@ public final class DebugManager {
         if (body instanceof ElementRigidBody) {
             position = ((ElementRigidBody) body).getElement().getPhysicsLocation(new Vector3f(), tickDelta);
             rotation = ((ElementRigidBody) body).getElement().getPhysicsRotation(new Quaternion(), tickDelta);
-        } else if (body instanceof EntityRigidBody) {
-            position = ((EntityRigidBody) body).getDebugFrame().getLocation(new Vector3f(), tickDelta);
-            rotation = ((EntityRigidBody) body).getDebugFrame().getRotation(new Quaternion(), tickDelta);
         } else {
             position = body.getPhysicsLocation(new Vector3f());
             rotation = body.getPhysicsRotation(new Quaternion());

@@ -9,10 +9,10 @@
     "common.WorldMixin"
   ],
   "client": [
-    "client.ClientPlayNetworkHandlerMixin",
+    "client.event.ClientPlayNetworkHandlerMixin",
     "client.input.KeyboardMixin",
     "client.render.WorldRendererMixin",
-    "client.world.ClientWorldMixin"
+    "client.event.ClientWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

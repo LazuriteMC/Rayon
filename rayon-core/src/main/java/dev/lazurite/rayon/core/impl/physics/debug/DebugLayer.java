@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.util.debug;
+package dev.lazurite.rayon.core.impl.physics.debug;
 
 import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
 

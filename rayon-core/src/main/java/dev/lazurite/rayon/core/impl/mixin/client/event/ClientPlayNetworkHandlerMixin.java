@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.mixin.client;
+package dev.lazurite.rayon.core.impl.mixin.client.event;
 
 import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
 import net.fabricmc.api.EnvType;

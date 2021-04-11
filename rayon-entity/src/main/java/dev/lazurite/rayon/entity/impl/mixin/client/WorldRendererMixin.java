@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.entity.impl.mixin.client.render;
+package dev.lazurite.rayon.entity.impl.mixin.client;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
@@ -6,12 +6,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 /**

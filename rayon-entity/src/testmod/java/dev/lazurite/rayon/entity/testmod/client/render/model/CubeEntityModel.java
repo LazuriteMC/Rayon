@@ -12,9 +12,9 @@ import net.minecraft.client.util.math.MatrixStack;
 public class CubeEntityModel extends EntityModel<CubeEntity> {
     private final ModelPart base;
 
-    public CubeEntityModel() {
+    public CubeEntityModel(int size) {
         base = new ModelPart(this, 0, 0);
-        base.addCuboid(0, 0, 0, 8, 8, 8);
+        base.addCuboid(0, 0, 0, size, size, size);
     }
 
     @Override

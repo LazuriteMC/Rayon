@@ -20,10 +20,11 @@ import net.minecraft.util.math.Quaternion;
 @Environment(EnvType.CLIENT)
 public class CubeEntityRenderer extends EntityRenderer<CubeEntity> {
     public static final Identifier texture = new Identifier(EntityTestMod.MODID, "textures/entity/cube.png");
-    private final CubeEntityModel model = new CubeEntityModel();
+    public final CubeEntityModel model;
 
-    public CubeEntityRenderer(EntityRenderDispatcher dispatcher) {
+    public CubeEntityRenderer(EntityRenderDispatcher dispatcher, CubeEntityModel model) {
         super(dispatcher);
+        this.model = model;
         this.shadowRadius = 0.2F;
     }
 

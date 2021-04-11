@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.physics.util.supplier;
+package dev.lazurite.rayon.core.impl.util.supplier.world;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

@@ -56,7 +56,7 @@ public final class TerrainManager {
                 BlockPos blockPos = blockInfo.getBlockPos();
                 BlockState blockState = blockInfo.getBlockState();
 
-                float friction = 1.0f;
+                float friction = 0.5f; // 1.0f
                 float restitution = 0.25f;
                 boolean collidable = !blockState.getBlock().canMobSpawnInside();
 

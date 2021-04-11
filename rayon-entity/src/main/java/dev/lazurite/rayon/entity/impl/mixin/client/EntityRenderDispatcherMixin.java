@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.entity.impl.mixin.client.render;
+package dev.lazurite.rayon.entity.impl.mixin.client;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;

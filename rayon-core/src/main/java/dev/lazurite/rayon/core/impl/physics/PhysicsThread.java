@@ -4,10 +4,10 @@ import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.physics.util.supplier.WorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.entity.EntitySupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.WorldSupplier;
 import dev.lazurite.rayon.core.impl.physics.util.thread.Pausable;
 import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
-import dev.lazurite.rayon.core.impl.util.RayonException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
@@ -27,8 +27,10 @@ import java.util.concurrent.Executor;
  */
 public class PhysicsThread extends Thread implements Executor, Pausable {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
-    private final Executor executor;
+    private final Executor parentExecutor;
+    private final Thread parentThread;
     private final WorldSupplier worldSupplier;
+    public volatile Throwable throwable;
     public volatile boolean running = true;
 
     public static PhysicsThread get(ReentrantThreadExecutor<? extends Runnable> executor) {
@@ -39,16 +41,15 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
         return MinecraftSpace.get(world).getThread();
     }
 
-    public PhysicsThread(Executor executor, WorldSupplier worldSupplier, String name) {
-        this.executor = executor;
+    public PhysicsThread(Executor parentExecutor, Thread parentThread, WorldSupplier worldSupplier, String name) {
+        this.parentExecutor = parentExecutor;
+        this.parentThread = parentThread;
         this.worldSupplier = worldSupplier;
 
         this.setName(name);
         this.setUncaughtExceptionHandler((thread, throwable) -> {
             this.running = false;
-            getThreadExecutor().execute(() -> {
-                throw new RayonException("Uncaught exception on " + getName() + ": " + throwable + ".", throwable);
-            });
+            this.throwable = throwable;
         });
 
         RayonCoreCommon.LOGGER.info("Starting " + getName());
@@ -87,13 +88,23 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     }
 
     /**
-     * Gets the original executor. Useful for returning to the main thread,
+     * Gets the parent executor. Useful for returning to the main thread,
      * especially server-side where {@link MinecraftServer} isn't always readily
      * available.
-     * @return the original {@link Executor}
+     * @return the original {@link Executor} object
      */
-    public Executor getThreadExecutor() {
-        return this.executor;
+    public Executor getParentExecutor() {
+        return this.parentExecutor;
+    }
+
+    /**
+     * Gets the parent thread. This is useful for checking whether or not
+     * a method is executing on this thread.
+     * @see EntitySupplier
+     * @return the parent {@link Thread} object
+     */
+    public Thread getParentThread() {
+        return this.parentThread;
     }
 
     /**

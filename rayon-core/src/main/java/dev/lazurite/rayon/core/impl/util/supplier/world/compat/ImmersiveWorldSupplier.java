@@ -1,8 +1,8 @@
-package dev.lazurite.rayon.core.impl.util.compat;
+package dev.lazurite.rayon.core.impl.util.supplier.world.compat;
 
 import com.qouteall.immersive_portals.ClientWorldLoader;
-import dev.lazurite.rayon.core.impl.physics.util.supplier.ClientWorldSupplier;
-import dev.lazurite.rayon.core.impl.physics.util.supplier.WorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.ClientWorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.WorldSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

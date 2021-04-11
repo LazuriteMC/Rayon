@@ -1,17 +1,13 @@
 package dev.lazurite.rayon.core.impl;
 
 import com.google.common.collect.Maps;
-import com.jme3.bounding.BoundingBox;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.util.BlockProperties;
-import dev.lazurite.rayon.core.impl.physics.util.supplier.ServerWorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.ServerWorldSupplier;
 import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
-import dev.lazurite.rayon.core.impl.util.NativeLoader;
+import dev.lazurite.rayon.core.impl.physics.util.NativeLoader;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -42,28 +38,25 @@ public class RayonCoreCommon implements ModInitializer {
 		NativeLoader.load();
 		loadBlockProps();
 
-		/* Thread Events */
 		AtomicReference<PhysicsThread> thread = new AtomicReference<>();
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> thread.get().destroy());
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
-			thread.set(new PhysicsThread(server, new ServerWorldSupplier(server), "Server Physics Thread"));
+			thread.set(new PhysicsThread(server, Thread.currentThread(), new ServerWorldSupplier(server), "Server Physics Thread"));
 			((ThreadStorage) server).setPhysicsThread(thread.get());
 		});
 
-		/* World Events */
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (thread.get().throwable != null) {
+				throw new RuntimeException(thread.get().throwable);
+			}
+		});
+
 		ServerTickEvents.START_WORLD_TICK.register(world -> {
 			MinecraftSpace space = MinecraftSpace.get(world);
-			space.getEntityManager().tick();
 
-			space.getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody ->
-				rigidBody.getFrame().from(rigidBody.getFrame(),
-						rigidBody.getPhysicsLocation(new Vector3f()),
-						rigidBody.getPhysicsRotation(new Quaternion()),
-						rigidBody.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox())));
-
-			if (!space.isEmpty() || space.isInPresim()) {
-				thread.get().execute(space::step);
+			if (space.canStep()) {
+				space.step();
 			}
 		});
 

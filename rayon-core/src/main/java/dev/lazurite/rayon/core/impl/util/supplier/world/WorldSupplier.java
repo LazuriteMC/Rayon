@@ -1,7 +1,7 @@
-package dev.lazurite.rayon.core.impl.physics.util.supplier;
+package dev.lazurite.rayon.core.impl.util.supplier.world;
 
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.util.compat.ImmersiveWorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.compat.ImmersiveWorldSupplier;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;

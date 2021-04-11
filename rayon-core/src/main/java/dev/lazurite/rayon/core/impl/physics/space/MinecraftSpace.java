@@ -1,10 +1,12 @@
 package dev.lazurite.rayon.core.impl.physics.space;
 
 import com.google.common.collect.Lists;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
@@ -12,11 +14,11 @@ import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.body.EntityRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.environment.EntityManager;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
+import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.util.supplier.entity.EntitySupplier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -44,11 +46,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private static final int MAX_PRESIM_STEPS = 10;
 
     private final TerrainManager terrainManager;
-    private final EntityManager entityManager;
     private final PhysicsThread thread;
     private final World world;
     private int presimSteps;
-    private boolean stepping;
+    private volatile boolean stepping;
 
     private float airDensity;
     private float waterDensity;
@@ -69,7 +70,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.thread = thread;
         this.world = world;
         this.terrainManager = new TerrainManager(this);
-        this.entityManager = new EntityManager(this);
         this.addCollisionListener(this);
 
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
@@ -106,31 +106,60 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         /* World Step Event */
         PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
-        /* Step and Fluid Resistance */
-        getRigidBodiesByClass(ElementRigidBody.class).forEach(body -> {
-            body.getElement().step(this);
+        getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
+            /* Frame Update */
+            rigidBody.getFrame().from(rigidBody.getFrame(),
+                    rigidBody.getPhysicsLocation(new Vector3f()),
+                    rigidBody.getPhysicsRotation(new Quaternion()),
+                    rigidBody.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
 
-            if (body.shouldDoFluidResistance()) {
-                body.applyDrag();
-            }
+            /* Entity Collisions */
+            BoundingBox box = rigidBody.boundingBox(new BoundingBox());
+            Vector3f location = rigidBody.getPhysicsLocation(new Vector3f()).subtract(new Vector3f(0, -box.getYExtent(), 0));
+            float mass = rigidBody.getMass();
 
-            /* Environment Loading */
-            if (body.shouldDoTerrainLoading()) {
-                Vector3f pos = body.getPhysicsLocation(new Vector3f());
-                Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(body.getEnvironmentLoadDistance());
-                terrainManager.load(body, box);
-            }
+            EntitySupplier.getInsideOf(rigidBody).forEach(entity -> {
+                Vector3f entityPos = VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength(), 0));
+                Vector3f distance = location.subtract(entityPos);
+                Vector3f force = distance.clone().multLocal(1 / distance.length()).multLocal(mass).multLocal(new Vector3f(1, 0, 1));
+                rigidBody.applyCentralImpulse(force);
+            });
         });
 
-        terrainManager.purge();
+        getThread().execute(() -> {
+            /* Step and Fluid Resistance */
+            getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
+                rigidBody.getElement().step(this);
 
-        /* Step Simulation */
-        if (presimSteps > MAX_PRESIM_STEPS) {
-            update(1/20f, 5);
-        } else ++presimSteps;
+                if (rigidBody.shouldDoFluidResistance()) {
+                    float dragCoefficient = rigidBody.getDragCoefficient();
+                    float area = (float) Math.pow(rigidBody.boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
+                    float k = (getAirDensity() * dragCoefficient * area) / 2.0f;
+                    Vector3f force = new Vector3f().set(rigidBody.getLinearVelocity(new Vector3f())).multLocal(-rigidBody.getLinearVelocity(new Vector3f()).lengthSquared()).multLocal(k);
 
-        distributeEvents();
-        stepping = false;
+                    if (Float.isFinite(force.length())) {
+                        rigidBody.applyCentralForce(force);
+                    }
+                }
+
+                /* Environment Loading */
+                if (rigidBody.shouldDoTerrainLoading()) {
+                    Vector3f pos = rigidBody.getPhysicsLocation(new Vector3f());
+                    Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance());
+                    terrainManager.load(rigidBody, box);
+                }
+            });
+
+            terrainManager.purge();
+
+            /* Step Simulation */
+            if (presimSteps > MAX_PRESIM_STEPS) {
+                update(1 / 20f, 5);
+            } else ++presimSteps;
+
+            distributeEvents();
+            stepping = false;
+        });
     }
 
     public void load(PhysicsElement element) {
@@ -151,11 +180,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     public boolean isServer() {
-        return getThread().getThreadExecutor() instanceof MinecraftServer;
+        return getThread().getParentExecutor() instanceof MinecraftServer;
     }
 
     public boolean isStepping() {
         return this.stepping;
+    }
+
+    public boolean canStep() {
+        return !isStepping() && (isInPresim() || !isEmpty());
     }
 
     public boolean isInPresim() {
@@ -210,17 +243,13 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return this.terrainManager;
     }
 
-    public EntityManager getEntityManager() {
-        return this.entityManager;
-    }
-
     /**
      * Trigger all collision events (e.g. block/element or element/element).
      * @param event the event context
      */
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        Executor thread = getThread().getThreadExecutor();
+        Executor thread = getThread().getParentExecutor();
         float impulse = event.getAppliedImpulse();
 
         /* Element on Element */
@@ -228,18 +257,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
             PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
             ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(thread, element1, element2, impulse);
-
-        /* Entity on Element */
-        } else if (event.getObjectA() instanceof EntityRigidBody && event.getObjectB() instanceof ElementRigidBody) {
-            EntityRigidBody entity = (EntityRigidBody) event.getObjectA();
-            PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
-            ElementCollisionEvents.ENTITY_COLLISION.invoker().onCollide(thread, element, entity, impulse);
-
-        /* Element on Entity */
-        } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof EntityRigidBody) {
-            EntityRigidBody entity = (EntityRigidBody) event.getObjectB();
-            PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
-            ElementCollisionEvents.ENTITY_COLLISION.invoker().onCollide(thread, element, entity, impulse);
 
         /* Block on Element */
         } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {

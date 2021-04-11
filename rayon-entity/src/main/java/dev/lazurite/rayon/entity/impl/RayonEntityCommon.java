@@ -1,10 +1,13 @@
 package dev.lazurite.rayon.entity.impl;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.util.supplier.player.ClientPlayerSupplier;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
@@ -56,6 +59,29 @@ public class RayonEntityCommon implements ModInitializer {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 				space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
 			}
+		});
+
+		PhysicsSpaceEvents.STEP.register(space -> {
+			space.getRigidBodiesByClass(ElementRigidBody.class).stream().filter(rigidBody -> rigidBody.getElement() instanceof EntityPhysicsElement).forEach(rigidBody -> {
+				EntityPhysicsElement element = (EntityPhysicsElement) rigidBody.getElement();
+
+				/* Movement Updates */
+				if (rigidBody.isActive() && rigidBody.needsMovementUpdate()) {
+					if ((space.isServer() && rigidBody.getPriorityPlayer() == null) || ClientPlayerSupplier.get().equals(rigidBody.getPriorityPlayer())) {
+						element.sendMovementUpdate();
+					}
+				}
+
+				/* Server Properties */
+				if (space.isServer() && rigidBody.arePropertiesDirty()) {
+					element.sendProperties();
+				}
+
+				/* Set the entity's position */
+				Vector3f location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
+				float offset = rigidBody.getFrame().getBox(new BoundingBox(), 1.0f).getYExtent();
+				element.asEntity().updatePosition(location.x, location.y - offset, location.z);
+			});
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(MOVEMENT_UPDATE, (server, player, handler, buf, sender) -> {

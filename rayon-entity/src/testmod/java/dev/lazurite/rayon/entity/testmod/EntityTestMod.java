@@ -23,20 +23,33 @@ public class EntityTestMod implements ModInitializer {
     public static final String MODID = "entitytestmod";
     public static final Logger LOGGER = LogManager.getLogger("Rayon Entity Test Mod");
 
-    public static EntityType<CubeEntity> CUBE_ENTITY;
+    public static EntityType<CubeEntity> SMOL_CUBE_ENTITY;
+    public static EntityType<CubeEntity> BIG_CUBE_ENTITY;
     public static WandItem WAND_ITEM;
     public static Block BLUE_BLOCK;
 
     @Override
     public void onInitialize() {
-        CUBE_ENTITY = Registry.register(
+        SMOL_CUBE_ENTITY = Registry.register(
                 Registry.ENTITY_TYPE,
-                new Identifier(MODID, "cube_entity"),
+                new Identifier(MODID, "smol_cube_entity"),
                 FabricEntityTypeBuilder.createLiving()
                         .entityFactory(CubeEntity::new)
                         .spawnGroup(SpawnGroup.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
                         .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
+                        .trackRangeBlocks(80)
+                        .build()
+        );
+
+        BIG_CUBE_ENTITY= Registry.register(
+                Registry.ENTITY_TYPE,
+                new Identifier(MODID, "big_cube_entity"),
+                FabricEntityTypeBuilder.createLiving()
+                        .entityFactory(CubeEntity::new)
+                        .spawnGroup(SpawnGroup.MISC)
+                        .defaultAttributes(LivingEntity::createLivingAttributes)
+                        .dimensions(EntityDimensions.fixed(1.0f, 1.0f))
                         .trackRangeBlocks(80)
                         .build()
         );

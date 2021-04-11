@@ -1,16 +1,12 @@
 package dev.lazurite.rayon.core.impl;
 
-import com.jme3.bounding.BoundingBox;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.physics.util.supplier.ClientWorldSupplier;
-import dev.lazurite.rayon.core.impl.physics.util.supplier.WorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.ClientWorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.WorldSupplier;
 import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
-import dev.lazurite.rayon.core.impl.util.compat.ImmersiveWorldSupplier;
+import dev.lazurite.rayon.core.impl.util.supplier.world.compat.ImmersiveWorldSupplier;
 import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import net.fabricmc.api.ClientModInitializer;
@@ -29,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class RayonCoreClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        /* Thread Events */
         AtomicReference<PhysicsThread> thread = new AtomicReference<>();
         BetterClientLifecycleEvents.DISCONNECT.register((client, world) -> thread.get().destroy());
 
@@ -37,23 +32,21 @@ public class RayonCoreClient implements ClientModInitializer {
             WorldSupplier supplier = RayonCoreCommon.isImmersivePortalsPresent() ?
                     new ImmersiveWorldSupplier(client) : new ClientWorldSupplier(client);
 
-            thread.set(new PhysicsThread(client, supplier, "Client Physics Thread"));
+            thread.set(new PhysicsThread(client, Thread.currentThread(), supplier, "Client Physics Thread"));
             ((ThreadStorage) client).setPhysicsThread(thread.get());
         });
 
-        /* World Events */
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (thread.get() != null && thread.get().throwable != null) {
+                throw new RuntimeException(thread.get().throwable);
+            }
+        });
+
         ClientTickEvents.START_WORLD_TICK.register(world -> {
             MinecraftSpace space = MinecraftSpace.get(world);
-            space.getEntityManager().tick();
 
-            space.getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody ->
-                rigidBody.getFrame().from(rigidBody.getFrame(),
-                        rigidBody.getPhysicsLocation(new Vector3f()),
-                        rigidBody.getPhysicsRotation(new Quaternion()),
-                        rigidBody.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox())));
-
-            if (!space.isEmpty() || space.isInPresim()) {
-                thread.get().execute(space::step);
+            if (space.canStep()) {
+                space.step();
             }
         });
 

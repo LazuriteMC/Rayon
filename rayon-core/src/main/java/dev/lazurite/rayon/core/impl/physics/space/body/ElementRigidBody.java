@@ -9,10 +9,13 @@ import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.util.debug.DebugLayer;
+import dev.lazurite.rayon.core.impl.physics.debug.DebugLayer;
 import dev.lazurite.rayon.core.impl.util.math.Frame;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.MinecartEntity;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -42,7 +45,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
     private boolean propertiesDirty;
     private int envLoadDistance;
     private float dragCoefficient;
-    public int movementCooldown;
 
     private boolean doFluidResistance = true;
     private boolean doTerrainLoading = true;
@@ -137,17 +139,8 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return false;
     }
 
-    public void applyDrag() {
-        if (shouldDoFluidResistance()) {
-            float dragCoefficient = getDragCoefficient();
-            float area = (float) Math.pow(boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
-            float k = (space.getAirDensity() * dragCoefficient * area) / 2.0f;
-
-            applyCentralForce(new Vector3f()
-                    .set(getLinearVelocity(new Vector3f()))
-                    .multLocal(-getLinearVelocity(new Vector3f()).lengthSquared())
-                    .multLocal(k));
-        }
+    public static boolean canCollideWith(Entity entity) {
+        return (entity instanceof BoatEntity || entity instanceof MinecartEntity || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement);
     }
 
     /* Property Setters */
