@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(Portal.class)
+@Mixin(value = Portal.class, remap = false)
 public class PortalMixin {
     @Shadow @Nullable public Quaternion rotation;
 

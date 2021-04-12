@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(McHelper.class)
+@Mixin(value = McHelper.class, remap = false)
 public abstract class McHelperMixin {
     @Inject(method = "setPosAndLastTickPos", at = @At("HEAD"))
     private static void setPosAndLastTickPos(Entity entity, Vec3d pos, Vec3d lastTickPos, CallbackInfo info) {

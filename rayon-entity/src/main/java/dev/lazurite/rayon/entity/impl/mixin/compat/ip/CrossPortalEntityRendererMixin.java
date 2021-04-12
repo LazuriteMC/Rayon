@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Pseudo
 @Environment(EnvType.CLIENT)
-@Mixin(CrossPortalEntityRenderer.class)
+@Mixin(value = CrossPortalEntityRenderer.class, remap = false)
 public class CrossPortalEntityRendererMixin {
     @Redirect(
             method = "renderEntity",
