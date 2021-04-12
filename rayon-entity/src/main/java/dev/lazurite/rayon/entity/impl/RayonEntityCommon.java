@@ -68,7 +68,7 @@ public class RayonEntityCommon implements ModInitializer {
 				/* Movement Updates */
 				if (rigidBody.isActive() && rigidBody.needsMovementUpdate()) {
 					if ((space.isServer() && rigidBody.getPriorityPlayer() == null) || ClientPlayerSupplier.get().equals(rigidBody.getPriorityPlayer())) {
-						element.sendMovementUpdate();
+						element.sendMovementUpdate(false);
 					}
 				}
 
@@ -89,6 +89,7 @@ public class RayonEntityCommon implements ModInitializer {
 
 			int entityId = buf.readInt();
 			RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+			boolean reset = buf.readBoolean();
 
 			Quaternion rotation = QuaternionHelper.fromBuffer(buf);
 			Vector3f location = VectorHelper.fromBuffer(buf);
@@ -108,9 +109,13 @@ public class RayonEntityCommon implements ModInitializer {
 							rigidBody.setLinearVelocity(linearVelocity);
 							rigidBody.setAngularVelocity(angularVelocity);
 							rigidBody.activate();
+
+							if (reset) {
+								rigidBody.scheduleFrameReset();
+							}
 						}
 
-						((EntityPhysicsElement) entity).sendMovementUpdate();
+						((EntityPhysicsElement) entity).sendMovementUpdate(false);
 					}
 				}
 			});

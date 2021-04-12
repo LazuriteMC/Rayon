@@ -1,10 +1,12 @@
 package dev.lazurite.rayon.core.impl.physics.space.body;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.Debuggable;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.TerrainLoading;
 import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
@@ -39,12 +41,13 @@ import org.jetbrains.annotations.Nullable;
  * </ul>
  * @see MinecraftSpace
  */
-public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody {
+public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading, Debuggable {
     private final PhysicsElement element;
     private final MinecraftSpace space;
     private boolean propertiesDirty;
     private int envLoadDistance;
     private float dragCoefficient;
+    private boolean shouldResetFrame;
 
     private boolean doFluidResistance = true;
     private boolean doTerrainLoading = true;
@@ -108,14 +111,34 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return this.propertiesDirty;
     }
 
+    public Frame updateFrame() {
+        getFrame().from(getFrame(),
+                getPhysicsLocation(new Vector3f()),
+                getPhysicsRotation(new Quaternion()),
+                getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
+
+        if (shouldResetFrame) {
+            getFrame().reset();
+            this.shouldResetFrame = false;
+        }
+
+        return getFrame();
+    }
+
+    public void scheduleFrameReset() {
+        this.shouldResetFrame = true;
+    }
+
     public Frame getFrame() {
         return this.frame;
     }
 
+    @Override
     public Clump getClump() {
         return this.clump;
     }
 
+    @Override
     public void setClump(Clump clump) {
         this.clump = clump;
     }
@@ -168,6 +191,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setPropertiesDirty(true);
     }
 
+    @Override
     public void setEnvironmentLoadDistance(int envLoadDistance) {
         this.envLoadDistance = envLoadDistance;
         this.setPropertiesDirty(true);
@@ -178,6 +202,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         this.setPropertiesDirty(true);
     }
 
+    @Override
     public void setDoTerrainLoading(boolean doTerrainLoading) {
         this.doTerrainLoading = doTerrainLoading;
         this.setPropertiesDirty(true);
@@ -208,6 +233,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return dragCoefficient;
     }
 
+    @Override
     public int getEnvironmentLoadDistance() {
         return this.envLoadDistance;
     }
@@ -216,6 +242,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements DebuggableBody
         return this.doFluidResistance;
     }
 
+    @Override
     public boolean shouldDoTerrainLoading() {
         return this.doTerrainLoading;
     }

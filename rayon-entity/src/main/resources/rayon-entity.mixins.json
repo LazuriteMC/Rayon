@@ -6,11 +6,14 @@
   "mixins": [
     "common.EntityMixin",
     "common.EntityTrackerEntryMixin",
-    "common.LivingEntityMixin"
+    "common.LivingEntityMixin",
+    "compat.ip.McHelperMixin",
+    "compat.ip.PortalMixin"
   ],
   "client": [
     "client.EntityRenderDispatcherMixin",
-    "client.WorldRendererMixin"
+    "client.WorldRendererMixin",
+    "compat.ip.CrossPortalEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

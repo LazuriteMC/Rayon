@@ -5,7 +5,6 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.util.math.Frame;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.impl.RayonEntityCommon;
@@ -23,9 +22,20 @@ import java.util.UUID;
 public interface EntityPhysicsElement extends PhysicsElement {
     @Override
     default void reset() {
-        getRigidBody().setPhysicsLocation(VectorHelper.vec3dToVector3f(asEntity().getPos().add(0, getRigidBody().boundingBox(new BoundingBox()).getYExtent(), 0)));
-        getRigidBody().setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -asEntity().yaw));
-        getRigidBody().getFrame().from(new Frame(getRigidBody().getPhysicsLocation(new Vector3f()), getRigidBody().getPhysicsRotation(new Quaternion()), getRigidBody().boundingBox(new BoundingBox())));
+        Vector3f location = VectorHelper.vec3dToVector3f(asEntity().getPos().add(0, getRigidBody().boundingBox(new BoundingBox()).getYExtent(), 0));
+
+        if (Float.isFinite(location.lengthSquared())) {
+            getRigidBody().setPhysicsLocation(location);
+            getRigidBody().setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -asEntity().yaw));
+            getRigidBody().getFrame().set(
+                    getRigidBody().getPhysicsLocation(new Vector3f()),
+                    getRigidBody().getPhysicsLocation(new Vector3f()),
+                    getRigidBody().getPhysicsRotation(new Quaternion()),
+                    getRigidBody().getPhysicsRotation(new Quaternion()),
+                    getRigidBody().boundingBox(new BoundingBox()),
+                    getRigidBody().boundingBox(new BoundingBox())
+            );
+        }
     }
 
     /**
@@ -40,11 +50,12 @@ public interface EntityPhysicsElement extends PhysicsElement {
      * Sends a movement update to either the client or the server depending
      * on which side the entity's world is on.
      */
-    default void sendMovementUpdate() {
+    default void sendMovementUpdate(boolean reset) {
         PacketByteBuf buf = PacketByteBufs.create();
 
         buf.writeInt(asEntity().getEntityId());
         buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
+        buf.writeBoolean(reset);
 
         QuaternionHelper.toBuffer(buf, getRigidBody().getPhysicsRotation(new Quaternion()));
         VectorHelper.toBuffer(buf, getRigidBody().getPhysicsLocation(new Vector3f()));

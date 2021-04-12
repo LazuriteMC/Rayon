@@ -12,7 +12,7 @@ import dev.lazurite.rayon.core.impl.physics.debug.DebugLayer;
  * @see DebugManager
  * @see DebugLayer
  */
-public interface DebuggableBody {
+public interface Debuggable {
     default Vector3f getOutlineColor() {
         return new Vector3f(1.0f, 1.0f, 1.0f);
     }

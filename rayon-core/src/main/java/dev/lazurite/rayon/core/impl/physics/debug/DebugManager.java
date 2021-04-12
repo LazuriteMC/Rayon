@@ -8,7 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.core.impl.mixin.client.render.WorldRendererMixin;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.Debuggable;
 import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
@@ -33,7 +33,7 @@ import java.nio.FloatBuffer;
  * something new on the screen in addition to the previous layer's contents.<br>
  * The two {@link DebugLayer}s currently available are {@link DebugLayer#BODY}
  * and {@link DebugLayer#BLOCK}. Since both {@link ElementRigidBody} and
- * {@link BlockRigidBody} are {@link DebuggableBody}s, they can both be rendered
+ * {@link BlockRigidBody} are {@link Debuggable}s, they can both be rendered
  * to the screen as debug objects with their own respective layers and colors.
  *
  * @see DebugLayer
@@ -78,7 +78,7 @@ public final class DebugManager {
     }
 
     public void render(World world, Camera camera, float tickDelta) {
-        for (DebuggableBody body : MinecraftSpace.get(world).getRigidBodiesByClass(DebuggableBody.class)) {
+        for (Debuggable body : MinecraftSpace.get(world).getRigidBodiesByClass(Debuggable.class)) {
             if (body instanceof PhysicsRigidBody && body.getDebugLayer().ordinal() <= debugLayer.ordinal()) {
                 if (VectorHelper.vector3fToVec3d(((PhysicsRigidBody) body).getPhysicsLocation(new Vector3f()))
                         .distanceTo(camera.getPos()) < MinecraftClient.getInstance().options.viewDistance * 16) {
@@ -96,8 +96,8 @@ public final class DebugManager {
 
         FloatBuffer buffer = (FloatBuffer) DebugShapeFactory.getDebugTriangles(body.getCollisionShape(), 0).rewind();
         BufferBuilder builder = Tessellator.getInstance().getBuffer();
-        float alpha = ((DebuggableBody) body).getOutlineAlpha();
-        Vector3f color = ((DebuggableBody) body).getOutlineColor();
+        float alpha = ((Debuggable) body).getOutlineAlpha();
+        Vector3f color = ((Debuggable) body).getOutlineColor();
 
         Vector3f position;
         Quaternion rotation;

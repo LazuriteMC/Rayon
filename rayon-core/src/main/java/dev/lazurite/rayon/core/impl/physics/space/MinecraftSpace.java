@@ -6,7 +6,6 @@ import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
@@ -14,9 +13,11 @@ import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.TerrainLoading;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
+import dev.lazurite.rayon.core.impl.util.math.BoxHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.core.impl.util.supplier.entity.EntitySupplier;
 import net.minecraft.server.MinecraftServer;
@@ -27,6 +28,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.function.BooleanSupplier;
 
 /**
  * This is the physics simulation environment for all {@link BlockRigidBody}s and {@link ElementRigidBody}s. It runs
@@ -97,69 +99,76 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * Additionally, none of the above steps execute when either the world is empty
      * (no {@link PhysicsRigidBody}s) or when the game is paused.
      *
+     * @param shouldStep whether or not to fully step the simulation
      * @see TerrainManager
      * @see PhysicsSpaceEvents
      */
-    public void step() {
-        stepping = true;
+    public void step(BooleanSupplier shouldStep) {
+        if (shouldStep.getAsBoolean()) {
+            stepping = true;
 
-        /* World Step Event */
-        PhysicsSpaceEvents.STEP.invoker().onStep(this);
+            /* World Step Event */
+            PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
-        getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
-            /* Frame Update */
-            rigidBody.getFrame().from(rigidBody.getFrame(),
-                    rigidBody.getPhysicsLocation(new Vector3f()),
-                    rigidBody.getPhysicsRotation(new Quaternion()),
-                    rigidBody.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
-
-            /* Entity Collisions */
-            BoundingBox box = rigidBody.boundingBox(new BoundingBox());
-            Vector3f location = rigidBody.getPhysicsLocation(new Vector3f()).subtract(new Vector3f(0, -box.getYExtent(), 0));
-            float mass = rigidBody.getMass();
-
-            EntitySupplier.getInsideOf(rigidBody).forEach(entity -> {
-                Vector3f entityPos = VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength(), 0));
-                Vector3f distance = location.subtract(entityPos);
-                Vector3f force = distance.clone().multLocal(1 / distance.length()).multLocal(mass).multLocal(new Vector3f(1, 0, 1));
-                rigidBody.applyCentralImpulse(force);
-            });
-        });
-
-        getThread().execute(() -> {
-            /* Step and Fluid Resistance */
             getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
-                rigidBody.getElement().step(this);
+                /* Frame Update */
+                rigidBody.updateFrame();
 
-                if (rigidBody.shouldDoFluidResistance()) {
-                    float dragCoefficient = rigidBody.getDragCoefficient();
-                    float area = (float) Math.pow(rigidBody.boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
-                    float k = (getAirDensity() * dragCoefficient * area) / 2.0f;
-                    Vector3f force = new Vector3f().set(rigidBody.getLinearVelocity(new Vector3f())).multLocal(-rigidBody.getLinearVelocity(new Vector3f()).lengthSquared()).multLocal(k);
+                /* Entity Collisions */
+                BoundingBox box = rigidBody.boundingBox(new BoundingBox());
+                Vector3f location = rigidBody.getPhysicsLocation(new Vector3f()).subtract(new Vector3f(0, -box.getYExtent(), 0));
+                float mass = rigidBody.getMass();
 
-                    if (Float.isFinite(force.length())) {
-                        rigidBody.applyCentralForce(force);
-                    }
-                }
+                EntitySupplier.getInsideOf(rigidBody).forEach(entity -> {
+                    Vector3f entityPos = VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength(), 0));
+                    Vector3f normal = location.subtract(entityPos).multLocal(new Vector3f(1, 0, 1)).normalize();
 
-                /* Environment Loading */
-                if (rigidBody.shouldDoTerrainLoading()) {
-                    Vector3f pos = rigidBody.getPhysicsLocation(new Vector3f());
-                    Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance());
-                    terrainManager.load(rigidBody, box);
-                }
+                    Box intersection = entity.getBoundingBox().intersection(BoxHelper.bulletToMinecraft(box));
+                    Vector3f force = normal.clone().multLocal((float) intersection.getAverageSideLength() / (float) BoxHelper.bulletToMinecraft(box).getAverageSideLength())
+                            .multLocal(mass).multLocal(new Vector3f(1, 0, 1));
+                    rigidBody.applyCentralImpulse(force);
+                });
             });
 
-            terrainManager.purge();
+            getThread().execute(() -> {
+                /* Step and Fluid Resistance */
+                getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
+                    rigidBody.getElement().step(this);
 
-            /* Step Simulation */
-            if (presimSteps > MAX_PRESIM_STEPS) {
-                update(1 / 20f, 5);
-            } else ++presimSteps;
+                    if (rigidBody.shouldDoFluidResistance()) {
+                        float dragCoefficient = rigidBody.getDragCoefficient();
+                        float area = (float) Math.pow(rigidBody.boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
+                        float k = (getAirDensity() * dragCoefficient * area) / 2.0f;
+                        Vector3f force = new Vector3f().set(rigidBody.getLinearVelocity(new Vector3f())).multLocal(-rigidBody.getLinearVelocity(new Vector3f()).lengthSquared()).multLocal(k);
 
-            distributeEvents();
-            stepping = false;
-        });
+                        if (Float.isFinite(force.length())) {
+                            rigidBody.applyCentralForce(force);
+                        }
+                    }
+                });
+
+                getRigidBodiesByClass(TerrainLoading.class).forEach(terrainBody -> {
+                    if (terrainBody.shouldDoTerrainLoading()) {
+                        Vector3f pos = ((PhysicsRigidBody) terrainBody).getPhysicsLocation(new Vector3f());
+                        Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(terrainBody.getEnvironmentLoadDistance());
+                        terrainManager.load(terrainBody, box);
+                    }
+                });
+
+                terrainManager.purge();
+
+                /* Step Simulation */
+                if (presimSteps > MAX_PRESIM_STEPS) {
+                    update(1 / 20f, 5);
+                } else ++presimSteps;
+
+                distributeEvents();
+                stepping = false;
+            });
+        } else {
+            // If we made it here, it means we're skipping steps due to poor performance.
+            getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
+        }
     }
 
     public void load(PhysicsElement element) {

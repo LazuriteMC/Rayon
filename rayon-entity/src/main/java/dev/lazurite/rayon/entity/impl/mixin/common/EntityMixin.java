@@ -41,7 +41,6 @@ public abstract class EntityMixin {
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
     public void move(MovementType type, Vec3d movement, CallbackInfo info) {
         if (this instanceof EntityPhysicsElement) {
-//            this.adjustMovementForCollisions(movement);
             info.cancel();
         }
     }

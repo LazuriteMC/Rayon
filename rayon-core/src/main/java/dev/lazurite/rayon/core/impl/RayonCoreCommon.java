@@ -54,10 +54,7 @@ public class RayonCoreCommon implements ModInitializer {
 
 		ServerTickEvents.START_WORLD_TICK.register(world -> {
 			MinecraftSpace space = MinecraftSpace.get(world);
-
-			if (space.canStep()) {
-				space.step();
-			}
+			space.step(space::canStep);
 		});
 
 		ServerWorldEvents.LOAD.register((server, world) -> {

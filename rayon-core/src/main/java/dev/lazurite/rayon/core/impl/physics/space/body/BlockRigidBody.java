@@ -4,7 +4,7 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.physics.space.body.type.DebuggableBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.type.Debuggable;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * A basic {@link PhysicsRigidBody} class representing a piece of the terrain.
  * @see TerrainManager
  */
-public class BlockRigidBody extends PhysicsRigidBody implements DebuggableBody {
+public class BlockRigidBody extends PhysicsRigidBody implements Debuggable {
     private final BlockState blockState;
     private final BlockPos blockPos;
 

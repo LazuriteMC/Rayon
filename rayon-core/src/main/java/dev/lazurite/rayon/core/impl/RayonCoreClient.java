@@ -44,10 +44,7 @@ public class RayonCoreClient implements ClientModInitializer {
 
         ClientTickEvents.START_WORLD_TICK.register(world -> {
             MinecraftSpace space = MinecraftSpace.get(world);
-
-            if (space.canStep()) {
-                space.step();
-            }
+            space.step(space::canStep);
         });
 
         BetterClientLifecycleEvents.LOAD_WORLD.register((client, world) -> {

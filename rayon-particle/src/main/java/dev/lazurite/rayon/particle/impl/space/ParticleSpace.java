@@ -6,6 +6,8 @@ import dev.lazurite.rayon.particle.impl.RayonParticleClient;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
+import java.util.function.BooleanSupplier;
+
 public class ParticleSpace extends MinecraftSpace {
     public static final Identifier PARTICLE = new Identifier(RayonParticleClient.MODID, "particle");
 
@@ -14,7 +16,7 @@ public class ParticleSpace extends MinecraftSpace {
     }
 
     @Override
-    public void step() {
-        super.step();
+    public void step(BooleanSupplier shouldStep) {
+        super.step(shouldStep);
     }
 }

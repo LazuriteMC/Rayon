@@ -29,14 +29,13 @@ public class WandItem extends Item {
         HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 
         if (!world.isClient()) {
-            CubeEntity entity = new CubeEntity(EntityTestMod.BIG_CUBE_ENTITY, world);
+            CubeEntity entity = new CubeEntity(EntityTestMod.SMOL_CUBE_ENTITY, world);
 
             if (user.isSneaking()) {
                 Vec3d unit = hitResult.getPos().subtract(user.getPos()).normalize();
                 entity.updatePosition(user.getPos().x + unit.x, user.getPos().y + user.getStandingEyeHeight(), user.getPos().z + unit.z);
                 ((EntityPhysicsElement) entity).getRigidBody().setLinearVelocity(VectorHelper.vec3dToVector3f(unit).multLocal(10));
                 ((EntityPhysicsElement) entity).getRigidBody().setAngularVelocity(new Vector3f(RANDOM.nextFloat(), RANDOM.nextFloat(), RANDOM.nextFloat()));
-                ((EntityPhysicsElement) entity).getRigidBody().prioritize(user);
             } else {
                 ((EntityPhysicsElement) entity).getRigidBody().setAngularVelocity(new Vector3f(0, 0.5f, 1.0f));
                 entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);

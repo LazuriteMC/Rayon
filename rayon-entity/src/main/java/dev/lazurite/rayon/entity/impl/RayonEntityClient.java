@@ -39,6 +39,7 @@ public class RayonEntityClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.MOVEMENT_UPDATE, (client, handler, buf, sender) -> {
             int entityId = buf.readInt();
             RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+            boolean reset = buf.readBoolean();
 
             Quaternion rotation = QuaternionHelper.fromBuffer(buf);
             Vector3f location = VectorHelper.fromBuffer(buf);
@@ -59,6 +60,10 @@ public class RayonEntityClient implements ClientModInitializer {
                         rigidBody.setLinearVelocity(linearVelocity);
                         rigidBody.setAngularVelocity(angularVelocity);
                         rigidBody.activate();
+
+                        if (reset) {
+                            rigidBody.scheduleFrameReset();
+                        }
                     }
                 }
             });

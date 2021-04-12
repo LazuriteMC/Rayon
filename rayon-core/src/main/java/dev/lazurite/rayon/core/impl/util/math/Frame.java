@@ -68,4 +68,10 @@ public class Frame {
         store.set(QuaternionHelper.toEulerAngles(tickRotation).subtract(QuaternionHelper.toEulerAngles(prevRotation)));
         return store;
     }
+
+    public void reset() {
+        this.prevLocation = tickLocation.clone();
+        this.prevRotation = tickRotation.clone();
+        this.prevBox = tickBox;
+    }
 }
