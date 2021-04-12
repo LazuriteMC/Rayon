@@ -141,7 +141,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                         float k = (getAirDensity() * dragCoefficient * area) / 2.0f;
                         Vector3f force = new Vector3f().set(rigidBody.getLinearVelocity(new Vector3f())).multLocal(-rigidBody.getLinearVelocity(new Vector3f()).lengthSquared()).multLocal(k);
 
-                        if (Float.isFinite(force.length())) {
+                        if (Float.isFinite(force.lengthSquared()) && force.lengthSquared() > 0.1f) {
                             rigidBody.applyCentralForce(force);
                         }
                     }
