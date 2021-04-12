@@ -35,7 +35,8 @@ public abstract class McHelperMixin {
     @Inject(method = "getEyePos", at = @At("HEAD"), cancellable = true)
     private static void getEyePos(Entity entity, CallbackInfoReturnable<Vec3d> info) {
         if (entity instanceof EntityPhysicsElement) {
-            info.setReturnValue(VectorHelper.vector3fToVec3d(((EntityPhysicsElement) entity).getPhysicsLocation(new Vector3f(), 1.0f)));
+            info.setReturnValue(VectorHelper.vector3fToVec3d(((EntityPhysicsElement) entity).getPhysicsLocation(new Vector3f(), 1.0f))
+                .add(0, entity.getBoundingBox().getYLength() / 2.0, 0));
         }
     }
 }

@@ -26,7 +26,6 @@ public interface EntityPhysicsElement extends PhysicsElement {
 
         if (Float.isFinite(location.lengthSquared())) {
             getRigidBody().setPhysicsLocation(location);
-            getRigidBody().setPhysicsRotation(QuaternionHelper.rotateY(new Quaternion(), -asEntity().yaw));
             getRigidBody().getFrame().set(
                     getRigidBody().getPhysicsLocation(new Vector3f()),
                     getRigidBody().getPhysicsLocation(new Vector3f()),
