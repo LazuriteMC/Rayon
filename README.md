@@ -15,9 +15,6 @@ repositories {
 
 dependencies {
     modApi 'com.github.LazuriteMC:Rayon:VERSION'
-
-    // Optional, for jar-in-jar:
-    include 'com.github.LazuriteMC:Rayon:VERSION'
 }
 ```
 
