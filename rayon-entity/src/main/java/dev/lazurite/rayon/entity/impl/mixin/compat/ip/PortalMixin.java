@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.entity.impl.mixin.compat.ip;
 
 import com.jme3.math.Vector3f;
-import com.qouteall.immersive_portals.portal.Portal;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
@@ -16,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(value = Portal.class, remap = false)
+@Mixin(targets = "com.qouteall.immersive_portals.portal.Portal")
 public class PortalMixin {
     @Shadow @Nullable public Quaternion rotation;
 

@@ -12,8 +12,7 @@
   ],
   "client": [
     "client.EntityRenderDispatcherMixin",
-    "client.WorldRendererMixin",
-    "compat.ip.CrossPortalEntityRendererMixin"
+    "client.WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
