@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.entity.impl.mixin.compat.ip;
 
 import com.jme3.math.Vector3f;
-import com.qouteall.immersive_portals.McHelper;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -16,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Pseudo
-@Mixin(value = McHelper.class, remap = false)
+@Mixin(targets = "com.qouteall.immersive_portals.McHelper")
 public abstract class McHelperMixin {
     @Inject(method = "setPosAndLastTickPos", at = @At("HEAD"))
     private static void setPosAndLastTickPos(Entity entity, Vec3d pos, Vec3d lastTickPos, CallbackInfo info) {
@@ -29,6 +28,13 @@ public abstract class McHelperMixin {
                 rigidBody.scheduleFrameReset();
                 ((EntityPhysicsElement) entity).sendMovementUpdate(true);
             });
+        }
+    }
+
+    @Inject(method = "setEyePos", at = @At("HEAD"), cancellable = true)
+    private static void setEyePos(Entity entity, Vec3d eyePos, Vec3d lastTickEyePos, CallbackInfo info) {
+        if (entity instanceof EntityPhysicsElement && entity.world.isClient()) {
+            info.cancel();
         }
     }
 
