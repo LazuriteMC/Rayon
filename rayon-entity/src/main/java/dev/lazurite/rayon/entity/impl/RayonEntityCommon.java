@@ -67,7 +67,7 @@ public class RayonEntityCommon implements ModInitializer {
 
 				/* Movement Updates */
 				if (rigidBody.isActive() && rigidBody.needsMovementUpdate()) {
-					if ((space.isServer() && rigidBody.getPriorityPlayer() == null) || ClientPlayerSupplier.get().equals(rigidBody.getPriorityPlayer())) {
+					if ((space.isServer() && rigidBody.getPriorityPlayer() == null) || (!space.isServer() && ClientPlayerSupplier.get().equals(rigidBody.getPriorityPlayer()))) {
 						element.sendMovementUpdate(false);
 					}
 				}
