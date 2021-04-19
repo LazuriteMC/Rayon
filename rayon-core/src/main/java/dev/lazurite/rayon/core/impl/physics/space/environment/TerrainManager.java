@@ -3,6 +3,7 @@ package dev.lazurite.rayon.core.impl.physics.space.environment;
 import com.google.common.collect.Lists;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
@@ -118,16 +119,20 @@ public final class TerrainManager {
 
                             BlockEntity blockEntity = world.getBlockEntity(blockPos);
 
-                            if (blockEntity != null) {
-                                pattern = Disassembler.getBlockEntity(blockEntity, transformation);
-                            } else {
-                                pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+                            try {
+                                if (blockEntity != null) {
+                                    pattern = Disassembler.getBlockEntity(blockEntity, transformation);
+                                } else {
+                                    pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+                                }
+                            } catch (Exception e) {
+                                pattern = null;
                             }
                         } else {
                             pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
                         }
 
-                        if (pattern != null) {
+                        if (pattern != null && !blockState.getBlock().equals(Blocks.GRASS_PATH)) {
                             if (body.getCollisionShape() instanceof PatternShape) {
                                 if (!pattern.equals(((PatternShape) body.getCollisionShape()).getPattern())) {
                                     body.setCollisionShape(new PatternShape(pattern));
@@ -142,6 +147,15 @@ public final class TerrainManager {
                                 if (world.isClient()) {
                                     PatternBuffer.getBlockBuffer(world).put(pattern);
                                 }
+                            }
+                        } else {
+                            VoxelShape voxel = blockState.getCollisionShape(world, blockPos);
+
+                            if (!voxel.isEmpty()) {
+                                body.setCollisionShape(new BoundingBoxShape(voxel.getBoundingBox()));
+                                body.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + (float) voxel.getBoundingBox().getCenter().y, blockPos.getZ() + 0.5f));
+                            } else {
+                                body.setCollisionShape(new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f)));
                             }
                         }
                     } else if (body.getCollisionShape() instanceof PatternShape) {
