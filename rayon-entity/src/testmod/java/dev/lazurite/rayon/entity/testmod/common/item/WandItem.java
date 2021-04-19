@@ -30,6 +30,7 @@ public class WandItem extends Item {
 
         if (!world.isClient()) {
             CubeEntity entity = new CubeEntity(EntityTestMod.SMOL_CUBE_ENTITY, world);
+            entity.getRigidBody().prioritize(user);
 
             if (user.isSneaking()) {
                 Vec3d unit = hitResult.getPos().subtract(user.getPos()).normalize();
