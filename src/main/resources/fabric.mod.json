@@ -23,6 +23,7 @@
   },
 
   "custom": {
+    "hermes": true,
     "modmenu": {
       "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" },
       "badges": [ "library" ]
