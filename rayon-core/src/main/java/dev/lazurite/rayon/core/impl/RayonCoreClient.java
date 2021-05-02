@@ -13,6 +13,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,6 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Environment(EnvType.CLIENT)
 public class RayonCoreClient implements ClientModInitializer {
+    private static boolean serverModded;
+
     @Override
     public void onInitializeClient() {
         AtomicReference<PhysicsThread> thread = new AtomicReference<>();
@@ -52,5 +55,11 @@ public class RayonCoreClient implements ClientModInitializer {
             ((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(thread.get(), world));
             PhysicsSpaceEvents.INIT.invoker().onInit(thread.get(), MinecraftSpace.get(world));
         });
+
+        ClientPlayNetworking.registerGlobalReceiver(RayonCoreCommon.MODDED_SERVER, (client, handler, buf, sender) -> serverModded = true);
+    }
+
+    public static boolean isServerModded() {
+        return serverModded;
     }
 }

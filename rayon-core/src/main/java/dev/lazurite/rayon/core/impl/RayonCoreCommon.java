@@ -13,6 +13,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.CustomValue;
 import net.minecraft.util.Identifier;
@@ -31,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class RayonCoreCommon implements ModInitializer {
 	public static final String MODID = "rayon-core";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Core");
+	public static final Identifier MODDED_SERVER = new Identifier(RayonCoreCommon.MODID, "modded_server");
 	private static final Map<Identifier, BlockProperties> blockProps = Maps.newHashMap();
 
 	@Override
@@ -50,6 +53,10 @@ public class RayonCoreCommon implements ModInitializer {
 			if (thread.get().throwable != null) {
 				throw new RuntimeException(thread.get().throwable);
 			}
+		});
+
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			sender.sendPacket(MODDED_SERVER, PacketByteBufs.create());
 		});
 
 		ServerTickEvents.START_WORLD_TICK.register(world -> {
