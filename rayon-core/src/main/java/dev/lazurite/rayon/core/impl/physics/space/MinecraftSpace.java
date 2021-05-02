@@ -47,15 +47,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public static final Identifier MAIN = new Identifier(RayonCoreCommon.MODID, "main");
     private static final int MAX_PRESIM_STEPS = 10;
 
+    private volatile boolean stepping;
     private final TerrainManager terrainManager;
     private final PhysicsThread thread;
     private final World world;
-    private int presimSteps;
-    private volatile boolean stepping;
-
     private float airDensity;
-    private float waterDensity;
-    private float lavaDensity;
+    private int presimSteps;
 
     /**
      * Allows users to retrieve the {@link MinecraftSpace} associated
@@ -76,9 +73,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
         this.setAirDensity(1.2f); // kg/m^3
-        this.setWaterDensity(997f); // kg/m^3
-        this.setLavaDensity(3100f); // kg/m^3
-
+//        this.setWaterDensity(997f); // kg/m^3
+//        this.setLavaDensity(3100f); // kg/m^3
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
@@ -228,24 +224,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.airDensity = airDensity;
     }
 
-    public void setWaterDensity(float waterDensity) {
-        this.waterDensity = waterDensity;
-    }
-
-    public void setLavaDensity(float lavaDensity) {
-        this.lavaDensity = lavaDensity;
-    }
-
     public float getAirDensity() {
         return this.airDensity;
-    }
-
-    public float getWaterDensity() {
-        return this.waterDensity;
-    }
-
-    public float getLavaDensity() {
-        return this.lavaDensity;
     }
 
     public TerrainManager getTerrainManager() {

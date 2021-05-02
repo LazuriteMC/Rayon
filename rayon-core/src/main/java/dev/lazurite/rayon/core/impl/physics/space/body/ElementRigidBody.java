@@ -51,7 +51,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
 
     private boolean doFluidResistance = true;
     private boolean doTerrainLoading = true;
-    private boolean doEntityLoading = true;
 
     private PlayerEntity priorityPlayer;
     private final Frame frame = new Frame();
@@ -208,11 +207,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
         this.setPropertiesDirty(true);
     }
 
-    public void setDoEntityLoading(boolean doEntityLoading) {
-        this.doEntityLoading = doEntityLoading;
-        this.setPropertiesDirty(true);
-    }
-
     public void prioritize(@Nullable PlayerEntity player) {
         priorityPlayer = player;
         this.setPropertiesDirty(true);
@@ -245,9 +239,5 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
     @Override
     public boolean shouldDoTerrainLoading() {
         return this.doTerrainLoading;
-    }
-
-    public boolean shouldDoEntityLoading() {
-        return this.doEntityLoading;
     }
 }
