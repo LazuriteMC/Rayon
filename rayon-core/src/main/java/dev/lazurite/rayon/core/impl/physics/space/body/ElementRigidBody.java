@@ -1,18 +1,11 @@
 package dev.lazurite.rayon.core.impl.physics.space.body;
 
-import com.jme3.bounding.BoundingBox;
-import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
-import dev.lazurite.rayon.core.impl.physics.space.body.type.Debuggable;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.physics.space.body.type.TerrainLoading;
-import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.physics.debug.DebugLayer;
-import dev.lazurite.rayon.core.impl.util.math.Frame;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,46 +17,16 @@ import org.jetbrains.annotations.Nullable;
  * This class represents how a {@link PhysicsElement} will interact with the {@link MinecraftSpace}. The user of Rayon
  * will be asked to provide one of these within their {@link PhysicsElement} implementation since when their entity is
  * spawned, the rigid body will be added to the physics space.<br>
- * Several properties can be modified and synced between the client and the server including:
- * <ul>
- *     <li>Drag</li>
- *     <li>Mass</li>
- *     <li>Friction</li>
- *     <li>Restitution</li>
- *     <li>Priority Player</li>
- * </ul>
- * as well as movement information:
- * <ul>
- *     <li>Location</li>
- *     <li>Rotation</li>
- *     <li>Linear Velocity</li>
- *     <li>Angular Velocity</li>
- * </ul>
  * @see MinecraftSpace
  */
-public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading, Debuggable {
+public class ElementRigidBody extends MinecraftRigidBody {
     private final PhysicsElement element;
-    private final MinecraftSpace space;
     private boolean propertiesDirty;
-    private int envLoadDistance;
-    private float dragCoefficient;
-    private boolean shouldResetFrame;
-
-    private boolean doFluidResistance = true;
-    private boolean doTerrainLoading = true;
-
     private PlayerEntity priorityPlayer;
-    private final Frame frame = new Frame();
-    private Clump clump;
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution) {
-        super(shape, mass);
+        super(space, shape, mass, dragCoefficient, friction, restitution);
         this.element = element;
-        this.space = space;
-        this.setDragCoefficient(dragCoefficient);
-        this.setFriction(friction);
-        this.setRestitution(restitution);
-        this.setEnvironmentLoadDistance(calculateLoadDistance());
     }
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape) {
@@ -79,20 +42,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
         this((PhysicsElement) entity, MinecraftSpace.get(entity.getEntityWorld()), new BoundingBoxShape(entity.getBoundingBox()));
     }
 
-    /**
-     * Calculates the distance away blocks should be loaded based
-     * on the size of the collision bounding box.
-     * @return the max distance to load blocks from
-     */
-    protected int calculateLoadDistance() {
-        return (int) boundingBox(new BoundingBox()).getExtent(new Vector3f()).length() + 1;
-    }
-
-    @Override
-    public void setCollisionShape(CollisionShape collisionShape) {
-        super.setCollisionShape(collisionShape);
-        this.setEnvironmentLoadDistance(calculateLoadDistance());
-    }
 
     public PhysicsElement getElement() {
         return this.element;
@@ -108,43 +57,6 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
 
     public boolean arePropertiesDirty() {
         return this.propertiesDirty;
-    }
-
-    public Frame updateFrame() {
-        getFrame().from(getFrame(),
-                getPhysicsLocation(new Vector3f()),
-                getPhysicsRotation(new Quaternion()),
-                getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox()));
-
-        if (shouldResetFrame) {
-            getFrame().reset();
-            this.shouldResetFrame = false;
-        }
-
-        return getFrame();
-    }
-
-    public void scheduleFrameReset() {
-        this.shouldResetFrame = true;
-    }
-
-    public Frame getFrame() {
-        return this.frame;
-    }
-
-    @Override
-    public Clump getClump() {
-        return this.clump;
-    }
-
-    @Override
-    public void setClump(Clump clump) {
-        this.clump = clump;
-    }
-
-    @Override
-    public Vector3f getOutlineColor() {
-        return new Vector3f(1.0f, 0.6f, 0);
     }
 
     @Override
@@ -174,7 +86,7 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
     }
 
     public void setDragCoefficient(float dragCoefficient) {
-        this.dragCoefficient = dragCoefficient;
+        super.setDragCoefficient(dragCoefficient);
         this.setPropertiesDirty(true);
     }
 
@@ -192,18 +104,18 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
 
     @Override
     public void setEnvironmentLoadDistance(int envLoadDistance) {
-        this.envLoadDistance = envLoadDistance;
+        super.setEnvironmentLoadDistance(envLoadDistance);
         this.setPropertiesDirty(true);
     }
 
     public void setDoFluidResistance(boolean doFluidResistance) {
-        this.doFluidResistance = doFluidResistance;
+        super.setDoFluidResistance(doFluidResistance);
         this.setPropertiesDirty(true);
     }
 
     @Override
     public void setDoTerrainLoading(boolean doTerrainLoading) {
-        this.doTerrainLoading = doTerrainLoading;
+        super.setDoTerrainLoading(doTerrainLoading);
         this.setPropertiesDirty(true);
     }
 
@@ -215,29 +127,12 @@ public class ElementRigidBody extends PhysicsRigidBody implements TerrainLoading
     /*
      * Property Getters
      *     getMass()
+     *     getDragCoefficient()
      *     getFriction()
      *     getRestitution()
      */
 
     public PlayerEntity getPriorityPlayer() {
         return this.priorityPlayer;
-    }
-
-    public float getDragCoefficient() {
-        return dragCoefficient;
-    }
-
-    @Override
-    public int getEnvironmentLoadDistance() {
-        return this.envLoadDistance;
-    }
-
-    public boolean shouldDoFluidResistance() {
-        return this.doFluidResistance;
-    }
-
-    @Override
-    public boolean shouldDoTerrainLoading() {
-        return this.doTerrainLoading;
     }
 }

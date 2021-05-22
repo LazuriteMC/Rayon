@@ -13,7 +13,8 @@ import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.body.type.TerrainLoading;
+import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.environment.FluidManager;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
@@ -49,9 +50,9 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     private volatile boolean stepping;
     private final TerrainManager terrainManager;
+    private final FluidManager fluidManager;
     private final PhysicsThread thread;
     private final World world;
-    private float airDensity;
     private int presimSteps;
 
     /**
@@ -69,12 +70,9 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.thread = thread;
         this.world = world;
         this.terrainManager = new TerrainManager(this);
+        this.fluidManager = new FluidManager(this);
         this.addCollisionListener(this);
-
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
-        this.setAirDensity(1.2f); // kg/m^3
-//        this.setWaterDensity(997f); // kg/m^3
-//        this.setLavaDensity(3100f); // kg/m^3
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
@@ -107,6 +105,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
             getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
+                rigidBody.getElement().step(this);
+
                 /* Frame Update */
                 rigidBody.updateFrame();
 
@@ -126,28 +126,19 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                 });
             });
 
+            getRigidBodiesByClass(MinecraftRigidBody.class).forEach(rigidBody -> {
+                if (rigidBody.shouldDoFluidResistance()) {
+                    fluidManager.doResistanceOn(rigidBody);
+                    fluidManager.doBuoyancyOn(rigidBody);
+                }
+            });
+
             getThread().execute(() -> {
-                /* Step and Fluid Resistance */
-                getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
-                    rigidBody.getElement().step(this);
-
-                    if (rigidBody.shouldDoFluidResistance()) {
-                        float dragCoefficient = rigidBody.getDragCoefficient();
-                        float area = (float) Math.pow(rigidBody.boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared(), 2);
-                        float k = (getAirDensity() * dragCoefficient * area) / 2.0f;
-                        Vector3f force = new Vector3f().set(rigidBody.getLinearVelocity(new Vector3f())).multLocal(-rigidBody.getLinearVelocity(new Vector3f()).lengthSquared()).multLocal(k);
-
-                        if (Float.isFinite(force.lengthSquared()) && force.lengthSquared() > 0.1f) {
-                            rigidBody.applyCentralForce(force);
-                        }
-                    }
-                });
-
-                getRigidBodiesByClass(TerrainLoading.class).forEach(terrainBody -> {
-                    if (terrainBody.shouldDoTerrainLoading()) {
-                        Vector3f pos = ((PhysicsRigidBody) terrainBody).getPhysicsLocation(new Vector3f());
-                        Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(terrainBody.getEnvironmentLoadDistance());
-                        terrainManager.load(terrainBody, box);
+                getRigidBodiesByClass(MinecraftRigidBody.class).forEach(rigidBody -> {
+                    if (rigidBody.shouldDoTerrainLoading()) {
+                        Vector3f pos = rigidBody.getPhysicsLocation(new Vector3f());
+                        Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance());
+                        terrainManager.load(rigidBody, box);
                     }
                 });
 
@@ -220,16 +211,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return this.world;
     }
 
-    public void setAirDensity(float airDensity) {
-        this.airDensity = airDensity;
-    }
-
-    public float getAirDensity() {
-        return this.airDensity;
-    }
-
     public TerrainManager getTerrainManager() {
         return this.terrainManager;
+    }
+
+    public FluidManager getFluidManager() {
+        return this.fluidManager;
     }
 
     /**

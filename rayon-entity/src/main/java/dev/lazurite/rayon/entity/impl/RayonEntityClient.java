@@ -46,27 +46,31 @@ public class RayonEntityClient implements ClientModInitializer {
             Vector3f linearVelocity = VectorHelper.fromBuffer(buf);
             Vector3f angularVelocity = VectorHelper.fromBuffer(buf);
 
-            PhysicsThread.get(client).execute(() -> {
-                ClientWorld world = (ClientWorld) PhysicsThread.get(client).getWorldSupplier().getWorld(worldKey);
+            PhysicsThread thread = PhysicsThread.get(client);
 
-                if (world != null) {
-                    Entity entity = world.getEntityById(entityId);
+            if (thread != null) {
+                thread.execute(() -> {
+                    ClientWorld world = (ClientWorld) PhysicsThread.get(client).getWorldSupplier().getWorld(worldKey);
 
-                    if (entity instanceof EntityPhysicsElement) {
-                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+                    if (world != null) {
+                        Entity entity = world.getEntityById(entityId);
 
-                        rigidBody.setPhysicsRotation(rotation);
-                        rigidBody.setPhysicsLocation(location);
-                        rigidBody.setLinearVelocity(linearVelocity);
-                        rigidBody.setAngularVelocity(angularVelocity);
-                        rigidBody.activate();
+                        if (entity instanceof EntityPhysicsElement) {
+                            ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
 
-                        if (reset) {
-                            rigidBody.scheduleFrameReset();
+                            rigidBody.setPhysicsRotation(rotation);
+                            rigidBody.setPhysicsLocation(location);
+                            rigidBody.setLinearVelocity(linearVelocity);
+                            rigidBody.setAngularVelocity(angularVelocity);
+                            rigidBody.activate();
+
+                            if (reset) {
+                                rigidBody.scheduleFrameReset();
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         });
 
         ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.PROPERTIES, (client, handler, buf, sender) -> {
@@ -80,31 +84,33 @@ public class RayonEntityClient implements ClientModInitializer {
             int blockDistance = buf.readInt();
             boolean doFluidResistance = buf.readBoolean();
             boolean doTerrainLoading = buf.readBoolean();
-            boolean doEntityLoading = buf.readBoolean();
             UUID priorityPlayer = buf.readUuid();
 
-            PhysicsThread.get(client).execute(() -> {
-                ClientWorld world = (ClientWorld) PhysicsThread.get(client).getWorldSupplier().getWorld(worldKey);
+            PhysicsThread thread = PhysicsThread.get(client);
 
-                if (world != null) {
-                    Entity entity = world.getEntityById(entityId);
+            if (thread != null) {
+                thread.execute(() -> {
+                    ClientWorld world = (ClientWorld) thread.getWorldSupplier().getWorld(worldKey);
 
-                    if (entity instanceof EntityPhysicsElement) {
-                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
-                        PlayerEntity player = world.getPlayerByUuid(priorityPlayer);
+                    if (world != null) {
+                        Entity entity = world.getEntityById(entityId);
 
-                        rigidBody.setMass(mass);
-                        rigidBody.setDragCoefficient(dragCoefficient);
-                        rigidBody.setFriction(friction);
-                        rigidBody.setRestitution(restitution);
-                        rigidBody.setEnvironmentLoadDistance(blockDistance);
-                        rigidBody.setDoFluidResistance(doFluidResistance);
-                        rigidBody.setDoTerrainLoading(doTerrainLoading);
-                        rigidBody.setDoEntityLoading(doEntityLoading);
-                        rigidBody.prioritize(player);
+                        if (entity instanceof EntityPhysicsElement) {
+                            ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+                            PlayerEntity player = world.getPlayerByUuid(priorityPlayer);
+
+                            rigidBody.setMass(mass);
+                            rigidBody.setDragCoefficient(dragCoefficient);
+                            rigidBody.setFriction(friction);
+                            rigidBody.setRestitution(restitution);
+                            rigidBody.setEnvironmentLoadDistance(blockDistance);
+                            rigidBody.setDoFluidResistance(doFluidResistance);
+                            rigidBody.setDoTerrainLoading(doTerrainLoading);
+                            rigidBody.prioritize(player);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
 
         ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.SPAWN, (client, handler, buf, sender) -> {
@@ -119,25 +125,29 @@ public class RayonEntityClient implements ClientModInitializer {
             Quaternion rotation = QuaternionHelper.fromBuffer(buf);
 
             client.execute(() -> {
-                ClientWorld world = (ClientWorld) PhysicsThread.get(client).getWorldSupplier().getWorld(worldKey);
+                PhysicsThread thread = PhysicsThread.get(client);
 
-                if (world != null) {
-                    Entity entity = type.create(world);
+                if (thread != null) {
+                    ClientWorld world = (ClientWorld) thread.getWorldSupplier().getWorld(worldKey);
 
-                    if (entity instanceof EntityPhysicsElement) {
-                        ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
+                    if (world != null) {
+                        Entity entity = type.create(world);
 
-                        entity.setEntityId(id);
-                        entity.setUuid(uuid);
+                        if (entity instanceof EntityPhysicsElement) {
+                            ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
 
-                        rigidBody.setPhysicsLocation(location);
-                        rigidBody.setLinearVelocity(linearVelocity);
-                        rigidBody.setAngularVelocity(angularVelocity);
-                        rigidBody.setPhysicsRotation(rotation);
-                        entity.updatePosition(location.x, location.y, location.z);
+                            entity.setEntityId(id);
+                            entity.setUuid(uuid);
 
-                        world.addEntity(id, entity);
-                        PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).load((EntityPhysicsElement) entity));
+                            rigidBody.setPhysicsLocation(location);
+                            rigidBody.setLinearVelocity(linearVelocity);
+                            rigidBody.setAngularVelocity(angularVelocity);
+                            rigidBody.setPhysicsRotation(rotation);
+                            entity.updatePosition(location.x, location.y, location.z);
+
+                            world.addEntity(id, entity);
+                            PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).load((EntityPhysicsElement) entity));
+                        }
                     }
                 }
             });

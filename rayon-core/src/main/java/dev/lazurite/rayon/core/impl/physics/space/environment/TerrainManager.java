@@ -2,14 +2,13 @@ package dev.lazurite.rayon.core.impl.physics.space.environment;
 
 import com.google.common.collect.Lists;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCoreCommon;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.PatternShape;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.physics.space.body.type.TerrainLoading;
 import dev.lazurite.rayon.core.impl.physics.space.util.BlockProperties;
 import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import dev.lazurite.transporter.api.Disassembler;
@@ -46,11 +45,10 @@ public final class TerrainManager {
      * Loads an individual element's block area into the physics simulation. This
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
-     * @param terrainLoading the rigid body to be loaded
+     * @param rigidBody the rigid body to be loaded
      * @param box the {@link Box} area around the element to search for blocks within
      */
-    public void load(TerrainLoading terrainLoading, Box box) {
-        PhysicsRigidBody rigidBody = (PhysicsRigidBody) terrainLoading;
+    public void load(MinecraftRigidBody rigidBody, Box box) {
         World world = space.getWorld();
         Clump clump = new Clump(world, box);
 
@@ -105,7 +103,7 @@ public final class TerrainManager {
                             shape = new BoundingBoxShape(new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
                         }
 
-                        body = new BlockRigidBody(blockState, blockPos, shape, friction, restitution);
+                        body = new BlockRigidBody(blockState, blockPos, space, shape, friction, restitution);
                     }
 
                     /* Make a pattern shape if applicable */
@@ -177,11 +175,11 @@ public final class TerrainManager {
             });
         }
 
-        if (!clump.equals(terrainLoading.getClump())) {
+        if (!clump.equals(rigidBody.getClump())) {
             rigidBody.activate();
         }
 
-        terrainLoading.setClump(clump);
+        rigidBody.setClump(clump);
     }
 
     /**
@@ -205,6 +203,10 @@ public final class TerrainManager {
 
         toRemove.forEach(space::removeCollisionObject);
         toKeep.clear();
+    }
+
+    public MinecraftSpace getSpace() {
+        return space;
     }
 
     public static BlockRigidBody findBlockAtPos(MinecraftSpace space, BlockPos blockPos) {

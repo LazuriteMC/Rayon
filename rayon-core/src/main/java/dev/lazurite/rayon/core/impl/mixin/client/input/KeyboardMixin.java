@@ -1,10 +1,8 @@
 package dev.lazurite.rayon.core.impl.mixin.client.input;
 
 import dev.lazurite.rayon.core.impl.mixin.client.render.WorldRendererMixin;
-import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.debug.DebugManager;
-import dev.lazurite.rayon.core.impl.physics.debug.DebugLayer;
+import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Keyboard;
@@ -15,10 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Adds an additional F3 key combination (F3 + R). When pressed
- * once, it enables rendering of {@link ElementRigidBody} objects.
- * When it's pressed again, it also enabled rendering of
- * {@link BlockRigidBody} objects in a different color.
+ * Adds an additional F3 key combination (F3 + R). It toggles
+ * renders for all {@link MinecraftRigidBody} objects.
  * @see WorldRendererMixin
  */
 @Mixin(Keyboard.class)
@@ -29,10 +25,10 @@ public abstract class KeyboardMixin {
     @Inject(method = "processF3", at = @At("HEAD"), cancellable = true)
     private void processF3(int key, CallbackInfoReturnable<Boolean> info) {
         if (key == 82) { // 'r' key
-            DebugLayer layer = DebugManager.getInstance().nextLayer();
+            boolean enabled = DebugManager.getInstance().toggle();
 
-            if (DebugManager.getInstance().isEnabled()) {
-                debugWarn(layer.getTranslation());
+            if (enabled) {
+                debugWarn("debug.rayon.on");
             } else {
                 debugWarn("debug.rayon.off");
             }

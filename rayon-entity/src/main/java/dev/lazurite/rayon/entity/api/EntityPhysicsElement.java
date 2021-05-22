@@ -86,7 +86,6 @@ public interface EntityPhysicsElement extends PhysicsElement {
         buf.writeInt(rigidBody.getEnvironmentLoadDistance());
         buf.writeBoolean(rigidBody.shouldDoFluidResistance());
         buf.writeBoolean(rigidBody.shouldDoTerrainLoading());
-        buf.writeBoolean(rigidBody.shouldDoEntityLoading());
         buf.writeUuid(rigidBody.getPriorityPlayer() == null ? new UUID(0,  0) : rigidBody.getPriorityPlayer().getUuid());
 
         PlayerLookup.tracking(asEntity()).forEach(player -> ServerPlayNetworking.send(player, RayonEntityCommon.PROPERTIES, buf));

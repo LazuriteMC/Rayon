@@ -31,7 +31,7 @@ public class WorldRendererMixin {
     )
     public void render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo info) {
         if (DebugManager.getInstance().isEnabled()) {
-            DebugManager.getInstance().render(world, camera, tickDelta);
+            DebugManager.getInstance().render(world, new MatrixStack(), camera, tickDelta);
         }
     }
 }

@@ -1,9 +1,9 @@
 package dev.lazurite.rayon.core.impl.physics.debug;
 
-import dev.lazurite.rayon.core.impl.physics.space.body.type.Debuggable;
+import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
 
 /**
- * The set of layers used in {@link DebugManager} and {@link Debuggable} objects.
+ * The set of layers used in {@link DebugManager} and {@link MinecraftRigidBody} objects.
  */
 public enum DebugLayer {
     BODY("debug.rayon.layer.body"),
