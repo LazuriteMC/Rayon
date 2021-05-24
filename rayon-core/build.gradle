@@ -4,7 +4,14 @@ plugins {
 
 archivesBaseName = "rayon-core"
 
+repositories {
+    maven { url "https://jitpack.io" }
+    maven { url "https://lazurite.dev/releases" }
+    maven { url "https://hephaestus.dev/release" }
+}
+
 dependencies {
+    // Fabric API
     modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
 
     // Transporter

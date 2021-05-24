@@ -1,7 +1,14 @@
 archivesBaseName = "rayon-entity"
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 dependencies {
+    // Rayon Core
     implementation project(":rayon-core")
+
+    // Fabric API
     modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
     modImplementation fabricApi.module("fabric-object-builder-api-v1", project.fabric_version)
     modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)

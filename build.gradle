@@ -16,9 +16,6 @@ allprojects { project ->
 	group = project.maven_group
 
 	repositories {
-		maven { url "https://jitpack.io" }
-		maven { url "https://lazurite.dev/releases" }
-		maven { url "https://hephaestus.dev/release" }
 		maven { url "https://maven.fabricmc.net/" }
 	}
 
@@ -64,12 +61,41 @@ allprojects { project ->
 		}
 	}
 
+	dependencies {
+		testmodImplementation project.sourceSets.main.output
+	}
+
 	publishing {
 		publications {
 			mavenJava(MavenPublication) {
+				artifactId = 'transporter'
+
+				pom {
+					name = 'Rayon'
+					description = 'A physics API for Minecraft.'
+					url = 'https://github.com/LazuriteMC/Rayon'
+					developers {
+						developer {
+							id = 'bluevista'
+							name = 'BlueVista'
+							email = 'ethan@ejohnsons.com'
+						}
+					}
+				}
+
+				versionMapping {
+					usage('java-api') {
+						fromResolutionOf('runtimeClasspath')
+					}
+					usage('java-runtime') {
+						fromResolutionResult()
+					}
+				}
+
 				artifact(remapJar) {
 					builtBy remapJar
 				}
+
 				artifact(sourcesJar) {
 					builtBy remapSourcesJar
 				}
@@ -77,12 +103,14 @@ allprojects { project ->
 		}
 
 		repositories {
-			mavenLocal()
+			maven {
+				url = 'https://lazurite.dev/maven/releases'
+				credentials {
+					username = project.property("publish.lazurite.alias")
+					password = project.property("publish.lazurite.secret")
+				}
+			}
 		}
-	}
-
-	dependencies {
-		testmodImplementation project.sourceSets.main.output
 	}
 }
 
