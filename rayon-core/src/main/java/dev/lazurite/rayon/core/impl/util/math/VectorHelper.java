@@ -1,10 +1,11 @@
 package dev.lazurite.rayon.core.impl.util.math;
 
 import com.jme3.math.Vector3f;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 /**
  * A helper class which contains useful operations and
@@ -30,21 +31,21 @@ public class VectorHelper {
     }
 
     /**
-     * Convert a bullet physics {@link Vector3f} to a minecraft {@link net.minecraft.client.util.math.Vector3f}.
+     * Convert a bullet physics {@link Vector3f} to a minecraft {@link Vec3f}.
      * @param vector3f the bullet physics {@link Vector3f}
-     * @return the new minecraft {@link net.minecraft.client.util.math.Vector3f}
+     * @return the new minecraft {@link Vec3f}
      */
-    public static net.minecraft.client.util.math.Vector3f bulletToMinecraft(Vector3f vector3f) {
-        return new net.minecraft.client.util.math.Vector3f(vector3f.x, vector3f.y, vector3f.z);
+    public static Vec3f bulletToMinecraft(Vector3f vector3f) {
+        return new Vec3f(vector3f.x, vector3f.y, vector3f.z);
     }
 
     /**
-     * Convert a minecraft {@link net.minecraft.client.util.math.Vector3f} to a bullet physics {@link Vector3f}.
-     * @param vector3f the minecraft {@link net.minecraft.client.util.math.Vector3f}
+     * Convert a minecraft {@link Vec3f} to a bullet physics {@link Vector3f}.
+     * @param vec3f the minecraft {@link Vec3f}
      * @return the new bullet {@link Vector3f}
      */
-    public static Vector3f minecraftToBullet(net.minecraft.client.util.math.Vector3f vector3f) {
-        return new Vector3f(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+    public static Vector3f minecraftToBullet(Vec3f vec3f) {
+        return new Vector3f(vec3f.getX(), vec3f.getY(), vec3f.getZ());
     }
 
     /**
@@ -63,12 +64,12 @@ public class VectorHelper {
     }
 
     /**
-     * Converts the given {@link Vector3f} into a new {@link CompoundTag}.
+     * Converts the given {@link Vector3f} into a new {@link NbtCompound}.
      * @param vector3f the {@link Vector3f} to convert
-     * @return the new {@link CompoundTag}
+     * @return the new {@link NbtCompound}
      */
-    public static CompoundTag toTag(Vector3f vector3f) {
-        CompoundTag tag = new CompoundTag();
+    public static NbtCompound toTag(Vector3f vector3f) {
+        NbtCompound tag = new NbtCompound();
         tag.putFloat("x", vector3f.x);
         tag.putFloat("y", vector3f.y);
         tag.putFloat("z", vector3f.z);
@@ -76,11 +77,11 @@ public class VectorHelper {
     }
 
     /**
-     * Retrieves a {@link Vector3f} from the given {@link CompoundTag}.
-     * @param tag the {@link CompoundTag} to retrieve the {@link Vector3f} from
+     * Retrieves a {@link Vector3f} from the given {@link NbtCompound}.
+     * @param tag the {@link NbtCompound} to retrieve the {@link Vector3f} from
      * @return the new {@link Vector3f}
      */
-    public static Vector3f fromTag(CompoundTag tag) {
+    public static Vector3f fromTag(NbtCompound tag) {
         return new Vector3f(
                 tag.getFloat("x"),
                 tag.getFloat("y"),

@@ -52,7 +52,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
     default void sendMovementUpdate(boolean reset) {
         PacketByteBuf buf = PacketByteBufs.create();
 
-        buf.writeInt(asEntity().getEntityId());
+        buf.writeInt(asEntity().getId());
         buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
         buf.writeBoolean(reset);
 
@@ -76,7 +76,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
         ElementRigidBody rigidBody = getRigidBody();
         PacketByteBuf buf = PacketByteBufs.create();
 
-        buf.writeInt(asEntity().getEntityId());
+        buf.writeInt(asEntity().getId());
         buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
 
         buf.writeFloat(rigidBody.getMass());
@@ -96,7 +96,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
         ElementRigidBody rigidBody = getRigidBody();
         PacketByteBuf buf = PacketByteBufs.create();
 
-        buf.writeInt(asEntity().getEntityId());
+        buf.writeInt(asEntity().getId());
         buf.writeUuid(asEntity().getUuid());
         buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(asEntity().getType()));
         buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());

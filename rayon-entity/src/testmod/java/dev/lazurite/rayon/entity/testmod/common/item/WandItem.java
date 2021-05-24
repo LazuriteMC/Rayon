@@ -15,6 +15,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
+import java.util.Random;
+
 /**
  * This is just meant as a test item that spawns a {@link CubeEntity}
  */
@@ -34,10 +36,11 @@ public class WandItem extends Item {
             entity.getRigidBody().setMass(1.0f); // 0.0175
 
             if (user.isSneaking()) {
+                Random random = new Random();
                 Vec3d unit = hitResult.getPos().subtract(user.getPos()).normalize();
                 entity.updatePosition(user.getPos().x + unit.x, user.getPos().y + user.getStandingEyeHeight(), user.getPos().z + unit.z);
                 ((EntityPhysicsElement) entity).getRigidBody().setLinearVelocity(VectorHelper.vec3dToVector3f(unit).multLocal(10));
-                ((EntityPhysicsElement) entity).getRigidBody().setAngularVelocity(new Vector3f(RANDOM.nextFloat(), RANDOM.nextFloat(), RANDOM.nextFloat()));
+                ((EntityPhysicsElement) entity).getRigidBody().setAngularVelocity(new Vector3f(random.nextFloat(), random.nextFloat(), random.nextFloat()));
             } else {
                 ((EntityPhysicsElement) entity).getRigidBody().setAngularVelocity(new Vector3f(0, 0.5f, 1.0f));
                 entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);

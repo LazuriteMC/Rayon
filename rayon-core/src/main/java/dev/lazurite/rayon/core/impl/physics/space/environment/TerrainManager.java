@@ -13,7 +13,7 @@ import dev.lazurite.rayon.core.impl.physics.space.util.BlockProperties;
 import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
-import dev.lazurite.transporter.api.pattern.TypedPattern;
+import dev.lazurite.transporter.api.pattern.Pattern;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.util.math.MatrixStack;
@@ -108,7 +108,7 @@ public final class TerrainManager {
 
                     /* Make a pattern shape if applicable */
                     if (!blockState.isFullCube(world, blockPos)) {
-                        TypedPattern<BlockPos> pattern;
+                        Pattern pattern;
 
                         if (world.isClient()) {
                             MatrixStack transformation = new MatrixStack();
@@ -121,29 +121,29 @@ public final class TerrainManager {
                                 if (blockEntity != null) {
                                     pattern = Disassembler.getBlockEntity(blockEntity, transformation);
                                 } else {
-                                    pattern = Disassembler.getBlock(blockState, blockPos, world, transformation);
+                                    pattern = Disassembler.getBlock(blockState, transformation);
                                 }
                             } catch (Exception e) {
                                 pattern = null;
                             }
                         } else {
-                            pattern = PatternBuffer.getBlockBuffer(world).get(blockPos);
+                            pattern = PatternBuffer.getPatternBuffer(world).get(Registry.BLOCK.getId(blockState.getBlock()));
                         }
 
-                        if (pattern != null && !blockState.getBlock().equals(Blocks.GRASS_PATH)) {
+                        if (pattern != null && !blockState.getBlock().equals(Blocks.DIRT_PATH)) {
                             if (body.getCollisionShape() instanceof PatternShape) {
                                 if (!pattern.equals(((PatternShape) body.getCollisionShape()).getPattern())) {
                                     body.setCollisionShape(new PatternShape(pattern));
 
                                     if (world.isClient()) {
-                                        PatternBuffer.getBlockBuffer(world).put(pattern);
+                                        PatternBuffer.getPatternBuffer(world).put(pattern);
                                     }
                                 }
                             } else {
                                 body.setCollisionShape(new PatternShape(pattern));
 
                                 if (world.isClient()) {
-                                    PatternBuffer.getBlockBuffer(world).put(pattern);
+                                    PatternBuffer.getPatternBuffer(world).put(pattern);
                                 }
                             }
                         } else {

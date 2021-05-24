@@ -2,7 +2,7 @@ package dev.lazurite.rayon.core.impl.util.math;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 
 /**
@@ -100,13 +100,13 @@ public class QuaternionHelper {
     }
 
     /**
-     * Stores the given {@link Quaternion} into a new {@link CompoundTag}.
+     * Stores the given {@link Quaternion} into a new {@link NbtCompound}.
      *
      * @param quat the {@link Quaternion} to store
-     * @return the new {@link CompoundTag}
+     * @return the new {@link NbtCompound}
      */
-    public static CompoundTag toTag(Quaternion quat) {
-        CompoundTag tag = new CompoundTag();
+    public static NbtCompound toTag(Quaternion quat) {
+        NbtCompound tag = new NbtCompound();
         tag.putFloat("x", quat.getX());
         tag.putFloat("y", quat.getY());
         tag.putFloat("z", quat.getZ());
@@ -115,12 +115,12 @@ public class QuaternionHelper {
     }
 
     /**
-     * Retrieves a {@link Quaternion} from the given {@link CompoundTag}.
+     * Retrieves a {@link Quaternion} from the given {@link NbtCompound}.
      *
-     * @param tag the {@link CompoundTag} to retrieve the {@link Quaternion} from
+     * @param tag the {@link NbtCompound} to retrieve the {@link Quaternion} from
      * @return the new {@link Quaternion}
      */
-    public static Quaternion fromTag(CompoundTag tag) {
+    public static Quaternion fromTag(NbtCompound tag) {
         return new Quaternion(tag.getFloat("x"), tag.getFloat("y"), tag.getFloat("z"), tag.getFloat("w"));
     }
 

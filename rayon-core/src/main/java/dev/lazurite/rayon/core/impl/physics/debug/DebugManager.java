@@ -14,10 +14,7 @@ import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
@@ -87,7 +84,7 @@ public final class DebugManager {
         RenderSystem.depthMask(false);
         RenderSystem.lineWidth(lineWidth);
 
-        builder.begin(GL11.GL_LINE_LOOP, VertexFormats.POSITION_COLOR);
+        builder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         if (translate) matrices.translate(position.x, position.y, position.z);
         matrices.multiply(QuaternionHelper.bulletToMinecraft(rotation));
 

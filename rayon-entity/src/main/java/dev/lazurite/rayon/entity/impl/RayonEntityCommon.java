@@ -88,7 +88,7 @@ public class RayonEntityCommon implements ModInitializer {
 			World world = player.getEntityWorld();
 
 			int entityId = buf.readInt();
-			RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+			RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
 			boolean reset = buf.readBoolean();
 
 			Quaternion rotation = QuaternionHelper.fromBuffer(buf);

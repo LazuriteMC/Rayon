@@ -38,7 +38,7 @@ public class RayonEntityClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.MOVEMENT_UPDATE, (client, handler, buf, sender) -> {
             int entityId = buf.readInt();
-            RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
             boolean reset = buf.readBoolean();
 
             Quaternion rotation = QuaternionHelper.fromBuffer(buf);
@@ -75,7 +75,7 @@ public class RayonEntityClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.PROPERTIES, (client, handler, buf, sender) -> {
             int entityId = buf.readInt();
-            RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
 
             float mass = buf.readFloat();
             float dragCoefficient = buf.readFloat();
@@ -117,7 +117,7 @@ public class RayonEntityClient implements ClientModInitializer {
             int id = buf.readInt();
             UUID uuid = buf.readUuid();
             EntityType<?> type = Registry.ENTITY_TYPE.get(buf.readVarInt());
-            RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
 
             Vector3f location = VectorHelper.fromBuffer(buf);
             Vector3f linearVelocity = VectorHelper.fromBuffer(buf);

@@ -8,7 +8,7 @@ import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.transporter.api.pattern.Pattern;
-import dev.lazurite.transporter.impl.pattern.part.Quad;
+import dev.lazurite.transporter.impl.pattern.model.Quad;
 
 import java.util.List;
 

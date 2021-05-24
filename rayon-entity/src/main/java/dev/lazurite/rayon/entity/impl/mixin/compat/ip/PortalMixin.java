@@ -6,6 +6,7 @@ import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -23,7 +24,7 @@ public class PortalMixin {
     public void transformVelocity(Entity entity, CallbackInfo info) {
         if (entity instanceof EntityPhysicsElement) {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
-            net.minecraft.client.util.math.Vector3f velocity = VectorHelper.bulletToMinecraft(rigidBody.getLinearVelocity(new Vector3f()));
+            Vec3f velocity = VectorHelper.bulletToMinecraft(rigidBody.getLinearVelocity(new Vector3f()));
 
             if (rotation != null) {
                 velocity.rotate(rotation);

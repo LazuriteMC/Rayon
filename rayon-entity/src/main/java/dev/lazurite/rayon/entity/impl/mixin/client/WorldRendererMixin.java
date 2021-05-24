@@ -37,49 +37,4 @@ public class WorldRendererMixin {
             args.set(3, location.z - cameraPos.z);
         }
     }
-
-//    @Redirect(
-//            method = "render",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/entity/Entity;getX()D"
-//            )
-//    )
-//    public double getX(Entity entity) {
-//        if (entity instanceof EntityPhysicsElement) {
-//            return ((EntityPhysicsElement) entity).getRigidBody().getFrame().getLocation(new Vector3f()).x;
-//        }
-//
-//        return entity.getX();
-//    }
-//
-//    @Redirect(
-//            method = "render",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/entity/Entity;getY()D"
-//            )
-//    )
-//    public double getY(Entity entity) {
-//        if (entity instanceof EntityPhysicsElement) {
-//            return ((EntityPhysicsElement) entity).getRigidBody().getFrame().getLocation(new Vector3f()).y;
-//        }
-//
-//        return entity.getY();
-//    }
-//
-//    @Redirect(
-//            method = "render",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/entity/Entity;getZ()D"
-//            )
-//    )
-//    public double getZ(Entity entity) {
-//        if (entity instanceof EntityPhysicsElement) {
-//            return ((EntityPhysicsElement) entity).getRigidBody().getFrame().getLocation(new Vector3f()).z;
-//        }
-//
-//        return entity.getZ();
-//    }
 }

@@ -35,15 +35,8 @@ public abstract class EntityRenderDispatcherMixin {
         return e;
     }
 
-    @Inject(method = "drawBox", at = @At("HEAD"), cancellable = true)
-    private void drawBox(MatrixStack matrix, VertexConsumer vertices, Entity entity, float red, float green, float blue, CallbackInfo info) {
-        if (entity instanceof EntityPhysicsElement) {
-            info.cancel();
-        }
-    }
-
     @Inject(method = "renderHitbox", at = @At("HEAD"), cancellable = true)
-    private void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, CallbackInfo info) {
+    private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, CallbackInfo info) {
         if (entity instanceof EntityPhysicsElement) {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
             Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
