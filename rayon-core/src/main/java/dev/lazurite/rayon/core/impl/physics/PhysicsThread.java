@@ -2,7 +2,7 @@ package dev.lazurite.rayon.core.impl.physics;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.core.impl.util.supplier.world.WorldSupplier;
@@ -52,7 +52,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
             this.throwable = throwable;
         });
 
-        RayonCoreCommon.LOGGER.info("Starting " + getName());
+        RayonCore.LOGGER.info("Starting " + getName());
         this.start();
     }
 
@@ -112,12 +112,12 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
      */
     public void destroy() {
         this.running = false;
-        RayonCoreCommon.LOGGER.info("Stopping " + getName());
+        RayonCore.LOGGER.info("Stopping " + getName());
 
         try {
             this.join();
         } catch (InterruptedException e) {
-            RayonCoreCommon.LOGGER.error("Error joining " + getName());
+            RayonCore.LOGGER.error("Error joining " + getName());
             e.printStackTrace();
         }
     }

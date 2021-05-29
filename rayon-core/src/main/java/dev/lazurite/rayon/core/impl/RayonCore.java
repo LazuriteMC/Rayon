@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.physics.space.util.BlockProperties;
 import dev.lazurite.rayon.core.impl.util.supplier.world.ServerWorldSupplier;
 import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
 import dev.lazurite.rayon.core.impl.physics.util.NativeLoader;
@@ -30,10 +29,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see RayonCoreClient
  * @see NativeLoader
  */
-public class RayonCoreCommon implements ModInitializer {
+public class RayonCore implements ModInitializer {
 	public static final String MODID = "rayon-core";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Core");
-	public static final Identifier MODDED_SERVER = new Identifier(RayonCoreCommon.MODID, "modded_server");
+	public static final Identifier MODDED_SERVER = new Identifier(RayonCore.MODID, "modded_server");
 	private static final Map<Identifier, BlockProperties> blockProps = Maps.newHashMap();
 
 	@Override
@@ -107,4 +106,6 @@ public class RayonCoreCommon implements ModInitializer {
 	public static boolean isImmersivePortalsPresent() {
 		return FabricLoader.getInstance().isModLoaded("immersive_portals");
 	}
+
+	public record BlockProperties(float friction, float restitution, boolean collidable) { }
 }

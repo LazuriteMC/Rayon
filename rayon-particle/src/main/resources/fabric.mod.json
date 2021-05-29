@@ -11,7 +11,9 @@
   "mixins": [ "rayon-particle.mixins.json" ],
 
   "entrypoints": {
-    "client": [ "dev.lazurite.rayon.particle.impl.RayonParticleClient" ]
+    "client": [
+      "dev.lazurite.rayon.particle.impl.RayonParticle"
+    ]
   },
 
   "depends": {

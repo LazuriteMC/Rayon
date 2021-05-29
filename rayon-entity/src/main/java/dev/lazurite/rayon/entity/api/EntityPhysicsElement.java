@@ -4,25 +4,34 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
-import dev.lazurite.rayon.entity.impl.RayonEntityCommon;
+import dev.lazurite.rayon.entity.impl.RayonEntity;
+import dev.lazurite.transporter.api.Disassembler;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 import java.util.UUID;
 
 public interface EntityPhysicsElement extends PhysicsElement {
     @Override
+    @Environment(EnvType.CLIENT)
+    default MinecraftShape generateShape() {
+//        var pattern = Disassembler.getEntity(asEntity(), null);
+        return null;
+    }
+
+    @Override
     default void reset() {
-        Vector3f location = VectorHelper.vec3dToVector3f(asEntity().getPos().add(0, getRigidBody().boundingBox(new BoundingBox()).getYExtent(), 0));
+        var location = VectorHelper.vec3dToVector3f(asEntity().getPos().add(0, getRigidBody().boundingBox(new BoundingBox()).getYExtent(), 0));
 
         if (Float.isFinite(location.lengthSquared())) {
             getRigidBody().setPhysicsLocation(location);
@@ -50,7 +59,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
      * on which side the entity's world is on.
      */
     default void sendMovementUpdate(boolean reset) {
-        PacketByteBuf buf = PacketByteBufs.create();
+        var buf = PacketByteBufs.create();
 
         buf.writeInt(asEntity().getId());
         buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
@@ -62,19 +71,19 @@ public interface EntityPhysicsElement extends PhysicsElement {
         VectorHelper.toBuffer(buf, getRigidBody().getAngularVelocity(new Vector3f()));
 
         if (asEntity().getEntityWorld().isClient()) {
-            ClientPlayNetworking.send(RayonEntityCommon.MOVEMENT_UPDATE, buf);
+            ClientPlayNetworking.send(RayonEntity.MOVEMENT_UPDATE, buf);
         } else {
             PlayerLookup.tracking(asEntity()).forEach(player -> {
                 if (!player.equals(getRigidBody().getPriorityPlayer())) {
-                    ServerPlayNetworking.send(player, RayonEntityCommon.MOVEMENT_UPDATE, buf);
+                    ServerPlayNetworking.send(player, RayonEntity.MOVEMENT_UPDATE, buf);
                 }
             });
         }
     }
 
     default void sendProperties() {
-        ElementRigidBody rigidBody = getRigidBody();
-        PacketByteBuf buf = PacketByteBufs.create();
+        var rigidBody = getRigidBody();
+        var buf = PacketByteBufs.create();
 
         buf.writeInt(asEntity().getId());
         buf.writeIdentifier(asEntity().getEntityWorld().getRegistryKey().getValue());
@@ -88,13 +97,13 @@ public interface EntityPhysicsElement extends PhysicsElement {
         buf.writeBoolean(rigidBody.shouldDoTerrainLoading());
         buf.writeUuid(rigidBody.getPriorityPlayer() == null ? new UUID(0,  0) : rigidBody.getPriorityPlayer().getUuid());
 
-        PlayerLookup.tracking(asEntity()).forEach(player -> ServerPlayNetworking.send(player, RayonEntityCommon.PROPERTIES, buf));
+        PlayerLookup.tracking(asEntity()).forEach(player -> ServerPlayNetworking.send(player, RayonEntity.PROPERTIES, buf));
         rigidBody.setPropertiesDirty(false);
     }
 
     default Packet<?> getSpawnPacket() {
-        ElementRigidBody rigidBody = getRigidBody();
-        PacketByteBuf buf = PacketByteBufs.create();
+        var rigidBody = getRigidBody();
+        var buf = PacketByteBufs.create();
 
         buf.writeInt(asEntity().getId());
         buf.writeUuid(asEntity().getUuid());
@@ -106,6 +115,6 @@ public interface EntityPhysicsElement extends PhysicsElement {
         VectorHelper.toBuffer(buf, rigidBody.getAngularVelocity(new Vector3f()));
         QuaternionHelper.toBuffer(buf, rigidBody.getPhysicsRotation(new Quaternion()));
 
-        return ServerPlayNetworking.createS2CPacket(RayonEntityCommon.SPAWN, buf);
+        return ServerPlayNetworking.createS2CPacket(RayonEntity.SPAWN, buf);
     }
 }

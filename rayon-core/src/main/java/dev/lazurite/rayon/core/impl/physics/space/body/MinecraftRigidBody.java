@@ -5,8 +5,8 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.physics.debug.DebugLayer;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
 import dev.lazurite.rayon.core.impl.util.math.Frame;
 
@@ -23,7 +23,7 @@ public abstract class MinecraftRigidBody extends PhysicsRigidBody {
     private final Frame frame = new Frame();
     private boolean shouldResetFrame;
 
-    public MinecraftRigidBody(MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution) {
+    public MinecraftRigidBody(MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(shape, mass);
         this.space = space;
         this.setDragCoefficient(dragCoefficient);
@@ -106,10 +106,6 @@ public abstract class MinecraftRigidBody extends PhysicsRigidBody {
         return 0.5f;
     }
 
-    public DebugLayer getDebugLayer() {
-        return DebugLayer.BLOCK;
-    }
-
     public void scheduleFrameReset() {
         this.shouldResetFrame = true;
     }
@@ -130,5 +126,14 @@ public abstract class MinecraftRigidBody extends PhysicsRigidBody {
 
     public Frame getFrame() {
         return this.frame;
+    }
+
+    public MinecraftSpace getSpace() {
+        return this.space;
+    }
+
+    @Override
+    public MinecraftShape getCollisionShape() {
+        return (MinecraftShape) super.getCollisionShape();
     }
 }

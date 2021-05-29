@@ -1,9 +1,5 @@
 archivesBaseName = "rayon-entity"
 
-repositories {
-    maven { url "https://jitpack.io" }
-}
-
 dependencies {
     // Rayon Core
     implementation project(":rayon-core")

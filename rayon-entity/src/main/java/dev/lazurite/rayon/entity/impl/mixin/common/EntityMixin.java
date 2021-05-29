@@ -2,7 +2,7 @@ package dev.lazurite.rayon.entity.impl.mixin.common;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin {
     @Inject(method = "getVelocity", at = @At("HEAD"), cancellable = true)
     public void getVelocity(CallbackInfoReturnable<Vec3d> info) {
-        if (this instanceof EntityPhysicsElement && RayonCoreCommon.isImmersivePortalsPresent()) {
+        if (this instanceof EntityPhysicsElement && RayonCore.isImmersivePortalsPresent()) {
             info.setReturnValue(VectorHelper.vector3fToVec3d(
                 ((EntityPhysicsElement) this).getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.05f).multLocal(0.2f)
             ));

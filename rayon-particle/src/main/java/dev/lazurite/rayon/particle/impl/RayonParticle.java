@@ -5,7 +5,7 @@ import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import dev.lazurite.rayon.particle.impl.space.ParticleSpace;
 import net.fabricmc.api.ClientModInitializer;
 
-public class RayonParticleClient implements ClientModInitializer {
+public class RayonParticle implements ClientModInitializer {
     public static final String MODID = "rayon-particle";
 
     @Override

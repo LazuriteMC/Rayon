@@ -4,7 +4,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.util.supplier.player.ClientPlayerSupplier;
@@ -30,13 +30,13 @@ import org.apache.logging.log4j.Logger;
  * as receiving {@link EntityPhysicsElement} movement updates from prioritized clients.
  * @see RayonEntityClient
  */
-public class RayonEntityCommon implements ModInitializer {
+public class RayonEntity implements ModInitializer {
 	public static final String MODID = "rayon-entity";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Entity");
 
 	public static final Identifier MOVEMENT_UPDATE = new Identifier(MODID, "entity_movement_update");
-	public static final Identifier SPAWN = new Identifier(RayonCoreCommon.MODID, "element_spawn");
-	public static final Identifier PROPERTIES = new Identifier(RayonCoreCommon.MODID, "element_properties");
+	public static final Identifier SPAWN = new Identifier(RayonCore.MODID, "element_spawn");
+	public static final Identifier PROPERTIES = new Identifier(RayonCore.MODID, "element_properties");
 
 	@Override
 	public void onInitialize() {

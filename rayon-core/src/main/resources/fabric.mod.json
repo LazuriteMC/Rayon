@@ -11,7 +11,9 @@
   "mixins": [ "rayon-core.mixins.json" ],
 
   "entrypoints": {
-    "main": [ "dev.lazurite.rayon.core.impl.RayonCoreCommon" ],
+    "main": [
+      "dev.lazurite.rayon.core.impl.RayonCore"
+    ],
     "client": [ "dev.lazurite.rayon.core.impl.RayonCoreClient" ]
   },
 

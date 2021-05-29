@@ -1,10 +1,12 @@
 package dev.lazurite.rayon.core.api;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -44,6 +46,9 @@ public interface PhysicsElement {
      * @return the {@link ElementRigidBody}
      */
     ElementRigidBody getRigidBody();
+
+    @Environment(EnvType.CLIENT)
+    MinecraftShape generateShape();
 
     /**
      * This is called whenever the element is loaded into the simulation. Any

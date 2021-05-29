@@ -25,7 +25,7 @@ import java.util.UUID;
  * The client entry point for Rayon Entity. Handles the loading and unloading
  * of entities into the {@link MinecraftSpace} as well as {@link EntityPhysicsElement}
  * movement and property updates.
- * @see RayonEntityCommon
+ * @see RayonEntity
  */
 public class RayonEntityClient implements ClientModInitializer {
     @Override
@@ -36,7 +36,7 @@ public class RayonEntityClient implements ClientModInitializer {
             }
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.MOVEMENT_UPDATE, (client, handler, buf, sender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(RayonEntity.MOVEMENT_UPDATE, (client, handler, buf, sender) -> {
             int entityId = buf.readInt();
             RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
             boolean reset = buf.readBoolean();
@@ -73,7 +73,7 @@ public class RayonEntityClient implements ClientModInitializer {
             }
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.PROPERTIES, (client, handler, buf, sender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(RayonEntity.PROPERTIES, (client, handler, buf, sender) -> {
             int entityId = buf.readInt();
             RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
 
@@ -113,7 +113,7 @@ public class RayonEntityClient implements ClientModInitializer {
             }
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(RayonEntityCommon.SPAWN, (client, handler, buf, sender) -> {
+        ClientPlayNetworking.registerGlobalReceiver(RayonEntity.SPAWN, (client, handler, buf, sender) -> {
             int id = buf.readInt();
             UUID uuid = buf.readUuid();
             EntityType<?> type = Registry.ENTITY_TYPE.get(buf.readVarInt());

@@ -1,11 +1,9 @@
 package dev.lazurite.rayon.core.impl.physics.space.body;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.physics.debug.DebugLayer;
+import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,15 +19,16 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ElementRigidBody extends MinecraftRigidBody {
     private final PhysicsElement element;
+
     private boolean propertiesDirty;
     private PlayerEntity priorityPlayer;
 
-    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape, float mass, float dragCoefficient, float friction, float restitution) {
+    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(space, shape, mass, dragCoefficient, friction, restitution);
         this.element = element;
     }
 
-    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, CollisionShape shape) {
+    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape shape) {
         this(element, space, shape, 1.0f, 0.05f, 1.0f, 0.5f);
     }
 
@@ -39,9 +38,9 @@ public class ElementRigidBody extends MinecraftRigidBody {
      * @param entity the element to base this body around
      */
     public ElementRigidBody(Entity entity) {
-        this((PhysicsElement) entity, MinecraftSpace.get(entity.getEntityWorld()), new BoundingBoxShape(entity.getBoundingBox()));
+//        this((PhysicsElement) entity, MinecraftSpace.get(entity.getEntityWorld()), new BoundingBoxShape(entity.getBoundingBox()));
+        this((PhysicsElement) entity, MinecraftSpace.get(entity.getEntityWorld()), MinecraftShape.of(entity.getBoundingBox()));
     }
-
 
     public PhysicsElement getElement() {
         return this.element;
@@ -57,11 +56,6 @@ public class ElementRigidBody extends MinecraftRigidBody {
 
     public boolean arePropertiesDirty() {
         return this.propertiesDirty;
-    }
-
-    @Override
-    public DebugLayer getDebugLayer() {
-        return DebugLayer.BODY;
     }
 
     public boolean needsMovementUpdate() {

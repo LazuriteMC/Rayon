@@ -5,18 +5,12 @@ plugins {
 archivesBaseName = "rayon-core"
 
 repositories {
-    maven { url "https://jitpack.io" }
-    maven { url "https://lazurite.dev/releases" }
     maven { url "https://hephaestus.dev/release" }
 }
 
 dependencies {
     // Fabric API
     modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
-
-    // Transporter
-    modImplementation "dev.lazurite:transporter:${project.transporter_version}"
-    include "dev.lazurite:transporter:${project.transporter_version}"
 
     // Bullet
     shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"

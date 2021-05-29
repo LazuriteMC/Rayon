@@ -10,11 +10,10 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.RayonCoreCommon;
+import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.environment.FluidManager;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
 import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
@@ -45,12 +44,11 @@ import java.util.function.BooleanSupplier;
  * @see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
-    public static final Identifier MAIN = new Identifier(RayonCoreCommon.MODID, "main");
+    public static final Identifier MAIN = new Identifier(RayonCore.MODID, "main");
     private static final int MAX_PRESIM_STEPS = 10;
 
     private volatile boolean stepping;
     private final TerrainManager terrainManager;
-    private final FluidManager fluidManager;
     private final PhysicsThread thread;
     private final World world;
     private int presimSteps;
@@ -70,7 +68,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.thread = thread;
         this.world = world;
         this.terrainManager = new TerrainManager(this);
-        this.fluidManager = new FluidManager(this);
         this.addCollisionListener(this);
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
     }
@@ -126,12 +123,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                 });
             });
 
-            getRigidBodiesByClass(MinecraftRigidBody.class).forEach(rigidBody -> {
-                if (rigidBody.shouldDoFluidResistance()) {
-                    fluidManager.doResistanceOn(rigidBody);
-                    fluidManager.doBuoyancyOn(rigidBody);
-                }
-            });
+//            getRigidBodiesByClass(MinecraftRigidBody.class).forEach(rigidBody -> {
+//                if (rigidBody.shouldDoFluidResistance()) {
+//                    fluidManager.doResistanceOn(rigidBody);
+//                    fluidManager.doBuoyancyOn(rigidBody);
+//                }
+//            });
 
             getThread().execute(() -> {
                 getRigidBodiesByClass(MinecraftRigidBody.class).forEach(rigidBody -> {
@@ -213,10 +210,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     public TerrainManager getTerrainManager() {
         return this.terrainManager;
-    }
-
-    public FluidManager getFluidManager() {
-        return this.fluidManager;
     }
 
     /**
