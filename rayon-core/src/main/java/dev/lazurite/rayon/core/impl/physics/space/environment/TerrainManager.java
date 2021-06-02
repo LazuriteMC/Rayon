@@ -9,15 +9,19 @@ import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
+import dev.lazurite.transporter.Transporter;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.buffer.PatternBuffer;
 import dev.lazurite.transporter.api.pattern.Pattern;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -97,34 +101,14 @@ public final class TerrainManager {
 
                     /* Make a pattern shape if applicable */
                     if (!blockState.isFullCube(world, blockPos)) {
-                        Pattern pattern;
+                        var pattern = Transporter.getPatternBuffer().get(Registry.BLOCK.getId(blockState.getBlock()));
 
-                        if (world.isClient()) {
-                            var transformation = new MatrixStack();
-                            transformation.scale(0.95f, 0.95f, 0.95f);
-                            transformation.translate(-0.5f, -0.5f, -0.5f);
-
-                            var blockEntity = world.getBlockEntity(blockPos);
-
-                            try {
-                                if (blockEntity != null) {
-                                    pattern = Disassembler.getBlockEntity(blockEntity, transformation);
-                                } else {
-                                    pattern = Disassembler.getBlock(blockState, transformation);
-                                }
-                            } catch (Exception e) {
-                                pattern = null;
-                            }
-                        } else {
-                            pattern = PatternBuffer.getPatternBuffer(world).get(Registry.BLOCK.getId(blockState.getBlock()));
+                        if (pattern == null && world.isClient()) {
+                            tryGenerateShape(world, blockPos, blockState);
                         }
 
-                        if (pattern != null && !(blockRigidBody.getCollisionShape() instanceof MinecraftShape)) {
+                        if (pattern != null && blockRigidBody.getCollisionShape() == null) {
                             blockRigidBody.setCollisionShape(MinecraftShape.of(pattern));
-
-                            if (world.isClient()) {
-                                PatternBuffer.getPatternBuffer(world).put(pattern);
-                            }
                         }
                     }
 
@@ -179,5 +163,24 @@ public final class TerrainManager {
         }
 
         return null;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static void tryGenerateShape(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        var transformation = new MatrixStack();
+        transformation.scale(0.95f, 0.95f, 0.95f);
+        transformation.translate(-0.5f, -0.5f, -0.5f);
+
+        var blockEntity = blockView.getBlockEntity(blockPos);
+
+        try {
+            if (blockEntity != null) {
+                Disassembler.getBlockEntity(blockEntity, transformation);
+            } else {
+                Disassembler.getBlock(blockState, transformation);
+            }
+        } catch (Exception ignored) {
+
+        }
     }
 }

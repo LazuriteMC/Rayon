@@ -1,9 +1,11 @@
 plugins {
+	id 'com.github.johnrengelman.shadow' version "5.2.0"
 	id 'fabric-loom' version '0.8-SNAPSHOT'
 	id 'maven-publish'
 }
 
 allprojects { project ->
+	apply plugin: 'com.github.johnrengelman.shadow'
 	apply plugin: 'fabric-loom'
 	apply plugin: 'maven-publish'
 	apply plugin: 'java-library'
@@ -19,16 +21,30 @@ allprojects { project ->
 		maven { url "https://jitpack.io" }
 		maven { url "https://maven.fabricmc.net/" }
 		maven { url "https://lazurite.dev/releases" }
+		maven { url "https://hephaestus.dev/release" }
 	}
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
 		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-		implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+		// Bullet
+		implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+
+		// Hermes
+		modImplementation "dev.inkwell:hermes:${project.hermes_version}"
+
+		// Transporter
 		modImplementation "dev.lazurite:transporter:${project.transporter_version}"
 		include "dev.lazurite:transporter:${project.transporter_version}"
+
+		// Immersive Portals Core
+		modCompileOnly("com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:${project.immersive_portals_version}") {
+			exclude(group: "net.fabricmc.fabric-api")
+		}
 	}
 
 	sourceSets {
@@ -135,4 +151,13 @@ task publishToMavenLocal(overwrite: true) {
 	subprojects {
 		publishToMavenLocal
 	}
+}
+
+shadowJar {
+	configurations = [project.configurations.shadow]
+}
+
+remapJar {
+	dependsOn shadowJar
+	input.set shadowJar.archiveFile.get()
 }

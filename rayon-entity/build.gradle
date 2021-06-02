@@ -1,18 +1,5 @@
 archivesBaseName = "rayon-entity"
 
 dependencies {
-    // Rayon Core
     implementation project(":rayon-core")
-
-    // Fabric API
-    modImplementation fabricApi.module("fabric-api-base", project.fabric_version)
-    modImplementation fabricApi.module("fabric-object-builder-api-v1", project.fabric_version)
-    modImplementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
-    modImplementation fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version)
-    modImplementation fabricApi.module("fabric-renderer-registries-v1", project.fabric_version)
-
-    // Immersive Portals
-    modCompileOnly("com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:${project.immersive_portals_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
 }
