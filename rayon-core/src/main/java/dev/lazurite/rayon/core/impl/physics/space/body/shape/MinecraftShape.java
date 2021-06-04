@@ -33,12 +33,10 @@ public class MinecraftShape extends CompoundCollisionShape {
     }
 
     public static MinecraftShape of(Box box) {
-        System.out.println(box);
         return MinecraftShape.of(BoxHelper.minecraftToBullet(box));
     }
 
     public static MinecraftShape of(BoundingBox box) {
-        System.out.println(box);
         var x = box.getXExtent() * 0.5f;
         var y = box.getYExtent() * 0.5f;
         var z = box.getZExtent() * 0.5f;
