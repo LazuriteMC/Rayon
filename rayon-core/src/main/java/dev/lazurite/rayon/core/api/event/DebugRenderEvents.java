@@ -15,9 +15,9 @@ import net.minecraft.client.render.BufferBuilder;
  */
 public class DebugRenderEvents {
     public static final Event<BeforeRender> BEFORE_RENDER = EventFactory.createArrayBacked(BeforeRender.class, (callbacks) -> (context) -> {
-//        for (BeforeRender event : callbacks) {
-//            event.onRender(new Context(space, builder, tickDelta));
-//        }
+        for (BeforeRender event : callbacks) {
+            event.onRender(context);
+        }
     });
 
     private DebugRenderEvents() { }
@@ -27,8 +27,6 @@ public class DebugRenderEvents {
         void onRender(Context context);
     }
 
-    public record Context(MinecraftSpace space, BufferBuilder builder, float tickDelta) {
-
-    }
+    public record Context(MinecraftSpace space, BufferBuilder builder, float tickDelta) { }
 }
 

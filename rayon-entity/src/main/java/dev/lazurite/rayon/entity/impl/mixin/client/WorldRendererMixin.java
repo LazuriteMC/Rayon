@@ -6,8 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.util.math.Vec3d;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
@@ -21,6 +22,8 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(WorldRenderer.class)
 @Environment(EnvType.CLIENT)
 public class WorldRendererMixin {
+    @Shadow @Final private MinecraftClient client;
+
     @ModifyArgs(
             method = "renderEntity",
             at = @At(
@@ -30,8 +33,8 @@ public class WorldRendererMixin {
     )
     public void render(Args args) {
         if (args.get(0) instanceof EntityPhysicsElement) {
-            Vector3f location = ((EntityPhysicsElement) args.get(0)).getPhysicsLocation(new Vector3f(), args.get(5));
-            Vec3d cameraPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
+            var location = ((EntityPhysicsElement) args.get(0)).getPhysicsLocation(new Vector3f(), args.get(5));
+            var cameraPos = this.client.gameRenderer.getCamera().getPos();
             args.set(1, location.x - cameraPos.x);
             args.set(2, location.y - cameraPos.y);
             args.set(3, location.z - cameraPos.z);

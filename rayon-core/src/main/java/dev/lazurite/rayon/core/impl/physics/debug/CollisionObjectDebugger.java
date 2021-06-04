@@ -8,6 +8,7 @@ import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
 import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -41,28 +42,31 @@ public final class CollisionObjectDebugger {
         return this.enabled;
     }
 
-    public void render(World world, MatrixStack stack, float tickDelta) {
-        DebugRenderEvents.BEFORE_RENDER.register(context -> {
+    public void render(World world, float tickDelta) {
+        var stack = new MatrixStack();
+        var space = MinecraftSpace.get(world);
+        var camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 
-        });
-        for (var body : MinecraftSpace.get(world).getRigidBodiesByClass(MinecraftRigidBody.class)) {
-            var builder = Tessellator.getInstance().getBuffer();
-            RenderSystem.lineWidth(2.0F);
+        var builder = Tessellator.getInstance().getBuffer();
+        builder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
+        DebugRenderEvents.BEFORE_RENDER.invoker().onRender(new DebugRenderEvents.Context(space, builder, tickDelta));
+
+        for (var body : space.getRigidBodiesByClass(MinecraftRigidBody.class)) {
             var points = body.getCollisionShape().getTriangles();
             var color = body.getOutlineColor();
             var alpha = body.getOutlineAlpha();
 
             var position = body.isStatic() ?
-                    body.getPhysicsLocation(new Vector3f()) :
-                    body.getFrame().getLocation(new Vector3f(), tickDelta);
+                    body.getPhysicsLocation(new Vector3f()).subtract(VectorHelper.vec3dToVector3f(camera.getPos())) :
+                    body.getFrame().getLocation(new Vector3f(), tickDelta).subtract(VectorHelper.vec3dToVector3f(camera.getPos()));
+
             var rotation = body.isStatic() ?
                     body.getPhysicsRotation(new Quaternion()) :
                     body.getFrame().getRotation(new Quaternion(), tickDelta);
 
             stack.push();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            builder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
             stack.translate(position.x, position.y, position.z);
             stack.multiply(QuaternionHelper.bulletToMinecraft(rotation));
 
@@ -72,7 +76,8 @@ public final class CollisionObjectDebugger {
             }
 
             stack.pop();
-            Tessellator.getInstance().draw();
         }
+
+        Tessellator.getInstance().draw();
     }
 }
