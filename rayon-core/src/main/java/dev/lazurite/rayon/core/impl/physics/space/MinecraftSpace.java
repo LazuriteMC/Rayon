@@ -15,7 +15,7 @@ import dev.lazurite.rayon.core.impl.physics.space.environment.EntityComponent;
 import dev.lazurite.rayon.core.impl.physics.space.environment.FluidComponent;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainComponent;
 import dev.lazurite.rayon.core.impl.physics.space.environment.WorldComponent;
-import dev.lazurite.rayon.core.impl.util.storage.SpaceStorage;
+import dev.lazurite.rayon.core.impl.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;

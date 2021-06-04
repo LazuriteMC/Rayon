@@ -1,11 +1,11 @@
 package dev.lazurite.rayon.core.impl.physics.space.environment;
 
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.util.BlockProps;
 import dev.lazurite.rayon.core.impl.util.model.Clump;
 import dev.lazurite.transporter.Transporter;
 import dev.lazurite.transporter.api.Disassembler;
@@ -13,7 +13,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
@@ -79,9 +78,9 @@ public class TerrainComponent implements WorldComponent {
                 }
 
                 /* Apply custom block properties */
-                Identifier blockId = Registry.BLOCK.getId(blockState.getBlock());
+                var blockId = Registry.BLOCK.getId(blockState.getBlock());
                 if (!blockId.getNamespace().equals("minecraft")) {
-                    RayonCore.BlockProperties props = RayonCore.getBlockProps().get(blockId);
+                    var props = BlockProps.get().get(blockId);
 
                     if (props != null) {
                         collidable = props.collidable();

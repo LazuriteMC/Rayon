@@ -47,9 +47,6 @@ public interface PhysicsElement {
      */
     ElementRigidBody getRigidBody();
 
-    @Environment(EnvType.CLIENT)
-    MinecraftShape generateShape();
-
     /**
      * This is called whenever the element is loaded into the simulation. Any
      * initial values you want set (e.g. position, rotation, velocity, etc.)

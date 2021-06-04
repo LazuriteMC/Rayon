@@ -3,11 +3,12 @@ package dev.lazurite.rayon.core.impl.physics;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCore;
+import dev.lazurite.rayon.core.impl.RayonCoreClient;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.util.supplier.SideSupplier;
 import dev.lazurite.rayon.core.impl.util.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.core.impl.util.supplier.world.WorldSupplier;
 import dev.lazurite.rayon.core.impl.util.Pausable;
-import dev.lazurite.rayon.core.impl.util.storage.ThreadStorage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
@@ -34,7 +35,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     public volatile boolean running = true;
 
     public static PhysicsThread get(ReentrantThreadExecutor<? extends Runnable> executor) {
-        return ((ThreadStorage) executor).getPhysicsThread();
+        return SideSupplier.isClient(executor) ? RayonCoreClient.getThread() : RayonCore.getThread();
     }
 
     public static PhysicsThread get(World world) {

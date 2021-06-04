@@ -4,13 +4,9 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
-import dev.lazurite.transporter.api.Disassembler;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -22,13 +18,6 @@ import net.minecraft.util.registry.Registry;
 import java.util.UUID;
 
 public interface EntityPhysicsElement extends PhysicsElement {
-    @Override
-    @Environment(EnvType.CLIENT)
-    default MinecraftShape generateShape() {
-//        var pattern = Disassembler.getEntity(asEntity(), null);
-        return null;
-    }
-
     @Override
     default void reset() {
         var location = VectorHelper.vec3dToVector3f(asEntity().getPos().add(0, getRigidBody().boundingBox(new BoundingBox()).getYExtent(), 0));

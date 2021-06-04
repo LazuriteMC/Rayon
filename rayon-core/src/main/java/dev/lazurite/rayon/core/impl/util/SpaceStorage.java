@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.util.storage;
+package dev.lazurite.rayon.core.impl.util;
 
 import dev.lazurite.rayon.core.impl.mixin.common.WorldMixin;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
