@@ -1,7 +1,5 @@
 package dev.lazurite.rayon.core.impl.physics.space;
 
-import com.google.common.collect.Lists;
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
@@ -10,48 +8,45 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
-import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.physics.space.environment.EntityComponent;
+import dev.lazurite.rayon.core.impl.physics.space.environment.FluidComponent;
+import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainComponent;
+import dev.lazurite.rayon.core.impl.physics.space.environment.WorldComponent;
+import dev.lazurite.rayon.core.impl.util.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.util.math.BoxHelper;
-import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
-import dev.lazurite.rayon.core.impl.util.supplier.entity.EntitySupplier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
 /**
- * This is the physics simulation environment for all {@link BlockRigidBody}s and {@link ElementRigidBody}s. It runs
- * on a separate thread from the rest of the game using {@link PhysicsThread}. Users shouldn't have to interact with
- * this object too much.<br>
- * To gain access to the world's {@link MinecraftSpace}, you can call {@link MinecraftSpace#get(World)} or register
- * a step event in {@link PhysicsSpaceEvents}. As a rule of thumb, if you need to modify information in the physics
- * environment (e.g. add a rigid body or apply a force) then you should always perform those operations on the same
- * thread. The easiest way to get onto the physics thread is to queue a task using {@link PhysicsThread#execute(Runnable)}.
- * The {@link PhysicsThread} can be accessed using {@link MinecraftSpace#getThread()}. If you only need to read information
- * from the physics world, you don't need to queue a task.
+ * This is the main physics simulation used by Rayon. It loops using the {@link MinecraftSpace#step} method
+ * where all {@link WorldComponent} objects are applied just before queuing the actual simulation step
+ * as an asynchronous task. This way, the only thing that runs asynchronously is bullet itself. All of the setup,
+ * input, or otherwise user defined behavior happens on the game logic thread.
+ * <br><br>
+ * It is also worth noting that another
+ * simulation step will not be performed if the last step has taken longer than 50ms and is still executing upon the
+ * next tick. This really only happens if you are dealing with an ungodly amount of rigid bodies or your computer is
+ * simply a :tiny_potato:
  * @see PhysicsThread
  * @see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
-    public static final Identifier MAIN = new Identifier(RayonCore.MODID, "main");
     private static final int MAX_PRESIM_STEPS = 10;
 
-    private volatile boolean stepping;
-    private final TerrainManager terrainManager;
+    private final List<WorldComponent> worldComponents;
     private final PhysicsThread thread;
     private final World world;
     private int presimSteps;
+
+    private volatile boolean stepping;
 
     /**
      * Allows users to retrieve the {@link MinecraftSpace} associated
@@ -60,16 +55,20 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * @return the {@link MinecraftSpace}
      */
     public static MinecraftSpace get(World world) {
-        return ((SpaceStorage) world).getSpace(MAIN);
+        return ((SpaceStorage) world).getSpace();
     }
 
     public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
         super(broadphase);
         this.thread = thread;
         this.world = world;
-        this.terrainManager = new TerrainManager(this);
+        this.worldComponents = new ArrayList<>();
         this.addCollisionListener(this);
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
+
+        this.addWorldComponent(new EntityComponent());
+        this.addWorldComponent(new FluidComponent());
+        this.addWorldComponent(new TerrainComponent());
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
@@ -81,82 +80,56 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * <ul>
      *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
-     *     <li>Applies air drag force to all {@link ElementRigidBody}s.</li>
-     *     <li>Loads blocks into the simulation around {@link ElementRigidBody}s using {@link TerrainManager}.</li>
-     *     <li>Triggers all collision events (queues up tasks in server thread).</li>
-     *     <li>Steps the simulation using {@link PhysicsSpace#update(float, int)}.</li>
+     *     <li>Applies air drag force to {@link MinecraftRigidBody}s.</li>
+     *     <li>Loads blocks into the simulation around {@link MinecraftRigidBody}s using {@link TerrainComponent}.</li>
+     *     <li>Steps the simulation asynchronously.</li>
+     *     <li>Triggers all collision events.</li>
      * </ul>
      *
      * Additionally, none of the above steps execute when either the world is empty
      * (no {@link PhysicsRigidBody}s) or when the game is paused.
      *
      * @param shouldStep whether or not to fully step the simulation
-     * @see TerrainManager
+     * @see TerrainComponent
      * @see PhysicsSpaceEvents
      */
     public void step(BooleanSupplier shouldStep) {
+        getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
+
         if (shouldStep.getAsBoolean()) {
             stepping = true;
 
             /* World Step Event */
             PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
-            getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> {
-                rigidBody.getElement().step(this);
+            /* Step all elements */
+            getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> rigidBody.getElement().step(this));
 
-                /* Frame Update */
-                rigidBody.updateFrame();
+            /* Apply all world components */
+            getWorldComponents().forEach(worldComponent -> worldComponent.apply(this));
 
-                /* Entity Collisions */
-                BoundingBox box = rigidBody.boundingBox(new BoundingBox());
-                Vector3f location = rigidBody.getPhysicsLocation(new Vector3f()).subtract(new Vector3f(0, -box.getYExtent(), 0));
-                float mass = rigidBody.getMass();
-
-                EntitySupplier.getInsideOf(rigidBody).forEach(entity -> {
-                    Vector3f entityPos = VectorHelper.vec3dToVector3f(entity.getPos().add(0, entity.getBoundingBox().getYLength(), 0));
-                    Vector3f normal = location.subtract(entityPos).multLocal(new Vector3f(1, 0, 1)).normalize();
-
-                    Box intersection = entity.getBoundingBox().intersection(BoxHelper.bulletToMinecraft(box));
-                    Vector3f force = normal.clone().multLocal((float) intersection.getAverageSideLength() / (float) BoxHelper.bulletToMinecraft(box).getAverageSideLength())
-                            .multLocal(mass).multLocal(new Vector3f(1, 0, 1));
-                    rigidBody.applyCentralImpulse(force);
-                });
-            });
-
-//            getRigidBodiesByClass(MinecraftRigidBody.class).forEach(rigidBody -> {
-//                if (rigidBody.shouldDoFluidResistance()) {
-//                    fluidManager.doResistanceOn(rigidBody);
-//                    fluidManager.doBuoyancyOn(rigidBody);
-//                }
-//            });
-
-            getThread().execute(() -> {
-                getRigidBodiesByClass(MinecraftRigidBody.class).forEach(rigidBody -> {
-                    if (rigidBody.shouldDoTerrainLoading()) {
-                        Vector3f pos = rigidBody.getPhysicsLocation(new Vector3f());
-                        Box box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance());
-                        terrainManager.load(rigidBody, box);
-                    }
-                });
-
-                terrainManager.purge();
-
-                /* Step Simulation */
+            /* Step Simulation Asynchronously */
+            CompletableFuture.runAsync(() -> {
                 if (presimSteps > MAX_PRESIM_STEPS) {
-                    update(1 / 20f, 5);
+                    update(0.05f, 5);
                 } else ++presimSteps;
-
-                distributeEvents();
-                stepping = false;
-            });
-        } else {
-            // If we made it here, it means we're skipping steps due to poor performance.
-            getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
+            }, getWorkerThread()).thenRunAsync(() -> {
+                this.distributeEvents();
+                this.stepping = false;
+            }, getWorkerThread().getParentExecutor());
         }
     }
 
-    public void load(PhysicsElement element) {
-        ElementRigidBody rigidBody = element.getRigidBody();
+    public void addWorldComponent(WorldComponent worldComponent) {
+        this.worldComponents.add(worldComponent);
+    }
+
+    public List<WorldComponent> getWorldComponents() {
+        return new ArrayList<>(worldComponents);
+    }
+
+    public void addPhysicsElement(PhysicsElement element) {
+        var rigidBody = element.getRigidBody();
 
         if (!rigidBody.isInWorld()) {
             element.reset();
@@ -166,14 +139,14 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         rigidBody.activate();
     }
 
-    public void unload(PhysicsElement element) {
+    public void removePhysicsElement(PhysicsElement element) {
         if (element.getRigidBody().isInWorld()) {
             removeCollisionObject(element.getRigidBody());
         }
     }
 
     public boolean isServer() {
-        return getThread().getParentExecutor() instanceof MinecraftServer;
+        return getWorkerThread().getParentExecutor() instanceof MinecraftServer;
     }
 
     public boolean isStepping() {
@@ -189,9 +162,9 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     public <T> List<T> getRigidBodiesByClass(Class<T> type) {
-        List<T> out = Lists.newArrayList();
+        var out = new ArrayList<T>();
 
-        for (PhysicsRigidBody body : getRigidBodyList()) {
+        for (var body : getRigidBodyList()) {
             if (type.isAssignableFrom(body.getClass())) {
                 out.add(type.cast(body));
             }
@@ -200,16 +173,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return out;
     }
 
-    public PhysicsThread getThread() {
+    public PhysicsThread getWorkerThread() {
         return this.thread;
     }
 
     public World getWorld() {
         return this.world;
-    }
-
-    public TerrainManager getTerrainManager() {
-        return this.terrainManager;
     }
 
     /**
@@ -218,26 +187,19 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      */
     @Override
     public void collision(PhysicsCollisionEvent event) {
-        Executor thread = getThread().getParentExecutor();
         float impulse = event.getAppliedImpulse();
 
         /* Element on Element */
-        if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof ElementRigidBody) {
-            PhysicsElement element1 = ((ElementRigidBody) event.getObjectA()).getElement();
-            PhysicsElement element2 = ((ElementRigidBody) event.getObjectB()).getElement();
-            ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(thread, element1, element2, impulse);
+        if (event.getObjectA() instanceof ElementRigidBody rigidBodyA && event.getObjectB() instanceof ElementRigidBody rigidBodyB) {
+            ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse);
 
         /* Block on Element */
-        } else if (event.getObjectA() instanceof BlockRigidBody && event.getObjectB() instanceof ElementRigidBody) {
-            BlockRigidBody block = (BlockRigidBody) event.getObjectA();
-            PhysicsElement element = ((ElementRigidBody) event.getObjectB()).getElement();
-            ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
+        } else if (event.getObjectA() instanceof BlockRigidBody block && event.getObjectB() instanceof ElementRigidBody rigidBody) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(rigidBody.getElement(), block, impulse);
 
         /* Element on Block */
-        } else if (event.getObjectA() instanceof ElementRigidBody && event.getObjectB() instanceof BlockRigidBody) {
-            BlockRigidBody block = (BlockRigidBody) event.getObjectB();
-            PhysicsElement element = ((ElementRigidBody) event.getObjectA()).getElement();
-            ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(thread, element, block, impulse);
+        } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof BlockRigidBody block) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(rigidBody.getElement(), block, impulse);
         }
     }
 }

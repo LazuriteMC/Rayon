@@ -13,6 +13,7 @@ import net.minecraft.world.World;
  *     <li><b>Init:</b> Called just after the space is created</li>
  *     <li><b>Step:</b> Called each world step</li>
  * </ul>
+ * @since 1.0.0
  */
 public final class PhysicsSpaceEvents {
     public static final Event<PreInit> PREINIT = EventFactory.createArrayBacked(PreInit.class, (callbacks) -> (thread, world) -> {

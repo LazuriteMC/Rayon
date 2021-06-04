@@ -43,21 +43,21 @@ public class RayonEntity implements ModInitializer {
 		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
 			if (entity instanceof EntityPhysicsElement && !PlayerLookup.tracking(entity).isEmpty()) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
-				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
+				space.getWorkerThread().execute(() -> space.addPhysicsElement((EntityPhysicsElement) entity));
 			}
 		});
 
 		EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
 			if (entity instanceof EntityPhysicsElement) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
-				space.getThread().execute(() -> space.load((EntityPhysicsElement) entity));
+				space.getWorkerThread().execute(() -> space.addPhysicsElement((EntityPhysicsElement) entity));
 			}
 		});
 
 		EntityTrackingEvents.STOP_TRACKING.register((entity, player) -> {
 			if (entity instanceof EntityPhysicsElement && PlayerLookup.tracking(entity).isEmpty()) {
 				MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
-				space.getThread().execute(() -> space.unload((EntityPhysicsElement) entity));
+				space.getWorkerThread().execute(() -> space.removePhysicsElement((EntityPhysicsElement) entity));
 			}
 		});
 

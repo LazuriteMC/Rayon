@@ -23,7 +23,7 @@ public abstract class McHelperMixin {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) entity).getRigidBody();
             MinecraftSpace space = MinecraftSpace.get(entity.getEntityWorld());
 
-            space.getThread().execute(() -> {
+            space.getWorkerThread().execute(() -> {
                 rigidBody.setPhysicsLocation(VectorHelper.vec3dToVector3f(pos));
                 rigidBody.scheduleFrameReset();
                 ((EntityPhysicsElement) entity).sendMovementUpdate(true);

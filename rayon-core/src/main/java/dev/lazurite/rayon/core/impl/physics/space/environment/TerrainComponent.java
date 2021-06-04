@@ -1,18 +1,14 @@
 package dev.lazurite.rayon.core.impl.physics.space.environment;
 
-import com.google.common.collect.Lists;
-import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.space.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
-import dev.lazurite.rayon.core.impl.physics.space.body.shape.BoundingBoxShape;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
+import dev.lazurite.rayon.core.impl.util.model.Clump;
 import dev.lazurite.transporter.Transporter;
 import dev.lazurite.transporter.api.Disassembler;
-import dev.lazurite.transporter.api.buffer.PatternBuffer;
-import dev.lazurite.transporter.api.pattern.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -22,23 +18,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
 import java.util.*;
 
 /**
- * This class is used primarily by {@link MinecraftSpace} in order
- * to load and unload blocks from the simulation. The reason not every block is loaded is
- * because it is too resource intensive to track thousands of blocks within the physics
- * simulation. Instead, only a set amount are made available within the world at a time.
+ * Used for loading blocks into the simulation so that rigid bodies can interact with them.
  * @see MinecraftSpace
+ * @see WorldComponent
  */
-public final class TerrainManager {
-    private final List<BlockRigidBody> toKeep = Lists.newArrayList();
-    private final MinecraftSpace space;
+public class TerrainComponent implements WorldComponent {
+    @Override
+    public void apply(MinecraftSpace space) {
+        final var toKeep = new ArrayList<BlockRigidBody>();
 
-    public TerrainManager(MinecraftSpace space) {
-        this.space = space;
+        for (var rigidBody : space.getRigidBodiesByClass(MinecraftRigidBody.class)) {
+            if (rigidBody.shouldDoTerrainLoading()) {
+                var pos = rigidBody.getPhysicsLocation(new Vector3f());
+                var box = new Box(new BlockPos(pos.x, pos.y, pos.z)).expand(rigidBody.getEnvironmentLoadDistance());
+                toKeep.addAll(getOrCreateAround(rigidBody, box));
+            }
+        }
+
+        for (var rigidBody : space.getRigidBodiesByClass(BlockRigidBody.class)) {
+            if (!toKeep.contains(rigidBody)) {
+                space.removeCollisionObject(rigidBody);
+            }
+        }
     }
 
     /**
@@ -46,11 +51,14 @@ public final class TerrainManager {
      * is also where each block's {@link BlockRigidBody} object is instantiated
      * and properties such as position, shape, friction, etc. are applied here.
      * @param rigidBody the rigid body to be loaded
-     * @param box the {@link Box} area around the element to search for blocks within
+     * @param bubble the {@link Box} area around the element to search for blocks within
+     * @return a list of {@link BlockRigidBody}s that were loaded or otherwise should be kept
      */
-    public void load(MinecraftRigidBody rigidBody, Box box) {
-        World world = space.getWorld();
-        Clump clump = new Clump(world, box);
+    public static List<BlockRigidBody> getOrCreateAround(MinecraftRigidBody rigidBody, Box bubble) {
+        final var space = rigidBody.getSpace();
+        final var world = space.getWorld();
+        final var clump = new Clump(world, bubble);
+        final var toKeep = new ArrayList<BlockRigidBody>();
 
         if (rigidBody.isActive()) {
             clump.getData().forEach(blockInfo -> {
@@ -126,33 +134,7 @@ public final class TerrainManager {
         }
 
         rigidBody.setClump(clump);
-    }
-
-    /**
-     * Prune out any unnecessary blocks from the world during each call
-     * to {@link MinecraftSpace#step}. The purpose is to prevent
-     * any trailing or residual blocks from being left over from a
-     * previous {@link TerrainManager#load} call.
-     * <b>Note:</b> This method should only be called after every element
-     * has been passed through the loading process. Otherwise, blocks will
-     * be removed from the simulation prematurely and cause you a headache.
-     * @see TerrainManager#load
-     */
-    public void purge() {
-        List<BlockRigidBody> toRemove = Lists.newArrayList();
-
-        space.getRigidBodiesByClass(BlockRigidBody.class).forEach(body -> {
-            if (!toKeep.contains(body)) {
-                toRemove.add(body);
-            }
-        });
-
-        toRemove.forEach(space::removeCollisionObject);
-        toKeep.clear();
-    }
-
-    public MinecraftSpace getSpace() {
-        return space;
+        return toKeep;
     }
 
     public static BlockRigidBody findBlockAtPos(MinecraftSpace space, BlockPos blockPos) {

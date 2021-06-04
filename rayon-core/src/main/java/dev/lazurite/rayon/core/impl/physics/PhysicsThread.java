@@ -6,8 +6,8 @@ import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.core.impl.util.supplier.world.WorldSupplier;
-import dev.lazurite.rayon.core.impl.physics.util.thread.Pausable;
-import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
+import dev.lazurite.rayon.core.impl.util.Pausable;
+import dev.lazurite.rayon.core.impl.util.storage.ThreadStorage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
@@ -38,7 +38,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     }
 
     public static PhysicsThread get(World world) {
-        return MinecraftSpace.get(world).getThread();
+        return MinecraftSpace.get(world).getWorkerThread();
     }
 
     public PhysicsThread(Executor parentExecutor, Thread parentThread, WorldSupplier worldSupplier, String name) {
@@ -74,6 +74,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
      * object is provided within the consumer.
      * @param task the task to run
      */
+    @Override
     public void execute(@NotNull Runnable task) {
         tasks.add(task);
     }

@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.core.api;
 
 import com.jme3.bounding.BoundingBox;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
@@ -15,6 +14,7 @@ import net.minecraft.entity.Entity;
  * This is the main interface you'll want to implement into your physics object. It provides
  * the basic components that a {@link PhysicsElement} needs in order to behave properly in the
  * {@link MinecraftSpace}.
+ * @since 1.0.0
  */
 public interface PhysicsElement {
     /**
@@ -54,7 +54,7 @@ public interface PhysicsElement {
      * This is called whenever the element is loaded into the simulation. Any
      * initial values you want set (e.g. position, rotation, velocity, etc.)
      * should be set here.
-     * @see MinecraftSpace#load(PhysicsElement) 
+     * @see MinecraftSpace#addPhysicsElement(PhysicsElement)
      */
     void reset();
 

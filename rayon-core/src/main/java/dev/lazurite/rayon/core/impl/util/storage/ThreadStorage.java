@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.physics.util.thread;
+package dev.lazurite.rayon.core.impl.util.storage;
 
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 

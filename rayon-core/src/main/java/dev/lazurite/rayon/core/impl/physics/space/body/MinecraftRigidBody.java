@@ -5,10 +5,15 @@ import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
-import dev.lazurite.rayon.core.impl.physics.space.util.Clump;
-import dev.lazurite.rayon.core.impl.util.math.Frame;
+import dev.lazurite.rayon.core.impl.util.model.Clump;
+import dev.lazurite.rayon.core.impl.util.model.Frame;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.MinecartEntity;
 
 public abstract class MinecraftRigidBody extends PhysicsRigidBody {
     private float dragCoefficient;
@@ -135,5 +140,9 @@ public abstract class MinecraftRigidBody extends PhysicsRigidBody {
     @Override
     public MinecraftShape getCollisionShape() {
         return (MinecraftShape) super.getCollisionShape();
+    }
+
+    public static boolean canCollideWith(Entity entity) {
+        return (entity instanceof BoatEntity || entity instanceof MinecartEntity || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement);
     }
 }

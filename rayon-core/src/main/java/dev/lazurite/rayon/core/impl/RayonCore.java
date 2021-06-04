@@ -5,9 +5,9 @@ import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import dev.lazurite.rayon.core.impl.util.supplier.world.ServerWorldSupplier;
-import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
-import dev.lazurite.rayon.core.impl.physics.util.NativeLoader;
-import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.util.storage.ThreadStorage;
+import dev.lazurite.rayon.core.impl.util.NativeLoader;
+import dev.lazurite.rayon.core.impl.util.storage.SpaceStorage;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -15,7 +15,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.CustomValue;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +39,7 @@ public class RayonCore implements ModInitializer {
 		NativeLoader.load();
 		loadBlockProps();
 
-		AtomicReference<PhysicsThread> thread = new AtomicReference<>();
+		var thread = new AtomicReference<PhysicsThread>();
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> thread.get().destroy());
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
@@ -59,13 +58,13 @@ public class RayonCore implements ModInitializer {
 		});
 
 		ServerTickEvents.START_WORLD_TICK.register(world -> {
-			MinecraftSpace space = MinecraftSpace.get(world);
+			var space = MinecraftSpace.get(world);
 			space.step(space::canStep);
 		});
 
 		ServerWorldEvents.LOAD.register((server, world) -> {
 			PhysicsSpaceEvents.PREINIT.invoker().onPreInit(thread.get(), world);
-			((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(thread.get(), world));
+			((SpaceStorage) world).setSpace(new MinecraftSpace(thread.get(), world));
 			PhysicsSpaceEvents.INIT.invoker().onInit(thread.get(), MinecraftSpace.get(world));
 		});
 	}
@@ -76,20 +75,20 @@ public class RayonCore implements ModInitializer {
 
 	public static void loadBlockProps() {
 		FabricLoader.getInstance().getAllMods().forEach(mod -> {
-			String modid = mod.getMetadata().getId();
-			CustomValue rayon = mod.getMetadata().getCustomValue("rayon");
+			var modid = mod.getMetadata().getId();
+			var rayon = mod.getMetadata().getCustomValue("rayon");
 
 			if (rayon != null) {
-				CustomValue blocks = rayon.getAsObject().get("blocks");
+				var blocks = rayon.getAsObject().get("blocks");
 
 				if (blocks != null) {
 					blocks.getAsArray().forEach(block -> {
-						CustomValue name = block.getAsObject().get("name");
+						var name = block.getAsObject().get("name");
 
 						if (name != null) {
-							CustomValue friction = block.getAsObject().get("friction");
-							CustomValue restitution = block.getAsObject().get("restitution");
-							CustomValue collidable = block.getAsObject().get("collidable");
+							var friction = block.getAsObject().get("friction");
+							var restitution = block.getAsObject().get("restitution");
+							var collidable = block.getAsObject().get("collidable");
 
 							blockProps.put(new Identifier(modid, name.getAsString()), new BlockProperties(
 									friction == null ? -1.0f : (float) (double) friction.getAsNumber(),

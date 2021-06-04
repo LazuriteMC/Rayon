@@ -67,10 +67,6 @@ public class ElementRigidBody extends MinecraftRigidBody {
         return false;
     }
 
-    public static boolean canCollideWith(Entity entity) {
-        return (entity instanceof BoatEntity || entity instanceof MinecartEntity || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement);
-    }
-
     /* Property Setters */
 
     @Override

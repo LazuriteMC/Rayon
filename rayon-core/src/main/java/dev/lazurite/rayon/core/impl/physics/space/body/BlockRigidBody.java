@@ -4,7 +4,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.shape.MinecraftShape;
-import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainManager;
+import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A basic {@link PhysicsRigidBody} class representing a piece of the terrain.
- * @see TerrainManager
+ * @see TerrainComponent
  */
 public class BlockRigidBody extends MinecraftRigidBody {
     private final BlockState blockState;

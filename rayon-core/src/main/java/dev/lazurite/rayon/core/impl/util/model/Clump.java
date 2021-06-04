@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.physics.space.util;
+package dev.lazurite.rayon.core.impl.util.model;
 
 import com.google.common.collect.Lists;
 import net.minecraft.block.BlockState;

@@ -32,7 +32,7 @@ public class RayonEntityClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
             if (entity instanceof EntityPhysicsElement) {
-                PhysicsThread.get(world).execute(() -> MinecraftSpace.get(world).unload((EntityPhysicsElement) entity));
+                PhysicsThread.get(world).execute(() -> MinecraftSpace.get(world).removePhysicsElement((EntityPhysicsElement) entity));
             }
         });
 
@@ -146,7 +146,7 @@ public class RayonEntityClient implements ClientModInitializer {
                             entity.updatePosition(location.x, location.y, location.z);
 
                             world.addEntity(id, entity);
-                            PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).load((EntityPhysicsElement) entity));
+                            PhysicsThread.get(client).execute(() -> MinecraftSpace.get(world).addPhysicsElement((EntityPhysicsElement) entity));
                         }
                     }
                 }

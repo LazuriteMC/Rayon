@@ -5,11 +5,10 @@ import dev.lazurite.rayon.core.impl.physics.debug.CollisionObjectDebugger;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import dev.lazurite.rayon.core.impl.util.supplier.world.ClientWorldSupplier;
-import dev.lazurite.rayon.core.impl.util.supplier.world.WorldSupplier;
-import dev.lazurite.rayon.core.impl.physics.util.thread.ThreadStorage;
+import dev.lazurite.rayon.core.impl.util.storage.ThreadStorage;
 import dev.lazurite.rayon.core.impl.util.supplier.world.compat.ImmersiveWorldSupplier;
 import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
-import dev.lazurite.rayon.core.impl.physics.space.util.SpaceStorage;
+import dev.lazurite.rayon.core.impl.util.storage.SpaceStorage;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,13 +29,11 @@ public class RayonCoreClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        AtomicReference<PhysicsThread> thread = new AtomicReference<>();
+        var thread = new AtomicReference<PhysicsThread>();
         BetterClientLifecycleEvents.DISCONNECT.register((client, world) -> thread.get().destroy());
 
         BetterClientLifecycleEvents.GAME_JOIN.register((client, world, player) -> {
-            WorldSupplier supplier = RayonCore.isImmersivePortalsPresent() ?
-                    new ImmersiveWorldSupplier(client) : new ClientWorldSupplier(client);
-
+            var supplier = RayonCore.isImmersivePortalsPresent() ? new ImmersiveWorldSupplier(client) : new ClientWorldSupplier(client);
             thread.set(new PhysicsThread(client, Thread.currentThread(), supplier, "Client Physics Thread"));
             ((ThreadStorage) client).setPhysicsThread(thread.get());
         });
@@ -48,13 +45,13 @@ public class RayonCoreClient implements ClientModInitializer {
         });
 
         ClientTickEvents.START_WORLD_TICK.register(world -> {
-            MinecraftSpace space = MinecraftSpace.get(world);
+            var space = MinecraftSpace.get(world);
             space.step(space::canStep);
         });
 
         BetterClientLifecycleEvents.LOAD_WORLD.register((client, world) -> {
             PhysicsSpaceEvents.PREINIT.invoker().onPreInit(thread.get(), world);
-            ((SpaceStorage) world).putSpace(MinecraftSpace.MAIN, new MinecraftSpace(thread.get(), world));
+            ((SpaceStorage) world).setSpace(new MinecraftSpace(thread.get(), world));
             PhysicsSpaceEvents.INIT.invoker().onInit(thread.get(), MinecraftSpace.get(world));
         });
 
@@ -62,7 +59,7 @@ public class RayonCoreClient implements ClientModInitializer {
 
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> {
             if (CollisionObjectDebugger.getInstance().isEnabled()) {
-                CollisionObjectDebugger.getInstance().render(context.world(), context.tickDelta());
+                CollisionObjectDebugger.getInstance().render(context.world(), context.matrixStack(), context.tickDelta());
             }
         });
     }

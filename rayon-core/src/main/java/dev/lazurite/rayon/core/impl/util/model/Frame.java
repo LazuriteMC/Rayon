@@ -1,9 +1,11 @@
-package dev.lazurite.rayon.core.impl.util.math;
+package dev.lazurite.rayon.core.impl.util.model;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
+import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.minecraft.util.math.MathHelper;
 
 /**

@@ -3,11 +3,11 @@ package dev.lazurite.rayon.core.impl.physics.debug;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.lazurite.rayon.core.api.event.DebugRenderEvents;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.physics.space.body.MinecraftRigidBody;
 import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
 import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
-import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -41,35 +41,37 @@ public final class CollisionObjectDebugger {
         return this.enabled;
     }
 
-    public void render(World world, float tickDelta) {
-        var camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-        var matrices = new MatrixStack();
-        RenderSystem.lineWidth(2.0F);
+    public void render(World world, MatrixStack stack, float tickDelta) {
+        DebugRenderEvents.BEFORE_RENDER.register(context -> {
 
+        });
         for (var body : MinecraftSpace.get(world).getRigidBodiesByClass(MinecraftRigidBody.class)) {
             var builder = Tessellator.getInstance().getBuffer();
+            RenderSystem.lineWidth(2.0F);
 
             var points = body.getCollisionShape().getTriangles();
             var color = body.getOutlineColor();
             var alpha = body.getOutlineAlpha();
 
             var position = body.isStatic() ?
-                    body.getPhysicsLocation(new Vector3f()).subtract(VectorHelper.vec3dToVector3f(camera.getPos())) :
-                    body.getFrame().getLocation(new Vector3f(), tickDelta).subtract(VectorHelper.vec3dToVector3f(camera.getPos()));
+                    body.getPhysicsLocation(new Vector3f()) :
+                    body.getFrame().getLocation(new Vector3f(), tickDelta);
             var rotation = body.isStatic() ?
                     body.getPhysicsRotation(new Quaternion()) :
                     body.getFrame().getRotation(new Quaternion(), tickDelta);
 
-            matrices.push();
-            builder.begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR);
-            matrices.translate(position.x, position.y, position.z);
-            matrices.multiply(QuaternionHelper.bulletToMinecraft(rotation));
+            stack.push();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            builder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+            stack.translate(position.x, position.y, position.z);
+            stack.multiply(QuaternionHelper.bulletToMinecraft(rotation));
 
             for (var point : points) {
-                builder.vertex(matrices.peek().getModel(), point.x, point.y, point.z).color(color.x, color.y, color.z, alpha).next();
+                builder.vertex(stack.peek().getModel(), point.x, point.y, point.z)
+                        .color(color.x, color.y, color.z, alpha).next();
             }
 
-            matrices.pop();
+            stack.pop();
             Tessellator.getInstance().draw();
         }
     }

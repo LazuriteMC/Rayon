@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.physics.util;
+package dev.lazurite.rayon.core.impl.util;
 
 import com.jme3.system.NativeLibraryLoader;
 import net.fabricmc.loader.api.FabricLoader;

@@ -46,7 +46,7 @@ public class ExplosionMixin {
         if (entity instanceof PhysicsElement) {
             ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
 
-            MinecraftSpace.get(entity.getEntityWorld()).getThread().execute(() ->
+            MinecraftSpace.get(entity.getEntityWorld()).getWorkerThread().execute(() ->
                 rigidBody.applyCentralImpulse(VectorHelper.vec3dToVector3f(velocity).multLocal(rigidBody.getMass()).multLocal(100))
             );
         }
