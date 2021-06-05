@@ -32,7 +32,7 @@ public class RayonCoreClient implements ClientModInitializer {
         // Debug Events
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> {
             if (CollisionObjectDebugger.getInstance().isEnabled()) {
-                CollisionObjectDebugger.getInstance().render(context.world(), context.tickDelta());
+                CollisionObjectDebugger.getInstance().renderSpace(MinecraftSpace.get(context.world()), context.tickDelta());
             }
         });
     }

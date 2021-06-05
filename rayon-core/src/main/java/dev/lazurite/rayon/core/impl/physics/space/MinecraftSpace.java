@@ -15,6 +15,7 @@ import dev.lazurite.rayon.core.impl.physics.space.environment.EntityComponent;
 import dev.lazurite.rayon.core.impl.physics.space.environment.FluidComponent;
 import dev.lazurite.rayon.core.impl.physics.space.environment.TerrainComponent;
 import dev.lazurite.rayon.core.impl.physics.space.environment.WorldComponent;
+import dev.lazurite.rayon.core.impl.util.Clock;
 import dev.lazurite.rayon.core.impl.util.SpaceStorage;
 import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
 import net.minecraft.server.MinecraftServer;
@@ -44,6 +45,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final List<WorldComponent> worldComponents;
     private final PhysicsThread thread;
     private final World world;
+    private final Clock clock;
     private int presimSteps;
 
     private volatile boolean stepping;
@@ -62,6 +64,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         super(broadphase);
         this.thread = thread;
         this.world = world;
+        this.clock = new Clock();
         this.worldComponents = new ArrayList<>();
         this.addCollisionListener(this);
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
@@ -96,8 +99,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public void step(BooleanSupplier shouldStep) {
         getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
 
+        System.out.println("IS STEPP: " + stepping);
+
         if (shouldStep.getAsBoolean()) {
-            stepping = true;
+            this.stepping = true;
 
             /* World Step Event */
             PhysicsSpaceEvents.STEP.invoker().onStep(this);
@@ -111,7 +116,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             /* Step Simulation Asynchronously */
             CompletableFuture.runAsync(() -> {
                 if (presimSteps > MAX_PRESIM_STEPS) {
-                    update(0.05f, 5);
+                    update(clock.getAndReset(), 5);
                 } else ++presimSteps;
             }, getWorkerThread()).thenRunAsync(() -> {
                 this.distributeEvents();

@@ -14,7 +14,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.world.World;
 
 /**
  * This class handles debug rendering on the client. Press F3+r to render
@@ -42,16 +41,15 @@ public final class CollisionObjectDebugger {
         return this.enabled;
     }
 
-    public void render(World world, float tickDelta) {
-        var stack = new MatrixStack();
-        var space = MinecraftSpace.get(world);
-        var camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-
+    public void renderSpace(MinecraftSpace space, float tickDelta) {
+        var cameraPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
         var builder = Tessellator.getInstance().getBuffer();
+        var stack = new MatrixStack();
+
         builder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        DebugRenderEvents.BEFORE_RENDER.invoker().onRender(new DebugRenderEvents.Context(space, builder, tickDelta));
+        RenderSystem.lineWidth(5.0F);
+        DebugRenderEvents.BEFORE_RENDER.invoker().onRender(new DebugRenderEvents.Context(space, builder, stack, cameraPos, tickDelta));
 
         for (var body : space.getRigidBodiesByClass(MinecraftRigidBody.class)) {
             var points = body.getCollisionShape().getTriangles();
@@ -59,8 +57,8 @@ public final class CollisionObjectDebugger {
             var alpha = body.getOutlineAlpha();
 
             var position = body.isStatic() ?
-                    body.getPhysicsLocation(new Vector3f()).subtract(VectorHelper.vec3dToVector3f(camera.getPos())) :
-                    body.getFrame().getLocation(new Vector3f(), tickDelta).subtract(VectorHelper.vec3dToVector3f(camera.getPos()));
+                    body.getPhysicsLocation(new Vector3f()).subtract(VectorHelper.vec3dToVector3f(cameraPos)) :
+                    body.getFrame().getLocation(new Vector3f(), tickDelta).subtract(VectorHelper.vec3dToVector3f(cameraPos));
 
             var rotation = body.isStatic() ?
                     body.getPhysicsRotation(new Quaternion()) :

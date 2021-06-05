@@ -81,6 +81,13 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     }
 
     /**
+     * @return the number of queued tasks for this thread
+     */
+    public int getTaskCount() {
+        return tasks.size();
+    }
+
+    /**
      * Gets the {@link WorldSupplier}. For servers, it is able to provide multiple worlds.
      * For clients, it will only provide one unless immersive portals is installed.
      * @return the {@link WorldSupplier}

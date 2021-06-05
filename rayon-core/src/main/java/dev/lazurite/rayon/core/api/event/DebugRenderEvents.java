@@ -4,7 +4,9 @@ import dev.lazurite.rayon.core.impl.physics.debug.CollisionObjectDebugger;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * The events available through this class are:
@@ -27,6 +29,6 @@ public class DebugRenderEvents {
         void onRender(Context context);
     }
 
-    public record Context(MinecraftSpace space, BufferBuilder builder, float tickDelta) { }
+    public record Context(MinecraftSpace space, VertexConsumer vertices, MatrixStack matrices, Vec3d cameraPos, float tickDelta) { }
 }
 

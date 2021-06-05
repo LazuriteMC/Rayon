@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.core.impl.mixin.common;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
 import net.minecraft.entity.Entity;
@@ -44,7 +43,7 @@ public class ExplosionMixin {
     )
     public Vec3d setVelocity(Vec3d velocity) {
         if (entity instanceof PhysicsElement) {
-            ElementRigidBody rigidBody = ((PhysicsElement) entity).getRigidBody();
+            var rigidBody = ((PhysicsElement) entity).getRigidBody();
 
             MinecraftSpace.get(entity.getEntityWorld()).getWorkerThread().execute(() ->
                 rigidBody.applyCentralImpulse(VectorHelper.vec3dToVector3f(velocity).multLocal(rigidBody.getMass()).multLocal(100))
