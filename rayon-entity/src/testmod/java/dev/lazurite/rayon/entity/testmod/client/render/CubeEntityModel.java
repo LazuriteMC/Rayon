@@ -8,17 +8,20 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class CubeEntityModel extends EntityModel<CubeEntity> {
-    private final List<ModelPart.Cuboid> cuboids = new ArrayList<>();
+    private final ModelPart modelPart;
 
     public CubeEntityModel(int size) {
-        var cuboidData = ModelPartBuilder.create().uv(0, 0).cuboid(0, 0, 0, size, size, size).build();
+        var cuboidData = ModelPartBuilder.create().cuboid(0, 0, 0, size, size, size).build();
+        var cuboids = new ArrayList<ModelPart.Cuboid>();
 
         for (var data : cuboidData) {
             cuboids.add(data.createCuboid(32, 32));
         }
+
+       modelPart = new ModelPart(cuboids, new HashMap<>());
     }
 
     @Override
@@ -28,8 +31,6 @@ public class CubeEntityModel extends EntityModel<CubeEntity> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-        for (var cuboid : cuboids) {
-            cuboid.renderCuboid(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
-        }
+        modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 }
