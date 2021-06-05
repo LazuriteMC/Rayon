@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity.testmod.common.item;
 
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
 import dev.lazurite.rayon.entity.testmod.EntityTestMod;

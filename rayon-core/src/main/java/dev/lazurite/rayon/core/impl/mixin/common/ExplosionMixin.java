@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.core.impl.mixin.common;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;

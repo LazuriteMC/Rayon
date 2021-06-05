@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.api.event;
 
-import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 

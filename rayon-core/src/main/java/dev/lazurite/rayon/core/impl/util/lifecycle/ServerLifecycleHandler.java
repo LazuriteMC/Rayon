@@ -1,10 +1,10 @@
 package dev.lazurite.rayon.core.impl.util.lifecycle;
 
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.util.SpaceStorage;
-import dev.lazurite.rayon.core.impl.util.supplier.world.ServerWorldSupplier;
+import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.space.storage.SpaceStorage;
+import dev.lazurite.rayon.core.impl.bullet.space.supplier.world.ServerWorldSupplier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 

@@ -2,11 +2,11 @@ package dev.lazurite.rayon.core.impl.util.lifecycle;
 
 import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCore;
-import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.util.SpaceStorage;
-import dev.lazurite.rayon.core.impl.util.supplier.world.ClientWorldSupplier;
-import dev.lazurite.rayon.core.impl.util.supplier.world.compat.ImmersiveWorldSupplier;
+import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.space.storage.SpaceStorage;
+import dev.lazurite.rayon.core.impl.bullet.space.supplier.world.ClientWorldSupplier;
+import dev.lazurite.rayon.core.impl.bullet.space.supplier.world.compat.ImmersiveWorldSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

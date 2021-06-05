@@ -2,12 +2,12 @@ package dev.lazurite.rayon.entity.impl;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
-import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
-import dev.lazurite.rayon.core.impl.util.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.bullet.collision.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

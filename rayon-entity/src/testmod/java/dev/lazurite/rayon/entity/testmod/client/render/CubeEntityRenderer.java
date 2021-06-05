@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity.testmod.client.render;
 
-import dev.lazurite.rayon.core.impl.util.math.BoxHelper;
-import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.BoxHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
 import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
 import dev.lazurite.rayon.entity.testmod.EntityTestMod;
 import net.fabricmc.api.EnvType;

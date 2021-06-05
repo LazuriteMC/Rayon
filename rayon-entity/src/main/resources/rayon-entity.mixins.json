@@ -6,9 +6,7 @@
   "mixins": [
     "common.EntityMixin",
     "common.EntityTrackerEntryMixin",
-    "common.LivingEntityMixin",
-    "compat.ip.McHelperMixin",
-    "compat.ip.PortalMixin"
+    "common.LivingEntityMixin"
   ],
   "client": [
     "client.EntityRenderDispatcherMixin",

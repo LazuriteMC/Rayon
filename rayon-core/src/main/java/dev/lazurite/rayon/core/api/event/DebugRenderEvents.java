@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.api.event;
 
-import dev.lazurite.rayon.core.impl.physics.debug.CollisionObjectDebugger;
-import dev.lazurite.rayon.core.impl.physics.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.client.CollisionObjectDebugger;
+import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.render.VertexConsumer;

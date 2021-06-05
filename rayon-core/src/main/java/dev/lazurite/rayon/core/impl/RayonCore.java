@@ -1,9 +1,9 @@
 package dev.lazurite.rayon.core.impl;
 
-import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
+import dev.lazurite.rayon.core.impl.bullet.natives.NativeLoader;
+import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.core.impl.util.BlockProps;
 import dev.lazurite.rayon.core.impl.util.lifecycle.ServerLifecycleHandler;
-import dev.lazurite.rayon.core.impl.util.NativeLoader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 /**
  * The common entrypoint for Rayon Core.
  * @see RayonCoreClient
- * @see NativeLoader
  * @see BlockProps
  * @see ServerLifecycleHandler
  */

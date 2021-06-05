@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.impl.mixin.client.event;
 
-import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
+import dev.lazurite.rayon.core.impl.client.event.BetterClientLifecycleEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.WorldRenderer;
