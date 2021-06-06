@@ -3,10 +3,13 @@ package dev.lazurite.rayon.core.impl.bullet.natives;
 import com.jme3.system.JmeSystem;
 import com.jme3.system.NativeLibraryLoader;
 import net.fabricmc.loader.api.FabricLoader;
-import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.NoSuchElementException;
 
 /**
@@ -14,37 +17,67 @@ import java.util.NoSuchElementException;
  */
 public class NativeLoader {
     public static void load() {
-        var destination = FabricLoader.getInstance().getGameDir().resolve("natives");
+        final var destination = FabricLoader.getInstance().getGameDir().resolve("natives");
 
         FabricLoader.getInstance().getModContainer("rayon-core").ifPresentOrElse(jar -> {
-            var natives = jar.getRootPath().resolve("assets").resolve("rayon-core").resolve("natives");
+            final var natives = jar.getRootPath().resolve("assets").resolve("rayon-core").resolve("natives");
+            final var fileName = getPlatformSpecificName();
 
             try {
-                // Delete the old natives/ directory if it's still there
-                if (Files.exists(destination)) {
-                    FileUtils.deleteDirectory(destination.toFile());
+                var destinationFile = destination.resolve(fileName);
+                var originalFile = natives.resolve(fileName);
+
+                if (!Files.exists(destination) && !Files.exists(destinationFile)) {
+                    Files.createDirectory(destination);
+                    Files.copy(originalFile, destinationFile);
+                } else if (!Files.exists(destinationFile)) {
+                    Files.copy(originalFile, destinationFile);
+                } else {
+                    var destinationHash = getChecksum(MessageDigest.getInstance("MD5"), destination.resolve(fileName).toFile());
+                    var jarHash = getChecksum(MessageDigest.getInstance("MD5"), natives.resolve(fileName).toFile());
+
+                    if (!jarHash.equals(destinationHash)) {
+                        Files.delete(destinationFile);
+                        Files.copy(originalFile, destinationFile);
+                    }
                 }
-
-                // Create the temporary natives/ folder
-                Files.createDirectory(destination);
-
-                // Copy the specific native lib to the natives/ folder
-                var fileName = getPlatformSpecificName();
-                Files.copy(natives.resolve(fileName), destination.resolve(fileName));
 
                 // Load it!
                 NativeLibraryLoader.loadLibbulletjme(true, destination.toFile(), "Release", "Sp");
             } catch (IOException | NoSuchElementException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Unable to load bullet natives.");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Unable to verify native libraries.");
             }
         }, () -> {
             throw new RuntimeException("Rayon jar not found.");
         });
     }
 
+    static String getChecksum(MessageDigest digest, File file) throws IOException {
+        var inputStream = new FileInputStream(file);
+        var byteArray = new byte[1024];
+        var bytesCount = 0;
+
+        while ((bytesCount = inputStream.read(byteArray)) != -1) {
+            digest.update(byteArray, 0, bytesCount);
+        }
+
+        inputStream.close();
+        var bytes = digest.digest();
+        var sb = new StringBuilder();
+
+        for (var aByte : bytes) {
+            sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        }
+
+        return sb.toString();
+    }
+
     static String getPlatformSpecificName() {
-        var platform = JmeSystem.getPlatform();
+        final var platform = JmeSystem.getPlatform();
 
         var name = switch (platform) {
             case Windows32, Windows64 -> "bulletjme.dll";
