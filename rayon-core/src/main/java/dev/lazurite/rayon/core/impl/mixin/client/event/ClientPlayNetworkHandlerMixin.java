@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.impl.mixin.client.event;
 
-import dev.lazurite.rayon.core.impl.client.event.BetterClientLifecycleEvents;
+import dev.lazurite.rayon.core.impl.util.event.BetterClientLifecycleEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

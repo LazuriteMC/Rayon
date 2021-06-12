@@ -3,7 +3,7 @@ package dev.lazurite.rayon.entity.impl.mixin.common;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCore;
-import dev.lazurite.rayon.core.impl.bullet.collision.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
 import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Basic changes for {@link EntityPhysicsElement}s.
+ * Basic changes for {@link EntityPhysicsElement}s. ({@link CallbackInfo#cancel()} go brrr)
  */
 @Mixin(Entity.class)
 public abstract class EntityMixin {

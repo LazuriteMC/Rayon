@@ -1,19 +1,19 @@
 package dev.lazurite.rayon.core.impl.bullet.thread;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.api.event.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCore;
-import dev.lazurite.rayon.core.impl.RayonCoreClient;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.space.supplier.SideSupplier;
-import dev.lazurite.rayon.core.impl.bullet.space.supplier.entity.EntitySupplier;
-import dev.lazurite.rayon.core.impl.bullet.space.supplier.world.WorldSupplier;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.SideSupplier;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.entity.EntitySupplier;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.WorldSupplier;
 import dev.lazurite.rayon.core.impl.bullet.thread.util.Pausable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
@@ -34,8 +34,12 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     public volatile Throwable throwable;
     public volatile boolean running = true;
 
+    public static Optional<PhysicsThread> getOptional(ReentrantThreadExecutor<? extends Runnable> executor) {
+        return Optional.ofNullable(get(executor));
+    }
+
     public static PhysicsThread get(ReentrantThreadExecutor<? extends Runnable> executor) {
-        return SideSupplier.isClient(executor) ? RayonCoreClient.getThread() : RayonCore.getThread();
+        return RayonCore.getThread(SideSupplier.isClient(executor));
     }
 
     public static PhysicsThread get(World world) {

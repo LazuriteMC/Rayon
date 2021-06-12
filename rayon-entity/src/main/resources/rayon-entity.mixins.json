@@ -5,8 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "common.EntityMixin",
-    "common.EntityTrackerEntryMixin",
-    "common.LivingEntityMixin"
+    "common.EntityTrackerEntryMixin"
   ],
   "client": [
     "client.EntityRenderDispatcherMixin",

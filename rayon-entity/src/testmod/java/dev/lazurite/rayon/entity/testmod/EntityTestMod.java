@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.entity.testmod;
 
-import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
+import dev.lazurite.rayon.core.api.event.collision.ElementCollisionEvents;
 import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
 import dev.lazurite.rayon.entity.testmod.common.item.WandItem;
 import net.fabricmc.api.ModInitializer;

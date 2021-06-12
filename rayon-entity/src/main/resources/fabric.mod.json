@@ -12,10 +12,8 @@
   "mixins": [ "rayon-entity.mixins.json" ],
 
   "entrypoints": {
-    "main": [
-      "dev.lazurite.rayon.entity.impl.RayonEntity"
-    ],
-    "client": [ "dev.lazurite.rayon.entity.impl.RayonEntityClient" ]
+    "main": [ "dev.lazurite.rayon.entity.impl.RayonEntity" ],
+    "client": [ "dev.lazurite.rayon.entity.impl.RayonEntity" ]
   },
 
   "depends": {

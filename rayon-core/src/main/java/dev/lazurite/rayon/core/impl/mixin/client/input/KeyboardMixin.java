@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.impl.mixin.client.input;
 
-import dev.lazurite.rayon.core.impl.client.CollisionObjectDebugger;
-import dev.lazurite.rayon.core.impl.bullet.collision.MinecraftRigidBody;
+import dev.lazurite.rayon.core.impl.util.CollisionObjectDebugger;
+import dev.lazurite.rayon.core.impl.bullet.collision.body.MinecraftRigidBody;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Keyboard;

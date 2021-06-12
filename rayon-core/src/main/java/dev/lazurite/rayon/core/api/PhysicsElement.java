@@ -1,13 +1,12 @@
 package dev.lazurite.rayon.core.api;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.bullet.collision.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
 
 /**
  * This is the main interface you'll want to implement into your physics object. It provides
@@ -17,42 +16,26 @@ import net.minecraft.entity.Entity;
  */
 public interface PhysicsElement {
     /**
-     * <b>Warning:</b> This method is run exclusively on the physics thread.<br>
      * This method is for doing things such as applying forces or interacting with
-     * the {@link MinecraftSpace} in some way. If you need to perform some other
-     * operation that doesn't have to do with physics {@link Entity#tick()} will suffice.
+     * the {@link MinecraftSpace} in some way.
      * @param space the {@link MinecraftSpace} that the {@link ElementRigidBody} is in
      */
-    void step(MinecraftSpace space);
+    default void step(MinecraftSpace space) { }
 
     /**
      * Gets {@link ElementRigidBody} object associated with this element. You should create and
      * store this in your {@link PhysicsElement} implementation in the constructor. You're able
-     * to set up the attributes and settings of your rigid body however you like that way. Examples
-     * of what you can modify include:
-     * <ul>
-     *     <li>Position</li>
-     *     <li>Rotation</li>
-     *     <li>Linear Velocity</li>
-     *     <li>Angular Velocity</li>
-     *     <li>Mass</li>
-     *     <li>Drag</li>
-     *     <li>Friction</li>
-     *     <li>Restitution</li>
-     *     <li>Collision Shape</li>
-     *     <li>Priority Player</li>
-     * </ul>
+     * to set up the attributes and settings of your rigid body however you like that way.
      * @return the {@link ElementRigidBody}
      */
     ElementRigidBody getRigidBody();
 
     /**
-     * This is called whenever the element is loaded into the simulation. Any
-     * initial values you want set (e.g. position, rotation, velocity, etc.)
-     * should be set here.
-     * @see MinecraftSpace#addPhysicsElement(PhysicsElement)
+     * For generating a new {@link MinecraftShape}. Optionally can be overriden
+     * in rayon sub-modules to handle default behavior (see entity module).
+     * @return the newly created {@link MinecraftShape}
      */
-    void reset();
+    MinecraftShape genShape();
 
     /**
      * Mainly used for lerping within your renderer.
@@ -74,16 +57,5 @@ public interface PhysicsElement {
     @Environment(EnvType.CLIENT)
     default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
         return getRigidBody().getFrame().getRotation(store, tickDelta);
-    }
-
-    /**
-     * Mainly used for lerping within your renderer.
-     * @param store the bounding box to store the output in
-     * @param tickDelta the delta time between ticks
-     * @return the lerped bounding box
-     */
-    @Environment(EnvType.CLIENT)
-    default BoundingBox getPhysicsBoundingBox(BoundingBox store, float tickDelta) {
-        return getRigidBody().getFrame().getBox(store, tickDelta);
     }
 }
