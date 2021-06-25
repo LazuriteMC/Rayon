@@ -1,6 +1,8 @@
 package dev.lazurite.rayon.core.impl.event;
 
 import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.components.FluidComponent;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.components.TerrainComponent;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
@@ -27,6 +29,10 @@ public final class ServerEventHandler {
         // World Events
         ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onWorldTick);
         ServerWorldEvents.LOAD.register(ServerEventHandler::onWorldLoad);
+
+        // Space Events
+        PhysicsSpaceEvents.STEP.register(TerrainComponent::step);
+        PhysicsSpaceEvents.STEP.register(FluidComponent::step);
     }
 
     private static void onServerStart(MinecraftServer server) {

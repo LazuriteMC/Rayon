@@ -24,6 +24,19 @@ public class MinecraftShape extends HullCollisionShape {
         this.triangles = triangles;
     }
 
+    public float getVolume() {
+        var volume = 0.0f;
+
+        for (var i = 0; i < triangles.size(); i += 3) {
+            var p1 = triangles.get(i);
+            var p2 = triangles.get(i + 1);
+            var p3 = triangles.get(i + 2);
+            volume += p1.dot(p2.multLocal(p3)) / 6.0f;
+        }
+
+        return volume;
+    }
+
     public List<Vector3f> getTriangles() {
         return this.triangles;
     }

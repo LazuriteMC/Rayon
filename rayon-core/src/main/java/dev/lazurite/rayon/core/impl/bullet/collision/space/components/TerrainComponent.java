@@ -10,6 +10,7 @@ import dev.lazurite.rayon.core.impl.util.BlockProps;
 import dev.lazurite.rayon.core.impl.util.model.Clump;
 import dev.lazurite.transporter.Transporter;
 import dev.lazurite.transporter.api.Disassembler;
+import dev.lazurite.transporter.api.pattern.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -24,11 +25,9 @@ import java.util.*;
 /**
  * Used for loading blocks into the simulation so that rigid bodies can interact with them.
  * @see MinecraftSpace
- * @see MinecraftSpace.Component
  */
-public class TerrainComponent implements MinecraftSpace.Component {
-    @Override
-    public void apply(MinecraftSpace space) {
+public class TerrainComponent {
+    public static void step(MinecraftSpace space) {
         final var toKeep = new ArrayList<BlockRigidBody>();
 
         for (var rigidBody : space.getRigidBodiesByClass(MinecraftRigidBody.class)) {
@@ -113,15 +112,15 @@ public class TerrainComponent implements MinecraftSpace.Component {
                         var pattern = Transporter.getPatternBuffer().get(Registry.BLOCK.getId(blockState.getBlock()));
 
                         if (pattern == null && world.isClient()) {
-                            tryGenerateShape(world, blockPos, blockState);
+                            pattern = tryGenerateShape(world, blockPos, blockState);
                         }
 
-                        if (pattern != null && blockRigidBody.getCollisionShape() == null) {
+                        if (pattern != null && blockRigidBody.getCollisionShape().getTriangles().size() == 36) {
                             blockRigidBody.setCollisionShape(MinecraftShape.of(pattern));
                         }
                     }
 
-                    if (!space.getRigidBodyList().contains(blockRigidBody)) {
+                    if (!blockRigidBody.isInWorld()) {
                         space.addCollisionObject(blockRigidBody);
                     }
 
@@ -139,7 +138,7 @@ public class TerrainComponent implements MinecraftSpace.Component {
     }
 
     public static BlockRigidBody findBlockAtPos(MinecraftSpace space, BlockPos blockPos) {
-        for (BlockRigidBody body : space.getRigidBodiesByClass(BlockRigidBody.class)) {
+        for (var body : space.getRigidBodiesByClass(BlockRigidBody.class)) {
             if (body.getBlockPos().equals(blockPos)) {
                 return body;
             }
@@ -149,7 +148,7 @@ public class TerrainComponent implements MinecraftSpace.Component {
     }
 
     @Environment(EnvType.CLIENT)
-    public static void tryGenerateShape(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+    public static Pattern tryGenerateShape(BlockView blockView, BlockPos blockPos, BlockState blockState) {
         var transformation = new MatrixStack();
         transformation.scale(0.95f, 0.95f, 0.95f);
         transformation.translate(-0.5f, -0.5f, -0.5f);
@@ -158,12 +157,12 @@ public class TerrainComponent implements MinecraftSpace.Component {
 
         try {
             if (blockEntity != null) {
-                Disassembler.getBlockEntity(blockEntity, transformation);
+                return Disassembler.getBlockEntity(blockEntity, transformation);
             } else {
-                Disassembler.getBlock(blockState, transformation);
+                return Disassembler.getBlock(blockState, transformation);
             }
-        } catch (Exception ignored) {
-
+        } catch (Exception e) {
+            return null;
         }
     }
 }

@@ -11,10 +11,7 @@ import dev.lazurite.rayon.core.api.event.collision.ElementCollisionEvents;
 import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.BlockRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.collision.space.components.EntityComponent;
-import dev.lazurite.rayon.core.impl.bullet.collision.space.components.FluidComponent;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.components.TerrainComponent;
-import dev.lazurite.rayon.core.impl.bullet.thread.util.Clock;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import net.minecraft.server.MinecraftServer;
@@ -27,25 +24,21 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
 /**
- * This is the main physics simulation used by Rayon. It loops using the {@link MinecraftSpace#step} method
- * where all {@link Component} objects are applied just before queuing the actual simulation step
- * as an asynchronous task. This way, the only thing that runs asynchronously is bullet itself. All of the setup,
- * input, or otherwise user defined behavior happens on the game logic thread.
+ * This is the main physics simulation used by Rayon. Each bullet simulation update
+ * happens asynchronously while all of the setup, input, or otherwise user defined
+ * behavior happens on the game logic thread.
  * <br><br>
  * It is also worth noting that another
  * simulation step will not be performed if the last step has taken longer than 50ms and is still executing upon the
- * next tick. This really only happens if you are dealing with an ungodly amount of rigid bodies or your computer is
- * simply a :tiny_potato:
+ * next tick. This really only happens if you are dealing with an ungodly amount of rigid bodies or your computer is slo.
  * @see PhysicsThread
  * @see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 10;
 
-    private final List<Component> worldComponents;
     private final PhysicsThread thread;
     private final World world;
-    private final Clock clock;
     private int presimSteps;
 
     private volatile boolean stepping;
@@ -68,14 +61,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         super(broadphase);
         this.thread = thread;
         this.world = world;
-        this.clock = new Clock();
-        this.worldComponents = new ArrayList<>();
         this.addCollisionListener(this);
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
-
-        this.addWorldComponent(new EntityComponent());
-        this.addWorldComponent(new FluidComponent());
-        this.addWorldComponent(new TerrainComponent());
     }
 
     public MinecraftSpace(PhysicsThread thread, World world) {
@@ -87,7 +74,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * <ul>
      *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
-     *     <li>Applies all {@link Component}s (e.g. terrain loading, fluid resistance, etc.)</li>
      *     <li>Steps the simulation asynchronously.</li>
      *     <li>Triggers collision events.</li>
      * </ul>
@@ -111,9 +97,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             /* Step all elements */
             getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> rigidBody.getElement().step(this));
 
-            /* Apply all world components */
-            getWorldComponents().forEach(worldComponent -> worldComponent.apply(this));
-
             /* Step Simulation Asynchronously */
             CompletableFuture.runAsync(() -> {
                 if (presimSteps > MAX_PRESIM_STEPS) {
@@ -122,16 +105,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             }, getWorkerThread()).thenRunAsync(() -> {
                 this.distributeEvents();
                 this.stepping = false;
-            });
+            }, getWorkerThread().getParentExecutor());
         }
-    }
-
-    public void addWorldComponent(Component worldComponent) {
-        this.worldComponents.add(worldComponent);
-    }
-
-    public List<Component> getWorldComponents() {
-        return new ArrayList<>(worldComponents);
     }
 
     @Override
@@ -221,9 +196,5 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof BlockRigidBody block) {
             ElementCollisionEvents.BLOCK_COLLISION.invoker().onCollide(rigidBody.getElement(), block, impulse);
         }
-    }
-
-    public interface Component {
-        void apply(MinecraftSpace space);
     }
 }
