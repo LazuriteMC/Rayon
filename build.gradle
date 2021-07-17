@@ -18,10 +18,10 @@ allprojects { project ->
 	group = project.maven_group
 
 	repositories {
+		mavenLocal()
 		maven { url "https://jitpack.io" }
 		maven { url "https://maven.fabricmc.net/" }
 		maven { url "https://lazurite.dev/releases" }
-		maven { url "https://hephaestus.dev/release" }
 	}
 
 	dependencies {
@@ -34,12 +34,13 @@ allprojects { project ->
 		implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 
-		// Hermes
-		modImplementation "dev.inkwell:hermes:${project.hermes_version}"
-
 		// Transporter
 		modImplementation "dev.lazurite:transporter:${project.transporter_version}"
 		include "dev.lazurite:transporter:${project.transporter_version}"
+
+		// Lazurite Toolbox
+		modImplementation "dev.lazurite:toolbox:${project.toolbox_version}"
+		include "dev.lazurite:toolbox:${project.toolbox_version}"
 
 		// Immersive Portals Core
 		modCompileOnly("com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:${project.immersive_portals_version}") {
@@ -89,7 +90,7 @@ allprojects { project ->
 	publishing {
 		publications {
 			mavenJava(MavenPublication) {
-				artifactId = 'transporter'
+				artifactId = 'rayon'
 
 				pom {
 					name = 'Rayon'

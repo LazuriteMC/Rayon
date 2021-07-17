@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.core.impl.mixin.client.input;
+package dev.lazurite.rayon.core.impl.mixin.client;
 
 import dev.lazurite.rayon.core.impl.util.CollisionObjectDebugger;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.MinecraftRigidBody;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Keyboard.class)
 @Environment(EnvType.CLIENT)
 public abstract class KeyboardMixin {
-    @Shadow protected abstract void debugWarn(String string, Object... objects);
+    @Shadow protected abstract void debugLog(String string, Object... objects);
 
     @Inject(method = "processF3", at = @At("HEAD"), cancellable = true)
     private void processF3(int key, CallbackInfoReturnable<Boolean> info) {
@@ -26,9 +26,9 @@ public abstract class KeyboardMixin {
             boolean enabled = CollisionObjectDebugger.getInstance().toggle();
 
             if (enabled) {
-                debugWarn("debug.rayon.on");
+                debugLog("debug.rayon.on");
             } else {
-                debugWarn("debug.rayon.off");
+                debugLog("debug.rayon.off");
             }
 
             info.setReturnValue(true);

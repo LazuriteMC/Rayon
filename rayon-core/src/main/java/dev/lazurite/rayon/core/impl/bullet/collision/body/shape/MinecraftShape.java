@@ -3,8 +3,7 @@ package dev.lazurite.rayon.core.impl.bullet.collision.body.shape;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.bullet.math.BoxHelper;
-import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
 import dev.lazurite.transporter.api.pattern.Pattern;
 import net.minecraft.util.math.Box;
 
@@ -24,17 +23,29 @@ public class MinecraftShape extends HullCollisionShape {
         this.triangles = triangles;
     }
 
+    public static float getSignedTriangleVolume(Vector3f p1, Vector3f p2, Vector3f p3) {
+        float v321 = p3.x * p2.y * p1.z;
+        float v231 = p2.x * p3.y * p1.z;
+        float v312 = p3.x * p1.y * p2.z;
+        float v132 = p1.x * p3.y * p2.z;
+        float v213 = p2.x * p1.y * p3.z;
+        float v123 = p1.x * p2.y * p3.z;
+        return (1.0f/6.0f) * (-v321 + v231 + v312 - v132 - v213 + v123);
+    }
+
     public float getVolume() {
         var volume = 0.0f;
 
         for (var i = 0; i < triangles.size(); i += 3) {
-            var p1 = triangles.get(i);
-            var p2 = triangles.get(i + 1);
-            var p3 = triangles.get(i + 2);
-            volume += p1.dot(p2.multLocal(p3)) / 6.0f;
+            var pt1 = triangles.get(i);
+            var pt2 = triangles.get(i + 1);
+            var pt3 = triangles.get(i + 2);
+            var vol = getSignedTriangleVolume(pt1, pt2, pt3);
+            System.out.println(vol);
+            volume += vol;
         }
 
-        return volume;
+        return Math.abs(volume);
     }
 
     public List<Vector3f> getTriangles() {
@@ -42,7 +53,7 @@ public class MinecraftShape extends HullCollisionShape {
     }
 
     public static MinecraftShape of(Box box) {
-        return MinecraftShape.of(BoxHelper.minecraftToBullet(box));
+        return MinecraftShape.of(Converter.toBullet(box));
     }
 
     public static MinecraftShape of(BoundingBox box) {
@@ -86,7 +97,7 @@ public class MinecraftShape extends HullCollisionShape {
 
         for (var quad : pattern.getQuads()) {
             for (var index : indices) {
-                points.add(VectorHelper.vec3dToVector3f(quad.getPoints().get(index)));
+                points.add(Converter.toBullet(quad.getPoints().get(index)));
             }
         }
 

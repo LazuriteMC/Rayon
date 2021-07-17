@@ -4,9 +4,10 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
-import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
+import dev.lazurite.toolbox.math.QuaternionHelper;
+import dev.lazurite.toolbox.math.VectorHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.NbtCompound;
@@ -25,9 +26,9 @@ public abstract class EntityMixin {
     @Inject(method = "getVelocity", at = @At("HEAD"), cancellable = true)
     public void getVelocity(CallbackInfoReturnable<Vec3d> info) {
         if (this instanceof EntityPhysicsElement && RayonCore.isImmersivePortalsPresent()) {
-            info.setReturnValue(VectorHelper.vector3fToVec3d(
+            info.setReturnValue(VectorHelper.toVec3d(Converter.toMinecraft(
                 ((EntityPhysicsElement) this).getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.05f).multLocal(0.2f)
-            ));
+            )));
         }
     }
 
@@ -49,9 +50,9 @@ public abstract class EntityMixin {
     public void toTag(NbtCompound tag, CallbackInfoReturnable<NbtCompound> info) {
         if (this instanceof EntityPhysicsElement) {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) this).getRigidBody();
-            tag.put("orientation", QuaternionHelper.toTag(rigidBody.getPhysicsRotation(new Quaternion())));
-            tag.put("linear_velocity", VectorHelper.toTag(rigidBody.getLinearVelocity(new Vector3f())));
-            tag.put("angular_velocity", VectorHelper.toTag(rigidBody.getAngularVelocity(new Vector3f())));
+            tag.put("orientation", QuaternionHelper.toTag(Converter.toMinecraft(rigidBody.getPhysicsRotation(new Quaternion()))));
+            tag.put("linear_velocity", VectorHelper.toTag(Converter.toMinecraft(rigidBody.getLinearVelocity(new Vector3f()))));
+            tag.put("angular_velocity", VectorHelper.toTag(Converter.toMinecraft(rigidBody.getAngularVelocity(new Vector3f()))));
         }
     }
 
@@ -59,9 +60,9 @@ public abstract class EntityMixin {
     public void fromTag(NbtCompound tag, CallbackInfo info) {
         if (this instanceof EntityPhysicsElement) {
             ElementRigidBody rigidBody = ((EntityPhysicsElement) this).getRigidBody();
-            rigidBody.setPhysicsRotation(QuaternionHelper.fromTag(tag.getCompound("orientation")));
-            rigidBody.setLinearVelocity(VectorHelper.fromTag(tag.getCompound("linear_velocity")));
-            rigidBody.setAngularVelocity(VectorHelper.fromTag(tag.getCompound("angular_velocity")));
+            rigidBody.setPhysicsRotation(Converter.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
+            rigidBody.setLinearVelocity(Converter.toBullet(VectorHelper.fromTag(tag.getCompound("linear_velocity"))));
+            rigidBody.setAngularVelocity(Converter.toBullet(VectorHelper.fromTag(tag.getCompound("angular_velocity"))));
         }
     }
 }

@@ -5,10 +5,11 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
-import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
+import dev.lazurite.toolbox.math.QuaternionHelper;
+import dev.lazurite.toolbox.math.VectorHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -61,10 +62,10 @@ public class EntityRigidBody extends ElementRigidBody {
         var buf = PacketByteBufs.create();
 
         buf.writeInt(entity.getId());
-        QuaternionHelper.toBuffer(buf, getPhysicsRotation(new Quaternion()));
-        VectorHelper.toBuffer(buf, getPhysicsLocation(new Vector3f()));
-        VectorHelper.toBuffer(buf, getLinearVelocity(new Vector3f()));
-        VectorHelper.toBuffer(buf, getAngularVelocity(new Vector3f()));
+        QuaternionHelper.toBuffer(buf, Converter.toMinecraft(getPhysicsRotation(new Quaternion())));
+        VectorHelper.toBuffer(buf, Converter.toMinecraft(getPhysicsLocation(new Vector3f())));
+        VectorHelper.toBuffer(buf, Converter.toMinecraft(getLinearVelocity(new Vector3f())));
+        VectorHelper.toBuffer(buf, Converter.toMinecraft(getAngularVelocity(new Vector3f())));
 
         if (getSpace().isServer()) {
             PlayerLookup.tracking(entity).forEach(player -> {

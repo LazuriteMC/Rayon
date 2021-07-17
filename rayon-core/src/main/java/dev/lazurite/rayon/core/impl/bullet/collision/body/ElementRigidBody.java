@@ -4,7 +4,8 @@ import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.toolbox.math.VectorHelper;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -25,7 +26,7 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
 
     public Collection<? extends PlayerEntity> getPlayersAround() {
         if (getSpace().isServer()) {
-            var location = VectorHelper.vector3fToVec3d(getPhysicsLocation(new Vector3f()));
+            var location = VectorHelper.toVec3d(Converter.toMinecraft(getPhysicsLocation(new Vector3f())));
             var world = (ServerWorld) getSpace().getWorld();
             var viewDistance = world.getServer().getPlayerManager().getViewDistance();
             return PlayerLookup.around(world, location, viewDistance);

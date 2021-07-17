@@ -1,14 +1,12 @@
 package dev.lazurite.rayon.entity.impl.event;
 
-import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
-import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
-import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
-import dev.lazurite.rayon.entity.impl.collision.body.EntityRigidBody;
+import dev.lazurite.toolbox.math.QuaternionHelper;
+import dev.lazurite.toolbox.math.VectorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
@@ -19,8 +17,6 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 @Environment(EnvType.CLIENT)
 public class ClientEventHandler {
@@ -65,10 +61,10 @@ public class ClientEventHandler {
 
                 if (entity instanceof EntityPhysicsElement element) {
                     var rigidBody = element.getRigidBody();
-                    rigidBody.setPhysicsRotation(rotation);
-                    rigidBody.setPhysicsLocation(location);
-                    rigidBody.setLinearVelocity(linearVelocity);
-                    rigidBody.setAngularVelocity(angularVelocity);
+                    rigidBody.setPhysicsRotation(Converter.toBullet(rotation));
+                    rigidBody.setPhysicsLocation(Converter.toBullet(location));
+                    rigidBody.setLinearVelocity(Converter.toBullet(linearVelocity));
+                    rigidBody.setAngularVelocity(Converter.toBullet(angularVelocity));
                     rigidBody.activate();
                 }
             }

@@ -4,8 +4,9 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
-import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.toolbox.math.QuaternionHelper;
+import dev.lazurite.toolbox.math.VectorHelper;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.
@@ -42,11 +43,17 @@ public class Frame {
     }
 
     public Vector3f getLocation(Vector3f store, float tickDelta) {
-        return store.set(VectorHelper.lerp(prevLocation, tickLocation, tickDelta));
+        var prevLocation = Converter.toMinecraft(this.prevLocation);
+        var tickLocation = Converter.toMinecraft(this.tickLocation);
+        var lerp = VectorHelper.lerp(prevLocation, tickLocation, tickDelta);
+        return store.set(Converter.toBullet(lerp));
     }
 
     public Quaternion getRotation(Quaternion store, float tickDelta) {
-        return store.set(QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta));
+        var prevRotation = Converter.toMinecraft(this.prevRotation);
+        var tickRotation= Converter.toMinecraft(this.tickRotation);
+        var slerp = QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta);
+        return store.set(Converter.toBullet(slerp));
     }
 
     public Vector3f getLocationDelta(Vector3f store) {
@@ -55,7 +62,12 @@ public class Frame {
     }
 
     public Vector3f getRotationDelta(Vector3f store) {
-        store.set(QuaternionHelper.toEulerAngles(tickRotation).subtract(QuaternionHelper.toEulerAngles(prevRotation)));
+        var tickRotation = Converter.toMinecraft(this.tickRotation);
+        var prevRotation = Converter.toMinecraft(this.prevRotation);
+        var tickAngles = QuaternionHelper.toEulerAngles(tickRotation);
+        var prevAngles = QuaternionHelper.toEulerAngles(prevRotation);
+        tickAngles.subtract(prevAngles);
+        store.set(Converter.toBullet(tickAngles));
         return store;
     }
 }

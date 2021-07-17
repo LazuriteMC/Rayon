@@ -3,7 +3,7 @@ package dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.entity;
 import com.jme3.bounding.BoundingBox;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.MinecraftRigidBody;
-import dev.lazurite.rayon.core.impl.bullet.math.BoxHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -25,7 +25,7 @@ public interface EntitySupplier {
         if (!thread.getParentThread().equals(Thread.currentThread())) {
             return CompletableFuture.supplyAsync(() -> getInsideOf(rigidBody), thread.getParentExecutor()).join();
         } else {
-            var box = BoxHelper.bulletToMinecraft(rigidBody.boundingBox(new BoundingBox()));
+            var box = Converter.toMinecraft(rigidBody.boundingBox(new BoundingBox()));
             return rigidBody.getSpace().getWorld().getEntitiesByClass(Entity.class, box,
                     entity -> (entity instanceof BoatEntity || entity instanceof MinecartEntity || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement));
         }

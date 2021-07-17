@@ -6,9 +6,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.core.api.event.render.DebugRenderEvents;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.MinecraftRigidBody;
-import dev.lazurite.rayon.core.impl.mixin.client.input.KeyboardMixin;
-import dev.lazurite.rayon.core.impl.bullet.math.QuaternionHelper;
-import dev.lazurite.rayon.core.impl.bullet.math.VectorHelper;
+import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.rayon.core.impl.mixin.client.KeyboardMixin;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -56,8 +55,8 @@ public final class CollisionObjectDebugger {
             var alpha = body.getOutlineAlpha();
 
             var position = body.isStatic() ?
-                    body.getPhysicsLocation(new Vector3f()).subtract(VectorHelper.vec3dToVector3f(cameraPos)) :
-                    body.getFrame().getLocation(new Vector3f(), tickDelta).subtract(VectorHelper.vec3dToVector3f(cameraPos));
+                    body.getPhysicsLocation(new Vector3f()).subtract(Converter.toBullet(cameraPos)) :
+                    body.getFrame().getLocation(new Vector3f(), tickDelta).subtract(Converter.toBullet(cameraPos));
 
             var rotation = body.isStatic() ?
                     body.getPhysicsRotation(new Quaternion()) :
@@ -65,7 +64,7 @@ public final class CollisionObjectDebugger {
 
             stack.push();
             stack.translate(position.x, position.y, position.z);
-            stack.multiply(QuaternionHelper.bulletToMinecraft(rotation));
+            stack.multiply(Converter.toMinecraft(rotation));
 
             for (var point : points) {
                 builder.vertex(stack.peek().getModel(), point.x, point.y, point.z)

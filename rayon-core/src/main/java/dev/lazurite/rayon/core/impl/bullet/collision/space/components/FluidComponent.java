@@ -27,7 +27,7 @@ public class FluidComponent {
                 var force = 9.81f * WATER_DENSITY * Math.abs(volume);
                 rigidBody.applyCentralForce(new Vector3f(0, force, 0));
 
-                System.out.println(force);
+                System.out.println("Volume lmao: " + volume);
             }
         }
     }

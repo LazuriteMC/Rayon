@@ -8,9 +8,7 @@
     "common.WorldMixin"
   ],
   "client": [
-    "client.event.ClientPlayNetworkHandlerMixin",
-    "client.input.KeyboardMixin",
-    "client.event.ClientWorldMixin"
+    "client.KeyboardMixin"
   ],
   "injectors": {
     "defaultRequire": 1
