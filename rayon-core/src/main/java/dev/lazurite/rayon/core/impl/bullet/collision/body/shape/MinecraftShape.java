@@ -40,6 +40,7 @@ public class MinecraftShape extends HullCollisionShape {
             var pt1 = triangles.get(i);
             var pt2 = triangles.get(i + 1);
             var pt3 = triangles.get(i + 2);
+//            var area = pt1.dot(pt2.cross(pt3));
             var vol = getSignedTriangleVolume(pt1, pt2, pt3);
             System.out.println(vol);
             volume += vol;
@@ -61,7 +62,33 @@ public class MinecraftShape extends HullCollisionShape {
         var y = box.getYExtent() * 0.5f;
         var z = box.getZExtent() * 0.5f;
 
-        // abominable
+        Vector3f[] points = {
+                // east
+                new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(-x, -y, z),
+                new Vector3f(-x, -y, z), new Vector3f(x, -y, z), new Vector3f(x, y, z),
+
+                // west
+                new Vector3f(x, y, -z), new Vector3f(-x, y, -z), new Vector3f(-x, -y, -z),
+                new Vector3f(-x, -y, -z), new Vector3f(x, -y, -z), new Vector3f(x, y, -z),
+
+                // north
+                new Vector3f(-x, y, z), new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z),
+                new Vector3f(-x, -y, -z), new Vector3f(-x, y, -z), new Vector3f(-x, y, z),
+
+                // south
+                new Vector3f(x, y, z), new Vector3f(x, -y, z), new Vector3f(x, -y, -z),
+                new Vector3f(x, -y, -z), new Vector3f(x, y, -z), new Vector3f(x, y, z),
+
+                // up
+                new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(-x, y, -z),
+                new Vector3f(-x, y, -z), new Vector3f(x, y, -z), new Vector3f(x, y, z),
+
+                // down
+                new Vector3f(x, -y, z), new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z),
+                new Vector3f(-x, -y, -z), new Vector3f(x, -y, -z), new Vector3f(x, -y, z)
+        };
+
+        /*// abominable
         Vector3f[] points = {
             // south
             new Vector3f(-x, -y, z), new Vector3f(-x,  y,  z), new Vector3f(-x,  y, -z),
@@ -86,7 +113,7 @@ public class MinecraftShape extends HullCollisionShape {
             // east
             new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(x, -y, z),
             new Vector3f(x, y, z), new Vector3f(-x, -y, z), new Vector3f(-x, y, z)
-        };
+        };*/
 
         return new MinecraftShape(Arrays.asList(points));
     }
