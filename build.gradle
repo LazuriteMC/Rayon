@@ -39,7 +39,7 @@ allprojects { project ->
 		include "dev.lazurite:transporter:${project.transporter_version}"
 
 		// Lazurite Toolbox
-		modImplementation "dev.lazurite:toolbox:${project.toolbox_version}"
+		modApi "dev.lazurite:toolbox:${project.toolbox_version}"
 		include "dev.lazurite:toolbox:${project.toolbox_version}"
 
 		// Immersive Portals Core
@@ -86,51 +86,51 @@ allprojects { project ->
 	dependencies {
 		testmodImplementation project.sourceSets.main.output
 	}
+}
 
-	publishing {
-		publications {
-			mavenJava(MavenPublication) {
-				artifactId = 'rayon'
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifactId = 'rayon'
 
-				pom {
-					name = 'Rayon'
-					description = 'A physics API for Minecraft.'
-					url = 'https://github.com/LazuriteMC/Rayon'
-					developers {
-						developer {
-							id = 'bluevista'
-							name = 'BlueVista'
-							email = 'ethan@ejohnsons.com'
-						}
+			pom {
+				name = 'Rayon'
+				description = 'A physics API for Minecraft.'
+				url = 'https://github.com/LazuriteMC/Rayon'
+				developers {
+					developer {
+						id = 'bluevista'
+						name = 'BlueVista'
+						email = 'ethan@ejohnsons.com'
 					}
-				}
-
-				versionMapping {
-					usage('java-api') {
-						fromResolutionOf('runtimeClasspath')
-					}
-					usage('java-runtime') {
-						fromResolutionResult()
-					}
-				}
-
-				artifact(remapJar) {
-					builtBy remapJar
-				}
-
-				artifact(sourcesJar) {
-					builtBy remapSourcesJar
 				}
 			}
-		}
 
-		repositories {
-			maven {
-				url = 'https://lazurite.dev/maven/releases'
-				credentials {
-					username = project.property("publish.lazurite.alias")
-					password = project.property("publish.lazurite.secret")
+			versionMapping {
+				usage('java-api') {
+					fromResolutionOf('runtimeClasspath')
 				}
+				usage('java-runtime') {
+					fromResolutionResult()
+				}
+			}
+
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+		}
+	}
+
+	repositories {
+		maven {
+			url = 'https://lazurite.dev/maven/releases'
+			credentials {
+				username = project.property("publish.lazurite.alias")
+				password = project.property("publish.lazurite.secret")
 			}
 		}
 	}
