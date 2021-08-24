@@ -4,17 +4,16 @@
 
 [![GitHub](https://img.shields.io/github/license/LazuriteMC/Rayon?color=A31F34&label=License&labelColor=8A8B8C)](https://github.com/LazuriteMC/Rayon/blob/main/LICENSE)
 [![Discord](https://img.shields.io/discord/719662192601071747?color=7289DA&label=Discord&labelColor=2C2F33&logo=Discord)](https://discord.gg/NNPPHN7b3P)
-[![Trello](https://img.shields.io/static/v1?label=Trello&message=Board&color=FFFFFF&logo=Trello&labelColor=0052CC)](https://trello.com/b/SNaD9BVr/rayon)
 
 ## How to develop using Rayon
 Add the following lines to your `build.gradle` where `VERSION` is the latest version.
 ```java
 repositories {
-    maven { url 'https://jitpack.io' }
+    maven { url "https://lazurite.dev/releases" }
 }
 
 dependencies {
-    modApi 'com.github.LazuriteMC:Rayon:VERSION'
+    modApi 'dev.lazurite:rayon:VERSION'
 }
 ```
 
