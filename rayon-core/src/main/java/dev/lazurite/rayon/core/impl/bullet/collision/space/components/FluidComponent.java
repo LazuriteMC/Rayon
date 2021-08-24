@@ -26,8 +26,6 @@ public class FluidComponent {
             if (position.y < waterHeight) {
                 var force = 9.81f * WATER_DENSITY * Math.abs(volume);
                 rigidBody.applyCentralForce(new Vector3f(0, force, 0));
-
-                System.out.println("Volume lmao: " + volume);
             }
         }
     }

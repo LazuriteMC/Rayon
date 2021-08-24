@@ -42,7 +42,6 @@ public class MinecraftShape extends HullCollisionShape {
             var pt3 = triangles.get(i + 2);
 //            var area = pt1.dot(pt2.cross(pt3));
             var vol = getSignedTriangleVolume(pt1, pt2, pt3);
-            System.out.println(vol);
             volume += vol;
         }
 

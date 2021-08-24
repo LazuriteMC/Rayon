@@ -32,7 +32,7 @@ public final class ServerEventHandler {
 
         // Space Events
         PhysicsSpaceEvents.STEP.register(TerrainComponent::step);
-        PhysicsSpaceEvents.STEP.register(FluidComponent::step);
+//        PhysicsSpaceEvents.STEP.register(FluidComponent::step);
     }
 
     private static void onServerStart(MinecraftServer server) {
