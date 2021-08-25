@@ -7,7 +7,7 @@ import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.ClientWorldSupplier;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.compat.ImmersiveWorldSupplier;
-import dev.lazurite.toolbox.event.BetterClientLifecycleEvents;
+import dev.lazurite.toolbox.api.event.BetterClientLifecycleEvents;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;

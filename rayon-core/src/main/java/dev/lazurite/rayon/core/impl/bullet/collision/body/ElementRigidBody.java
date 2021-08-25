@@ -5,7 +5,7 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.math.Converter;
-import dev.lazurite.toolbox.math.VectorHelper;
+import dev.lazurite.toolbox.api.math.VectorHelper;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;

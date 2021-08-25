@@ -18,7 +18,6 @@ allprojects { project ->
 	group = project.maven_group
 
 	repositories {
-		mavenLocal()
 		maven { url "https://jitpack.io" }
 		maven { url "https://maven.fabricmc.net/" }
 		maven { url "https://lazurite.dev/releases" }
@@ -86,60 +85,54 @@ allprojects { project ->
 	dependencies {
 		testmodImplementation project.sourceSets.main.output
 	}
-}
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifactId = 'rayon'
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				artifactId = 'rayon'
 
-			pom {
-				name = 'Rayon'
-				description = 'A physics API for Minecraft.'
-				url = 'https://github.com/LazuriteMC/Rayon'
-				developers {
-					developer {
-						id = 'bluevista'
-						name = 'BlueVista'
-						email = 'ethan@ejohnsons.com'
+				pom {
+					name = 'Rayon'
+					description = 'A physics API for Minecraft.'
+					url = 'https://github.com/LazuriteMC/Rayon'
+					developers {
+						developer {
+							id = 'bluevista'
+							name = 'BlueVista'
+							email = 'ethan@ejohnsons.com'
+						}
 					}
 				}
-			}
 
-			versionMapping {
-				usage('java-api') {
-					fromResolutionOf('runtimeClasspath')
+				versionMapping {
+					usage('java-api') {
+						fromResolutionOf('runtimeClasspath')
+					}
+					usage('java-runtime') {
+						fromResolutionResult()
+					}
 				}
-				usage('java-runtime') {
-					fromResolutionResult()
+
+				artifact(remapJar) {
+					builtBy remapJar
+				}
+
+				artifact(sourcesJar) {
+					builtBy remapSourcesJar
 				}
 			}
+		}
 
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
+		repositories {
+			maven {
+				url = 'https://lazurite.dev/maven/releases'
+				credentials {
+					username = project.property("publish.lazurite.alias")
+					password = project.property("publish.lazurite.secret")
+				}
 			}
 		}
 	}
-
-	repositories {
-		maven {
-			url = 'https://lazurite.dev/maven/releases'
-			credentials {
-				username = project.property("publish.lazurite.alias")
-				password = project.property("publish.lazurite.secret")
-			}
-		}
-	}
-}
-
-dependencies {
-	include project(":rayon-core")
-	include project(":rayon-entity")
-	include project(":rayon-particle")
 }
 
 task publish(overwrite: true) {
@@ -161,4 +154,10 @@ shadowJar {
 remapJar {
 	dependsOn shadowJar
 	input.set shadowJar.archiveFile.get()
+}
+
+dependencies {
+	include project(":rayon-core")
+	include project(":rayon-entity")
+	include project(":rayon-particle")
 }
