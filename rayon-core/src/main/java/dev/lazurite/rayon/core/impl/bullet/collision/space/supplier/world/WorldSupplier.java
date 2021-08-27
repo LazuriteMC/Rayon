@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world;
 
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.compat.ImmersiveWorldSupplier;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -17,7 +16,6 @@ import java.util.Optional;
  * @see PhysicsThread
  * @see ClientWorldSupplier
  * @see ServerWorldSupplier
- * @see ImmersiveWorldSupplier
  */
 public interface WorldSupplier {
      /**

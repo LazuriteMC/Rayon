@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.compat;
 
-import com.qouteall.immersive_portals.ClientWorldLoader;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.WorldSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import qouteall.imm_ptl.core.ClientWorldLoader;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,5 @@
 archivesBaseName = "rayon-entity"
 
 dependencies {
-    implementation project(path: ":rayon-core", configuration: 'shadow')
+    implementation project(path: ":rayon-core")
 }
