@@ -13,7 +13,6 @@ allprojects { project ->
 	sourceCompatibility = JavaVersion.VERSION_16
 	targetCompatibility = JavaVersion.VERSION_16
 
-	archivesBaseName = project.archives_base_name
 	version = project.mod_version
 	group = project.maven_group
 
@@ -85,40 +84,37 @@ allprojects { project ->
 	dependencies {
 		testmodImplementation project.sourceSets.main.output
 	}
+}
+
+subprojects {
+	task remapMavenJar(type: Copy, dependsOn: remapJar) {
+		afterEvaluate {
+			from("${project.buildDir}/libs/$archivesBaseName-${version}.jar")
+			into("${project.buildDir}/libs/")
+			rename { String fn -> "$archivesBaseName-${version}-maven.jar" }
+		}
+	}
 
 	publishing {
 		publications {
 			mavenJava(MavenPublication) {
-				artifactId = 'rayon'
-
-				pom {
-					name = 'Rayon'
-					description = 'A physics API for Minecraft.'
-					url = 'https://github.com/LazuriteMC/Rayon'
-					developers {
-						developer {
-							id = 'bluevista'
-							name = 'BlueVista'
-							email = 'ethan@ejohnsons.com'
-						}
-					}
-				}
-
-				versionMapping {
-					usage('java-api') {
-						fromResolutionOf('runtimeClasspath')
-					}
-					usage('java-runtime') {
-						fromResolutionResult()
-					}
-				}
-
-				artifact(remapJar) {
-					builtBy remapJar
+				artifact(file("${project.buildDir}/libs/$archivesBaseName-${version}.jar")) {
+					builtBy remapMavenJar
 				}
 
 				artifact(sourcesJar) {
 					builtBy remapSourcesJar
+				}
+
+				pom.withXml {
+					def depsNode = asNode().appendNode("dependencies")
+					subprojects.each {
+						def depNode = depsNode.appendNode("dependency")
+						depNode.appendNode("groupId", it.group)
+						depNode.appendNode("artifactId", it.name)
+						depNode.appendNode("version", it.version)
+						depNode.appendNode("scope", "compile")
+					}
 				}
 			}
 		}
@@ -126,6 +122,7 @@ allprojects { project ->
 		repositories {
 			maven {
 				url = 'https://lazurite.dev/maven/releases'
+
 				credentials {
 					username = project.property("publish.lazurite.alias")
 					password = project.property("publish.lazurite.secret")
@@ -133,31 +130,4 @@ allprojects { project ->
 			}
 		}
 	}
-}
-
-task publish(overwrite: true) {
-	subprojects {
-		publish
-	}
-}
-
-task publishToMavenLocal(overwrite: true) {
-	subprojects {
-		publishToMavenLocal
-	}
-}
-
-shadowJar {
-	configurations = [project.configurations.shadow]
-}
-
-remapJar {
-	dependsOn shadowJar
-	input.set shadowJar.archiveFile.get()
-}
-
-dependencies {
-	include project(":rayon-core")
-	include project(":rayon-entity")
-	include project(":rayon-particle")
 }

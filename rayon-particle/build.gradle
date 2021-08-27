@@ -1,5 +1,5 @@
 archivesBaseName = "rayon-particle"
 
 dependencies {
-    implementation project(":rayon-core")
+    implementation project(path: ":rayon-core", configuration: 'shadow')
 }
