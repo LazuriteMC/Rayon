@@ -13,7 +13,8 @@ repositories {
 }
 
 dependencies {
-    modApi 'dev.lazurite:rayon:VERSION'
+    modApi 'dev.lazurite:rayon-core:VERSION'
+    modApi 'dev.lazurite:rayon-entity:VERSION'
 }
 ```
 
