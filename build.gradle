@@ -131,3 +131,9 @@ subprojects {
 		}
 	}
 }
+
+dependencies {
+	include project(':rayon-core')
+	include project(':rayon-entity')
+	include project(':rayon-particle')
+}
