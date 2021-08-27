@@ -16,40 +16,9 @@ import java.util.List;
  * methods to allow for easier creation (e.g. from a {@link Box} or a {@link Pattern}).
  */
 public class MinecraftShape extends HullCollisionShape {
-    private final List<Vector3f> triangles;
 
     public MinecraftShape(List<Vector3f> triangles) {
         super(triangles);
-        this.triangles = triangles;
-    }
-
-    public static float getSignedTriangleVolume(Vector3f p1, Vector3f p2, Vector3f p3) {
-        float v321 = p3.x * p2.y * p1.z;
-        float v231 = p2.x * p3.y * p1.z;
-        float v312 = p3.x * p1.y * p2.z;
-        float v132 = p1.x * p3.y * p2.z;
-        float v213 = p2.x * p1.y * p3.z;
-        float v123 = p1.x * p2.y * p3.z;
-        return (1.0f/6.0f) * (-v321 + v231 + v312 - v132 - v213 + v123);
-    }
-
-    public float getVolume() {
-        var volume = 0.0f;
-
-        for (var i = 0; i < triangles.size(); i += 3) {
-            var pt1 = triangles.get(i);
-            var pt2 = triangles.get(i + 1);
-            var pt3 = triangles.get(i + 2);
-//            var area = pt1.dot(pt2.cross(pt3));
-            var vol = getSignedTriangleVolume(pt1, pt2, pt3);
-            volume += vol;
-        }
-
-        return Math.abs(volume);
-    }
-
-    public List<Vector3f> getTriangles() {
-        return this.triangles;
     }
 
     public static MinecraftShape of(Box box) {
@@ -86,33 +55,6 @@ public class MinecraftShape extends HullCollisionShape {
                 new Vector3f(x, -y, z), new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z),
                 new Vector3f(-x, -y, -z), new Vector3f(x, -y, -z), new Vector3f(x, -y, z)
         };
-
-        /*// abominable
-        Vector3f[] points = {
-            // south
-            new Vector3f(-x, -y, z), new Vector3f(-x,  y,  z), new Vector3f(-x,  y, -z),
-            new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z), new Vector3f(-x,  y,  z),
-
-            // north
-            new Vector3f(x, -y, z), new Vector3f(x, y, z), new Vector3f(x, y, -z),
-            new Vector3f(x, -y, z), new Vector3f(x, -y, -z), new Vector3f(x, y, z),
-
-            // down
-            new Vector3f(-x, -y, z), new Vector3f(x, -y, z), new Vector3f(x, -y, -z),
-            new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z), new Vector3f(x, -y, z),
-
-            // up
-            new Vector3f(-x, y, z), new Vector3f(x,  y,  z), new Vector3f(x, y, -z),
-            new Vector3f(-x, y, z), new Vector3f(-x, y, -z), new Vector3f(x, y,  z),
-
-            // west
-            new Vector3f(-x, y, -z), new Vector3f(x,   y, -z), new Vector3f(x, -y, -z),
-            new Vector3f(-x, y, -z), new Vector3f(-x, -y, -z), new Vector3f(x,  y, -z),
-
-            // east
-            new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(x, -y, z),
-            new Vector3f(x, y, z), new Vector3f(-x, -y, z), new Vector3f(-x, y, z)
-        };*/
 
         return new MinecraftShape(Arrays.asList(points));
     }

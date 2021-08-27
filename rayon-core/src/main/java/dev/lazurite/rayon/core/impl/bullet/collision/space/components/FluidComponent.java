@@ -22,11 +22,10 @@ public class FluidComponent {
 
         for (var rigidBody : space.getRigidBodiesByClass(MinecraftRigidBody.class)) {
             final var position = rigidBody.getPhysicsLocation(new Vector3f());
-            final var volume = rigidBody.getCollisionShape().getVolume();
+            final var volume = rigidBody.getCollisionShape().aabbVolume();
 
             final var rotation = rigidBody.getPhysicsRotation(new Quaternion());
-            final var bb = rigidBody.getCollisionShape().copyHullVertices(position, rotation, new BoundingBox());
-            System.out.println(bb.
+            final var bb = rigidBody.getCollisionShape().boundingBox(position, rotation, new BoundingBox());
 
             if (position.y < waterHeight) {
                 var force = 9.81f * WATER_DENSITY * Math.abs(volume);
