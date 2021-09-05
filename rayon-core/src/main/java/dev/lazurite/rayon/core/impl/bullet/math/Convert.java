@@ -5,7 +5,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 
-public class Converter {
+public class Convert {
     public static Box toMinecraft(com.jme3.bounding.BoundingBox box) {
         var min = box.getMin(new Vector3f());
         var max = box.getMax(new Vector3f());

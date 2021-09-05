@@ -5,6 +5,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class BlockProps {
     public record BlockProperties(float friction, float restitution, boolean collidable) { }
@@ -13,6 +14,10 @@ public class BlockProps {
 
     public static Map<Identifier, BlockProperties> get() {
         return blockProps;
+    }
+
+    public static Optional<BlockProperties> get(Identifier identifier) {
+        return Optional.ofNullable(blockProps.get(identifier));
     }
 
     public static void load() {

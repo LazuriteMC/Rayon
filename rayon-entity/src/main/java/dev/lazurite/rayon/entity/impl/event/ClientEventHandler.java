@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity.impl.event;
 
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
@@ -61,10 +61,10 @@ public class ClientEventHandler {
 
                 if (entity instanceof EntityPhysicsElement element) {
                     var rigidBody = element.getRigidBody();
-                    rigidBody.setPhysicsRotation(Converter.toBullet(rotation));
-                    rigidBody.setPhysicsLocation(Converter.toBullet(location));
-                    rigidBody.setLinearVelocity(Converter.toBullet(linearVelocity));
-                    rigidBody.setAngularVelocity(Converter.toBullet(angularVelocity));
+                    rigidBody.setPhysicsRotation(Convert.toBullet(rotation));
+                    rigidBody.setPhysicsLocation(Convert.toBullet(location));
+                    rigidBody.setLinearVelocity(Convert.toBullet(linearVelocity));
+                    rigidBody.setAngularVelocity(Convert.toBullet(angularVelocity));
                     rigidBody.activate();
                 }
             }

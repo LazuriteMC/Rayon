@@ -7,7 +7,7 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.player.ClientPlayerSupplier;
-import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
@@ -40,7 +40,7 @@ public class ServerEventHandler {
         if (rigidBody instanceof EntityRigidBody entityBody) {
             var pos = entityBody.getElement().asEntity().getPos();
             var box = entityBody.getElement().asEntity().getBoundingBox();
-            entityBody.setPhysicsLocation(Converter.toBullet(pos.add(0, box.getYLength() / 2.0, 0)));
+            entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYLength() / 2.0, 0)));
         }
     }
 
@@ -86,11 +86,11 @@ public class ServerEventHandler {
                 var mass = rigidBody.getMass();
 
                 for (var entity : EntitySupplier.getInsideOf(rigidBody)) {
-                    var entityPos = Converter.toBullet(entity.getPos().add(0, entity.getBoundingBox().getYLength(), 0));
+                    var entityPos = Convert.toBullet(entity.getPos().add(0, entity.getBoundingBox().getYLength(), 0));
                     var normal = location.subtract(entityPos).multLocal(new Vector3f(1, 0, 1)).normalize();
 
-                    var intersection = entity.getBoundingBox().intersection(Converter.toMinecraft(box));
-                    var force = normal.clone().multLocal((float) intersection.getAverageSideLength() / (float) Converter.toMinecraft(box).getAverageSideLength())
+                    var intersection = entity.getBoundingBox().intersection(Convert.toMinecraft(box));
+                    var force = normal.clone().multLocal((float) intersection.getAverageSideLength() / (float) Convert.toMinecraft(box).getAverageSideLength())
                             .multLocal(mass).multLocal(new Vector3f(1, 0, 1));
                     rigidBody.applyCentralImpulse(force);
                 }
@@ -106,10 +106,10 @@ public class ServerEventHandler {
 
     private static void onMovement(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
         var entityId = buf.readInt();
-        var rotation = Converter.toBullet(QuaternionHelper.fromBuffer(buf));
-        var location = Converter.toBullet(VectorHelper.fromBuffer(buf));
-        var linearVelocity = Converter.toBullet(VectorHelper.fromBuffer(buf));
-        var angularVelocity = Converter.toBullet(VectorHelper.fromBuffer(buf));
+        var rotation = Convert.toBullet(QuaternionHelper.fromBuffer(buf));
+        var location = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var linearVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var angularVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
 
         PhysicsThread.getOptional(server).ifPresent(thread -> thread.execute(() -> {
             var world = player.getEntityWorld();

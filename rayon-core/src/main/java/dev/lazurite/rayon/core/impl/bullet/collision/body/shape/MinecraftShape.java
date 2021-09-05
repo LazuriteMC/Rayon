@@ -3,7 +3,7 @@ package dev.lazurite.rayon.core.impl.bullet.collision.body.shape;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
 import net.minecraft.util.math.Box;
 
@@ -16,13 +16,12 @@ import java.util.List;
  * methods to allow for easier creation (e.g. from a {@link Box} or a {@link Pattern}).
  */
 public class MinecraftShape extends HullCollisionShape {
-
     public MinecraftShape(List<Vector3f> triangles) {
         super(triangles);
     }
 
     public static MinecraftShape of(Box box) {
-        return MinecraftShape.of(Converter.toBullet(box));
+        return MinecraftShape.of(Convert.toBullet(box));
     }
 
     public static MinecraftShape of(BoundingBox box) {
@@ -65,7 +64,7 @@ public class MinecraftShape extends HullCollisionShape {
 
         for (var quad : pattern.getQuads()) {
             for (var index : indices) {
-                points.add(Converter.toBullet(quad.getPoints().get(index)));
+                points.add(Convert.toBullet(quad.getPoints().get(index)));
             }
         }
 

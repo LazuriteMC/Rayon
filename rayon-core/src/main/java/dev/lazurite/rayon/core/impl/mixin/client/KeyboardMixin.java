@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.impl.mixin.client;
 
-import dev.lazurite.rayon.core.impl.util.CollisionObjectDebugger;
-import dev.lazurite.rayon.core.impl.bullet.collision.body.MinecraftRigidBody;
+import com.jme3.bullet.objects.PhysicsRigidBody;
+import dev.lazurite.rayon.core.impl.util.debug.CollisionObjectDebugger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Keyboard;
@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * Adds an additional F3 key combination (F3 + R). It toggles
- * renders for all {@link MinecraftRigidBody} objects.
+ * Adds an F3 key combination (F3 + R). It toggles
+ * renders for all relevant {@link PhysicsRigidBody} objects.
  */
 @Mixin(Keyboard.class)
 @Environment(EnvType.CLIENT)

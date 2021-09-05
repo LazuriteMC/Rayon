@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.api.event.render;
 
-import dev.lazurite.rayon.core.impl.util.CollisionObjectDebugger;
+import dev.lazurite.rayon.core.impl.util.debug.CollisionObjectDebugger;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

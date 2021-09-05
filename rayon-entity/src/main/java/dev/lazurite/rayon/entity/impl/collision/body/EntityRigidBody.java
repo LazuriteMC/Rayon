@@ -5,7 +5,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class EntityRigidBody extends ElementRigidBody {
     private PlayerEntity priorityPlayer;
-    private boolean dirtyProperties;
+    private boolean dirtyProperties = true;
 
     public EntityRigidBody(EntityPhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(element, space, shape, mass, dragCoefficient, friction, restitution);
@@ -62,10 +62,10 @@ public class EntityRigidBody extends ElementRigidBody {
         var buf = PacketByteBufs.create();
 
         buf.writeInt(entity.getId());
-        QuaternionHelper.toBuffer(buf, Converter.toMinecraft(getPhysicsRotation(new Quaternion())));
-        VectorHelper.toBuffer(buf, Converter.toMinecraft(getPhysicsLocation(new Vector3f())));
-        VectorHelper.toBuffer(buf, Converter.toMinecraft(getLinearVelocity(new Vector3f())));
-        VectorHelper.toBuffer(buf, Converter.toMinecraft(getAngularVelocity(new Vector3f())));
+        QuaternionHelper.toBuffer(buf, Convert.toMinecraft(getPhysicsRotation(new Quaternion())));
+        VectorHelper.toBuffer(buf, Convert.toMinecraft(getPhysicsLocation(new Vector3f())));
+        VectorHelper.toBuffer(buf, Convert.toMinecraft(getLinearVelocity(new Vector3f())));
+        VectorHelper.toBuffer(buf, Convert.toMinecraft(getAngularVelocity(new Vector3f())));
 
         if (getSpace().isServer()) {
             PlayerLookup.tracking(entity).forEach(player -> {

@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.entity.testmod.client.render;
 
-import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
 import dev.lazurite.rayon.entity.testmod.EntityTestMod;
 import net.fabricmc.api.EnvType;
@@ -24,8 +24,8 @@ public class CubeEntityRenderer extends EntityRenderer<CubeEntity> {
     }
 
     public void render(CubeEntity cubeEntity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        var box = Converter.toBullet(cubeEntity.getBoundingBox());
-        var rot = Converter.toMinecraft(cubeEntity.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
+        var box = Convert.toBullet(cubeEntity.getBoundingBox());
+        var rot = Convert.toMinecraft(cubeEntity.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
 
         matrixStack.push();
         matrixStack.multiply(rot);

@@ -1,10 +1,9 @@
-package dev.lazurite.rayon.core.impl.util.model;
+package dev.lazurite.rayon.core.impl.util;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.impl.bullet.math.Converter;
+import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
 
@@ -20,10 +19,10 @@ public class Frame {
     private Quaternion tickRotation;
 
     public Frame() {
-        this(new Vector3f(), new Quaternion(), new BoundingBox());
+        this(new Vector3f(), new Quaternion());
     }
 
-    public Frame(Vector3f location, Quaternion rotation, BoundingBox box) {
+    public Frame(Vector3f location, Quaternion rotation) {
         this.set(location, location, rotation, rotation);
     }
 
@@ -38,22 +37,22 @@ public class Frame {
         this.set(frame.prevLocation, frame.tickLocation, frame.prevRotation, frame.tickRotation);
     }
 
-    public void from(Frame prevFrame, Vector3f tickLocation, Quaternion tickRotation, BoundingBox tickBox) {
+    public void from(Frame prevFrame, Vector3f tickLocation, Quaternion tickRotation) {
         this.set(prevFrame.tickLocation, tickLocation, prevFrame.tickRotation, tickRotation);
     }
 
     public Vector3f getLocation(Vector3f store, float tickDelta) {
-        var prevLocation = Converter.toMinecraft(this.prevLocation);
-        var tickLocation = Converter.toMinecraft(this.tickLocation);
+        var prevLocation = Convert.toMinecraft(this.prevLocation);
+        var tickLocation = Convert.toMinecraft(this.tickLocation);
         var lerp = VectorHelper.lerp(prevLocation, tickLocation, tickDelta);
-        return store.set(Converter.toBullet(lerp));
+        return store.set(Convert.toBullet(lerp));
     }
 
     public Quaternion getRotation(Quaternion store, float tickDelta) {
-        var prevRotation = Converter.toMinecraft(this.prevRotation);
-        var tickRotation= Converter.toMinecraft(this.tickRotation);
+        var prevRotation = Convert.toMinecraft(this.prevRotation);
+        var tickRotation= Convert.toMinecraft(this.tickRotation);
         var slerp = QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta);
-        return store.set(Converter.toBullet(slerp));
+        return store.set(Convert.toBullet(slerp));
     }
 
     public Vector3f getLocationDelta(Vector3f store) {
@@ -62,12 +61,12 @@ public class Frame {
     }
 
     public Vector3f getRotationDelta(Vector3f store) {
-        var tickRotation = Converter.toMinecraft(this.tickRotation);
-        var prevRotation = Converter.toMinecraft(this.prevRotation);
+        var tickRotation = Convert.toMinecraft(this.tickRotation);
+        var prevRotation = Convert.toMinecraft(this.prevRotation);
         var tickAngles = QuaternionHelper.toEulerAngles(tickRotation);
         var prevAngles = QuaternionHelper.toEulerAngles(prevRotation);
         tickAngles.subtract(prevAngles);
-        store.set(Converter.toBullet(tickAngles));
+        store.set(Convert.toBullet(tickAngles));
         return store;
     }
 }
