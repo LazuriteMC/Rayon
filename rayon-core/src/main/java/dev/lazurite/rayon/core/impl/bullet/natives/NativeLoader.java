@@ -7,7 +7,10 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.NoSuchElementException;
@@ -33,8 +36,8 @@ public class NativeLoader {
                 } else if (!Files.exists(destinationFile)) {
                     Files.copy(originalFile, destinationFile);
                 } else {
-                    var destinationHash = getChecksum(MessageDigest.getInstance("MD5"), destination.resolve(fileName).toFile());
-                    var jarHash = getChecksum(MessageDigest.getInstance("MD5"), natives.resolve(fileName).toFile());
+                    var destinationHash = getChecksum(MessageDigest.getInstance("MD5"), destination.resolve(fileName));
+                    var jarHash = getChecksum(MessageDigest.getInstance("MD5"), natives.resolve(fileName));
 
                     if (!jarHash.equals(destinationHash)) {
                         Files.delete(destinationFile);
@@ -56,23 +59,24 @@ public class NativeLoader {
         });
     }
 
-    static String getChecksum(MessageDigest digest, File file) throws IOException {
-        var inputStream = new FileInputStream(file);
-        var byteArray = new byte[1024];
-        var bytesCount = 0;
+    static String getChecksum(MessageDigest digest, Path path) throws IOException {
+        var channel = Files.newByteChannel(path, StandardOpenOption.READ);
+        var buf = ByteBuffer.allocate(1024);
+        var bytesRead = 0;
 
-        while ((bytesCount = inputStream.read(byteArray)) != -1) {
-            digest.update(byteArray, 0, bytesCount);
+        while ((bytesRead = channel.read(buf)) > 0) {
+            buf.flip();
+            digest.update(buf.array(), 0, bytesRead);
+            buf.clear();
         }
 
-        inputStream.close();
+        channel.close();
         var bytes = digest.digest();
         var sb = new StringBuilder();
 
-        for (var aByte : bytes) {
-            sb.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        for (byte b : bytes) {
+            sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
         }
-
         return sb.toString();
     }
 
