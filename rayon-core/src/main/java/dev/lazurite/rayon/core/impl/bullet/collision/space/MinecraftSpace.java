@@ -14,7 +14,6 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.bullet.thread.util.Clock;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -42,7 +41,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final List<TerrainObject> terrainObjects;
     private final PhysicsThread thread;
     private final World world;
-    private final Clock clock;
     private int presimSteps;
 
     private volatile boolean stepping;
@@ -65,7 +63,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         super(broadphase);
         this.thread = thread;
         this.world = world;
-        this.clock = new Clock();
         this.terrainObjects = new ArrayList<>();
         this.addCollisionListener(this);
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
@@ -103,15 +100,19 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             /* Step all elements */
             getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> rigidBody.getElement().step(this));
 
+            /* Call collision events */
+            this.distributeEvents();
+
             /* Step Simulation Asynchronously */
             CompletableFuture.runAsync(() -> {
                 if (presimSteps > MAX_PRESIM_STEPS) {
-                    update(clock.getAndReset(), 5);
-                } else ++presimSteps;
-            }, getWorkerThread()).thenRunAsync(() -> {
-                this.distributeEvents();
+                    update(0.05f, 5);
+                } else {
+                    ++presimSteps;
+                }
+
                 this.stepping = false;
-            }, getWorkerThread().getParentExecutor());
+            }, getWorkerThread());
         }
     }
 
@@ -147,8 +148,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     public void addTerrainObject(TerrainObject terrainObject) {
-        this.terrainObjects.add(terrainObject);
-        this.addCollisionObject(terrainObject.getCollisionObject());
+        if (!this.terrainObjects.contains(terrainObject)) {
+            this.terrainObjects.add(terrainObject);
+            this.addCollisionObject(terrainObject.getCollisionObject());
+        }
     }
 
     public void removeTerrainObject(TerrainObject terrainObject) {

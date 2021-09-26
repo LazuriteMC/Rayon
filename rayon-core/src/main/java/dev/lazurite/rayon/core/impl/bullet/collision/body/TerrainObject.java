@@ -29,8 +29,6 @@ public class TerrainObject {
         var voxelShape = fluidState.getShape(space.getWorld(), blockPos);
         var boundingBox = voxelShape.isEmpty() ? new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.getBoundingBox();
         this.collisionObject = new Fluid(this, space, MinecraftShape.of(boundingBox), density);
-
-        this.space.addTerrainObject(this);
     }
 
     public TerrainObject(MinecraftSpace space, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
@@ -41,8 +39,6 @@ public class TerrainObject {
         var voxelShape = blockState.getCollisionShape(space.getWorld(), blockPos);
         var boundingBox = voxelShape.isEmpty() ? new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.getBoundingBox();
         this.collisionObject = new Block(this, space, MinecraftShape.of(boundingBox), friction, restitution);
-
-        this.space.addTerrainObject(this);
     }
 
     public PhysicsCollisionObject getCollisionObject() {
@@ -71,6 +67,15 @@ public class TerrainObject {
 
     public Optional<FluidState> getFluidState() {
         return Optional.ofNullable(this.state instanceof FluidState fluidState ? fluidState : null);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TerrainObject terrainObject) {
+            return terrainObject.getBlockPos().equals(blockPos) && terrainObject.getState().equals(state);
+        }
+
+        return false;
     }
 
     // Marker interface

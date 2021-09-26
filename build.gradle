@@ -20,8 +20,6 @@ allprojects { project ->
 		maven { url "https://jitpack.io" }
 		maven { url "https://maven.fabricmc.net/" }
 		maven { url "https://lazurite.dev/releases" }
-		maven { url = "https://maven.shedaniel.me/" }
-		maven { url = "https://maven.terraformersmc.com/releases" }
 	}
 
 	dependencies {
@@ -45,12 +43,10 @@ allprojects { project ->
 		// Immersive Portals Core
 		modImplementation ("com.github.qouteall.ImmersivePortalsMod:imm_ptl_core:${project.imm_ptl_core_version}") {
 			exclude(group: "net.fabricmc.fabric-api")
-			transitive(false)
 		}
 
 		modImplementation ("com.github.qouteall.ImmersivePortalsMod:q_misc_util:${project.imm_ptl_core_version}") {
 			exclude(group: "net.fabricmc.fabric-api")
-			transitive(false)
 		}
 	}
 

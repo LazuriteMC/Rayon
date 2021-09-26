@@ -36,7 +36,7 @@ public class WandItem extends Item {
                 var random = new Random();
                 var unit = hitResult.getPos().subtract(user.getPos()).normalize();
                 entity.updatePosition(user.getPos().x + unit.x, user.getPos().y + user.getStandingEyeHeight(), user.getPos().z + unit.z);
-                rigidBody.setLinearVelocity(Convert.toBullet(unit).multLocal(10));
+                rigidBody.setLinearVelocity(Convert.toBullet(unit).multLocal(20));
                 rigidBody.setAngularVelocity(new Vector3f(random.nextFloat(), random.nextFloat(), random.nextFloat()));
             } else {
                 entity.updatePosition(hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
