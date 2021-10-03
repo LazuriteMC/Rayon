@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity.testmod.client.render;
 
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
-import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.entity.testmod.EntityTestMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,17 +13,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
-public class CubeEntityRenderer extends EntityRenderer<CubeEntity> {
-    public static final Identifier texture = new Identifier(EntityTestMod.MODID, "textures/entity/cube.png");
-    private final CubeEntityModel model;
+public class StoneBlockEntityRenderer extends EntityRenderer<StoneBlockEntity> {
+    private static final Identifier texture = new Identifier(EntityTestMod.MODID, "textures/entity/stone_block.png");
+    private final StoneBlockEntityModel model;
 
-    public CubeEntityRenderer(EntityRendererFactory.Context ctx, CubeEntityModel model) {
+    public StoneBlockEntityRenderer(EntityRendererFactory.Context ctx, StoneBlockEntityModel model) {
         super(ctx);
         this.model = model;
         this.shadowRadius = 0.2F;
     }
 
-    public void render(CubeEntity cubeEntity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(StoneBlockEntity cubeEntity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         var box = Convert.toBullet(cubeEntity.getBoundingBox());
         var rot = Convert.toMinecraft(cubeEntity.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
 
@@ -38,7 +38,7 @@ public class CubeEntityRenderer extends EntityRenderer<CubeEntity> {
     }
 
     @Override
-    public Identifier getTexture(CubeEntity cubeEntity) {
+    public Identifier getTexture(StoneBlockEntity cubeEntity) {
         return texture;
     }
 }

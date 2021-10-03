@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space.generator;
 
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
@@ -16,6 +18,7 @@ import net.minecraft.block.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
@@ -28,6 +31,7 @@ import java.util.*;
  */
 public class TerrainGenerator {
     public static void step(MinecraftSpace space) {
+        final var world = space.getWorld();
         final var toKeep = new HashMap<BlockPos, TerrainObject>();
 
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
@@ -35,14 +39,15 @@ public class TerrainGenerator {
                 continue;
             }
 
-            final var world = space.getWorld();
             final var blocks = new ArrayList<BlockPos>();
-            final var d = VectorHelper.toVec3d(Convert.toMinecraft(rigidBody.getLinearVelocity(null)));
 
-            final var x = Math.min(Math.abs(d.x) * 0.125f, 1);
-            final var y = Math.min(Math.abs(d.y) * 0.125f, 1);
-            final var z = Math.min(Math.abs(d.z) * 0.125f, 1);
+            final var d = VectorHelper.toVec3d(Convert.toMinecraft(rigidBody.getLinearVelocity(null)));
+            final var x = Math.min(Math.abs(d.x), 1);
+            final var y = Math.min(Math.abs(d.y), 1);
+            final var z = Math.min(Math.abs(d.z), 1);
             final var box = Convert.toMinecraft(rigidBody.boundingBox(null)).expand(0.5f).expand(x, y, z);
+            final var pos = rigidBody.getPhysicsLocation(null);
+            final var chunk = world.getChunk(ChunkSectionPos.getSectionCoord(pos.x), ChunkSectionPos.getSectionCoord(pos.z));
 
             for (int i = (int) Math.floor(box.minX); i < Math.ceil(box.maxX); i++) {
                 for (int j = (int) Math.floor(box.minY); j < Math.ceil(box.maxY); j++) {
@@ -55,7 +60,7 @@ public class TerrainGenerator {
 
                             if (terrainObject != null) {
                                 terrainObject.getBlockState().ifPresent(blockState -> {
-                                    if (world.getBlockState(blockPos) != blockState) {
+                                    if (!chunk.getBlockState(blockPos).equals(blockState)) {
                                         rigidBody.activate();
                                     }
                                 });
@@ -67,16 +72,16 @@ public class TerrainGenerator {
 
             for (var blockPos : blocks) {
                 space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrainObject -> {
-                    if (rigidBody.isActive() && !world.getBlockState(terrainObject.getBlockPos()).getBlock().equals(Blocks.AIR) || !world.getFluidState(terrainObject.getBlockPos()).getFluid().equals(Fluids.EMPTY)) {
+                    if (rigidBody.isActive() && !chunk.getBlockState(terrainObject.getBlockPos()).getBlock().equals(Blocks.AIR) || !chunk.getFluidState(terrainObject.getBlockPos()).getFluid().equals(Fluids.EMPTY)) {
                         toKeep.put(blockPos, terrainObject);
                     }
                 }, () -> {
                     if (rigidBody.isActive()) {
-                        var blockState = world.getBlockState(blockPos);
-                        var fluidState = world.getFluidState(blockPos);
+                        var blockState = chunk.getBlockState(blockPos);
+                        var fluidState = chunk.getFluidState(blockPos);
 
                         if (fluidState.getFluid() != Fluids.EMPTY) {
-                            var newTerrainObject = new TerrainObject(space, blockPos, fluidState, 1000f);
+                            var newTerrainObject = new TerrainObject(space, blockPos, fluidState);
                             space.addTerrainObject(newTerrainObject);
                             toKeep.put(blockPos, newTerrainObject);
                         } else if (blockState.getBlock() != Blocks.AIR) {
@@ -135,50 +140,46 @@ public class TerrainGenerator {
                 space.removeTerrainObject(terrainObject);
             }
         }
-
-        space.getRigidBodiesByClass(ElementRigidBody.class).forEach(TerrainGenerator::applyPressureForces);
     }
 
-    public static void applyPressureForces(ElementRigidBody rigidBody) {
-        var space = rigidBody.getSpace();
-        var origin = rigidBody.getPhysicsLocation(null).addLocal(0.0f, rigidBody.boundingBox(null).getYExtent() * -0.5f, 0.0f);
-        var radius = rigidBody.boundingBox(null).getExtent(null).length() * 0.55f;
+    public static void applyPressureForces(MinecraftSpace space) {
+        for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
+            var rigidBodyBox = Convert.toMinecraft(rigidBody.getCollisionShape().boundingBox(rigidBody.getPhysicsLocation(null), new Quaternion(), null));
+            rigidBodyBox = rigidBodyBox.contract(rigidBodyBox.getXLength() * 0.2, rigidBodyBox.getYLength() * 0.2, rigidBodyBox.getZLength() * 0.2);
+            var volume = 0.0f;
 
-//        rigidBody.applyDragForce(1.2f);
+            final var gravity = -1.0f * space.getGravity(null).y;
+            final var maxVolume = rigidBodyBox.getXLength() * rigidBodyBox.getYLength() * rigidBodyBox.getZLength();
+            final var fluidObjects = rigidBody.getTerrainObjects().values().stream()
+                    .filter(terrainObject -> terrainObject.getFluidState().isPresent()).toList();
 
-//        float density = 1000f;
-//        float volume = 0.0f;
-//
-//        for (var terrainObject : rigidBody.getClump().getTerrainObjects().stream().filter(terrainObject -> terrainObject.getFluidState().isPresent()).toList()) {
-//            var fluidBody = (TerrainObject.Fluid) terrainObject.getCollisionObject();
-//            var fluidPos = fluidBody.getPhysicsLocation(null).addLocal(0.0f, fluidBody.boundingBox(null).getYExtent() * 0.5f, 0.0f);
-//
-//            var xOffset = Math.abs(fluidPos.x - origin.x);
-//            var yOffset = Math.abs(fluidPos.y - origin.y);
-//            var zOffset = Math.abs(fluidPos.z - origin.z);
-//
-//            if (xOffset >= radius * 2 || yOffset >= radius * 2 || zOffset >= radius * 2) {
-//                continue;
-//            }
-//
-//            volume += (radius * 2 - xOffset) * (radius * 2 - yOffset) * (radius * 2 - zOffset);
-//        }
-//
-//        var maxVolume = rigidBody.getCollisionShape().aabbVolume();
-//
-//        if (volume > 0.0f) {
-//            var gravity = space.getGravity(null).y;
-//            var force = new Vector3f(0.0f, -1.0f * gravity * density * Math.min(volume, maxVolume), 0.0f);
-////            var contact = fluidPos.add(origin).multLocal(0.5f).subtract(origin);
-//            var contact = new Vector3f();
-//
-//            if (space.isServer()) {
-//                System.out.println("Radius: " + radius + ", Max Volume: " + maxVolume + ", Volume: " + volume + ", Contact: " + contact + ", Force: " + force);
-//            }
-//
-//            rigidBody.applyCentralForce(force);
-////                    rigidBody.applyCentralForce(getWaterDragForceOn(rigidBody));
-//        }
+            final var relativePoints = new ArrayList<Vector3f>();
+            relativePoints.add(new Vector3f((float) rigidBodyBox.getXLength() * 0.5f, (float) rigidBodyBox.getYLength(), (float) (-1.0f * rigidBodyBox.getZLength() * 0.5f)));
+            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXLength() * 0.5f), (float) rigidBodyBox.getYLength(), (float) (-1.0f * rigidBodyBox.getZLength() * 0.5f)));
+            relativePoints.add(new Vector3f((float) rigidBodyBox.getXLength() * 0.5f, (float) rigidBodyBox.getYLength(), (float) rigidBodyBox.getZLength() * 0.5f));
+            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXLength() * 0.5f), (float) rigidBodyBox.getYLength(), (float) rigidBodyBox.getZLength() * 0.5f));
+
+            for (var fluidObject : fluidObjects) {
+                final var fluidBox = Convert.toMinecraft(fluidObject.getCollisionObject().boundingBox(null));
+
+                if (fluidBox.intersects(rigidBodyBox)) {
+                    final var intersection = fluidBox.intersection(rigidBodyBox);
+                    volume += intersection.getXLength() * intersection.getYLength() * intersection.getZLength();
+                }
+            }
+
+            final var force = new Vector3f(0.0f, (float) (gravity * 1000 * Math.min(volume, maxVolume)), 0.0f).multLocal(0.25f);
+
+            if (Float.isFinite(force.lengthSquared()) && force.lengthSquared() > 0.0f) {
+                rigidBody.applyDragForce(1000);
+
+                for (var point : relativePoints) {
+                    rigidBody.applyForce(force, point);
+                }
+            } else {
+                rigidBody.applyDragForce(1.2f);
+            }
+        }
     }
 
     @Environment(EnvType.CLIENT)

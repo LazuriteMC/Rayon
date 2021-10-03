@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "testmod_entity:block/blue_dirt" }
+  }
+}

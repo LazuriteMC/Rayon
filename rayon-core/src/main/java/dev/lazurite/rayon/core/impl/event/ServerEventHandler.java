@@ -26,11 +26,11 @@ public final class ServerEventHandler {
         ServerTickEvents.END_SERVER_TICK.register(ServerEventHandler::onServerTick);
 
         // World Events
-        ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onWorldTick);
+        ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onStartWorldTick);
         ServerWorldEvents.LOAD.register(ServerEventHandler::onWorldLoad);
 
         // Space Events
-        PhysicsSpaceEvents.STEP.register(TerrainGenerator::step);
+        PhysicsSpaceEvents.STEP.register(TerrainGenerator::applyPressureForces);
     }
 
     private static void onServerStart(MinecraftServer server) {
@@ -47,13 +47,16 @@ public final class ServerEventHandler {
         }
     }
 
-    private static void onWorldTick(ServerWorld world) {
-        var space = MinecraftSpace.get(world);
-        space.step(space::canStep);
+    private static void onStartWorldTick(ServerWorld world) {
+        final var space = MinecraftSpace.get(world);
+
+        if (!space.getWorkerThread().isPaused()) {
+            space.step();
+        }
     }
 
     private static void onWorldLoad(MinecraftServer server, ServerWorld world) {
-        var space = new MinecraftSpace(thread, world);
+        final var space = new MinecraftSpace(thread, world);
         ((SpaceStorage) world).setSpace(space);
         PhysicsSpaceEvents.INIT.invoker().onInit(space);
     }

@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.body;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.core.api.PhysicsElement;
@@ -18,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class ElementRigidBody extends PhysicsRigidBody implements Debuggable {
@@ -110,19 +108,26 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     }
 
     /**
-     * Assumes the rigid body is sphere shaped for simplicity.
      * @param density the density of the surrounding fluid (air, water, etc. - not the rigid body)
      */
     public void applyDragForce(float density) {
-        final float dragCoefficient = getDragCoefficient();
-        final float area = boundingBox(new BoundingBox()).getExtent(new Vector3f()).lengthSquared();
-        final float k = density * dragCoefficient * area * 0.5f;
-        final float v2 = -getLinearVelocity(new Vector3f()).lengthSquared();
-        final var direction = getLinearVelocity(new Vector3f()).normalize();
-        final var force = new Vector3f().set(direction).multLocal(v2).multLocal(k);
+        final var area = (float) Math.pow(Convert.toMinecraft(
+                this.getCollisionShape().boundingBox(this.getPhysicsLocation(null), new Quaternion(), null))
+                .getAverageSideLength(), 2);
+        final var v2 = this.getLinearVelocity(null).lengthSquared();
+        final var direction = getLinearVelocity(null).normalize();
 
-        if (Float.isFinite(force.lengthSquared()) && force.lengthSquared() > 0.1f) {
-            applyCentralForce(force);
+        /*
+            0.5CpAv2
+            C = drag coefficient of object
+            p = density of fluid
+            A = area of object
+            v2 = velocity squared of object
+        */
+        final var force = new Vector3f().set(direction).multLocal(-0.5f * this.getDragCoefficient() * density * area * v2);
+
+        if (Float.isFinite(force.lengthSquared()) && force.lengthSquared() > 0.001f) {
+            this.applyCentralForce(force);
         }
     }
 }

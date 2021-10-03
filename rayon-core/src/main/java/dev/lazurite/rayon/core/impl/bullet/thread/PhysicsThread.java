@@ -21,7 +21,7 @@ import java.util.concurrent.Executor;
 /**
  * In order to access an instance of this, all you need is a {@link World} or {@link ReentrantThreadExecutor} object.
  * Calling {@link PhysicsThread#execute} adds a runnable to the queue of tasks and is the main way to execute code on
- * this thread. You can also execute code here by using {@link PhysicsSpaceEvents} as well as {@link PhysicsElement#step}.
+ * this thread. You can also execute code here by using {@link PhysicsSpaceEvents}.
  * @see PhysicsSpaceEvents
  * @see PhysicsElement
  * @see MinecraftSpace
@@ -31,6 +31,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     private final Executor parentExecutor;
     private final Thread parentThread;
     private final WorldSupplier worldSupplier;
+
     public volatile Throwable throwable;
     public volatile boolean running = true;
 
@@ -62,14 +63,16 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     }
 
     /**
-     * The worker loop. Waits for tasks
-     * and executes right away.
+     * The worker loop. Waits for tasks and executes right away.
      */
     @Override
     public void run() {
         while (running) {
-            while (!tasks.isEmpty()) {
-                tasks.poll().run();
+            if (!isPaused()) {
+                /* Run all queued tasks */
+                while (!tasks.isEmpty()) {
+                    tasks.poll().run();
+                }
             }
         }
     }

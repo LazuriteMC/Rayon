@@ -2,7 +2,7 @@ package dev.lazurite.rayon.entity.testmod.common.item;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
-import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.entity.testmod.EntityTestMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 /**
- * This is just meant as a test item that spawns a {@link CubeEntity}
+ * This is just meant as a test item that spawns a {@link StoneBlockEntity}
  */
 public class WandItem extends Item {
     public WandItem(Settings settings) {
@@ -28,9 +28,9 @@ public class WandItem extends Item {
         var hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
 
         if (!world.isClient()) {
-            var entity = new CubeEntity(EntityTestMod.SMOL_CUBE_ENTITY, world);
+            var entity = new StoneBlockEntity(EntityTestMod.STONE_BLOCK_ENTITY, world);
             var rigidBody = entity.getRigidBody();
-            rigidBody.setMass(10.0f);
+            rigidBody.setMass(20);
 
             if (user.isSneaking()) {
                 var random = new Random();

@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.entity.testmod.client.render;
 
-import dev.lazurite.rayon.entity.testmod.common.entity.CubeEntity;
+import dev.lazurite.rayon.entity.testmod.common.entity.StoneBlockEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.render.VertexConsumer;
@@ -10,10 +10,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class CubeEntityModel extends EntityModel<CubeEntity> {
+public class StoneBlockEntityModel extends EntityModel<StoneBlockEntity> {
     private final ModelPart modelPart;
 
-    public CubeEntityModel(int size) {
+    public StoneBlockEntityModel(int size) {
         var cuboidData = ModelPartBuilder.create().cuboid(0, 0, 0, size, size, size).build();
         var cuboids = new ArrayList<ModelPart.Cuboid>();
 
@@ -25,7 +25,7 @@ public class CubeEntityModel extends EntityModel<CubeEntity> {
     }
 
     @Override
-    public void setAngles(CubeEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setAngles(StoneBlockEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 
     }
 

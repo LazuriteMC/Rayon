@@ -8,14 +8,11 @@ import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.ClientWorldSupplier;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.compat.ImmersiveWorldSupplier;
 import dev.lazurite.toolbox.api.event.BetterClientLifecycleEvents;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 
-@Environment(EnvType.CLIENT)
 public final class ClientEventHandler {
     private static PhysicsThread thread;
 
@@ -31,12 +28,15 @@ public final class ClientEventHandler {
 
         // World Events
         BetterClientLifecycleEvents.LOAD_WORLD.register(ClientEventHandler::onWorldLoad);
-        ClientTickEvents.START_WORLD_TICK.register(ClientEventHandler::onWorldTick);
+        ClientTickEvents.START_WORLD_TICK.register(ClientEventHandler::onStartWorldTick);
     }
 
-    private static void onWorldTick(ClientWorld world) {
-        var space = MinecraftSpace.get(world);
-        space.step(space::canStep);
+    private static void onStartWorldTick(ClientWorld world) {
+        final var space = MinecraftSpace.get(world);
+
+        if (!space.getWorkerThread().isPaused()) {
+            space.step();
+        }
     }
 
     private static void onWorldLoad(MinecraftClient client, ClientWorld world) {

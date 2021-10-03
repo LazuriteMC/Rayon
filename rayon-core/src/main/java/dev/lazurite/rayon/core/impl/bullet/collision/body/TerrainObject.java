@@ -21,14 +21,14 @@ public class TerrainObject {
     private final BlockPos blockPos;
     private final State state;
 
-    public TerrainObject(MinecraftSpace space, BlockPos blockPos, FluidState fluidState, float density) {
+    public TerrainObject(MinecraftSpace space, BlockPos blockPos, FluidState fluidState) {
         this.space = space;
         this.blockPos = blockPos;
         this.state = fluidState;
 
         var voxelShape = fluidState.getShape(space.getWorld(), blockPos);
         var boundingBox = voxelShape.isEmpty() ? new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.getBoundingBox();
-        this.collisionObject = new Fluid(this, space, MinecraftShape.of(boundingBox), density);
+        this.collisionObject = new Fluid(this, space, MinecraftShape.of(boundingBox));
     }
 
     public TerrainObject(MinecraftSpace space, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
@@ -126,13 +126,11 @@ public class TerrainObject {
     public static class Fluid extends PhysicsGhostObject implements Terrain, Debuggable {
         private final TerrainObject parent;
         private final MinecraftSpace space;
-        private final float density;
 
-        public Fluid(TerrainObject parent, MinecraftSpace space, MinecraftShape shape, float density) {
+        public Fluid(TerrainObject parent, MinecraftSpace space, MinecraftShape shape) {
             super(shape);
             this.parent = parent;
             this.space = space;
-            this.density = density;
 
             var blockPos = parent.getBlockPos();
             this.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
@@ -145,10 +143,6 @@ public class TerrainObject {
         @Override
         public TerrainObject getParent() {
             return this.parent;
-        }
-
-        public float getDensity() {
-            return this.density;
         }
 
         @Override

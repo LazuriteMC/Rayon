@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "entitytestmod:blue_block"
+          "name": "testmod_entity:blue_dirt"
         }
       ],
       "conditions": [

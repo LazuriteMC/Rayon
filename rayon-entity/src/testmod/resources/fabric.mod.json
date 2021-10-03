@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "entitytestmod",
+  "id": "testmod_entity",
   "version": "${version}",
   "license": "MIT",
   "environment": "*",
@@ -21,7 +21,7 @@
     "rayon": {
       "blocks": [
         {
-          "name": "blue_block",
+          "name": "blue_dirt",
           "friction": 1.0,
           "restitution": 0.25,
           "collidable": true

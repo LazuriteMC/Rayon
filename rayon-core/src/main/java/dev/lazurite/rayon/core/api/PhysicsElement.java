@@ -16,13 +16,6 @@ import net.fabricmc.api.Environment;
  */
 public interface PhysicsElement {
     /**
-     * This method is for doing things such as applying forces or interacting with
-     * the {@link MinecraftSpace} in some way.
-     * @param space the {@link MinecraftSpace} that the {@link ElementRigidBody} is in
-     */
-    default void step(MinecraftSpace space) { }
-
-    /**
      * Gets {@link ElementRigidBody} object associated with this element. You should create and
      * store this in your {@link PhysicsElement} implementation in the constructor. You're able
      * to set up the attributes and settings of your rigid body however you like that way.

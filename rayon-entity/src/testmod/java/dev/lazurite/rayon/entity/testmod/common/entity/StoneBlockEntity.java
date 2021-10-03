@@ -14,11 +14,10 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("EntityConstructor")
-public class CubeEntity extends LivingEntity implements EntityPhysicsElement {
+public class StoneBlockEntity extends LivingEntity implements EntityPhysicsElement {
     private final EntityRigidBody rigidBody = new EntityRigidBody(this);
 
-    public CubeEntity(EntityType<? extends LivingEntity> entityType, World world) {
+    public StoneBlockEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 

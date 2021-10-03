@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "rayon-particle-testmod",
+  "id": "testmod_particle",
   "version": "${version}",
   "license": "MIT",
   "environment": "*",

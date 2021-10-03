@@ -1,0 +1,5 @@
+{
+  "item.testmod_entity.wand_item" : "Wand Item",
+  "block.testmod_entity.blue_dirt": "Blue Dirt",
+  "entity.testmod_entity.stone_block_entity" : "Stone Block"
+}

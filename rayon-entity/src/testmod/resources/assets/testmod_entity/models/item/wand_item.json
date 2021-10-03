@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "examplemod:item/wand_item"
+    "layer0": "testmod_entity:item/wand_item"
   }
 }

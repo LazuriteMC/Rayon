@@ -14,6 +14,7 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.core.impl.bullet.thread.util.Clock;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BooleanSupplier;
 
 /**
  * This is the main physics simulation used by Rayon. Each bullet simulation update
@@ -43,6 +43,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final World world;
     private int presimSteps;
 
+    private final Clock clock = new Clock();
+
     private volatile boolean stepping;
 
     /**
@@ -59,17 +61,20 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return Optional.ofNullable(get(world));
     }
 
-    public MinecraftSpace(PhysicsThread thread, World world, BroadphaseType broadphase) {
-        super(broadphase);
+    public MinecraftSpace(PhysicsThread thread, World world) {
+        super(
+//                new Vector3f(-Integer.MAX_VALUE, -Integer.MAX_VALUE, -Integer.MAX_VALUE),
+//                new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE),
+                BroadphaseType.DBVT
+        );
+
         this.thread = thread;
         this.world = world;
         this.terrainObjects = new ArrayList<>();
         this.addCollisionListener(this);
+        this.setAccuracy(1f/20f); // really important if u want buoyancy 2 work...
+        this.setMaxSubSteps(10);
         this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
-    }
-
-    public MinecraftSpace(PhysicsThread thread, World world) {
-        this(thread, world, BroadphaseType.DBVT);
     }
 
     /**
@@ -84,32 +89,33 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * Additionally, none of the above steps execute when either the world is empty
      * (no {@link PhysicsRigidBody}s) or when the game is paused.
      *
-     * @param shouldStep whether to fully step the simulation
      * @see TerrainGenerator
      * @see PhysicsSpaceEvents
      */
-    public void step(BooleanSupplier shouldStep) {
-        getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
+    public void step() {
+        MinecraftSpace.get(world).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
 
-        if (shouldStep.getAsBoolean()) {
+        if (!isStepping()) {
+            this.clock.reset();
             this.stepping = true;
 
-            /* World Step Event */
-            PhysicsSpaceEvents.STEP.invoker().onStep(this);
+            TerrainGenerator.step(this);
 
-            /* Step all elements */
-            getRigidBodiesByClass(ElementRigidBody.class).forEach(rigidBody -> rigidBody.getElement().step(this));
-
-            /* Call collision events */
-            this.distributeEvents();
-
-            /* Step Simulation Asynchronously */
+            /* Step Simulation */
             CompletableFuture.runAsync(() -> {
-                if (presimSteps > MAX_PRESIM_STEPS) {
-                    update(0.05f, 5);
-                } else {
-                    ++presimSteps;
-                }
+//                for (int i = 0; i < 3; ++i) {
+                    /* Call collision events */
+                    this.distributeEvents();
+
+                    /* World Step Event */
+                    PhysicsSpaceEvents.STEP.invoker().onStep(this);
+
+                    if (presimSteps > MAX_PRESIM_STEPS) {
+                        this.update(0.05f);
+                    } else {
+                        ++presimSteps;
+                    }
+//                }
 
                 this.stepping = false;
             }, getWorkerThread());

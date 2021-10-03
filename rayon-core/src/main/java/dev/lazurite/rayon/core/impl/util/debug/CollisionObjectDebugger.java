@@ -3,7 +3,6 @@ package dev.lazurite.rayon.core.impl.util.debug;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.lazurite.rayon.core.api.event.render.DebugRenderEvents;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
@@ -18,9 +17,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class handles debug rendering on the client. Press F3+r to render
@@ -52,9 +48,9 @@ public final class CollisionObjectDebugger {
         var builder = Tessellator.getInstance().getBuffer();
         var stack = new MatrixStack();
 
+        DebugRenderEvents.BEFORE_RENDER.invoker().onRender(new DebugRenderEvents.Context(space, builder, stack, cameraPos, tickDelta));
         builder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        DebugRenderEvents.BEFORE_RENDER.invoker().onRender(new DebugRenderEvents.Context(space, builder, stack, cameraPos, tickDelta));
 
         space.getTerrainObjects().stream().map(TerrainObject::getCollisionObject).forEach(
                 physicsCollisionObject -> {
