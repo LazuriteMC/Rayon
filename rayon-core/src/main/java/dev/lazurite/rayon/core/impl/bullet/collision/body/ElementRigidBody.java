@@ -84,7 +84,7 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
 
     @Override
     public Vector3f getOutlineColor() {
-        return new Vector3f(1.0f, 1.0f, 1.0f);
+        return this.isActive() ? new Vector3f(1.0f, 1.0f, 1.0f) : new Vector3f(1.0f, 0.0f, 0.0f);
     }
 
     @Override
