@@ -4,7 +4,6 @@ import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.SideSupplier;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.WorldSupplier;
 import dev.lazurite.rayon.core.impl.bullet.thread.util.Pausable;
@@ -40,7 +39,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     }
 
     public static PhysicsThread get(ReentrantThreadExecutor<? extends Runnable> executor) {
-        return RayonCore.getThread(SideSupplier.isClient(executor));
+        return RayonCore.getThread(!(executor instanceof MinecraftServer));
     }
 
     public static PhysicsThread get(World world) {
@@ -107,8 +106,8 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     }
 
     /**
-     * Gets the parent thread. This is useful for checking whether or not
-     * a method is executing on this thread.
+     * Gets the parent thread. This is useful for checking
+     * whether a method is executing on this thread.
      * @see EntitySupplier
      * @return the parent {@link Thread} object
      */

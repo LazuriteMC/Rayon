@@ -14,7 +14,6 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.bullet.thread.util.Clock;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -43,8 +42,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final World world;
     private int presimSteps;
 
-    private final Clock clock = new Clock();
-
     private volatile boolean stepping;
 
     /**
@@ -63,18 +60,18 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     public MinecraftSpace(PhysicsThread thread, World world) {
         super(
-//                new Vector3f(-Integer.MAX_VALUE, -Integer.MAX_VALUE, -Integer.MAX_VALUE),
-//                new Vector3f(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE),
-                BroadphaseType.DBVT
+                new Vector3f(-World.HORIZONTAL_LIMIT, World.MIN_Y, -World.HORIZONTAL_LIMIT),
+                new Vector3f(World.HORIZONTAL_LIMIT, World.MAX_Y, World.HORIZONTAL_LIMIT),
+                BroadphaseType.AXIS_SWEEP_3_32
         );
 
         this.thread = thread;
         this.world = world;
         this.terrainObjects = new ArrayList<>();
+        this.setGravity(new Vector3f(0, -9.807f, 0));
         this.addCollisionListener(this);
-        this.setAccuracy(1f/20f); // really important if u want buoyancy 2 work...
+        this.setAccuracy(1f/60f);
         this.setMaxSubSteps(10);
-        this.setGravity(new Vector3f(0, -9.807f, 0)); // m/s/s
     }
 
     /**
@@ -95,15 +92,16 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public void step() {
         MinecraftSpace.get(world).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
 
-        if (!isStepping()) {
-            this.clock.reset();
+        if (!isStepping() && (isInPresim() || !isEmpty())) {
             this.stepping = true;
 
+            // This can only be done on each tick
             TerrainGenerator.step(this);
 
-            /* Step Simulation */
+            // Hop threads...
             CompletableFuture.runAsync(() -> {
-//                for (int i = 0; i < 3; ++i) {
+                // Step 3 times per tick, re-evaluating forces each step
+                for (int i = 0; i < 3; ++i) {
                     /* Call collision events */
                     this.distributeEvents();
 
@@ -111,11 +109,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                     PhysicsSpaceEvents.STEP.invoker().onStep(this);
 
                     if (presimSteps > MAX_PRESIM_STEPS) {
-                        this.update(0.05f);
+                        this.update(1f/60f);
                     } else {
                         ++presimSteps;
                     }
-//                }
+                }
 
                 this.stepping = false;
             }, getWorkerThread());
@@ -171,10 +169,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     public boolean isStepping() {
         return this.stepping;
-    }
-
-    public boolean canStep() {
-        return !isStepping() && (isInPresim() || !isEmpty());
     }
 
     public boolean isInPresim() {
