@@ -61,11 +61,11 @@ public class Frame {
     }
 
     public Vector3f getRotationDelta(Vector3f store) {
-        var tickRotation = Convert.toMinecraft(this.tickRotation);
-        var prevRotation = Convert.toMinecraft(this.prevRotation);
-        var tickAngles = QuaternionHelper.toEulerAngles(tickRotation);
-        var prevAngles = QuaternionHelper.toEulerAngles(prevRotation);
-        tickAngles.subtract(prevAngles);
+        final var tickRotation = Convert.toMinecraft(this.tickRotation);
+        final var prevRotation = Convert.toMinecraft(this.prevRotation);
+        final var tickAngles = QuaternionHelper.toEulerAngles(tickRotation);
+        final var prevAngles = QuaternionHelper.toEulerAngles(prevRotation);
+        tickAngles.sub(prevAngles);
         store.set(Convert.toBullet(tickAngles));
         return store;
     }

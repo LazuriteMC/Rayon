@@ -4,10 +4,10 @@ import com.jme3.bounding.BoundingBox;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.MinecartEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.Minecart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,8 @@ public interface EntitySupplier {
             return CompletableFuture.supplyAsync(() -> getInsideOf(rigidBody), thread.getParentExecutor()).join();
         } else {
             var box = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox()));
-            return rigidBody.getSpace().getWorld().getEntitiesByClass(Entity.class, box,
-                    entity -> (entity instanceof BoatEntity || entity instanceof MinecartEntity || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement));
+            return rigidBody.getSpace().getLevel().getEntitiesOfClass(Entity.class, box,
+                    entity -> (entity instanceof Boat || entity instanceof Minecart || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement));
         }
     }
 }

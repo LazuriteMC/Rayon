@@ -1,43 +1,43 @@
 package dev.lazurite.rayon.core.impl.util;
 
-import com.google.common.collect.Maps;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class BlockProps {
     public record BlockProperties(float friction, float restitution, boolean collidable) { }
 
-    private static final Map<Identifier, BlockProperties> blockProps = Maps.newHashMap();
+    private static final Map<ResourceLocation, BlockProperties> blockProps = new HashMap<>();
 
-    public static Map<Identifier, BlockProperties> get() {
+    public static Map<ResourceLocation, BlockProperties> get() {
         return blockProps;
     }
 
-    public static Optional<BlockProperties> get(Identifier identifier) {
+    public static Optional<BlockProperties> get(ResourceLocation identifier) {
         return Optional.ofNullable(blockProps.get(identifier));
     }
 
     public static void load() {
         FabricLoader.getInstance().getAllMods().forEach(mod -> {
-            var modid = mod.getMetadata().getId();
-            var rayon = mod.getMetadata().getCustomValue("rayon");
+            final var modid = mod.getMetadata().getId();
+            final var rayon = mod.getMetadata().getCustomValue("rayon");
 
             if (rayon != null) {
-                var blocks = rayon.getAsObject().get("blocks");
+                final var blocks = rayon.getAsObject().get("blocks");
 
                 if (blocks != null) {
                     blocks.getAsArray().forEach(block -> {
-                        var name = block.getAsObject().get("name");
+                        final var name = block.getAsObject().get("name");
 
                         if (name != null) {
-                            var friction = block.getAsObject().get("friction");
-                            var restitution = block.getAsObject().get("restitution");
-                            var collidable = block.getAsObject().get("collidable");
+                            final var friction = block.getAsObject().get("friction");
+                            final var restitution = block.getAsObject().get("restitution");
+                            final var collidable = block.getAsObject().get("collidable");
 
-                            blockProps.put(new Identifier(modid, name.getAsString()), new BlockProperties(
+                            blockProps.put(new ResourceLocation(modid, name.getAsString()), new BlockProperties(
                                     friction == null ? -1.0f : (float) (double) friction.getAsNumber(),
                                     restitution == null ? -1.0f : (float) (double) restitution.getAsNumber(),
                                     collidable == null || collidable.getAsBoolean()

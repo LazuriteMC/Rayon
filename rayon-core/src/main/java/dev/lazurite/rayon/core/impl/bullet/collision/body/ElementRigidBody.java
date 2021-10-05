@@ -11,9 +11,9 @@ import dev.lazurite.rayon.core.impl.util.debug.Debuggable;
 import dev.lazurite.rayon.core.impl.util.Frame;
 import dev.lazurite.toolbox.api.math.VectorHelper;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -69,14 +69,14 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         return this.space;
     }
 
-    public Collection<? extends PlayerEntity> getPlayersAround() {
+    public Collection<? extends Player> getPlayersAround() {
         if (getSpace().isServer()) {
-            var location = VectorHelper.toVec3d(Convert.toMinecraft(getPhysicsLocation(new Vector3f())));
-            var world = (ServerWorld) getSpace().getWorld();
-            var viewDistance = world.getServer().getPlayerManager().getViewDistance();
+            var location = VectorHelper.toVec3(Convert.toMinecraft(getPhysicsLocation(new Vector3f())));
+            var world = (ServerLevel) getSpace().getLevel();
+            var viewDistance = world.getServer().getPlayerList().getViewDistance();
             return PlayerLookup.around(world, location, viewDistance);
         } else {
-            return getSpace().getWorld().getPlayers();
+            return getSpace().getLevel().players();
         }
     }
 
@@ -113,7 +113,7 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     public void applyDragForce(float density) {
         final var area = (float) Math.pow(Convert.toMinecraft(
                 this.getCollisionShape().boundingBox(this.getPhysicsLocation(null), new Quaternion(), null))
-                .getAverageSideLength(), 2);
+                .getSize(), 2);
         final var v2 = this.getLinearVelocity(null).lengthSquared();
         final var direction = getLinearVelocity(null).normalize();
 

@@ -4,8 +4,8 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,22 +19,22 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
  * (which is slightly different).
  * @see EntityRenderDispatcherMixin
  */
-@Mixin(WorldRenderer.class)
+@Mixin(LevelRenderer.class)
 @Environment(EnvType.CLIENT)
-public class WorldRendererMixin {
-    @Shadow @Final private MinecraftClient client;
+public class LevelRendererMixin {
+    @Shadow @Final private Minecraft minecraft;
 
     @ModifyArgs(
             method = "renderEntity",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;render(Lnet/minecraft/entity/Entity;DDDFFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"
+                    target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;render(Lnet/minecraft/world/entity/Entity;DDDFFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"
             )
     )
     public void render(Args args) {
         if (args.get(0) instanceof EntityPhysicsElement) {
             var location = ((EntityPhysicsElement) args.get(0)).getPhysicsLocation(new Vector3f(), args.get(5));
-            var cameraPos = this.client.gameRenderer.getCamera().getPos();
+            var cameraPos = this.minecraft.gameRenderer.getMainCamera().getPosition();
             args.set(1, location.x - cameraPos.x);
             args.set(2, location.y - cameraPos.y);
             args.set(3, location.z - cameraPos.z);

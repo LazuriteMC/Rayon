@@ -6,16 +6,18 @@ import dev.lazurite.rayon.entity.testmod.common.item.WandItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.block.*;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Material;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,10 +33,10 @@ public class EntityTestMod implements ModInitializer {
     public void onInitialize() {
         STONE_BLOCK_ENTITY = Registry.register(
                 Registry.ENTITY_TYPE,
-                new Identifier(MODID, "stone_block_entity"),
+                new ResourceLocation(MODID, "stone_block_entity"),
                 FabricEntityTypeBuilder.createLiving()
                         .entityFactory(StoneBlockEntity::new)
-                        .spawnGroup(SpawnGroup.MISC)
+                        .spawnGroup(MobCategory.AMBIENT.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
                         .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
                         .trackRangeBlocks(80)
@@ -43,18 +45,18 @@ public class EntityTestMod implements ModInitializer {
 
         WAND_ITEM = Registry.register(
                 Registry.ITEM,
-                new Identifier(MODID, "wand_item"),
-                new WandItem(new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
+                new ResourceLocation(MODID, "wand_item"),
+                new WandItem(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC)));
 
         BLUE_DIRT = Registry.register(
                 Registry.BLOCK,
-                new Identifier(MODID, "blue_dirt"),
+                new ResourceLocation(MODID, "blue_dirt"),
                 new Block(FabricBlockSettings.of(Material.METAL).hardness(1.0f)));
 
         Registry.register(
                 Registry.ITEM,
-                new Identifier(MODID, "blue_dirt"),
-                new BlockItem(BLUE_DIRT, new Item.Settings().group(ItemGroup.MISC)));
+                new ResourceLocation(MODID, "blue_dirt"),
+                new BlockItem(BLUE_DIRT, new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
 
         /* An example of a block collision event */
         ElementCollisionEvents.TERRAIN_COLLISION.register((element, terrainObject, impulse) -> {

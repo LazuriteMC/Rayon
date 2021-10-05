@@ -7,11 +7,11 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.util.debug.Debuggable;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.state.State;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateHolder;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
 
@@ -19,15 +19,15 @@ public class TerrainObject {
     private final PhysicsCollisionObject collisionObject;
     private final MinecraftSpace space;
     private final BlockPos blockPos;
-    private final State state;
+    private final StateHolder state;
 
     public TerrainObject(MinecraftSpace space, BlockPos blockPos, FluidState fluidState) {
         this.space = space;
         this.blockPos = blockPos;
         this.state = fluidState;
 
-        var voxelShape = fluidState.getShape(space.getWorld(), blockPos);
-        var boundingBox = voxelShape.isEmpty() ? new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.getBoundingBox();
+        final var voxelShape = fluidState.getShape(space.getLevel(), blockPos);
+        final var boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
         this.collisionObject = new Fluid(this, space, MinecraftShape.of(boundingBox));
     }
 
@@ -36,8 +36,8 @@ public class TerrainObject {
         this.blockPos = blockPos;
         this.state = blockState;
 
-        var voxelShape = blockState.getCollisionShape(space.getWorld(), blockPos);
-        var boundingBox = voxelShape.isEmpty() ? new Box(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.getBoundingBox();
+        final var voxelShape = blockState.getCollisionShape(space.getLevel(), blockPos);
+        final var boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
         this.collisionObject = new Block(this, space, MinecraftShape.of(boundingBox), friction, restitution);
     }
 
@@ -53,7 +53,7 @@ public class TerrainObject {
         return this.blockPos;
     }
 
-    public State getState() {
+    public StateHolder getState() {
         return this.state;
     }
 

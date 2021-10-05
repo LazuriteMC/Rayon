@@ -1,12 +1,12 @@
 package dev.lazurite.rayon.core.api.event.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.lazurite.rayon.core.impl.util.debug.CollisionObjectDebugger;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * The events available through this class are:
@@ -29,6 +29,6 @@ public class DebugRenderEvents {
         void onRender(Context context);
     }
 
-    public record Context(MinecraftSpace space, VertexConsumer vertices, MatrixStack matrices, Vec3d cameraPos, float tickDelta) { }
+    public record Context(MinecraftSpace space, VertexConsumer vertices, PoseStack matrices, Vec3 cameraPos, float tickDelta) { }
 }
 

@@ -15,11 +15,11 @@ public class EntityCollisionGenerator {
             final var mass = rigidBody.getMass();
 
             for (var entity : EntitySupplier.getInsideOf(rigidBody)) {
-                var entityPos = Convert.toBullet(entity.getPos().add(0, entity.getBoundingBox().getYLength(), 0));
+                var entityPos = Convert.toBullet(entity.position().add(0, entity.getBoundingBox().getYsize(), 0));
                 var normal = location.subtract(entityPos).multLocal(new Vector3f(1, 0, 1)).normalize();
 
-                var intersection = entity.getBoundingBox().intersection(Convert.toMinecraft(box));
-                var force = normal.clone().multLocal((float) intersection.getAverageSideLength() / (float) Convert.toMinecraft(box).getAverageSideLength())
+                var intersection = entity.getBoundingBox().intersect(Convert.toMinecraft(box));
+                var force = normal.clone().multLocal((float) intersection.getSize() / (float) Convert.toMinecraft(box).getSize())
                         .multLocal(mass).multLocal(new Vector3f(1, 0, 1));
                 rigidBody.applyCentralImpulse(force);
             }

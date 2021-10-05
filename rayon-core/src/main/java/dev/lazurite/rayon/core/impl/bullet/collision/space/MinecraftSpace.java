@@ -14,9 +14,9 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,34 +39,34 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     private final List<TerrainObject> terrainObjects;
     private final PhysicsThread thread;
-    private final World world;
+    private final Level level;
     private int presimSteps;
 
     private volatile boolean stepping;
 
     /**
      * Allows users to retrieve the {@link MinecraftSpace} associated
-     * with any given {@link World} object (client or server).
-     * @param world the world to get the physics space from
+     * with any given {@link Level} object (client or server).
+     * @param level the level to get the physics space from
      * @return the {@link MinecraftSpace}
      */
-    public static MinecraftSpace get(World world) {
-        return ((SpaceStorage) world).getSpace();
+    public static MinecraftSpace get(Level level) {
+        return ((SpaceStorage) level).getSpace();
     }
 
-    public static Optional<MinecraftSpace> getOptional(World world) {
-        return Optional.ofNullable(get(world));
+    public static Optional<MinecraftSpace> getOptional(Level level) {
+        return Optional.ofNullable(get(level));
     }
 
-    public MinecraftSpace(PhysicsThread thread, World world) {
+    public MinecraftSpace(PhysicsThread thread, Level level) {
         super(
-                new Vector3f(-World.HORIZONTAL_LIMIT, World.MIN_Y, -World.HORIZONTAL_LIMIT),
-                new Vector3f(World.HORIZONTAL_LIMIT, World.MAX_Y, World.HORIZONTAL_LIMIT),
+                new Vector3f(-Level.MAX_LEVEL_SIZE, Level.MIN_ENTITY_SPAWN_Y, -Level.MAX_LEVEL_SIZE),
+                new Vector3f(Level.MAX_LEVEL_SIZE, Level.MAX_ENTITY_SPAWN_Y, Level.MAX_LEVEL_SIZE),
                 BroadphaseType.AXIS_SWEEP_3_32
         );
 
         this.thread = thread;
-        this.world = world;
+        this.level = level;
         this.terrainObjects = new ArrayList<>();
         this.setGravity(new Vector3f(0, -9.807f, 0));
         this.addCollisionListener(this);
@@ -90,7 +90,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * @see PhysicsSpaceEvents
      */
     public void step() {
-        MinecraftSpace.get(world).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
+        MinecraftSpace.get(level).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
 
         if (!isStepping() && (isInPresim() || !isEmpty())) {
             this.stepping = true;
@@ -205,8 +205,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return this.thread;
     }
 
-    public World getWorld() {
-        return this.world;
+    public Level getLevel() {
+        return this.level;
     }
 
     /**

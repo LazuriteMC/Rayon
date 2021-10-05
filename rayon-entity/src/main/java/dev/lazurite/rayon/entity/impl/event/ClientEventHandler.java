@@ -18,11 +18,11 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class ClientEventHandler {
@@ -31,31 +31,31 @@ public class ClientEventHandler {
         ClientPlayNetworking.registerGlobalReceiver(RayonEntity.PROPERTIES_PACKET, ClientEventHandler::onProperties);
         ClientEntityEvents.ENTITY_LOAD.register(ClientEventHandler::onLoad);
         ClientEntityEvents.ENTITY_UNLOAD.register(ClientEventHandler::onUnload);
-        ClientTickEvents.START_WORLD_TICK.register(ClientEventHandler::onStartWorldTick);
+        ClientTickEvents.START_WORLD_TICK.register(ClientEventHandler::onStartLevelTick);
     }
 
-    private static void onLoad(Entity entity, ClientWorld world) {
+    private static void onLoad(Entity entity, ClientLevel level) {
         if (entity instanceof EntityPhysicsElement element) {
-            PhysicsThread.get(world).execute(() ->
-                    MinecraftSpace.getOptional(world).ifPresent(space ->
+            PhysicsThread.get(level).execute(() ->
+                    MinecraftSpace.getOptional(level).ifPresent(space ->
                             space.addCollisionObject(element.getRigidBody())
                     )
             );
         }
     }
 
-    private static void onUnload(Entity entity, ClientWorld world) {
+    private static void onUnload(Entity entity, ClientLevel level) {
         if (entity instanceof EntityPhysicsElement element) {
-            PhysicsThread.get(world).execute(() ->
-                MinecraftSpace.getOptional(world).ifPresent(space ->
+            PhysicsThread.get(level).execute(() ->
+                MinecraftSpace.getOptional(level).ifPresent(space ->
                         space.removeCollisionObject(element.getRigidBody())
                 )
             );
        }
     }
 
-    private static void onStartWorldTick(ClientWorld world) {
-        final var space = MinecraftSpace.get(world);
+    private static void onStartLevelTick(ClientLevel level) {
+        final var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.applyEntityCollisions(space);
 
         for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
@@ -68,22 +68,22 @@ public class ClientEventHandler {
             final var element = ((EntityPhysicsElement) rigidBody.getElement());
             final var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
             final var offset = rigidBody.boundingBox(new BoundingBox()).getYExtent();
-            element.asEntity().updatePosition(location.x, location.y - offset, location.z);
+            element.asEntity().absMoveTo(location.x, location.y - offset, location.z);
         }
     }
 
 
-    private static void onMovement(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+    private static void onMovement(Minecraft minecraft, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender sender) {
         final var entityId= buf.readInt();
         final var rotation = QuaternionHelper.fromBuffer(buf);
         final var location = VectorHelper.fromBuffer(buf);
         final var linearVelocity = VectorHelper.fromBuffer(buf);
         final var angularVelocity = VectorHelper.fromBuffer(buf);
 
-        PhysicsThread.getOptional(client).ifPresent(thread -> thread.execute(() -> {
-            if (client.player != null) {
-                final var world = client.player.getEntityWorld();
-                final var entity = world.getEntityById(entityId);
+        PhysicsThread.getOptional(minecraft).ifPresent(thread -> thread.execute(() -> {
+            if (minecraft.player != null) {
+                final var level = minecraft.player.getLevel();
+                final var entity = level.getEntity(entityId);
 
                 if (entity instanceof EntityPhysicsElement element) {
                     final var rigidBody = element.getRigidBody();
@@ -97,19 +97,19 @@ public class ClientEventHandler {
         }));
     }
 
-    private static void onProperties(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+    private static void onProperties(Minecraft minecraft, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender sender) {
         final var entityId = buf.readInt();
         final var mass = buf.readFloat();
         final var dragCoefficient = buf.readFloat();
         final var friction = buf.readFloat();
         final var restitution = buf.readFloat();
         final var doTerrainLoading = buf.readBoolean();
-        final var priorityPlayer = buf.readUuid();
+        final var priorityPlayer = buf.readUUID();
 
-        PhysicsThread.getOptional(client).ifPresent(thread -> thread.execute(() -> {
-            if (client.player != null) {
-                final var world = client.player.getEntityWorld();
-                final var entity = world.getEntityById(entityId);
+        PhysicsThread.getOptional(minecraft).ifPresent(thread -> thread.execute(() -> {
+            if (minecraft.player != null) {
+                final var level = minecraft.player.getLevel();
+                final var entity = level.getEntity(entityId);
 
                 if (entity instanceof EntityPhysicsElement element) {
                     final var rigidBody = element.getRigidBody();
@@ -118,7 +118,7 @@ public class ClientEventHandler {
                     rigidBody.setFriction(friction);
                     rigidBody.setRestitution(restitution);
                     rigidBody.setDoTerrainLoading(doTerrainLoading);
-                    rigidBody.prioritize(rigidBody.getSpace().getWorld().getPlayerByUuid(priorityPlayer));
+                    rigidBody.prioritize(rigidBody.getSpace().getLevel().getPlayerByUUID(priorityPlayer));
                 }
             }
         }));

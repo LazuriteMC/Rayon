@@ -1,11 +1,11 @@
 package dev.lazurite.rayon.entity.testmod.client.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.lazurite.rayon.entity.testmod.common.entity.StoneBlockEntity;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.ModelPartBuilder;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,23 +14,23 @@ public class StoneBlockEntityModel extends EntityModel<StoneBlockEntity> {
     private final ModelPart modelPart;
 
     public StoneBlockEntityModel(int size) {
-        var cuboidData = ModelPartBuilder.create().cuboid(0, 0, 0, size, size, size).build();
-        var cuboids = new ArrayList<ModelPart.Cuboid>();
+        var cuboidData = CubeListBuilder.create().addBox(0, 0, 0, size, size, size).getCubes();
+        var cuboids = new ArrayList<ModelPart.Cube>();
 
         for (var data : cuboidData) {
-            cuboids.add(data.createCuboid(32, 32));
+            cuboids.add(data.bake(32, 32));
         }
 
        modelPart = new ModelPart(cuboids, new HashMap<>());
     }
 
     @Override
-    public void setAngles(StoneBlockEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(StoneBlockEntity entity, float f, float g, float h, float i, float j) {
 
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-        modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
+        modelPart.render(poseStack, vertexConsumer, i, j, f, g, h, k);
     }
 }

@@ -1,14 +1,14 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.player;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 
 /**
- * This was created because {@link MinecraftClient} is not
+ * This was created because {@link Minecraft} is not
  * allowed in server-side code.
  */
 public interface ClientPlayerSupplier {
-    static ClientPlayerEntity get() {
-        return MinecraftClient.getInstance().player;
+    static LocalPlayer get() {
+        return Minecraft.getInstance().player;
     }
 }

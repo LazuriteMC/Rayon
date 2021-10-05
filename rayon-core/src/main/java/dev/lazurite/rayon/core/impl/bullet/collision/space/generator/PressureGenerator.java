@@ -12,27 +12,27 @@ public class PressureGenerator {
     public static void step(MinecraftSpace space) {
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
             var rigidBodyBox = Convert.toMinecraft(rigidBody.getCollisionShape().boundingBox(rigidBody.getPhysicsLocation(null), new Quaternion(), null));
-            rigidBodyBox = rigidBodyBox.contract(rigidBodyBox.getXLength() * 0.2, rigidBodyBox.getYLength() * 0.2, rigidBodyBox.getZLength() * 0.2);
+            rigidBodyBox = rigidBodyBox.contract(rigidBodyBox.getXsize() * 0.2, rigidBodyBox.getYsize() * 0.2, rigidBodyBox.getZsize() * 0.2);
 
             var volume = 0.0f;
 
             final var gravity = -1.0f * space.getGravity(null).y;
-            final var maxVolume = rigidBodyBox.getXLength() * rigidBodyBox.getYLength() * rigidBodyBox.getZLength();
+            final var maxVolume = rigidBodyBox.getXsize() * rigidBodyBox.getYsize() * rigidBodyBox.getZsize();
             final var fluidObjects = rigidBody.getTerrainObjects().values().stream()
                     .filter(terrainObject -> terrainObject.getFluidState().isPresent()).toList();
 
             final var relativePoints = new ArrayList<Vector3f>();
-            relativePoints.add(new Vector3f((float) rigidBodyBox.getXLength() * 0.5f, (float) rigidBodyBox.getYLength(), (float) (-1.0f * rigidBodyBox.getZLength() * 0.5f)));
-            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXLength() * 0.5f), (float) rigidBodyBox.getYLength(), (float) (-1.0f * rigidBodyBox.getZLength() * 0.5f)));
-            relativePoints.add(new Vector3f((float) rigidBodyBox.getXLength() * 0.5f, (float) rigidBodyBox.getYLength(), (float) rigidBodyBox.getZLength() * 0.5f));
-            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXLength() * 0.5f), (float) rigidBodyBox.getYLength(), (float) rigidBodyBox.getZLength() * 0.5f));
+            relativePoints.add(new Vector3f((float) rigidBodyBox.getXsize() * 0.5f, (float) rigidBodyBox.getYsize(), (float) (-1.0f * rigidBodyBox.getZsize() * 0.5f)));
+            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXsize() * 0.5f), (float) rigidBodyBox.getYsize(), (float) (-1.0f * rigidBodyBox.getZsize() * 0.5f)));
+            relativePoints.add(new Vector3f((float) rigidBodyBox.getXsize() * 0.5f, (float) rigidBodyBox.getYsize(), (float) rigidBodyBox.getZsize() * 0.5f));
+            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXsize() * 0.5f), (float) rigidBodyBox.getYsize(), (float) rigidBodyBox.getZsize() * 0.5f));
 
             for (var fluidObject : fluidObjects) {
                 final var fluidBox = Convert.toMinecraft(fluidObject.getCollisionObject().boundingBox(null));
 
                 if (fluidBox.intersects(rigidBodyBox)) {
-                    final var intersection = fluidBox.intersection(rigidBodyBox);
-                    volume += intersection.getXLength() * intersection.getYLength() * intersection.getZLength();
+                    final var intersection = fluidBox.intersect(rigidBodyBox);
+                    volume += intersection.getXsize() * intersection.getYsize() * intersection.getZsize();
                 }
             }
 

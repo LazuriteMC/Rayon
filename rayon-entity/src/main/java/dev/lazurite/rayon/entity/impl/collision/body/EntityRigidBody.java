@@ -14,12 +14,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
 
 public class EntityRigidBody extends ElementRigidBody {
-    private PlayerEntity priorityPlayer;
+    private Player priorityPlayer;
     private boolean dirtyProperties = true;
 
     public EntityRigidBody(EntityPhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
@@ -35,7 +35,7 @@ public class EntityRigidBody extends ElementRigidBody {
      * @param element the element to base this body around
      */
     public EntityRigidBody(EntityPhysicsElement element) {
-        this(element, MinecraftSpace.get(element.asEntity().getEntityWorld()), element.genShape());
+        this(element, MinecraftSpace.get(element.asEntity().getLevel()), element.genShape());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class EntityRigidBody extends ElementRigidBody {
         return (EntityPhysicsElement) super.getElement();
     }
 
-    public PlayerEntity getPriorityPlayer() {
+    public Player getPriorityPlayer() {
         return this.priorityPlayer;
     }
 
@@ -91,14 +91,14 @@ public class EntityRigidBody extends ElementRigidBody {
         buf.writeFloat(getFriction());
         buf.writeFloat(getRestitution());
         buf.writeBoolean(shouldDoTerrainLoading());
-        buf.writeUuid(getPriorityPlayer() == null ? new UUID(0,  0) : getPriorityPlayer().getUuid());
+        buf.writeUUID(getPriorityPlayer() == null ? new UUID(0,  0) : getPriorityPlayer().getUUID());
 
         PlayerLookup.tracking(entity).forEach(player ->
             ServerPlayNetworking.send(player, RayonEntity.PROPERTIES_PACKET, buf)
         );
     }
 
-    public void prioritize(PlayerEntity priorityPlayer) {
+    public void prioritize(Player priorityPlayer) {
         this.priorityPlayer = priorityPlayer;
         this.dirtyProperties = true;
     }

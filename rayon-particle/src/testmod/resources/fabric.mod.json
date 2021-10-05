@@ -7,8 +7,8 @@
   "entrypoints": {},
 
   "depends": {
-    "minecraft": "1.17.x",
-    "fabricloader": ">=0.7.4",
+    "minecraft": "1.18.x",
+    "fabricloader": ">=0.11",
     "fabric": "*",
     "rayon-particle": "*"
   }

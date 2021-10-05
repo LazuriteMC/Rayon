@@ -19,12 +19,12 @@ import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 
 public class ServerEventHandler {
     public static void register() {
@@ -33,40 +33,40 @@ public class ServerEventHandler {
         ServerEntityEvents.ENTITY_LOAD.register(ServerEventHandler::onEntityLoad);
         EntityTrackingEvents.START_TRACKING.register(ServerEventHandler::onStartTracking);
         EntityTrackingEvents.STOP_TRACKING.register(ServerEventHandler::onStopTracking);
-        ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onStartWorldTick);
+        ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onStartLevelTick);
     }
 
     private static void onAddedToSpace(MinecraftSpace space, ElementRigidBody rigidBody) {
         if (rigidBody instanceof EntityRigidBody entityBody) {
-            final var pos = entityBody.getElement().asEntity().getPos();
+            final var pos = entityBody.getElement().asEntity().position();
             final var box = entityBody.getElement().asEntity().getBoundingBox();
-            entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYLength() / 2.0, 0)));
+            entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYsize() / 2.0, 0)));
         }
     }
 
-    private static void onEntityLoad(Entity entity, ServerWorld world) {
+    private static void onEntityLoad(Entity entity, ServerLevel level) {
         if (entity instanceof EntityPhysicsElement element && !PlayerLookup.tracking(entity).isEmpty()) {
-            final var space = MinecraftSpace.get(entity.getEntityWorld());
+            final var space = MinecraftSpace.get(entity.getLevel());
             space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
         }
     }
 
-    private static void onStartTracking(Entity entity, ServerPlayerEntity player) {
+    private static void onStartTracking(Entity entity, ServerPlayer player) {
         if (entity instanceof EntityPhysicsElement element) {
-            final var space = MinecraftSpace.get(entity.getEntityWorld());
+            final var space = MinecraftSpace.get(entity.getLevel());
             space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
         }
     }
 
-    private static void onStopTracking(Entity entity, ServerPlayerEntity player) {
+    private static void onStopTracking(Entity entity, ServerPlayer player) {
         if (entity instanceof EntityPhysicsElement element && PlayerLookup.tracking(entity).isEmpty()) {
-            final var space = MinecraftSpace.get(entity.getEntityWorld());
+            final var space = MinecraftSpace.get(entity.getLevel());
             space.getWorkerThread().execute(() -> space.removeCollisionObject(element.getRigidBody()));
         }
     }
 
-    private static void onStartWorldTick(ServerWorld world) {
-        final var space = MinecraftSpace.get(world);
+    private static void onStartLevelTick(ServerLevel level) {
+        final var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.applyEntityCollisions(space);
 
         for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
@@ -86,11 +86,11 @@ public class ServerEventHandler {
             final var entity = rigidBody.getElement().asEntity();
             final var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
             final var offset = rigidBody.boundingBox(new BoundingBox()).getYExtent();
-            entity.updatePosition(location.x, location.y - offset, location.z);
+            entity.absMoveTo(location.x, location.y - offset, location.z);
         }
     }
 
-    private static void onMovement(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender sender) {
+    private static void onMovement(MinecraftServer server, ServerPlayer player, ServerGamePacketListener handler, FriendlyByteBuf buf, PacketSender sender) {
         final var entityId = buf.readInt();
         final var rotation = Convert.toBullet(QuaternionHelper.fromBuffer(buf));
         final var location = Convert.toBullet(VectorHelper.fromBuffer(buf));
@@ -98,8 +98,8 @@ public class ServerEventHandler {
         final var angularVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
 
         PhysicsThread.getOptional(server).ifPresent(thread -> thread.execute(() -> {
-            final var world = player.getEntityWorld();
-            final var entity = world.getEntityById(entityId);
+            final var level = player.getLevel();
+            final var entity = level.getEntity(entityId);
 
             if (entity instanceof EntityPhysicsElement element) {
                 final var rigidBody = element.getRigidBody();

@@ -9,7 +9,7 @@
   ],
   "client": [
     "client.EntityRenderDispatcherMixin",
-    "client.WorldRendererMixin"
+    "client.LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

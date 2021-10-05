@@ -3,7 +3,7 @@ package dev.lazurite.rayon.entity.api;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.entity.impl.collision.body.EntityRigidBody;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Use this interface to create a physics entity.
@@ -15,7 +15,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
     @Override
     default MinecraftShape genShape() {
         final var box = asEntity().getBoundingBox();
-        return MinecraftShape.of(box.contract(box.getXLength() * 0.1, box.getYLength() * 0.1, box.getZLength() * 0.1));
+        return MinecraftShape.of(box.contract(box.getXsize() * 0.1, box.getYsize() * 0.1, box.getZsize() * 0.1));
     }
 
     default Entity asEntity() {

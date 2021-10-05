@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space.generator;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
@@ -12,14 +13,14 @@ import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.pattern.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.*;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
@@ -29,7 +30,7 @@ import java.util.*;
  */
 public class TerrainGenerator {
     public static void step(MinecraftSpace space) {
-        final var world = space.getWorld();
+        final var level = space.getLevel();
         final var toKeep = new HashMap<BlockPos, TerrainObject>();
 
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
@@ -39,18 +40,18 @@ public class TerrainGenerator {
 
             final var blocks = new ArrayList<BlockPos>();
 
-            final var d = VectorHelper.toVec3d(Convert.toMinecraft(rigidBody.getLinearVelocity(null)));
+            final var d = VectorHelper.toVec3(Convert.toMinecraft(rigidBody.getLinearVelocity(null)));
             final var x = Math.min(Math.abs(d.x), 1);
             final var y = Math.min(Math.abs(d.y), 1);
             final var z = Math.min(Math.abs(d.z), 1);
-            final var box = Convert.toMinecraft(rigidBody.boundingBox(null)).expand(0.5f).expand(x, y, z);
+            final var box = Convert.toMinecraft(rigidBody.boundingBox(null)).inflate(0.5f).expandTowards(x, y, z);
             final var pos = rigidBody.getPhysicsLocation(null);
-            final var chunk = world.getChunk(ChunkSectionPos.getSectionCoord(pos.x), ChunkSectionPos.getSectionCoord(pos.z));
+            final var chunk = level.getChunk(SectionPos.posToSectionCoord(pos.x), SectionPos.posToSectionCoord(pos.z));
 
             for (int i = (int) Math.floor(box.minX); i < Math.ceil(box.maxX); i++) {
                 for (int j = (int) Math.floor(box.minY); j < Math.ceil(box.maxY); j++) {
                     for (int k = (int) Math.floor(box.minZ); k < Math.ceil(box.maxZ); k++) {
-                        if (box.contains(Vec3d.ofCenter(new BlockPos(i, j, k)))) {
+                        if (box.contains(Vec3.atCenterOf(new BlockPos(i, j, k)))) {
                             final var blockPos = new BlockPos(i, j, k);
                             blocks.add(blockPos);
 
@@ -70,7 +71,7 @@ public class TerrainGenerator {
 
             for (var blockPos : blocks) {
                 space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrainObject -> {
-                    if (rigidBody.isActive() && !chunk.getBlockState(terrainObject.getBlockPos()).getBlock().equals(Blocks.AIR) || !chunk.getFluidState(terrainObject.getBlockPos()).getFluid().equals(Fluids.EMPTY)) {
+                    if (rigidBody.isActive() && !chunk.getBlockState(terrainObject.getBlockPos()).getBlock().equals(Blocks.AIR) || !chunk.getFluidState(terrainObject.getBlockPos()).getType().equals(Fluids.EMPTY)) {
                         toKeep.put(blockPos, terrainObject);
                     }
                 }, () -> {
@@ -78,12 +79,12 @@ public class TerrainGenerator {
                         var blockState = chunk.getBlockState(blockPos);
                         var fluidState = chunk.getFluidState(blockPos);
 
-                        if (fluidState.getFluid() != Fluids.EMPTY) {
+                        if (fluidState.getType() != Fluids.EMPTY) {
                             var newTerrainObject = new TerrainObject(space, blockPos, fluidState);
                             space.addTerrainObject(newTerrainObject);
                             toKeep.put(blockPos, newTerrainObject);
                         } else if (blockState.getBlock() != Blocks.AIR) {
-                            var optional = BlockProps.get(Registry.BLOCK.getId(blockState.getBlock()));
+                            var optional = BlockProps.get(Registry.BLOCK.getKey(blockState.getBlock()));
 
                             float friction = 0.75f;
                             float restitution = 0.25f;
@@ -104,15 +105,15 @@ public class TerrainGenerator {
                                 collidable = optional.get().collidable();
                             }
 
-                            if (!blockState.getBlock().canMobSpawnInside() || collidable) {
+                            if (!blockState.getBlock().isPossibleToRespawnInThis() || collidable) {
                                 final var newTerrainObject = new TerrainObject(space, blockPos, blockState, friction, restitution);
 
                                 /* Make a pattern shape if applicable */
-                                if (!blockState.isFullCube(world, blockPos)) {
-                                    var pattern = Transporter.getPatternBuffer().get(Registry.BLOCK.getId(blockState.getBlock()));
+                                if (!blockState.isCollisionShapeFullBlock(level, blockPos)) {
+                                    var pattern = Transporter.getPatternBuffer().get(Registry.BLOCK.getKey(blockState.getBlock()));
 
-                                    if (pattern == null && world.isClient()) {
-                                        pattern = TerrainGenerator.tryGenerateShape(world, blockPos, blockState);
+                                    if (pattern == null && level.isClientSide()) {
+                                        pattern = TerrainGenerator.tryGenerateShape(level, blockPos, blockState);
                                     }
 
                                     if (pattern != null && ((MinecraftShape) newTerrainObject.getCollisionObject().getCollisionShape()).copyHullVertices().length == 108) {
@@ -141,9 +142,9 @@ public class TerrainGenerator {
     }
 
     @Environment(EnvType.CLIENT)
-    private static Pattern tryGenerateShape(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-        final var blockEntity = blockView.getBlockEntity(blockPos);
-        final var transformation = new MatrixStack();
+    private static Pattern tryGenerateShape(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
+        final var blockEntity = blockGetter.getBlockEntity(blockPos);
+        final var transformation = new PoseStack();
         transformation.scale(0.95f, 0.95f, 0.95f);
         transformation.translate(-0.5f, -0.5f, -0.5f);
 

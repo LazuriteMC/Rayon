@@ -5,11 +5,11 @@ import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.entity.EntitySupplier;
-import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.world.WorldSupplier;
+import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.level.LevelSupplier;
 import dev.lazurite.rayon.core.impl.bullet.thread.util.Pausable;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.thread.ReentrantThreadExecutor;
-import net.minecraft.world.World;
+import net.minecraft.util.thread.ReentrantBlockableEventLoop;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 /**
- * In order to access an instance of this, all you need is a {@link World} or {@link ReentrantThreadExecutor} object.
+ * In order to access an instance of this, all you need is a {@link Level} or {@link ReentrantBlockableEventLoop} object.
  * Calling {@link PhysicsThread#execute} adds a runnable to the queue of tasks and is the main way to execute code on
  * this thread. You can also execute code here by using {@link PhysicsSpaceEvents}.
  * @see PhysicsSpaceEvents
@@ -29,27 +29,27 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
     private final Executor parentExecutor;
     private final Thread parentThread;
-    private final WorldSupplier worldSupplier;
+    private final LevelSupplier levelSupplier;
 
     public volatile Throwable throwable;
     public volatile boolean running = true;
 
-    public static Optional<PhysicsThread> getOptional(ReentrantThreadExecutor<? extends Runnable> executor) {
+    public static Optional<PhysicsThread> getOptional(ReentrantBlockableEventLoop<? extends Runnable> executor) {
         return Optional.ofNullable(get(executor));
     }
 
-    public static PhysicsThread get(ReentrantThreadExecutor<? extends Runnable> executor) {
+    public static PhysicsThread get(ReentrantBlockableEventLoop<? extends Runnable> executor) {
         return RayonCore.getThread(!(executor instanceof MinecraftServer));
     }
 
-    public static PhysicsThread get(World world) {
-        return MinecraftSpace.get(world).getWorkerThread();
+    public static PhysicsThread get(Level level) {
+        return MinecraftSpace.get(level).getWorkerThread();
     }
 
-    public PhysicsThread(Executor parentExecutor, Thread parentThread, WorldSupplier worldSupplier, String name) {
+    public PhysicsThread(Executor parentExecutor, Thread parentThread, LevelSupplier levelSupplier, String name) {
         this.parentExecutor = parentExecutor;
         this.parentThread = parentThread;
-        this.worldSupplier = worldSupplier;
+        this.levelSupplier = levelSupplier;
 
         this.setName(name);
         this.setUncaughtExceptionHandler((thread, throwable) -> {
@@ -87,12 +87,12 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     }
 
     /**
-     * Gets the {@link WorldSupplier}. For servers, it is able to provide multiple worlds.
+     * Gets the {@link LevelSupplier}. For servers, it is able to provide multiple worlds.
      * For clients, it will only provide one unless immersive portals is installed.
-     * @return the {@link WorldSupplier}
+     * @return the {@link LevelSupplier}
      */
-    public WorldSupplier getWorldSupplier() {
-        return this.worldSupplier;
+    public LevelSupplier getLevelSupplier() {
+        return this.levelSupplier;
     }
 
     /**
