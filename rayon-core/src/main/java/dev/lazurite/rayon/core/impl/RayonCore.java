@@ -7,15 +7,19 @@ import dev.lazurite.rayon.core.impl.event.ClientEventHandler;
 import dev.lazurite.rayon.core.impl.event.ServerEventHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RayonCore implements ModInitializer {
+@Mod(RayonCore.MODID)
+public class RayonCore{
 	public static final String MODID = "rayon-core";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon Core");
 
-	@Override
-	public void onInitialize() {
+	@SubscribeEvent
+	public void onInitialize(FMLCommonSetupEvent event) {
 		NativeLoader.load();
 		BlockProps.load();
 		ServerEventHandler.register();

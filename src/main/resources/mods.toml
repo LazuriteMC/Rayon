@@ -1,0 +1,55 @@
+odLoader="javafml"
+loaderVersion="[37,)"
+license="MIT"
+[[mods]]
+modId="rayon"
+version="${version}"
+displayName="Rayon"
+logoFile="icon.png"
+credits="Lazurite team who made original Rayon"
+authors="The Lazurite Team"
+description="A physics API for Forge."
+[[dependencies.rayon]]
+    modId="forge"
+    mandatory=true
+    versionRange="[37,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.rayon]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17.1,1.18)"
+    ordering="NONE"
+    side="BOTH"
+
+# {
+#   "schemaVersion": 1,
+#   "id": "rayon",
+#   "version": "${version}",
+#   "name": "Rayon",
+#   "description": "A physics API for Fabric.",
+#   "authors": [ "The Lazurite Team" ],
+#
+#   "contact": {
+#     "homepage": "https://lazurite.dev",
+#     "sources": "https://github.com/lazuritemc/Rayon",
+#     "issues": "https://github.com/LazuriteMC/Rayon/issues"
+#   },
+#
+#   "license": "MIT",
+#   "icon": "assets/rayon/icon.png",
+#   "environment": "*",
+#
+#   "depends": {
+#     "fabricloader": ">=0.7.4",
+#     "fabric": "*",
+#     "minecraft": "1.17.x"
+#   },
+#
+#   "custom": {
+#     "modmenu": {
+#       "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" },
+#       "badges": [ "library" ]
+#     }
+#   }
+# }

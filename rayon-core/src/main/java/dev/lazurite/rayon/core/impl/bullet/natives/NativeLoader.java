@@ -2,64 +2,63 @@ package dev.lazurite.rayon.core.impl.bullet.natives;
 
 import com.jme3.system.JmeSystem;
 import com.jme3.system.NativeLibraryLoader;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraftforge.fml.loading.FMLPaths;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * Facilitates copying of natives outside the jar so that LibBulletJME can load them.
  */
 public class NativeLoader {
     public static void load() {
-        final var destination = FabricLoader.getInstance().getGameDir().resolve("natives");
+        final var destination = FMLPaths.GAMEDIR.get().resolve("natives");
 
-        FabricLoader.getInstance().getModContainer("rayon-core").ifPresentOrElse(jar -> {
-            final var natives = jar.getRootPath().resolve("assets").resolve("rayon-core").resolve("natives");
-            final var fileName = getPlatformSpecificName();
+        final var fileName = getPlatformSpecificName();
 
-            try {
-                var destinationFile = destination.resolve(fileName);
-                var originalFile = natives.resolve(fileName);
+        try {
+            var destinationFile = destination.resolve(fileName);
 
-                if (!Files.exists(destination) && !Files.exists(destinationFile)) {
+            if (!Files.exists(destinationFile)) {
+                if(!Files.exists(destination)){
                     Files.createDirectory(destination);
-                    Files.copy(originalFile, destinationFile);
-                } else if (!Files.exists(destinationFile)) {
-                    Files.copy(originalFile, destinationFile);
-                } else {
-                    var destinationHash = getChecksum(MessageDigest.getInstance("MD5"), destination.resolve(fileName));
-                    var jarHash = getChecksum(MessageDigest.getInstance("MD5"), natives.resolve(fileName));
-
-                    if (!jarHash.equals(destinationHash)) {
-                        Files.delete(destinationFile);
-                        Files.copy(originalFile, destinationFile);
-                    }
                 }
+                Files.copy(
+                        Objects.requireNonNull(
+                                NativeLoader.class.getResourceAsStream("/assets/rayon-core/natives/" + fileName)
+                        ), destinationFile
+                );
+            } else {
+                InputStream destinationInputStream = new FileInputStream(destinationFile.toFile());
+                var destinationHash = getChecksum(MessageDigest.getInstance("MD5"), destination.resolve(fileName));
+                var jarHash = getChecksum(MessageDigest.getInstance("MD5"), natives.resolve(fileName));
 
-                // Load it!
-                NativeLibraryLoader.loadLibbulletjme(true, destination.toFile(), "Release", "Sp");
-            } catch (IOException | NoSuchElementException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Unable to load bullet natives.");
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Unable to verify native libraries.");
+                if (!jarHash.equals(destinationHash)) {
+                    Files.delete(destinationFile);
+                    Files.copy(originalFile, destinationFile);
+                }
             }
-        }, () -> {
-            throw new RuntimeException("Rayon jar not found.");
-        });
+
+            // Load it!
+            NativeLibraryLoader.loadLibbulletjme(true, destination.toFile(), "Release", "Sp");
+        } catch (IOException | NoSuchElementException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Unable to load bullet natives.");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Unable to verify native libraries.");
+        }
     }
 
-    static String getChecksum(MessageDigest digest, Path path) throws IOException {
+    static String getChecksum(MessageDigest digest, InputStream input) throws IOException {
         var channel = Files.newByteChannel(path, StandardOpenOption.READ);
         var buf = ByteBuffer.allocate(1024);
         var bytesRead = 0;

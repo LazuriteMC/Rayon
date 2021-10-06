@@ -1,0 +1,62 @@
+odLoader="javafml"
+loaderVersion="[37,)"
+license="MIT"
+[[mods]]
+modId="rayon-core"
+version="${version}"
+displayName="Rayon Core API"
+logoFile="icon.png"
+credits="Lazurite team who made original Rayon Core"
+authors="The Lazurite Team"
+description="The core API for Rayon"
+[[dependencies.rayon-core]]
+    modId="forge"
+    mandatory=true
+    versionRange="[37,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.rayon-core]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17.1,1.18)"
+    ordering="NONE"
+    side="BOTH"
+#
+# {
+#   "schemaVersion": 1,
+#   "id": "rayon-core",
+#   "version": "${version}",
+#   "name": "Rayon Core API",
+#   "description": "The core API for Rayon.",
+#   "authors": [ "The Lazurite Team" ],
+#   "license": "MIT",
+#   "environment": "*",
+#   "icon": "icon.png",
+#   "mixins": [ "rayon-core.mixins.json" ],
+#
+#   "entrypoints": {
+#     "main": [ "dev.lazurite.rayon.core.impl.RayonCore" ],
+#     "client": [ "dev.lazurite.rayon.core.impl.RayonCoreClient" ]
+#   },
+#
+#   "depends": {
+#     "minecraft": "1.18.x",
+#     "fabricloader": ">=0.11",
+#     "fabric-api-base": "*",
+#     "fabric-lifecycle-events-v1": "*"
+#   },
+#
+#   "contact": {
+#     "homepage": "https://lazurite.dev",
+#     "sources": "https://github.com/lazuritemc/Rayon",
+#     "issues": "https://github.com/LazuriteMC/Rayon/issues"
+#   },
+#
+#   "custom": {
+#     "modmenu": {
+#       "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" },
+#       "badges": [ "library" ],
+#       "parent": "rayon"
+#     }
+#   }
+# }

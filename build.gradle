@@ -1,133 +1,162 @@
-plugins {
-	id 'com.github.johnrengelman.shadow' version "5.2.0"
-	id 'fabric-loom' version '0.9-SNAPSHOT'
-	id 'maven-publish'
+buildscript {
+    repositories {
+        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
+        maven { url = 'https://maven.minecraftforge.net' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+    }
 }
 
+plugins {
+    id 'com.github.johnrengelman.shadow' version "5.2.0"
+    id 'maven-publish'
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'java-library'
+
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
+
 allprojects { project ->
-	apply plugin: 'com.github.johnrengelman.shadow'
-	apply plugin: 'fabric-loom'
-	apply plugin: 'maven-publish'
-	apply plugin: 'java-library'
+    apply plugin: 'net.minecraftforge.gradle'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'maven-publish'
+    apply plugin: 'java-library'
 
-	sourceCompatibility = JavaVersion.VERSION_16
-	targetCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 
-	version = project.mod_version
-	group = project.maven_group
+    version = project.mod_version
+    group = project.maven_group
 
-	repositories {
-		maven { url "https://maven.fabricmc.net/" }
-		maven { url "https://lazurite.dev/releases" }
-	}
+    minecraft {
+        mappings channel: 'official', version: '1.17.1'
 
-	dependencies {
-		minecraft "com.mojang:minecraft:${project.minecraft_version}"
-		mappings minecraft.officialMojangMappings()
-		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+        //accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
-		// Bullet
-		implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
-		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+        runs {
+            client {
+                workingDirectory project.file('run')
 
-		// Transporter
-		modImplementation "dev.lazurite:transporter:${project.transporter_version}"
-		include "dev.lazurite:transporter:${project.transporter_version}"
+                property 'forge.logging.markers', 'REGISTRIES'
 
-		// Lazurite Toolbox
-		modApi "dev.lazurite:toolbox:${project.toolbox_version}"
-		include "dev.lazurite:toolbox:${project.toolbox_version}"
-	}
+                property 'forge.logging.console.level', 'debug'
 
-	sourceSets {
-		testmod {
-			compileClasspath += main.compileClasspath
-			runtimeClasspath += main.runtimeClasspath
-		}
-	}
+                mods {
+                    "${project.archivesBaseName}" {
+                        source sourceSets.main
+                    }
+                }
+            }
 
-	processResources {
-		inputs.property "version", project.version
+            server {
+                workingDirectory project.file('run')
 
-		filesMatching("fabric.mod.json") {
-			expand "version": project.version
-		}
-	}
+                property 'forge.logging.markers', 'REGISTRIES'
 
-	tasks.withType(JavaCompile).configureEach {
-		it.options.encoding = "UTF-8"
-		it.options.release = 16
-	}
+                property 'forge.logging.console.level', 'debug'
 
-	task sourcesJar(type: Jar, dependsOn: classes) {
-		classifier = "sources"
-		from sourceSets.main.allSource
-	}
+                mods {
+					"${project.archivesBaseName}" {
+                        source sourceSets.main
+                    }
+                }
+            }
 
-	java {
-		withSourcesJar()
-	}
+            data {
+                workingDirectory project.file('run')
 
-	jar {
-		from("LICENSE") {
-			rename { "${it}_${project.archivesBaseName}"}
-		}
-	}
+                property 'forge.logging.markers', 'REGISTRIES'
 
-	dependencies {
-		testmodImplementation project.sourceSets.main.output
-	}
+                property 'forge.logging.console.level', 'debug'
+
+                args '--mod', "${project.archivesBaseName}", '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+
+                mods {
+					"${project.archivesBaseName}" {
+                        source sourceSets.main
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        minecraft 'net.minecraftforge:forge:1.17.1-37.0.82'
+        // Bullet
+        implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+        shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+
+        // Transporter
+        implementation files("libs/transporter-${project.transporter_version}.jar")
+        //include files("libs/transporter-${project.transporter_version}.jar")
+
+        // Lazurite Toolbox
+        implementation files("libs/toolbox-${project.toolbox_version}.jar")
+        //include files("libs/toolbox-${project.toolbox_version}.jar")
+    }
+
+    sourceSets {
+        testmod {
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+
+    processResources {
+        inputs.property "version", project.version
+
+        filesMatching("resources/META-INF/mods.toml") {
+            expand "version": project.version
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = "UTF-8"
+        it.options.release = 16
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = "sources"
+        from sourceSets.main.allSource
+    }
+
+    java {
+        withSourcesJar()
+    }
+
+    jar {
+        from("LICENSE") {
+            rename { "${it}_${project.archivesBaseName}" }
+        }
+    }
+
+    dependencies {
+        testmodImplementation project.sourceSets.main.output
+    }
 }
 
 subprojects {
-	task remapMavenJar(type: Copy, dependsOn: remapJar) {
-		afterEvaluate {
-			from("${project.buildDir}/libs/$archivesBaseName-${version}.jar")
-			into("${project.buildDir}/libs/")
-			rename { String fn -> "$archivesBaseName-${version}-maven.jar" }
-		}
-	}
-
-	publishing {
-		publications {
-			mavenJava(MavenPublication) {
-				artifact(file("${project.buildDir}/libs/$archivesBaseName-${version}.jar")) {
-					builtBy remapMavenJar
-				}
-
-				artifact(sourcesJar) {
-					builtBy remapSourcesJar
-				}
-
-				pom.withXml {
-					def depsNode = asNode().appendNode("dependencies")
-					subprojects.each {
-						def depNode = depsNode.appendNode("dependency")
-						depNode.appendNode("groupId", it.group)
-						depNode.appendNode("artifactId", it.name)
-						depNode.appendNode("version", it.version)
-						depNode.appendNode("scope", "compile")
-					}
-				}
-			}
-		}
-
-		repositories {
-			maven {
-				url = 'https://lazurite.dev/maven/releases'
-
-				credentials {
-					username = project.property("publish.lazurite.alias")
-					password = project.property("publish.lazurite.secret")
-				}
-			}
-		}
-	}
-}
-
-dependencies {
-	include project(':rayon-core')
-	include project(':rayon-entity')
-	include project(':rayon-particle')
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifact jar
+            }
+        }
+        repositories {
+            maven {
+                url "file://${project.projectDir}/mcmodsrepo"
+            }
+        }
+    }
 }

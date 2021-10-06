@@ -3,8 +3,3 @@ archivesBaseName = "rayon-core"
 shadowJar {
     configurations = [project.configurations.shadow]
 }
-
-remapJar {
-    dependsOn shadowJar
-    input.set shadowJar.archiveFile.get()
-}
