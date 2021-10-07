@@ -7,10 +7,10 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.core.impl.util.BlockProps;
-import dev.lazurite.toolbox.api.math.VectorHelper;
 import dev.lazurite.transporter.Transporter;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.pattern.Pattern;
+import dev.lazurite.toolbox.api.VectorHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
@@ -22,12 +22,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Used for loading blocks into the simulation so that rigid bodies can interact with them.
  * @see MinecraftSpace
  */
+//TODO Fix library classpath so that this can be fixed
 public class TerrainGenerator {
     public static void step(MinecraftSpace space) {
         final var level = space.getLevel();
@@ -141,7 +143,6 @@ public class TerrainGenerator {
         }
     }
 
-    @Environment(EnvType.CLIENT)
     private static Pattern tryGenerateShape(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
         final var blockEntity = blockGetter.getBlockEntity(blockPos);
         final var transformation = new PoseStack();

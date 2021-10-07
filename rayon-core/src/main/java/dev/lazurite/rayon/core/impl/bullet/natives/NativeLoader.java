@@ -3,13 +3,13 @@ package dev.lazurite.rayon.core.impl.bullet.natives;
 import com.jme3.system.JmeSystem;
 import com.jme3.system.NativeLibraryLoader;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.NoSuchElementException;
@@ -20,63 +20,37 @@ import java.util.Objects;
  */
 public class NativeLoader {
     public static void load() {
-        final var destination = FMLPaths.GAMEDIR.get().resolve("natives");
-
         final var fileName = getPlatformSpecificName();
+        final var destination = FMLPaths.GAMEDIR.get().resolve("natives").resolve(fileName);
+        final var destinationFile = destination.toFile();
 
-        try {
-            var destinationFile = destination.resolve(fileName);
+        boolean delete = false;
+        boolean copy = false;
+        boolean[] load = new boolean[]{false};
 
-            if (!Files.exists(destinationFile)) {
-                if(!Files.exists(destination)){
-                    Files.createDirectory(destination);
-                }
-                Files.copy(
-                        Objects.requireNonNull(
-                                NativeLoader.class.getResourceAsStream("/assets/rayon-core/natives/" + fileName)
-                        ), destinationFile
-                );
-            } else {
-                InputStream destinationInputStream = new FileInputStream(destinationFile.toFile());
-                var destinationHash = getChecksum(MessageDigest.getInstance("MD5"), destination.resolve(fileName));
-                var jarHash = getChecksum(MessageDigest.getInstance("MD5"), natives.resolve(fileName));
+        if (destinationFile.exists()) {
+            try (
+                    var fileInputStream = new FileInputStream(destinationFile);
+                    var nativeStream = NativeLoader.class.getResourceAsStream("/assets/rayon-core/natives/" + fileName)
+            ) {
+                var destDigest = DigestUtils.md5Hex(fileInputStream);
+                var jarDigest = DigestUtils.md5Hex(nativeStream);
+                if(!destDigest.equals(jarDigest)){
+                    delete = true;
+                    copy = true;
+                }else load[0] = true;
 
-                if (!jarHash.equals(destinationHash)) {
-                    Files.delete(destinationFile);
-                    Files.copy(originalFile, destinationFile);
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Unable to verify native libraries.");
             }
-
-            // Load it!
-            NativeLibraryLoader.loadLibbulletjme(true, destination.toFile(), "Release", "Sp");
-        } catch (IOException | NoSuchElementException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to load bullet natives.");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to verify native libraries.");
-        }
-    }
-
-    static String getChecksum(MessageDigest digest, InputStream input) throws IOException {
-        var channel = Files.newByteChannel(path, StandardOpenOption.READ);
-        var buf = ByteBuffer.allocate(1024);
-        var bytesRead = 0;
-
-        while ((bytesRead = channel.read(buf)) > 0) {
-            buf.flip();
-            digest.update(buf.array(), 0, bytesRead);
-            buf.clear();
+        } else {
+            copy = true;
         }
 
-        channel.close();
-        var bytes = digest.digest();
-        var sb = new StringBuilder();
-
-        for (byte b : bytes) {
-            sb.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
-        }
-        return sb.toString();
+        if(delete)destinationFile.delete();
+        if(copy)copyNative(fileName, destination, load);
+        if(load[0])NativeLibraryLoader.loadLibbulletjme(true, destinationFile, "Release", "Sp");
     }
 
     static String getPlatformSpecificName() {
@@ -90,5 +64,20 @@ public class NativeLoader {
         };
 
         return platform + "Release" + "Sp" + "_" + name;
+    }
+
+    private static void copyNative(String fileName, Path destination, boolean[] load){
+        final var destinationFile = destination.toFile();
+
+        destinationFile.getParentFile().mkdirs();
+        try (
+                var nativeStream = NativeLoader.class.getResourceAsStream("/assets/rayon-core/natives/" + fileName)
+        ) {
+            Files.copy(nativeStream, destination);
+            load[0] = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Unable to load bullet natives.");
+        }
     }
 }

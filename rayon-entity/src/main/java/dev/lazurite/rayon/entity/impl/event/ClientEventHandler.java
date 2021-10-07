@@ -2,6 +2,7 @@ package dev.lazurite.rayon.entity.impl.event;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.player.ClientPlayerSupplier;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
@@ -12,8 +13,6 @@ import dev.lazurite.rayon.entity.impl.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.entity.impl.collision.space.generator.EntityCollisionGenerator;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -23,8 +22,15 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@Environment(EnvType.CLIENT)
+@Mod.EventBusSubscriber(modid = RayonCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEventHandler {
     public static void register() {
         ClientPlayNetworking.registerGlobalReceiver(RayonEntity.MOVEMENT_PACKET, ClientEventHandler::onMovement);
@@ -34,7 +40,10 @@ public class ClientEventHandler {
         ClientTickEvents.START_WORLD_TICK.register(ClientEventHandler::onStartLevelTick);
     }
 
-    private static void onLoad(Entity entity, ClientLevel level) {
+    @SubscribeEvent
+    private static void onLoad(EntityJoinWorldEvent event) {
+        Entity entity = event.getEntity();
+        Level level = event.getWorld();
         if (entity instanceof EntityPhysicsElement element) {
             PhysicsThread.get(level).execute(() ->
                     MinecraftSpace.getOptional(level).ifPresent(space ->
@@ -44,7 +53,10 @@ public class ClientEventHandler {
         }
     }
 
-    private static void onUnload(Entity entity, ClientLevel level) {
+    @SubscribeEvent
+    private static void onUnload(EntityLeaveWorldEvent event) {
+        Entity entity = event.getEntity();
+        Level level = event.getWorld();
         if (entity instanceof EntityPhysicsElement element) {
             PhysicsThread.get(level).execute(() ->
                 MinecraftSpace.getOptional(level).ifPresent(space ->
@@ -54,7 +66,10 @@ public class ClientEventHandler {
        }
     }
 
-    private static void onStartLevelTick(ClientLevel level) {
+    @SubscribeEvent
+    private static void onStartLevelTick(TickEvent.WorldTickEvent event) {
+        if(event.phase != TickEvent.Phase.START)return;
+        Level level = event.world;
         final var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.applyEntityCollisions(space);
 
@@ -72,7 +87,7 @@ public class ClientEventHandler {
         }
     }
 
-
+    @SubscribeEvent
     private static void onMovement(Minecraft minecraft, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender sender) {
         final var entityId= buf.readInt();
         final var rotation = QuaternionHelper.fromBuffer(buf);

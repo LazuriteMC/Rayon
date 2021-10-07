@@ -12,6 +12,7 @@ import dev.lazurite.toolbox.api.math.VectorHelper;
  * {@link Frame}s are stored in {@link PhysicsElement}s and are updated
  * each tick.
  */
+//TODO Fix library class path
 public class Frame {
     private Vector3f prevLocation;
     private Vector3f tickLocation;

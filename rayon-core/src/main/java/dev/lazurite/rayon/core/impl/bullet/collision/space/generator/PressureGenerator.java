@@ -2,14 +2,22 @@ package dev.lazurite.rayon.core.impl.bullet.collision.space.generator;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvent;
+import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
 
+@Mod.EventBusSubscriber(modid = RayonCore.MODID)
 public class PressureGenerator {
-    public static void step(MinecraftSpace space) {
+
+    @SubscribeEvent
+    public static void step(PhysicsSpaceEvent.Step event) {
+        MinecraftSpace space = event.getSpace();
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
             var rigidBodyBox = Convert.toMinecraft(rigidBody.getCollisionShape().boundingBox(rigidBody.getPhysicsLocation(null), new Quaternion(), null));
             rigidBodyBox = rigidBodyBox.contract(rigidBodyBox.getXsize() * 0.2, rigidBodyBox.getYsize() * 0.2, rigidBodyBox.getZsize() * 0.2);

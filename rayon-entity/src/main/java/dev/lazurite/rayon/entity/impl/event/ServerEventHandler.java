@@ -2,7 +2,7 @@ package dev.lazurite.rayon.entity.impl.event;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvent;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
@@ -29,7 +29,7 @@ import net.minecraft.world.entity.Entity;
 public class ServerEventHandler {
     public static void register() {
         ServerPlayNetworking.registerGlobalReceiver(RayonEntity.MOVEMENT_PACKET, ServerEventHandler::onMovement);
-        PhysicsSpaceEvents.ELEMENT_ADDED.register(ServerEventHandler::onAddedToSpace);
+        PhysicsSpaceEvent.ELEMENT_ADDED.register(ServerEventHandler::onAddedToSpace);
         ServerEntityEvents.ENTITY_LOAD.register(ServerEventHandler::onEntityLoad);
         EntityTrackingEvents.START_TRACKING.register(ServerEventHandler::onStartTracking);
         EntityTrackingEvents.STOP_TRACKING.register(ServerEventHandler::onStopTracking);

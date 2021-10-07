@@ -12,18 +12,16 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.core.impl.mixin.client.KeyboardMixin;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * This class handles debug rendering on the client. Press F3+r to render
  * all {@link ElementRigidBody} objects present in the {@link MinecraftSpace}.
  * @see KeyboardMixin
  */
-@Environment(EnvType.CLIENT)
 public final class CollisionObjectDebugger {
     private static final CollisionObjectDebugger instance = new CollisionObjectDebugger();
     private boolean enabled;
@@ -48,7 +46,7 @@ public final class CollisionObjectDebugger {
         final var builder = Tesselator.getInstance().getBuilder();
         final var stack = new PoseStack();
 
-        DebugRenderEvents.BEFORE_RENDER.invoker().onRender(new DebugRenderEvents.Context(space, builder, stack, cameraPos, tickDelta));
+        MinecraftForge.EVENT_BUS.post(new DebugRenderEvents(space, builder, stack, cameraPos, tickDelta));
         builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 

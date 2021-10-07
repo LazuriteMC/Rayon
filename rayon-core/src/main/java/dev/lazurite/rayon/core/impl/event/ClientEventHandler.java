@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.core.impl.event;
 
-import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvent;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
@@ -40,7 +40,7 @@ public final class ClientEventHandler {
     private static void onLevelLoad(Minecraft minecraft, ClientLevel level) {
         final var space = new MinecraftSpace(thread, level);
         ((SpaceStorage) level).setSpace(space);
-        PhysicsSpaceEvents.INIT.invoker().onInit(space);
+        PhysicsSpaceEvent.INIT.invoker().onInit(space);
     }
 
     private static void onClientTick(Minecraft minecraft) {

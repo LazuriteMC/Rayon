@@ -7,8 +7,8 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.api.event.collision.ElementCollisionEvents;
-import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.api.event.collision.CollisionEvent;
+import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvent;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.generator.TerrainGenerator;
@@ -17,6 +17,7 @@ import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
  * simulation step will not be performed if the last step has taken longer than 50ms and is still executing upon the
  * next tick. This really only happens if you are dealing with an ungodly amount of rigid bodies or your computer is slo.
  * @see PhysicsThread
- * @see PhysicsSpaceEvents
+ * @see PhysicsSpaceEvent
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 10;
@@ -77,7 +78,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     /**
      * This method performs the following steps:
      * <ul>
-     *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
+     *     <li>Fires world step events in {@link PhysicsSpaceEvent}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
      *     <li>Steps the simulation asynchronously.</li>
      *     <li>Triggers collision events.</li>
@@ -87,7 +88,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * (no {@link PhysicsRigidBody}s) or when the game is paused.
      *
      * @see TerrainGenerator
-     * @see PhysicsSpaceEvents
+     * @see PhysicsSpaceEvent
      */
     public void step() {
         MinecraftSpace.get(level).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
@@ -105,8 +106,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                     /* Call collision events */
                     this.distributeEvents();
 
-                    /* World Step Event */
-                    PhysicsSpaceEvents.STEP.invoker().onStep(this);
+                    MinecraftForge.EVENT_BUS.post(new PhysicsSpaceEvent.Step(this));
 
                     if (presimSteps > MAX_PRESIM_STEPS) {
                         this.update(1f/60f);
@@ -124,7 +124,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (!collisionObject.isInWorld()) {
             if (collisionObject instanceof ElementRigidBody rigidBody) {
-                PhysicsSpaceEvents.ELEMENT_ADDED.invoker().onElementAdded(this, rigidBody);
+                MinecraftForge.EVENT_BUS.post(new PhysicsSpaceEvent.ElementAdded(this, rigidBody));
 
                 if (!rigidBody.isInWorld()) {
                     rigidBody.activate();
@@ -146,7 +146,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             super.removeCollisionObject(collisionObject);
 
             if (collisionObject instanceof ElementRigidBody rigidBody) {
-                PhysicsSpaceEvents.ELEMENT_REMOVED.invoker().onElementRemoved(this, rigidBody);
+                MinecraftForge.EVENT_BUS.post(new PhysicsSpaceEvent.ElementRemoved(this, rigidBody));
             }
         }
     }
@@ -219,15 +219,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         /* Element on Element */
         if (event.getObjectA() instanceof ElementRigidBody rigidBodyA && event.getObjectB() instanceof ElementRigidBody rigidBodyB) {
-            ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse);
+            MinecraftForge.EVENT_BUS.post(new CollisionEvent.ElementCollisionEvent(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse));
 
         /* Terrain on Element */
         } else if (event.getObjectA() instanceof TerrainObject.Terrain terrain && event.getObjectB() instanceof ElementRigidBody rigidBody) {
-            ElementCollisionEvents.TERRAIN_COLLISION.invoker().onCollide(rigidBody.getElement(), terrain.getParent(), impulse);
+            MinecraftForge.EVENT_BUS.post(new CollisionEvent.TerrainCollisionEvent(rigidBody.getElement(), terrain.getParent(), impulse));
 
         /* Element on Terrain */
         } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainObject.Terrain terrain) {
-            ElementCollisionEvents.TERRAIN_COLLISION.invoker().onCollide(rigidBody.getElement(), terrain.getParent(), impulse);
+            MinecraftForge.EVENT_BUS.post(new CollisionEvent.TerrainCollisionEvent(rigidBody.getElement(), terrain.getParent(), impulse));
         }
     }
 }

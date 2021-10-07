@@ -9,8 +9,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.core.impl.util.debug.Debuggable;
 import dev.lazurite.rayon.core.impl.util.Frame;
-import dev.lazurite.toolbox.api.math.VectorHelper;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import dev.lazurite.toolbox.api.VectorHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
+//TODO Fix library classpath so that this can be fixed
 public abstract class ElementRigidBody extends PhysicsRigidBody implements Debuggable {
     protected final PhysicsElement element;
     protected final MinecraftSpace space;

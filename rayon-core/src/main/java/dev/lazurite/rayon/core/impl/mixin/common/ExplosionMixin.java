@@ -19,6 +19,7 @@ import java.util.Set;
  * Allows {@link PhysicsElement} objects to be affected by explosions.
  */
 @Mixin(Explosion.class)
+//TODO Change this to forge event handler and not mixin
 public class ExplosionMixin {
     @Unique private Entity entity;
 
@@ -26,7 +27,7 @@ public class ExplosionMixin {
             method = "explode",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;isImmuneToExplosion()Z"
+                    target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
@@ -38,14 +39,14 @@ public class ExplosionMixin {
             method = "explode",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"
+                    target = "Lnet/minecraft/world/entity/Entity;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"
             )
     )
     public Vec3 setVelocity(Vec3 velocity) {
         if (entity instanceof PhysicsElement) {
             var rigidBody = ((PhysicsElement) entity).getRigidBody();
 
-            MinecraftSpace.get(entity.getLevel()).getWorkerThread().execute(() ->
+            MinecraftSpace.get(entity.level).getWorkerThread().execute(() ->
                 rigidBody.applyCentralImpulse(Convert.toBullet(velocity).multLocal(rigidBody.getMass()).multLocal(100))
             );
         }

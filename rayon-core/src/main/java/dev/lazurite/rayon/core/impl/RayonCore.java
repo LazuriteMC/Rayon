@@ -2,12 +2,11 @@ package dev.lazurite.rayon.core.impl;
 
 import dev.lazurite.rayon.core.impl.bullet.natives.NativeLoader;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.util.BlockProps;
 import dev.lazurite.rayon.core.impl.event.ClientEventHandler;
 import dev.lazurite.rayon.core.impl.event.ServerEventHandler;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.lazurite.rayon.core.impl.util.BlockProps;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +29,6 @@ public class RayonCore{
 	}
 
 	public static boolean isImmersivePortalsPresent() {
-		return FabricLoader.getInstance().isModLoaded("immersive_portals");
+		return ModList.get().isLoaded("immersive_portals");
 	}
 }

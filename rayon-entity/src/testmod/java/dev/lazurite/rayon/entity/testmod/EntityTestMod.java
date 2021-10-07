@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.entity.testmod;
 
-import dev.lazurite.rayon.core.api.event.collision.ElementCollisionEvents;
+import dev.lazurite.rayon.core.api.event.collision.CollisionEvent;
 import dev.lazurite.rayon.entity.testmod.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.entity.testmod.common.item.WandItem;
 import net.fabricmc.api.ModInitializer;
@@ -59,7 +59,7 @@ public class EntityTestMod implements ModInitializer {
                 new BlockItem(BLUE_DIRT, new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
 
         /* An example of a block collision event */
-        ElementCollisionEvents.TERRAIN_COLLISION.register((element, terrainObject, impulse) -> {
+        CollisionEvent.TERRAIN_COLLISION.register((element, terrainObject, impulse) -> {
             if (element instanceof StoneBlockEntity) {
                 terrainObject.getBlockState().ifPresent(blockState -> {
                     if (blockState.getBlock().equals(Blocks.BRICKS)) {

@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.core.impl.bullet.thread;
 
 import dev.lazurite.rayon.core.api.PhysicsElement;
-import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvent;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.entity.EntitySupplier;
@@ -20,8 +20,8 @@ import java.util.concurrent.Executor;
 /**
  * In order to access an instance of this, all you need is a {@link Level} or {@link ReentrantBlockableEventLoop} object.
  * Calling {@link PhysicsThread#execute} adds a runnable to the queue of tasks and is the main way to execute code on
- * this thread. You can also execute code here by using {@link PhysicsSpaceEvents}.
- * @see PhysicsSpaceEvents
+ * this thread. You can also execute code here by using {@link PhysicsSpaceEvent}.
+ * @see PhysicsSpaceEvent
  * @see PhysicsElement
  * @see MinecraftSpace
  */
