@@ -1,6 +1,6 @@
 plugins {
-	id 'com.github.johnrengelman.shadow' version "5.2.0"
-	id 'fabric-loom' version '0.9-SNAPSHOT'
+	id 'com.github.johnrengelman.shadow' version "${shadow_version}"
+	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
@@ -19,13 +19,19 @@ allprojects { project ->
 	repositories {
 		maven { url "https://maven.fabricmc.net/" }
 		maven { url "https://lazurite.dev/releases" }
+		mavenLocal()
 	}
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
 		mappings minecraft.officialMojangMappings()
 		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+		modImplementation(fabricApi.module("fabric-api-base", project.fabric_version))
+		modImplementation(fabricApi.module("fabric-rendering-v1", project.fabric_version))
+		modImplementation(fabricApi.module("fabric-networking-api-v1", project.fabric_version))
+		modImplementation(fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version))
+		modImplementation(fabricApi.module("fabric-object-builder-api-v1", project.fabric_version))
 
 		// Bullet
 		implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"

@@ -19,10 +19,7 @@
   "depends": {
     "minecraft": "1.18.x",
     "fabricloader": ">=0.11",
-    "fabric-api-base": "*",
-    "fabric-object-builder-api-v1": "*",
-    "fabric-networking-api-v1": "*",
-    "fabric-lifecycle-events-v1": "*"
+    "fabric-api-base": "*"
   },
 
   "contact": {
