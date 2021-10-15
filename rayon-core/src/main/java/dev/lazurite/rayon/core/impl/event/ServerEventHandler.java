@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.core.impl.event;
 
+import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvent;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
@@ -8,16 +9,17 @@ import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.level.Server
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 
-@Mod.EventBusSubscriber(modid = RayonCore.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.DEDICATED_SERVER)
+@Mod.EventBusSubscriber(modid = RayonCore.MODID)
 public final class ServerEventHandler {
     private static PhysicsThread thread;
 
@@ -32,12 +34,12 @@ public final class ServerEventHandler {
     }
 
     @SubscribeEvent
-    private static void onServerStop(FMLServerStoppingEvent event) {
+    public static void onServerStop(FMLServerStoppingEvent event) {
         thread.destroy();
     }
 
     @SubscribeEvent
-    private static void onServerTick(TickEvent.ServerTickEvent event) {
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
         if(event.phase == TickEvent.Phase.END){
             if (thread.throwable != null) {
                 throw new RuntimeException(thread.throwable);
@@ -46,8 +48,8 @@ public final class ServerEventHandler {
     }
 
     @SubscribeEvent
-    private static void onStartLevelTick(TickEvent.WorldTickEvent event) {
-        if(event.phase == TickEvent.Phase.START){
+    public static void onStartLevelTick(TickEvent.WorldTickEvent event) {
+        if(event.phase == TickEvent.Phase.START && event.side == LogicalSide.SERVER){
             final var space = MinecraftSpace.get(event.world);
 
             if (!space.getWorkerThread().isPaused()) {
@@ -57,7 +59,7 @@ public final class ServerEventHandler {
     }
 
     @SubscribeEvent
-    private static void onLevelLoad(WorldEvent.Load event) {
+    public static void onLevelLoad(WorldEvent.Load event) {
         if(event.getWorld() instanceof ServerLevel level){
             final var space = new MinecraftSpace(thread, level);
             ((SpaceStorage) level).setSpace(space);
