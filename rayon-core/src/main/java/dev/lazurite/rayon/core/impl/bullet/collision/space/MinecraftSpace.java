@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space;
 
+import com.jme3.bullet.MultiBodySpace;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
@@ -35,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
  * @see PhysicsThread
  * @see PhysicsSpaceEvent
  */
-public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
+public class MinecraftSpace extends MultiBodySpace implements PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 10;
 
     private final List<TerrainObject> terrainObjects;

@@ -17,7 +17,6 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-//TODO Fix library classpath so that this can be fixed
 public abstract class ElementRigidBody extends PhysicsRigidBody implements Debuggable {
     protected final PhysicsElement element;
     protected final MinecraftSpace space;
@@ -73,7 +72,7 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
             var location = VectorHelper.toVec3(Convert.toMinecraft(getPhysicsLocation(new Vector3f())));
             var world = (ServerLevel) getSpace().getLevel();
             var viewDistance = world.getServer().getPlayerList().getViewDistance();
-            return PlayerLookup.around(world, location, viewDistance);
+            return world.getPlayers(serverPlayer -> location.distanceToSqr(location) <= (viewDistance * viewDistance));
         } else {
             return getSpace().getLevel().players();
         }

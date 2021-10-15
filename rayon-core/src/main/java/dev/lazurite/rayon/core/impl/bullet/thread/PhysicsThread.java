@@ -10,8 +10,8 @@ import dev.lazurite.rayon.core.impl.bullet.thread.util.Pausable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -82,7 +82,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
      * @param task the task to run
      */
     @Override
-    public void execute(@NotNull Runnable task) {
+    public void execute(@Nonnull Runnable task) {
         tasks.add(task);
     }
 

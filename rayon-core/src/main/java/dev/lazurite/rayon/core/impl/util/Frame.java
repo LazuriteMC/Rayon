@@ -4,15 +4,14 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
-import dev.lazurite.toolbox.api.math.QuaternionHelper;
-import dev.lazurite.toolbox.api.math.VectorHelper;
+import dev.lazurite.toolbox.api.QuaternionHelper;
+import dev.lazurite.toolbox.api.VectorHelper;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.
  * {@link Frame}s are stored in {@link PhysicsElement}s and are updated
  * each tick.
  */
-//TODO Fix library class path
 public class Frame {
     private Vector3f prevLocation;
     private Vector3f tickLocation;

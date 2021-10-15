@@ -4,7 +4,6 @@ import dev.lazurite.rayon.core.impl.bullet.natives.NativeLoader;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.core.impl.event.ClientEventHandler;
 import dev.lazurite.rayon.core.impl.event.ServerEventHandler;
-import dev.lazurite.rayon.core.impl.util.BlockProps;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -20,8 +19,6 @@ public class RayonCore{
 	@SubscribeEvent
 	public void onInitialize(FMLCommonSetupEvent event) {
 		NativeLoader.load();
-		BlockProps.load();
-		ServerEventHandler.register();
 	}
 
 	public static PhysicsThread getThread(boolean isClient) {

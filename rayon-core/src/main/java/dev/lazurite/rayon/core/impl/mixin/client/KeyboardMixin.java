@@ -2,8 +2,6 @@ package dev.lazurite.rayon.core.impl.mixin.client;
 
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import dev.lazurite.rayon.core.impl.util.debug.CollisionObjectDebugger;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.KeyboardHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * renders for all relevant {@link PhysicsRigidBody} objects.
  */
 @Mixin(KeyboardHandler.class)
-@Environment(EnvType.CLIENT)
 public abstract class KeyboardMixin {
     @Shadow protected abstract void debugFeedback(String string, Object... objects);
 
