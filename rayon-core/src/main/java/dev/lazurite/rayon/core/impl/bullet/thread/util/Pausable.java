@@ -1,9 +1,9 @@
 package dev.lazurite.rayon.core.impl.bullet.thread.util;
 
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 
 /**
  * A pausable interface for {@link PhysicsThread}. Mainly
@@ -12,10 +12,9 @@ import net.minecraft.client.Minecraft;
  */
 public interface Pausable {
     default boolean isPaused() {
-        if (FabricLoader.getInstance().getEnvironmentType().equals(EnvType.CLIENT)) {
-            return Minecraft.getInstance().isPaused();
-        }
+        Boolean result = DistExecutor.<Boolean>safeCallWhenOn(Dist.CLIENT, () ->
+                (DistExecutor.SafeCallable<Boolean>) () -> Minecraft.getInstance().isPaused());
 
-        return false;
+        return Boolean.TRUE.equals(result);
     }
 }
