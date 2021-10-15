@@ -2,10 +2,13 @@ buildscript {
     repositories {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7.+'
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 
@@ -15,13 +18,17 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
+apply plugin: 'org.spongepowered.mixin'
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
+
+def parchmentDate = '2021.10.10'
 
 allprojects { project ->
     apply plugin: 'net.minecraftforge.gradle'
@@ -36,9 +43,9 @@ allprojects { project ->
     group = project.maven_group
 
     minecraft {
-        mappings channel: 'official', version: '1.17.1'
+        mappings channel: 'parchment', version: parchmentDate + '-1.17.1'
 
-        //accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
         runs {
             client {
@@ -63,7 +70,7 @@ allprojects { project ->
                 property 'forge.logging.console.level', 'debug'
 
                 mods {
-					"${project.archivesBaseName}" {
+                    "${project.archivesBaseName}" {
                         source sourceSets.main
                     }
                 }
@@ -79,7 +86,7 @@ allprojects { project ->
                 args '--mod', "${project.archivesBaseName}", '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
                 mods {
-					"${project.archivesBaseName}" {
+                    "${project.archivesBaseName}" {
                         source sourceSets.main
                     }
                 }
@@ -89,6 +96,7 @@ allprojects { project ->
 
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 
     dependencies {
@@ -98,12 +106,12 @@ allprojects { project ->
         shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
 
         // Transporter
-        implementation files("libs/transporter-${project.transporter_version}.jar")
-        //include files("libs/transporter-${project.transporter_version}.jar")
+        implementation "dev.lazurite:transporter:${project.transporter_version}"
 
         // Lazurite Toolbox
-        implementation files("libs/toolbox-${project.toolbox_version}.jar")
-        //include files("libs/toolbox-${project.toolbox_version}.jar")
+        implementation "dev.lazurite:toolbox:${project.toolbox_version}"
+
+        annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
     }
 
     sourceSets {
@@ -149,14 +157,14 @@ allprojects { project ->
 subprojects {
     publishing {
         publications {
+            println archivesBaseName
             mavenJava(MavenPublication) {
+                artifactId archivesBaseName
                 artifact jar
             }
         }
         repositories {
-            maven {
-                url "file://${project.projectDir}/mcmodsrepo"
-            }
+            mavenLocal()
         }
     }
 }
