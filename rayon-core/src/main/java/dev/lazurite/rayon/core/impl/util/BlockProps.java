@@ -1,13 +1,17 @@
 package dev.lazurite.rayon.core.impl.util;
 
+import dev.lazurite.rayon.core.impl.RayonCore;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.ModList;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Mod.EventBusSubscriber(modid = RayonCore.MODID)
 public class BlockProps {
     public record BlockProperties(float friction, float restitution, boolean collidable) { }
 
@@ -21,35 +25,15 @@ public class BlockProps {
         return Optional.ofNullable(blockProps.get(identifier));
     }
 
-    public static void load() {
-        ModList.get().getMods().forEach(mod -> {
-            final var modid = mod.getModId();
-            final var properties = mod.getModProperties();
-            final var r = properties.get("rayon");
-
-            if (r != null) {
-                final var rayon = (Map<String, Object>)r;
-                final var blocks = (Map<String, Object>[])rayon.get("blocks");
-
-                if (blocks != null) {
-                    Arrays.stream(blocks).forEach(block -> {
-                        final var name = (String)block.get("name");
-
-                        if (name != null) {
-                            final var friction = block.get("friction");
-
-                            final var restitution = block.get("restitution");
-                            final var collidable = block.get("collidable");
-
-                            blockProps.put(new ResourceLocation(modid, name), new BlockProperties(
-                                    friction == null ? -1.0f : (float) (double) (Double) friction,
-                                    restitution == null ? -1.0f : (float) (double) (Double) restitution,
-                                    collidable == null || (Boolean) collidable
-                            ));
-                        }
-                    });
-                }
-            }
+    @SubscribeEvent
+    public static void onImcProcess(InterModProcessEvent event){
+        InterModComms.getMessages(RayonCore.MODID).forEach(imcMessage -> {
+            String[] properties = ((String) imcMessage.messageSupplier().get()).split(" ");
+            ResourceLocation block = new ResourceLocation(properties[0]);
+            float friction = Float.parseFloat(properties[1]);
+            float restitution = Float.parseFloat(properties[2]);
+            boolean collidable = Boolean.parseBoolean(properties[3]);
+            blockProps.put(block, new BlockProperties(friction, restitution, collidable));
         });
     }
 }
