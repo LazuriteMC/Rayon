@@ -3,69 +3,63 @@ package dev.lazurite.rayon.entity.impl.event;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvent;
-import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
-import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
 import dev.lazurite.rayon.entity.impl.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.entity.impl.collision.space.generator.EntityCollisionGenerator;
-import dev.lazurite.toolbox.api.math.QuaternionHelper;
-import dev.lazurite.toolbox.api.math.VectorHelper;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ServerGamePacketListener;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
+@Mod.EventBusSubscriber(modid = RayonEntity.MODID)
 public class ServerEventHandler {
-    public static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(RayonEntity.MOVEMENT_PACKET, ServerEventHandler::onMovement);
-        PhysicsSpaceEvent.ELEMENT_ADDED.register(ServerEventHandler::onAddedToSpace);
-        ServerEntityEvents.ENTITY_LOAD.register(ServerEventHandler::onEntityLoad);
-        EntityTrackingEvents.START_TRACKING.register(ServerEventHandler::onStartTracking);
-        EntityTrackingEvents.STOP_TRACKING.register(ServerEventHandler::onStopTracking);
-        ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onStartLevelTick);
-    }
 
-    private static void onAddedToSpace(MinecraftSpace space, ElementRigidBody rigidBody) {
-        if (rigidBody instanceof EntityRigidBody entityBody) {
+    @SubscribeEvent
+    public static void onAddedToSpace(PhysicsSpaceEvent.ElementAdded event) {
+        if (event.getRigidBody() instanceof EntityRigidBody entityBody) {
             final var pos = entityBody.getElement().asEntity().position();
             final var box = entityBody.getElement().asEntity().getBoundingBox();
             entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYsize() / 2.0, 0)));
         }
     }
 
-    private static void onEntityLoad(Entity entity, ServerLevel level) {
-        if (entity instanceof EntityPhysicsElement element && !PlayerLookup.tracking(entity).isEmpty()) {
-            final var space = MinecraftSpace.get(entity.getLevel());
+    @SubscribeEvent
+    public static void onEntityLoad(EntityJoinWorldEvent event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof EntityPhysicsElement element && !RayonEntity.getPlayerTrackingEntity(entity).isEmpty()) {
+            final var space = MinecraftSpace.get(entity.level);
             space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
         }
     }
 
-    private static void onStartTracking(Entity entity, ServerPlayer player) {
+    @SubscribeEvent
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        Entity entity = event.getEntity();
         if (entity instanceof EntityPhysicsElement element) {
-            final var space = MinecraftSpace.get(entity.getLevel());
+            final var space = MinecraftSpace.get(entity.level);
             space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
         }
     }
 
-    private static void onStopTracking(Entity entity, ServerPlayer player) {
-        if (entity instanceof EntityPhysicsElement element && PlayerLookup.tracking(entity).isEmpty()) {
-            final var space = MinecraftSpace.get(entity.getLevel());
+    @SubscribeEvent
+    public static void onStopTracking(PlayerEvent.StopTracking event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof EntityPhysicsElement element && RayonEntity.getPlayerTrackingEntity(entity).isEmpty()) {
+            final var space = MinecraftSpace.get(entity.level);
             space.getWorkerThread().execute(() -> space.removeCollisionObject(element.getRigidBody()));
         }
     }
 
-    private static void onStartLevelTick(ServerLevel level) {
+    @SubscribeEvent
+    public static void onStartLevelTick(TickEvent.WorldTickEvent event) {
+        if(event.phase != TickEvent.Phase.START)return;
+        Level level = event.world;
         final var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.applyEntityCollisions(space);
 
@@ -90,7 +84,7 @@ public class ServerEventHandler {
         }
     }
 
-    private static void onMovement(MinecraftServer server, ServerPlayer player, ServerGamePacketListener handler, FriendlyByteBuf buf, PacketSender sender) {
+    /*private static void onMovement(MinecraftServer server, ServerPlayer player, ServerGamePacketListener handler, FriendlyByteBuf buf, PacketSender sender) {
         final var entityId = buf.readInt();
         final var rotation = Convert.toBullet(QuaternionHelper.fromBuffer(buf));
         final var location = Convert.toBullet(VectorHelper.fromBuffer(buf));
@@ -115,5 +109,5 @@ public class ServerEventHandler {
                 }
             }
         }));
-    }
+    }*/
 }
