@@ -1,22 +1,17 @@
 package dev.lazurite.rayon.entity.impl.collision.body;
 
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.entity.impl.RayonEntity;
-import dev.lazurite.toolbox.api.math.QuaternionHelper;
-import dev.lazurite.toolbox.api.math.VectorHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import dev.lazurite.rayon.entity.impl.network.RayonEntityPacketHandler;
+import dev.lazurite.rayon.entity.impl.network.packets.ElementMovementPacket;
+import dev.lazurite.rayon.entity.impl.network.packets.ElementPropertyPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.UUID;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 public class EntityRigidBody extends ElementRigidBody {
     private Player priorityPlayer;
@@ -32,10 +27,11 @@ public class EntityRigidBody extends ElementRigidBody {
 
     /**
      * The simplest way to create a new {@link EntityRigidBody}.
+     *
      * @param element the element to base this body around
      */
     public EntityRigidBody(EntityPhysicsElement element) {
-        this(element, MinecraftSpace.get(element.asEntity().getLevel()), element.genShape());
+        this(element, MinecraftSpace.get(element.asEntity().level), element.genShape());
     }
 
     @Override
@@ -50,7 +46,7 @@ public class EntityRigidBody extends ElementRigidBody {
     public boolean isPositionDirty() {
         return getFrame() != null &&
                 (getFrame().getLocationDelta(new Vector3f()).length() > 0.1f ||
-                getFrame().getRotationDelta(new Vector3f()).length() > 0.01f);
+                        getFrame().getRotationDelta(new Vector3f()).length() > 0.01f);
     }
 
     public boolean arePropertiesDirty() {
@@ -59,7 +55,15 @@ public class EntityRigidBody extends ElementRigidBody {
 
     public void sendMovementPacket() {
         var entity = getElement().asEntity();
-        var buf = PacketByteBufs.create();
+        if (getSpace().isServer()) {
+            RayonEntityPacketHandler.INSTANCE.send(RayonEntityPacketHandler.TRACKING_EXCEPT
+                            .with(() -> new Tuple<>(entity, (ServerPlayer) getPriorityPlayer())),
+                    new ElementMovementPacket(this));
+        } else {
+            RayonEntityPacketHandler.INSTANCE.sendToServer(new ElementMovementPacket(this));
+        }
+
+        /*var buf = PacketByteBufs.create();
 
         buf.writeInt(entity.getId());
         QuaternionHelper.toBuffer(buf, Convert.toMinecraft(getPhysicsRotation(new Quaternion())));
@@ -75,27 +79,32 @@ public class EntityRigidBody extends ElementRigidBody {
             });
         } else {
             ClientPlayNetworking.send(RayonEntity.MOVEMENT_PACKET, buf);
-        }
+        }*/
     }
 
     public void sendPropertiesPacket() {
         if (!getSpace().isServer()) return;
-
         var entity = getElement().asEntity();
-        var buf = PacketByteBufs.create();
 
+        RayonEntityPacketHandler.INSTANCE.send(
+                PacketDistributor.TRACKING_ENTITY.with(() -> entity),
+                new ElementPropertyPacket(this)
+        );
         this.dirtyProperties = false;
+
+        /*var buf = PacketByteBufs.create();
+
         buf.writeInt(entity.getId());
         buf.writeFloat(getMass());
         buf.writeFloat(getDragCoefficient());
         buf.writeFloat(getFriction());
         buf.writeFloat(getRestitution());
         buf.writeBoolean(shouldDoTerrainLoading());
-        buf.writeUUID(getPriorityPlayer() == null ? new UUID(0,  0) : getPriorityPlayer().getUUID());
+        buf.writeUUID(getPriorityPlayer() == null ? new UUID(0, 0) : getPriorityPlayer().getUUID());
 
         PlayerLookup.tracking(entity).forEach(player ->
-            ServerPlayNetworking.send(player, RayonEntity.PROPERTIES_PACKET, buf)
-        );
+                ServerPlayNetworking.send(player, RayonEntity.PROPERTIES_PACKET, buf)
+        );*/
     }
 
     public void prioritize(Player priorityPlayer) {
