@@ -43,9 +43,8 @@ public class RayonEntityPacketHandler {
             Tuple<Entity, ServerPlayer> tuple = tupleSupplier.get();
             final Entity entity = tuple.getA();
             ServerPlayer except = tuple.getB();
-            ChunkMap chunkMap = ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).chunkMap;
-            chunkMap.entityMap.get(entity.getId()).seenBy.forEach(connection -> {
-                if (connection.getPlayer() != except) connection.send(p);
+            RayonEntity.getPlayerTrackingEntity(entity).forEach(serverPlayer -> {
+                if(serverPlayer != except)serverPlayer.connection.send(p);
             });
         };
     }
