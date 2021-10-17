@@ -31,7 +31,6 @@ public class EntityTestMod {
     public static final String MODID = "testmod_entity";
     public static final Logger LOGGER = LogManager.getLogger("Rayon Entity Test Mod");
 
-    public static WandItem WAND_ITEM;
     public static Block BLUE_DIRT;
 
     public EntityTestMod() {
