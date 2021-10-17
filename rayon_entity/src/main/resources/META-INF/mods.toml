@@ -2,25 +2,25 @@ modLoader="javafml"
 loaderVersion="[37,)"
 license="MIT"
 [[mods]]
-modId="rayon_entity"
-version="${version}"
-displayName="Rayon Core API"
-logoFile= "icon.png"
-credits="Lazurite team who made original Rayon Core"
-authors="The Lazurite Team"
-description="The entity API for Rayon."
+    modId="rayon_entity"
+    version="${version}"
+    displayName="Rayon Entity"
+    logoFile= "icon.png"
+    credits="Lazurite team who made original Rayon Core"
+    authors="The Lazurite Team"
+    description="The entity API for Rayon."
 [[dependencies.rayon_entity]]
-modId="forge"
-mandatory=true
-versionRange="[37,)"
-ordering="NONE"
-side="BOTH"
+    modId="forge"
+    mandatory=true
+    versionRange="[37,)"
+    ordering="NONE"
+    side="BOTH"
 [[dependencies.rayon_entity]]
-modId="minecraft"
-mandatory=true
-versionRange="[1.17.1,1.18)"
-ordering="NONE"
-side="BOTH"
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17.1,1.18)"
+    ordering="NONE"
+    side="BOTH"
 
 #{
 #  "schemaVersion": 1,
