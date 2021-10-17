@@ -87,7 +87,7 @@ public class ElementMovementPacket {
                 }
             }));
         }
-
+        context.setPacketHandled(true);
     }
 
     public void encode(FriendlyByteBuf buf) {

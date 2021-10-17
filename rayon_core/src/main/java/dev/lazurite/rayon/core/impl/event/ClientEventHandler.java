@@ -41,7 +41,13 @@ public final class ClientEventHandler {
 
     @SubscribeEvent
     public static void onLevelLoad(WorldEvent.Load event) {
-        if(!(event.getWorld() instanceof ClientLevel))return;
+        if(!(event.getWorld().isClientSide()))return;
+        if(thread==null || !thread.running){
+            Minecraft minecraft = Minecraft.getInstance();
+//        var supplier = RayonCore.isImmersivePortalsPresent() ? new ImmersiveWorldSupplier(minecraft) : new ClientLevelSupplier(minecraft);
+            final var supplier = new ClientLevelSupplier(minecraft);
+            thread = new PhysicsThread(minecraft, Thread.currentThread(), supplier, "Client Physics Thread");
+        }
         Level level = (ClientLevel) event.getWorld();
         final var space = new MinecraftSpace(thread, level);
         ((SpaceStorage) level).setSpace(space);
@@ -54,14 +60,6 @@ public final class ClientEventHandler {
         if (thread != null && thread.throwable != null) {
             throw new RuntimeException(thread.throwable);
         }
-    }
-
-    @SubscribeEvent
-    public static void onGameJoin(ClientPlayerNetworkEvent.LoggedInEvent event) {
-        Minecraft minecraft = Minecraft.getInstance();
-//        var supplier = RayonCore.isImmersivePortalsPresent() ? new ImmersiveWorldSupplier(minecraft) : new ClientLevelSupplier(minecraft);
-        final var supplier = new ClientLevelSupplier(minecraft);
-        thread = new PhysicsThread(minecraft, Thread.currentThread(), supplier, "Client Physics Thread");
     }
 
     @SubscribeEvent

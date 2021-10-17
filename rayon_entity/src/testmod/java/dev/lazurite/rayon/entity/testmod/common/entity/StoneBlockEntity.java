@@ -25,7 +25,7 @@ public class StoneBlockEntity extends LivingEntity implements EntityPhysicsEleme
 
     @Override
     public ItemStack getItemBySlot(EquipmentSlot equipmentSlot) {
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override

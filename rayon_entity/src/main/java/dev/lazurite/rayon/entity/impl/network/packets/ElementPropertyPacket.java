@@ -89,5 +89,6 @@ public class ElementPropertyPacket {
                 }
             }
         }));
+        ctx.get().setPacketHandled(true);
     }
 }

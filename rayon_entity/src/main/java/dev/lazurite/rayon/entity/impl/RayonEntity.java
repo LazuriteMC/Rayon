@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.entity.impl;
 
 import dev.lazurite.rayon.entity.impl.network.RayonEntityPacketHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,6 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,10 @@ public class RayonEntity{
 
 	public static Set<ServerPlayer> getPlayerTrackingEntity(Entity entity){
 		ChunkMap chunkMap = ((ServerChunkCache) entity.getCommandSenderWorld().getChunkSource()).chunkMap;
-		return chunkMap.entityMap.get(entity.getId()).seenBy.stream().map(ServerPlayerConnection::getPlayer).collect(Collectors.toSet());
+		ChunkMap.TrackedEntity tracked = chunkMap.entityMap.get(entity.getId());
+		if(tracked != null){
+			return tracked.seenBy.stream().map(ServerPlayerConnection::getPlayer).collect(Collectors.toSet());
+		}
+		else return Collections.emptySet();
 	}
 }

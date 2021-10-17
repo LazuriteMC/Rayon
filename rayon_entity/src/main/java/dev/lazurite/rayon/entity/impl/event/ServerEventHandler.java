@@ -23,24 +23,29 @@ public class ServerEventHandler {
     @SubscribeEvent
     public static void onAddedToSpace(PhysicsSpaceEvent.ElementAdded event) {
         if (event.getRigidBody() instanceof EntityRigidBody entityBody) {
-            final var pos = entityBody.getElement().asEntity().position();
-            final var box = entityBody.getElement().asEntity().getBoundingBox();
+            Entity entity = entityBody.getElement().asEntity();
+            if(entity.level.isClientSide)return;
+            final var pos = entity.position();
+            final var box = entity.getBoundingBox();
             entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYsize() / 2.0, 0)));
         }
     }
 
+    /*
     @SubscribeEvent
     public static void onEntityLoad(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
+        if(entity.level.isClientSide)return;
         if (entity instanceof EntityPhysicsElement element && !RayonEntity.getPlayerTrackingEntity(entity).isEmpty()) {
             final var space = MinecraftSpace.get(entity.level);
             space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
         }
-    }
+    }*/
 
     @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {
-        Entity entity = event.getEntity();
+        Entity entity = event.getTarget();
+        if(entity.level.isClientSide)return;
         if (entity instanceof EntityPhysicsElement element) {
             final var space = MinecraftSpace.get(entity.level);
             space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
@@ -49,7 +54,8 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public static void onStopTracking(PlayerEvent.StopTracking event) {
-        Entity entity = event.getEntity();
+        Entity entity = event.getTarget();
+        if(entity.level.isClientSide)return;
         if (entity instanceof EntityPhysicsElement element && RayonEntity.getPlayerTrackingEntity(entity).isEmpty()) {
             final var space = MinecraftSpace.get(entity.level);
             space.getWorkerThread().execute(() -> space.removeCollisionObject(element.getRigidBody()));
@@ -60,6 +66,7 @@ public class ServerEventHandler {
     public static void onStartLevelTick(TickEvent.WorldTickEvent event) {
         if(event.phase != TickEvent.Phase.START)return;
         Level level = event.world;
+        if(level.isClientSide)return;
         final var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.applyEntityCollisions(space);
 

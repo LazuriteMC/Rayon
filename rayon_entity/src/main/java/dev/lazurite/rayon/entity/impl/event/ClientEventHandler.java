@@ -7,6 +7,7 @@ import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.player.ClientPlayerSupplier;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
+import dev.lazurite.rayon.entity.impl.RayonEntity;
 import dev.lazurite.rayon.entity.impl.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.entity.impl.collision.space.generator.EntityCollisionGenerator;
 import net.minecraft.world.entity.Entity;
@@ -14,18 +15,20 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = RayonCore.MODID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = RayonEntity.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = {Dist.CLIENT})
 public class ClientEventHandler {
     @SubscribeEvent
     public static void onLoad(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
         Level level = event.getWorld();
+        if(!level.isClientSide)return;
         if (entity instanceof EntityPhysicsElement element) {
             PhysicsThread.get(level).execute(() ->
                     MinecraftSpace.getOptional(level).ifPresent(space ->
@@ -39,6 +42,7 @@ public class ClientEventHandler {
     public static void onUnload(EntityLeaveWorldEvent event) {
         Entity entity = event.getEntity();
         Level level = event.getWorld();
+        if(!level.isClientSide)return;
         if (entity instanceof EntityPhysicsElement element) {
             PhysicsThread.get(level).execute(() ->
                 MinecraftSpace.getOptional(level).ifPresent(space ->
@@ -52,6 +56,7 @@ public class ClientEventHandler {
     public static void onStartLevelTick(TickEvent.WorldTickEvent event) {
         if(event.phase != TickEvent.Phase.START)return;
         Level level = event.world;
+        if(!level.isClientSide)return;
         final var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.applyEntityCollisions(space);
 
