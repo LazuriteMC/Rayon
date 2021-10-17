@@ -1,0 +1,10 @@
+apply plugin: 'org.spongepowered.mixin'
+archivesBaseName = "rayon_entity"
+
+dependencies {
+    implementation project(path: ":rayon_core")
+}
+
+minecraft{
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+}

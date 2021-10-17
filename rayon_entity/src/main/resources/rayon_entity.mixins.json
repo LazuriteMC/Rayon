@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.lazurite.rayon.entity.impl.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "common.EntityMixin",
+    "common.EntityTrackerEntryMixin"
+  ],
+  "client": [
+    "client.EntityRenderDispatcherMixin",
+    "client.LevelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "rayon_entity.mixins.refmap.json"
+}

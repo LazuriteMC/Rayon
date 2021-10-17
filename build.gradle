@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
@@ -14,38 +13,40 @@ buildscript {
 
 plugins {
     id 'com.github.johnrengelman.shadow' version "5.2.0"
-    id 'maven-publish'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
-apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
+def rootName = rootProject.archives_base_name
+def rootVersion = rootProject.mod_version
+def rootGroup = rootProject.maven_group
 
 def parchmentDate = '2021.10.10'
 
 allprojects { project ->
     apply plugin: 'net.minecraftforge.gradle'
-    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'org.parchmentmc.librarian.forgegradle'
+    apply plugin: 'eclipse'
     apply plugin: 'maven-publish'
     apply plugin: 'java-library'
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'org.spongepowered.mixin'
 
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
 
-    version = project.mod_version
-    group = project.maven_group
+    archivesBaseName = project.archivesBaseName
+    version = rootVersion
+    group = rootGroup
 
+
+    java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+
+    println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
     minecraft {
         mappings channel: 'parchment', version: parchmentDate + '-1.17.1'
-
-        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
         runs {
             client {
@@ -56,7 +57,7 @@ allprojects { project ->
                 property 'forge.logging.console.level', 'debug'
 
                 mods {
-                    "${project.archivesBaseName}" {
+                    "${archivesBaseName}" {
                         source sourceSets.main
                     }
                 }
@@ -70,7 +71,7 @@ allprojects { project ->
                 property 'forge.logging.console.level', 'debug'
 
                 mods {
-                    "${project.archivesBaseName}" {
+                    "${archivesBaseName}" {
                         source sourceSets.main
                     }
                 }
@@ -86,11 +87,30 @@ allprojects { project ->
                 args '--mod', "${project.archivesBaseName}", '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
                 mods {
-                    "${project.archivesBaseName}" {
+                    "${archivesBaseName}" {
                         source sourceSets.main
                     }
                 }
             }
+        }
+    }
+
+    configurations {
+        library
+        implementation.extendsFrom library
+    }
+    minecraft.runs.all {
+        lazyToken('minecraft_classpath') {
+            configurations.library.copyRecursive().resolve().collect { it.absolutePath }.join(File.pathSeparator)
+        }
+    }
+
+    sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+    sourceSets {
+        testmod {
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
         }
     }
 
@@ -102,36 +122,25 @@ allprojects { project ->
     dependencies {
         minecraft 'net.minecraftforge:forge:1.17.1-37.0.82'
         // Bullet
-        implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
-        shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
+        library "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
+        shadow "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
 
         // Transporter
-        implementation "dev.lazurite:transporter:${project.transporter_version}"
+        implementation "dev.lazurite:transporter:${rootProject.transporter_version}"
 
         // Lazurite Toolbox
-        implementation "dev.lazurite:toolbox:${project.toolbox_version}"
+        implementation "dev.lazurite:toolbox:${rootProject.toolbox_version}"
 
         annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
     }
 
-    sourceSets {
-        testmod {
-            compileClasspath += main.compileClasspath
-            runtimeClasspath += main.runtimeClasspath
-        }
-    }
-
-    processResources {
-        inputs.property "version", project.version
-
-        filesMatching("resources/META-INF/mods.toml") {
-            expand "version": project.version
-        }
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        it.options.encoding = "UTF-8"
-        it.options.release = 16
+    mixin {
+        // MixinGradle Settings
+        add sourceSets.main, "${project.archivesBaseName}.mixins.refmap.json"
+        config "${project.archivesBaseName}.mixins.json"
+        /*debug.verbose = true
+        debug.export = true
+        dumpTargetOnFailure = true*/
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
@@ -144,27 +153,36 @@ allprojects { project ->
     }
 
     jar {
-        from("LICENSE") {
-            rename { "${it}_${project.archivesBaseName}" }
+        manifest {
+            attributes([
+                    "Specification-Title"     : project.group,
+                    "Specification-Vendor"    : "examplemodsareus",
+                    "Specification-Version"   : "1", // We are version 1 of ourselves
+                    "Implementation-Title"    : project.name,
+                    "Implementation-Version"  : project.jar.archiveVersion,
+                    "Implementation-Vendor"   : "examplemodsareus",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            ])
         }
     }
+    jar.finalizedBy('reobfJar')
 
     dependencies {
         testmodImplementation project.sourceSets.main.output
     }
-}
 
-subprojects {
     publishing {
         publications {
-            println archivesBaseName
             mavenJava(MavenPublication) {
-                artifactId archivesBaseName
                 artifact jar
             }
         }
         repositories {
-            mavenLocal()
+            maven {
+                url "file://${project.projectDir}/mcmodsrepo"
+            }
         }
     }
 }
+
+

@@ -1,7 +1,6 @@
 package dev.lazurite.rayon;
 
-import net.minecraft.server.level.ChunkMap;
-import net.minecraft.server.level.ServerChunkCache;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -15,6 +14,7 @@ public class Rayon {
     public static final Logger LOGGER = LogManager.getLogger("Rayon");
 
     public Rayon(){
+        MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onFMLCommonSetup);
     }
 

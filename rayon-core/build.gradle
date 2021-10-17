@@ -1,5 +1,0 @@
-archivesBaseName = "rayon-core"
-
-shadowJar {
-    configurations = [project.configurations.shadow]
-}

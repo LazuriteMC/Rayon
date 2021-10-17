@@ -1,9 +1,0 @@
-archivesBaseName = "rayon-entity"
-
-dependencies {
-    implementation project(path: ":rayon-core")
-}
-
-minecraft{
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-}

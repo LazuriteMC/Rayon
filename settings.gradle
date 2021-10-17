@@ -10,6 +10,6 @@ pluginManagement {
 
 rootProject.name = 'rayon'
 
-include "rayon-core"
-include "rayon-entity"
-include "rayon-particle"
+include "rayon_core"
+include "rayon_entity"
+include "rayon_particle"

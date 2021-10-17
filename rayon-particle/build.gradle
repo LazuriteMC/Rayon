@@ -1,5 +1,0 @@
-archivesBaseName = "rayon-particle"
-
-dependencies {
-    implementation project(path: ":rayon-core")
-}

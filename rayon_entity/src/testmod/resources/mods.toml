@@ -1,0 +1,63 @@
+modLoader="javafml"
+loaderVersion="[37,)"
+license="MIT"
+[[mods]]
+modId="testmod_entity"
+version="${version}"
+displayName="Rayon Core API"
+logoFile="icon.png"
+credits="Lazurite team who made original Rayon Core"
+authors="The Lazurite Team"
+description="Entity test mod"
+[[dependencies.testmod_entity]]
+modId="forge"
+mandatory=true
+versionRange="[37,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.testmod_entity]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.17.1,1.18)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.testmod_entity]]
+modId="rayon_entity"
+mandatory=true
+versionRange=""
+ordering="NONE"
+side="BOTH"
+
+
+#{
+#  "schemaVersion": 1,
+#  "id": "testmod_entity",
+#  "version": "${version}",
+#  "license": "MIT",
+#  "environment": "*",
+#
+#  "entrypoints": {
+#    "main": [ "dev.lazurite.rayon.entity.testmod.EntityTestMod" ],
+#    "client": [ "dev.lazurite.rayon.entity.testmod.client.EntityTestModClient" ]
+#  },
+#
+#  "depends": {
+#    "minecraft": "1.18.x",
+#    "fabricloader": ">=0.11",
+#    "fabric": "*",
+#    "rayon-entity": "*"
+#  },
+#
+#  "custom": {
+#    "rayon": {
+#      "blocks": [
+#        {
+#          "name": "blue_dirt",
+#          "friction": 1.0,
+#          "restitution": 0.25,
+#          "collidable": true
+#        }
+#      ]
+#    }
+#  }
+#}

@@ -1,0 +1,9 @@
+archivesBaseName = "rayon_core"
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+}
+
+configurations {
+    project.configurations.shadow.extendsFrom library
+}

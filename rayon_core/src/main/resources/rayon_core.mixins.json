@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.lazurite.rayon.core.impl.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "common.ExplosionMixin",
+    "common.LevelMixin"
+  ],
+  "client": [
+    "client.KeyboardMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "rayon_core.mixins.refmap.json"
+}
