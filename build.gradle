@@ -45,6 +45,14 @@ allprojects { project ->
     java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
     println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+
+    sourceSets {
+        testmod {
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+
     minecraft {
         mappings channel: 'parchment', version: parchmentDate + '-1.17.1'
 
@@ -59,6 +67,7 @@ allprojects { project ->
                 mods {
                     "${archivesBaseName}" {
                         source sourceSets.main
+                        source sourceSets.testmod
                     }
                 }
             }
@@ -73,6 +82,7 @@ allprojects { project ->
                 mods {
                     "${archivesBaseName}" {
                         source sourceSets.main
+                        source sourceSets.testmod
                     }
                 }
             }
@@ -89,12 +99,12 @@ allprojects { project ->
                 mods {
                     "${archivesBaseName}" {
                         source sourceSets.main
+                        source sourceSets.testmod
                     }
                 }
             }
         }
     }
-
     configurations {
         library
         implementation.extendsFrom library
@@ -107,12 +117,6 @@ allprojects { project ->
 
     sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-    sourceSets {
-        testmod {
-            compileClasspath += main.compileClasspath
-            runtimeClasspath += main.runtimeClasspath
-        }
-    }
 
     repositories {
         mavenCentral()
