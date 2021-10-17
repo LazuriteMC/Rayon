@@ -46,11 +46,8 @@ allprojects { project ->
 
     println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
-    sourceSets {
-        testmod {
-            compileClasspath += main.compileClasspath
-            runtimeClasspath += main.runtimeClasspath
-        }
+    sourceSets{
+        testmod{}
     }
 
     minecraft {
@@ -114,6 +111,7 @@ allprojects { project ->
     configurations {
         library
         implementation.extendsFrom library
+        testmodImplementation.extendsFrom implementation
     }
     minecraft.runs.all {
         lazyToken('minecraft_classpath') {
@@ -142,6 +140,8 @@ allprojects { project ->
         implementation "dev.lazurite:toolbox:${rootProject.toolbox_version}"
 
         annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+
+        testmodImplementation project.sourceSets.main.output
     }
 
     processResources {
@@ -175,10 +175,6 @@ allprojects { project ->
         }
     }
     jar.finalizedBy('reobfJar')
-
-    dependencies {
-        testmodImplementation project.sourceSets.main.output
-    }
 
     publishing {
         publications {
