@@ -51,7 +51,7 @@ public class NativeLoader {
 
         if(delete)destinationFile.delete();
         if(copy)copyNative(fileName, destination, load);
-        if(load[0])NativeLibraryLoader.loadLibbulletjme(true, destinationFile, "Release", "Sp");
+        if(load[0])NativeLibraryLoader.loadLibbulletjme(true, destinationFile.getParentFile(), "Release", "Sp");
     }
 
     static String getPlatformSpecificName() {

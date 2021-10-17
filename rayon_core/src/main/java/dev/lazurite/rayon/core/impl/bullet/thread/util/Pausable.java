@@ -12,8 +12,7 @@ import net.minecraftforge.fml.DistExecutor;
  */
 public interface Pausable {
     default boolean isPaused() {
-        Boolean result = DistExecutor.<Boolean>safeCallWhenOn(Dist.CLIENT, () ->
-                (DistExecutor.SafeCallable<Boolean>) () -> Minecraft.getInstance().isPaused());
+        Boolean result = DistExecutor.<Boolean>safeCallWhenOn(Dist.CLIENT, () -> Minecraft.getInstance()::isPaused);
 
         return Boolean.TRUE.equals(result);
     }

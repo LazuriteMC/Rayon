@@ -10,6 +10,7 @@ import dev.lazurite.rayon.core.impl.util.debug.CollisionObjectDebugger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,7 +20,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = RayonCore.MODID)
+@Mod.EventBusSubscriber(modid = RayonCore.MODID, value = Dist.CLIENT)
 public final class ClientEventHandler {
     private static PhysicsThread thread;
 
@@ -65,7 +66,7 @@ public final class ClientEventHandler {
 
     @SubscribeEvent
     public static void onDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-        thread.destroy();
+        if(Minecraft.getInstance().level != null) thread.destroy();
     }
 
     @SubscribeEvent
