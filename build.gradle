@@ -134,13 +134,12 @@ allprojects { project ->
         annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
     }
 
-    mixin {
-        // MixinGradle Settings
-        add sourceSets.main, "${project.archivesBaseName}.mixins.refmap.json"
-        config "${project.archivesBaseName}.mixins.json"
-        /*debug.verbose = true
-        debug.export = true
-        dumpTargetOnFailure = true*/
+    processResources {
+        inputs.property "version", project.version
+
+        filesMatching("META-INF/mods.toml") {
+            expand "version": rootVersion
+        }
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {

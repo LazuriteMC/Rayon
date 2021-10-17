@@ -1,4 +1,3 @@
-apply plugin: 'org.spongepowered.mixin'
 archivesBaseName = "rayon_entity"
 
 dependencies {

@@ -7,3 +7,12 @@ shadowJar {
 configurations {
     project.configurations.shadow.extendsFrom library
 }
+
+mixin {
+    // MixinGradle Settings
+    add sourceSets.main, "${project.archivesBaseName}.mixins.refmap.json"
+    config "${project.archivesBaseName}.mixins.json"
+    /*debug.verbose = true
+    debug.export = true
+    dumpTargetOnFailure = true*/
+}
