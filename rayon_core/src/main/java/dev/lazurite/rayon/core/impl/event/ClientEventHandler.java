@@ -29,10 +29,11 @@ public final class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onStartLevelTick(TickEvent.WorldTickEvent event) {
+    public static void onStartLevelTick(TickEvent.ClientTickEvent event) {//Trying to mimic behavior of Client tick start
+        Level level = Minecraft.getInstance().level;
+        if(level == null)return;
         if(event.side != LogicalSide.CLIENT)return;
         if(event.phase != TickEvent.Phase.START)return;
-        Level level = event.world;
         final var space = MinecraftSpace.get(level);
         if (!space.getWorkerThread().isPaused()) {
             space.step();
@@ -70,7 +71,7 @@ public final class ClientEventHandler {
     @SubscribeEvent
     public static void onRenderWorldLast(RenderWorldLastEvent event){
         if (CollisionObjectDebugger.getInstance().isEnabled()) {
-            CollisionObjectDebugger.getInstance().renderSpace(MinecraftSpace.get(Minecraft.getInstance().level), event.getPartialTicks());
+            CollisionObjectDebugger.getInstance().renderSpace(MinecraftSpace.get(Minecraft.getInstance().level), event.getPartialTicks(), event.getMatrixStack());
         }
     }
 }

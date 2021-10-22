@@ -45,7 +45,7 @@ public class TerrainGenerator {
             final var z = Math.min(Math.abs(d.z), 1);
             final var box = Convert.toMinecraft(rigidBody.boundingBox(null)).inflate(0.5f).expandTowards(x, y, z);
             final var pos = rigidBody.getPhysicsLocation(null);
-            final var chunk = level.getChunk(SectionPos.posToSectionCoord(pos.x), SectionPos.posToSectionCoord(pos.z));
+            //final var chunk = level.getChunk(SectionPos.posToSectionCoord(pos.x), SectionPos.posToSectionCoord(pos.z));
 
             for (int i = (int) Math.floor(box.minX); i < Math.ceil(box.maxX); i++) {
                 for (int j = (int) Math.floor(box.minY); j < Math.ceil(box.maxY); j++) {
@@ -58,7 +58,7 @@ public class TerrainGenerator {
 
                             if (terrainObject != null) {
                                 terrainObject.getBlockState().ifPresent(blockState -> {
-                                    if (!chunk.getBlockState(blockPos).equals(blockState)) {
+                                    if (!level.getBlockState(blockPos).equals(blockState)) {
                                         rigidBody.activate();
                                     }
                                 });
@@ -70,13 +70,13 @@ public class TerrainGenerator {
 
             for (var blockPos : blocks) {
                 space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrainObject -> {
-                    if (rigidBody.isActive() && !chunk.getBlockState(terrainObject.getBlockPos()).getBlock().equals(Blocks.AIR) || !chunk.getFluidState(terrainObject.getBlockPos()).getType().equals(Fluids.EMPTY)) {
+                    if (rigidBody.isActive() && !level.getBlockState(terrainObject.getBlockPos()).isAir() || !level.getFluidState(terrainObject.getBlockPos()).isEmpty()) {
                         toKeep.put(blockPos, terrainObject);
                     }
                 }, () -> {
                     if (rigidBody.isActive()) {
-                        var blockState = chunk.getBlockState(blockPos);
-                        var fluidState = chunk.getFluidState(blockPos);
+                        var blockState = level.getBlockState(blockPos);
+                        var fluidState = level.getFluidState(blockPos);
 
                         if (fluidState.getType() != Fluids.EMPTY) {
                             var newTerrainObject = new TerrainObject(space, blockPos, fluidState);

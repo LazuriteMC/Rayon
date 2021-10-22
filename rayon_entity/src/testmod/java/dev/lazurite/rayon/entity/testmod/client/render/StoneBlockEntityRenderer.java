@@ -26,7 +26,7 @@ public class StoneBlockEntityRenderer extends EntityRenderer<StoneBlockEntity> {
 
         matrixStack.pushPose();
         matrixStack.mulPose(rot);
-        matrixStack.translate(box.getXExtent() * -0.5, box.getYExtent() * -0.5, box.getZExtent() * -0.5);
+        matrixStack.translate(box.getXExtent() * -0.5, 0, box.getZExtent() * -0.5);
         var vertexConsumer = multiBufferSource.getBuffer(model.renderType(this.getTextureLocation(cubeEntity)));
         model.renderToBuffer(matrixStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStack.popPose();

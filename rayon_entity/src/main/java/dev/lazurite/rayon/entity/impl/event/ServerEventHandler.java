@@ -31,16 +31,16 @@ public class ServerEventHandler {
         }
     }
 
-    /*
+
     @SubscribeEvent
     public static void onEntityLoad(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
         if(entity.level.isClientSide)return;
-        if (entity instanceof EntityPhysicsElement element && !RayonEntity.getPlayerTrackingEntity(entity).isEmpty()) {
+        if (entity instanceof EntityPhysicsElement element && !entity.level.players().isEmpty()) {
             final var space = MinecraftSpace.get(entity.level);
             space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
         }
-    }*/
+    }
 
     @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {

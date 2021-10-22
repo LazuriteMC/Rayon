@@ -41,10 +41,13 @@ public final class CollisionObjectDebugger {
         return this.enabled;
     }
 
-    public void renderSpace(MinecraftSpace space, float tickDelta) {
+    public void renderSpace(MinecraftSpace space, float tickDelta, PoseStack poseStack) {
         final var cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         final var builder = Tesselator.getInstance().getBuilder();
-        final var stack = new PoseStack();
+        final var stack = RenderSystem.getModelViewStack();
+        stack.pushPose();
+        stack.mulPoseMatrix(poseStack.last().pose());
+        RenderSystem.applyModelViewMatrix();
 
         MinecraftForge.EVENT_BUS.post(new DebugRenderEvents(space, builder, stack, cameraPos, tickDelta));
         builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
@@ -58,6 +61,9 @@ public final class CollisionObjectDebugger {
                 elementRigidBody -> this.renderBody(elementRigidBody, builder, stack, cameraPos, tickDelta)
         );
 
+
+        stack.popPose();
+        RenderSystem.applyModelViewMatrix();
         Tesselator.getInstance().end();
     }
 
