@@ -7,3 +7,9 @@ dependencies {
 minecraft{
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 }
+
+mixin {
+    // MixinGradle Settings
+    add sourceSets.main, "${project.archivesBaseName}.mixins.refmap.json"
+    config "${project.archivesBaseName}.mixins.json"
+}
