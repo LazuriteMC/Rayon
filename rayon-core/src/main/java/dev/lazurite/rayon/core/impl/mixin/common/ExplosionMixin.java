@@ -26,7 +26,7 @@ public class ExplosionMixin {
             method = "explode",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;isImmuneToExplosion()Z"
+                    target = "Lnet/minecraft/world/entity/Entity;ignoreExplosion()Z"
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
@@ -38,7 +38,7 @@ public class ExplosionMixin {
             method = "explode",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/Entity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"
+                    target = "Lnet/minecraft/world/entity/Entity;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"
             )
     )
     public Vec3 setVelocity(Vec3 velocity) {

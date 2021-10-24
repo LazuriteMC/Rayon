@@ -1,5 +1,11 @@
-archivesBaseName = "rayon-entity"
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+    }
+}
 
 dependencies {
-    implementation project(path: ":rayon-core")
+    modImplementation project(':rayon-core')
+    testmodImplementation sourceSets.main.output
 }

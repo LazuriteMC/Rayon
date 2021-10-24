@@ -1,131 +1,85 @@
 plugins {
-	id 'com.github.johnrengelman.shadow' version "${shadow_version}"
-	id 'fabric-loom' version "${loom_version}"
-	id 'maven-publish'
+	id 'com.github.johnrengelman.shadow' version "$shadow_version" apply false
+	id 'fabric-loom' version "$loom_version" apply false
 }
 
-allprojects { project ->
+allprojects {
 	apply plugin: 'com.github.johnrengelman.shadow'
 	apply plugin: 'fabric-loom'
-	apply plugin: 'maven-publish'
-	apply plugin: 'java-library'
 
-	sourceCompatibility = JavaVersion.VERSION_16
-	targetCompatibility = JavaVersion.VERSION_16
-
-	version = project.mod_version
-	group = project.maven_group
-
-	repositories {
-		maven { url "https://maven.fabricmc.net/" }
-		maven { url "https://lazurite.dev/releases" }
-		mavenLocal()
-	}
-
-	dependencies {
-		minecraft "com.mojang:minecraft:${project.minecraft_version}"
-		mappings minecraft.officialMojangMappings()
-		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-		modImplementation(fabricApi.module("fabric-api-base", project.fabric_version))
-		modImplementation(fabricApi.module("fabric-rendering-v1", project.fabric_version))
-		modImplementation(fabricApi.module("fabric-networking-api-v1", project.fabric_version))
-		modImplementation(fabricApi.module("fabric-lifecycle-events-v1", project.fabric_version))
-		modImplementation(fabricApi.module("fabric-object-builder-api-v1", project.fabric_version))
-
-		// Bullet
-		implementation "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
-		shadow "com.github.stephengold:Libbulletjme:${project.libbulletjme_version}"
-
-		// Transporter
-		modImplementation "dev.lazurite:transporter:${project.transporter_version}"
-		include "dev.lazurite:transporter:${project.transporter_version}"
-
-		// Lazurite Toolbox
-		modApi "dev.lazurite:toolbox:${project.toolbox_version}"
-		include "dev.lazurite:toolbox:${project.toolbox_version}"
-	}
-
-	sourceSets {
-		testmod {
-			compileClasspath += main.compileClasspath
-			runtimeClasspath += main.runtimeClasspath
-		}
-	}
-
-	processResources {
-		inputs.property "version", project.version
-
-		filesMatching("fabric.mod.json") {
-			expand "version": project.version
-		}
-	}
-
-	tasks.withType(JavaCompile).configureEach {
-		it.options.encoding = "UTF-8"
-		it.options.release = 16
-	}
-
-	task sourcesJar(type: Jar, dependsOn: classes) {
-		classifier = "sources"
-		from sourceSets.main.allSource
-	}
+	version mod_version
+	group maven_group
 
 	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(16)
+		}
+
 		withSourcesJar()
 	}
 
 	jar {
-		from("LICENSE") {
-			rename { "${it}_${project.archivesBaseName}"}
+		from 'LICENSE'
+	}
+
+	processResources {
+		inputs.property 'version', version
+
+		filesMatching('fabric.mod.json') {
+			expand 'version': version
 		}
 	}
 
+	repositories {
+		maven { url 'https://lazurite.dev/releases' }
+	}
+
 	dependencies {
-		testmodImplementation project.sourceSets.main.output
+		mappings loom.officialMojangMappings()
+		minecraft "com.mojang:minecraft:$minecraft_version"
+		modImplementation "net.fabricmc:fabric-loader:$loader_version"
+
+		// Fabric API
+		modImplementation(fabricApi.module('fabric-api-base', fabric_version))
+		modImplementation(fabricApi.module('fabric-rendering-v1', fabric_version))
+		modImplementation(fabricApi.module('fabric-networking-api-v1', fabric_version))
+		modImplementation(fabricApi.module('fabric-lifecycle-events-v1', fabric_version))
+		modImplementation(fabricApi.module('fabric-object-builder-api-v1', fabric_version))
+
+		// Bullet
+		implementation "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+		shadow "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+
+		// Transporter
+		modImplementation "dev.lazurite:transporter:$transporter_version"
+
+		// Lazurite Toolbox
+		modApi "dev.lazurite:toolbox:$toolbox_version"
 	}
 }
 
 subprojects {
-	task remapMavenJar(type: Copy, dependsOn: remapJar) {
-		afterEvaluate {
-			from("${project.buildDir}/libs/$archivesBaseName-${version}.jar")
-			into("${project.buildDir}/libs/")
-			rename { String fn -> "$archivesBaseName-${version}-maven.jar" }
-		}
-	}
+	apply plugin: 'maven-publish'
 
 	publishing {
 		publications {
-			mavenJava(MavenPublication) {
-				artifact(file("${project.buildDir}/libs/$archivesBaseName-${version}.jar")) {
-					builtBy remapMavenJar
-				}
+			rayon(MavenPublication) {
+				artifact(remapJar)
 
 				artifact(sourcesJar) {
 					builtBy remapSourcesJar
-				}
-
-				pom.withXml {
-					def depsNode = asNode().appendNode("dependencies")
-					subprojects.each {
-						def depNode = depsNode.appendNode("dependency")
-						depNode.appendNode("groupId", it.group)
-						depNode.appendNode("artifactId", it.name)
-						depNode.appendNode("version", it.version)
-						depNode.appendNode("scope", "compile")
-					}
 				}
 			}
 		}
 
 		repositories {
 			maven {
-				url = 'https://lazurite.dev/maven/releases'
+				name 'Lazurite'
+				url 'https://lazurite.dev/maven/releases'
 
 				credentials {
-					username = project.property("publish.lazurite.alias")
-					password = project.property("publish.lazurite.secret")
+					username property('publish.lazurite.alias')
+					password property('publish.lazurite.secret')
 				}
 			}
 		}

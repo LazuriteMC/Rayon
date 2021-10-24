@@ -8,7 +8,6 @@
   "license": "MIT",
   "environment": "*",
   "icon": "assets/rayon-particle/icon.png",
-  "mixins": [ "rayon-particle.mixins.json" ],
 
   "entrypoints": {
     "client": [

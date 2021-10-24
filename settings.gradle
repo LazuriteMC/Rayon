@@ -1,15 +1,13 @@
 pluginManagement {
     repositories {
         maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
+            name 'Fabric'
+            url 'https://maven.fabricmc.net/'
         }
+
         gradlePluginPortal()
     }
 }
 
 rootProject.name = 'rayon'
-
-include "rayon-core"
-include "rayon-entity"
-include "rayon-particle"
+include 'rayon-core', 'rayon-entity', 'rayon-particle'
