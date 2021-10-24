@@ -1,5 +1,3 @@
-build.dependsOn project('rayon-core')
-
 sourceSets {
     testmod {
         compileClasspath += main.compileClasspath
@@ -8,6 +6,6 @@ sourceSets {
 }
 
 dependencies {
-    modImplementation project(':rayon-core')
+    api project(path: ':rayon-core', configuration: 'shadow')
     testmodImplementation sourceSets.main.output
 }

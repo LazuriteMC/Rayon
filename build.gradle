@@ -9,6 +9,7 @@ allprojects {
 
 	version mod_version
 	group maven_group
+	jar.from 'LICENSE'
 
 	java {
 		toolchain {
@@ -16,10 +17,6 @@ allprojects {
 		}
 
 		withSourcesJar()
-	}
-
-	jar {
-		from 'LICENSE'
 	}
 
 	processResources {
@@ -38,28 +35,23 @@ allprojects {
 		mappings loom.officialMojangMappings()
 		minecraft "com.mojang:minecraft:$minecraft_version"
 		modImplementation "net.fabricmc:fabric-loader:$loader_version"
-
-		// Fabric API
-		modImplementation(fabricApi.module('fabric-api-base', fabric_version))
-		modImplementation(fabricApi.module('fabric-rendering-v1', fabric_version))
-		modImplementation(fabricApi.module('fabric-networking-api-v1', fabric_version))
-		modImplementation(fabricApi.module('fabric-lifecycle-events-v1', fabric_version))
-		modImplementation(fabricApi.module('fabric-object-builder-api-v1', fabric_version))
-
-		// Bullet
-		implementation "com.github.stephengold:Libbulletjme:$libbulletjme_version"
-		shadow "com.github.stephengold:Libbulletjme:$libbulletjme_version"
-
-		// Transporter
-		modImplementation "dev.lazurite:transporter:$transporter_version"
-
-		// Lazurite Toolbox
-		modApi "dev.lazurite:toolbox:$toolbox_version"
 	}
 }
 
 subprojects {
 	apply plugin: 'maven-publish'
+
+	dependencies {
+		modImplementation fabricApi.module('fabric-api-base', fabric_version)
+		modImplementation fabricApi.module('fabric-rendering-v1', fabric_version)
+		modImplementation fabricApi.module('fabric-networking-api-v1', fabric_version)
+		modImplementation fabricApi.module('fabric-lifecycle-events-v1', fabric_version)
+		modImplementation fabricApi.module('fabric-object-builder-api-v1', fabric_version)
+
+		api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+		modApi "dev.lazurite:transporter:$transporter_version"
+		modApi "dev.lazurite:toolbox:$toolbox_version"
+	}
 
 	publishing {
 		publications {
@@ -78,8 +70,8 @@ subprojects {
 				url 'https://lazurite.dev/maven/releases'
 
 				credentials {
-					username property('publish.lazurite.alias')
-					password property('publish.lazurite.secret')
+					username = property('publish.lazurite.alias')
+					password = property('publish.lazurite.secret')
 				}
 			}
 		}

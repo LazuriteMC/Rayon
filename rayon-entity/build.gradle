@@ -6,6 +6,6 @@ sourceSets {
 }
 
 dependencies {
-    modImplementation project(':rayon-core')
+    api project(path: ':rayon-core', configuration: 'shadow')
     testmodImplementation sourceSets.main.output
 }

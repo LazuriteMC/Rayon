@@ -1,13 +1,14 @@
-//shadowJar {
-//    configurations = [project.configurations.shadow]
-//}
+shadowJar {
+    configurations = [project.configurations.shadow]
+}
 
 remapJar {
-//    dependsOn shadowJar
-//    input.set shadowJar.archiveFile.get()
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile.get()
 }
 
 dependencies {
+    shadow "com.github.stephengold:Libbulletjme:$libbulletjme_version"
     include "dev.lazurite:toolbox:$toolbox_version"
     include "dev.lazurite:transporter:$transporter_version"
 }
