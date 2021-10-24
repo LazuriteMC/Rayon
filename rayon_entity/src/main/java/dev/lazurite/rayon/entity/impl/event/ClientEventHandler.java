@@ -2,7 +2,6 @@ package dev.lazurite.rayon.entity.impl.event;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.player.ClientPlayerSupplier;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
@@ -10,12 +9,10 @@ import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.impl.RayonEntity;
 import dev.lazurite.rayon.entity.impl.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.entity.impl.collision.space.generator.EntityCollisionGenerator;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
@@ -53,10 +50,10 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onStartLevelTick(TickEvent.WorldTickEvent event) {
+    public static void onStartLevelTick(TickEvent.ClientTickEvent event) {//Trying to mimic behavior of Client tick start
         if(event.phase != TickEvent.Phase.START)return;
-        Level level = event.world;
-        if(!level.isClientSide)return;
+        Level level = Minecraft.getInstance().level;
+        if(level==null)return;
         final var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.applyEntityCollisions(space);
 

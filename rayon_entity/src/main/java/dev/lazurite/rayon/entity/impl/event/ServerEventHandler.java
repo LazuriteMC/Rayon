@@ -28,6 +28,7 @@ public class ServerEventHandler {
             final var pos = entity.position();
             final var box = entity.getBoundingBox();
             entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYsize() / 2.0, 0)));
+            entityBody.sendMovementPacket();
         }
     }
 
