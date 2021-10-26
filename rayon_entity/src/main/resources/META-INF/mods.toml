@@ -7,7 +7,7 @@ license="MIT"
     displayName="Rayon Entity"
     logoFile= "icon.png"
     credits="Lazurite team who made original Rayon Core"
-    authors="The Lazurite Team and tmvkrpxl0"
+    authors="The Lazurite Team"
     description="The entity API for Rayon."
 [[dependencies.rayon_entity]]
     modId="forge"

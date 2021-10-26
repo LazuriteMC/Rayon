@@ -62,9 +62,10 @@ public class MinecraftSpace extends MultiBodySpace implements PhysicsCollisionLi
 
     public MinecraftSpace(PhysicsThread thread, Level level) {
         super(
-                new Vector3f(-Level.MAX_LEVEL_SIZE, Level.MIN_ENTITY_SPAWN_Y, -Level.MAX_LEVEL_SIZE),
-                new Vector3f(Level.MAX_LEVEL_SIZE, Level.MAX_ENTITY_SPAWN_Y, Level.MAX_LEVEL_SIZE),
-                BroadphaseType.AXIS_SWEEP_3_32
+//                new Vector3f(-Level.MAX_LEVEL_SIZE, Level.MIN_ENTITY_SPAWN_Y, -Level.MAX_LEVEL_SIZE),
+//                new Vector3f(Level.MAX_LEVEL_SIZE, Level.MAX_ENTITY_SPAWN_Y, Level.MAX_LEVEL_SIZE),
+//                BroadphaseType.AXIS_SWEEP_3_32
+                BroadphaseType.DBVT
         );
 
         this.thread = thread;

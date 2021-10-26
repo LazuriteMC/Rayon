@@ -15,7 +15,7 @@ public interface EntityPhysicsElement extends PhysicsElement {
     @Override
     default MinecraftShape genShape() {
         final var box = asEntity().getBoundingBox();
-        return MinecraftShape.of(box.contract(box.getXsize() * 0.1, box.getYsize() * 0.1, box.getZsize() * 0.1));
+        return MinecraftShape.of(box.contract(box.getXsize() * 0.25, box.getYsize() * 0.25, box.getZsize() * 0.25));
     }
 
     default Entity asEntity() {
