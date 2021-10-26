@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "testmod_entity",
+  "id": "rayon-entity-testmod",
   "version": "${version}",
   "license": "MIT",
   "environment": "*",

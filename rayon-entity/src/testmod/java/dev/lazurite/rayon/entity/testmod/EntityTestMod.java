@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EntityTestMod implements ModInitializer {
-    public static final String MODID = "testmod_entity";
+    public static final String MODID = "rayon-entity-testmod";
     public static final Logger LOGGER = LogManager.getLogger("Rayon Entity Test Mod");
 
     public static EntityType<StoneBlockEntity> STONE_BLOCK_ENTITY;
