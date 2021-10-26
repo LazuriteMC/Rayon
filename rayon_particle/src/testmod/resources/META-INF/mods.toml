@@ -1,14 +1,14 @@
 modLoader="javafml"
-loaderVersion="[37,)"
-license="MIT"
+    loaderVersion="[37,)"
+    license="MIT"
 [[mods]]
-modId="testmod_particle"
-version="${version}"
-displayName="Testmod particle"
-logoFile="icon.png"
-credits="Lazurite team who made original Rayon"
-authors="The Lazurite Team"
-description="A physics API for Forge."
+    modId="testmod_particle"
+    version="${version}"
+    displayName="Testmod particle"
+    logoFile="icon.png"
+    credits="Lazurite team who made original Rayon"
+    authors="The Lazurite Team"
+    description="A physics API for Forge."
 [[dependencies.testmod_particle]]
     modId="forge"
     mandatory=true

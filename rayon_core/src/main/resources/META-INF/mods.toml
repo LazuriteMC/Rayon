@@ -1,14 +1,14 @@
 modLoader="javafml"
-loaderVersion="[37,)"
-license="MIT"
+    loaderVersion="[37,)"
+    license="MIT"
 [[mods]]
-modId="rayon_core"
-version="1.4.0"
-displayName="Rayon Core API"
-logoFile= "icon.png"
-credits="Lazurite team who made original Rayon Core"
-authors="The Lazurite Team"
-description="The core API for Rayon"
+    modId="rayon_core"
+    version="1.4.0"
+    displayName="Rayon Core API"
+    logoFile= "icon.png"
+    credits="Lazurite team who made original Rayon Core"
+    authors="The Lazurite Team and tmvkrpxl0"
+    description="The core API for Rayon"
 [[dependencies.rayon_core]]
     modId="forge"
     mandatory=true

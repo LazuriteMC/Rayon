@@ -15,11 +15,6 @@ plugins {
     id 'com.github.johnrengelman.shadow' version "5.2.0"
 }
 
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: 'java-library'
-apply plugin: 'com.github.johnrengelman.shadow'
-
 def rootName = rootProject.archives_base_name
 def rootVersion = rootProject.mod_version
 def rootGroup = rootProject.maven_group
@@ -184,7 +179,7 @@ allprojects { project ->
         }
         repositories {
             maven {
-                url "file://${project.projectDir}/mcmodsrepo"
+                url "file://${rootProject.projectDir}/mcmodsrepo"
             }
         }
     }
