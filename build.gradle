@@ -34,7 +34,6 @@ allprojects {
 	dependencies {
 		mappings loom.officialMojangMappings()
 		minecraft "com.mojang:minecraft:$minecraft_version"
-		modImplementation "net.fabricmc:fabric-loader:$loader_version"
 	}
 }
 
