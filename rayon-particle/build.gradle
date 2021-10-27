@@ -1,11 +1,11 @@
-sourceSets {
-    testmod {
-        compileClasspath += main.compileClasspath
-        runtimeClasspath += main.runtimeClasspath
-    }
-}
+publishing {
+    publications {
+        particle(MavenPublication) {
+            artifact(remapJar)
 
-dependencies {
-    api project(path: ':rayon-core', configuration: 'shadow')
-    testmodImplementation sourceSets.main.output
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
 }
