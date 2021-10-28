@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.entity.testmod.client.render;
 
-import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.entity.testmod.EntityTestMod;

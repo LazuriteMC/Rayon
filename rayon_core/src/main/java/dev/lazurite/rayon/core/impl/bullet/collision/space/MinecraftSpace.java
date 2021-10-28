@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space;
 
 import com.jme3.bullet.MultiBodySpace;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
@@ -61,12 +60,8 @@ public class MinecraftSpace extends MultiBodySpace implements PhysicsCollisionLi
     }
 
     public MinecraftSpace(PhysicsThread thread, Level level) {
-        super(
-//                new Vector3f(-Level.MAX_LEVEL_SIZE, Level.MIN_ENTITY_SPAWN_Y, -Level.MAX_LEVEL_SIZE),
-//                new Vector3f(Level.MAX_LEVEL_SIZE, Level.MAX_ENTITY_SPAWN_Y, Level.MAX_LEVEL_SIZE),
-//                BroadphaseType.AXIS_SWEEP_3_32
-                BroadphaseType.DBVT
-        );
+        super(new Vector3f(-10000f, -10000f, -10000f),
+                new Vector3f(10000f, 10000f, 10000f), BroadphaseType.DBVT);
 
         this.thread = thread;
         this.level = level;
