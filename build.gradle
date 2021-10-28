@@ -1,78 +1,79 @@
 plugins {
-	id 'com.github.johnrengelman.shadow' version "$shadow_version" apply false
-	id 'fabric-loom' version "$loom_version" apply false
+	id 'fabric-loom' version "$fabric_loom_version" apply false
 }
 
 allprojects {
-	apply plugin: 'com.github.johnrengelman.shadow'
 	apply plugin: 'fabric-loom'
+	apply plugin: 'dev.lazurite.abacus'
 
-	version mod_version
-	group maven_group
-	jar.from 'LICENSE'
-
-	java {
-		toolchain {
-			languageVersion = JavaLanguageVersion.of(16)
-		}
-
-		withSourcesJar()
-	}
+	version rayon_version
 
 	processResources {
 		inputs.property 'version', version
 
-		filesMatching('fabric.mod.json') {
+		filesMatching 'fabric.mod.json', {
 			expand 'version': version
 		}
-	}
-
-	repositories {
-		maven { url 'https://lazurite.dev/releases' }
-	}
-
-	dependencies {
-		mappings loom.officialMojangMappings()
-		minecraft "com.mojang:minecraft:$minecraft_version"
 	}
 }
 
 subprojects {
 	apply plugin: 'maven-publish'
 
+	repositories {
+		maven {
+			name 'Lazurite'
+			url 'https://lazurite.dev/releases'
+		}
+	}
+
 	dependencies {
-		modImplementation fabricApi.module('fabric-api-base', fabric_version)
-		modImplementation fabricApi.module('fabric-rendering-v1', fabric_version)
-		modImplementation fabricApi.module('fabric-networking-api-v1', fabric_version)
-		modImplementation fabricApi.module('fabric-lifecycle-events-v1', fabric_version)
-		modImplementation fabricApi.module('fabric-object-builder-api-v1', fabric_version)
+		modImplementation fabricApi.module('fabric-api-base', fabric_api_version)
+		modImplementation fabricApi.module('fabric-rendering-v1', fabric_api_version)
+		modImplementation fabricApi.module('fabric-networking-api-v1', fabric_api_version)
+		modImplementation fabricApi.module('fabric-lifecycle-events-v1', fabric_api_version)
+		modImplementation fabricApi.module('fabric-object-builder-api-v1', fabric_api_version)
 
 		api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+
 		modApi "dev.lazurite:transporter:$transporter_version"
 		modApi "dev.lazurite:toolbox:$toolbox_version"
 	}
 
 	publishing {
-		publications {
-			rayon(MavenPublication) {
-				artifact(remapJar)
-
-				artifact(sourcesJar) {
-					builtBy remapSourcesJar
-				}
-			}
-		}
-
 		repositories {
 			maven {
 				name 'Lazurite'
-				url 'https://lazurite.dev/maven/releases'
+				url 'https://lazurite.dev/releases'
 
 				credentials {
-					username = property('publish.lazurite.alias')
-					password = property('publish.lazurite.secret')
+					username property('publish.lazurite.alias')
+					password property('publish.lazurite.secret')
 				}
 			}
+		}
+	}
+
+	// apply testmod configuration and core dependency to non-core subprojects
+	if (name != 'rayon-core') {
+		sourceSets {
+			testmod {
+				compileClasspath += main.compileClasspath
+				runtimeClasspath += main.runtimeClasspath
+			}
+		}
+
+		processTestmodResources {
+			inputs.property 'version', version
+
+			filesMatching 'fabric.mod.json', {
+				expand 'version': version
+			}
+		}
+
+		dependencies {
+			api project(path: ':rayon-core', configuration: 'dev')
+			testmodImplementation sourceSets.main.output
 		}
 	}
 }

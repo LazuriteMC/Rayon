@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "testmod_entity:blue_dirt"
+          "name": "rayon-entity-testmod:blue_dirt"
         }
       ],
       "conditions": [

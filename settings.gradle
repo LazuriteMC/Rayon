@@ -5,9 +5,24 @@ pluginManagement {
             url 'https://maven.fabricmc.net/'
         }
 
+        maven {
+            name 'Lazurite'
+            url 'https://lazurite.dev/releases'
+        }
+
         gradlePluginPortal()
     }
 }
 
+plugins {
+    id 'dev.lazurite.abacus' version "$abacus_version"
+}
+
+abacus {
+    minecraftVersion = minecraft_version
+    fabricLoaderVersion = fabric_loader_version
+}
+
 rootProject.name = 'rayon'
+
 include 'rayon-core', 'rayon-entity', 'rayon-particle'

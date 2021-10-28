@@ -1,14 +1,25 @@
-shadowJar {
-    configurations = [project.configurations.shadow]
+configurations {
+    dev
 }
 
-remapJar {
-    dependsOn shadowJar
-    input.set shadowJar.archiveFile.get()
+artifacts {
+    dev jar
 }
 
 dependencies {
-    shadow "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+    include "com.github.stephengold:Libbulletjme:$libbulletjme_version"
     include "dev.lazurite:toolbox:$toolbox_version"
     include "dev.lazurite:transporter:$transporter_version"
+}
+
+publishing {
+    publications {
+        core(MavenPublication) {
+            artifact(remapJar)
+
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
 }

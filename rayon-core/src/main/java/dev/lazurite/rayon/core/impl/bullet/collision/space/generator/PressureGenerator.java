@@ -21,11 +21,14 @@ public class PressureGenerator {
             final var fluidObjects = rigidBody.getTerrainObjects().values().stream()
                     .filter(terrainObject -> terrainObject.getFluidState().isPresent()).toList();
 
-            final var relativePoints = new ArrayList<Vector3f>();
-            relativePoints.add(new Vector3f((float) rigidBodyBox.getXsize() * 0.5f, (float) rigidBodyBox.getYsize(), (float) (-1.0f * rigidBodyBox.getZsize() * 0.5f)));
-            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXsize() * 0.5f), (float) rigidBodyBox.getYsize(), (float) (-1.0f * rigidBodyBox.getZsize() * 0.5f)));
-            relativePoints.add(new Vector3f((float) rigidBodyBox.getXsize() * 0.5f, (float) rigidBodyBox.getYsize(), (float) rigidBodyBox.getZsize() * 0.5f));
-            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXsize() * 0.5f), (float) rigidBodyBox.getYsize(), (float) rigidBodyBox.getZsize() * 0.5f));
+//            final var relativePoints = new ArrayList<Vector3f>();
+//            relativePoints.add(new Vector3f((float) rigidBodyBox.getXsize() * 0.5f, (float) rigidBodyBox.getYsize(), (float) (-1.0f * rigidBodyBox.getZsize() * 0.5f)));
+//            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXsize() * 0.5f), (float) rigidBodyBox.getYsize(), (float) (-1.0f * rigidBodyBox.getZsize() * 0.5f)));
+//            relativePoints.add(new Vector3f((float) rigidBodyBox.getXsize() * 0.5f, (float) rigidBodyBox.getYsize(), (float) rigidBodyBox.getZsize() * 0.5f));
+//            relativePoints.add(new Vector3f((float) (-1.0f * rigidBodyBox.getXsize() * 0.5f), (float) rigidBodyBox.getYsize(), (float) rigidBodyBox.getZsize() * 0.5f));
+
+            float centerY = 0.0f;
+            int i = 0;
 
             for (var fluidObject : fluidObjects) {
                 final var fluidBox = Convert.toMinecraft(fluidObject.getCollisionObject().boundingBox(null));
@@ -33,17 +36,35 @@ public class PressureGenerator {
                 if (fluidBox.intersects(rigidBodyBox)) {
                     final var intersection = fluidBox.intersect(rigidBodyBox);
                     volume += intersection.getXsize() * intersection.getYsize() * intersection.getZsize();
+
+                    centerY += intersection.getCenter().y;
+                    i++;
                 }
             }
 
-            final var force = new Vector3f(0.0f, (float) (gravity * 1000 * Math.min(volume, maxVolume)), 0.0f).multLocal(0.25f);
+            final var force = (float) (gravity * 1000 * Math.min(volume, maxVolume)) * 0.25f;
 
-            if (Float.isFinite(force.lengthSquared()) && force.lengthSquared() > 0.0f) {
+            if (Float.isFinite(force) && force > 0.0f) {
                 rigidBody.applyDragForce(1000);
 
-                for (var point : relativePoints) {
-                    rigidBody.applyForce(force, point);
-                }
+//                final float y = centerY / (float) i;
+                final var y = (float) rigidBodyBox.getCenter().y;
+                final var rotation = Convert.toMinecraft(rigidBody.getPhysicsRotation(null));
+
+                final var v1 = Convert.toMinecraft(new Vector3f((float) -rigidBodyBox.getXsize(), 0, (float) -rigidBodyBox.getZsize()));
+                final var v2 = Convert.toMinecraft(new Vector3f((float) -rigidBodyBox.getXsize(), 0, (float) rigidBodyBox.getZsize()));
+                final var v3 = Convert.toMinecraft(new Vector3f((float) rigidBodyBox.getXsize(), 0, (float) -rigidBodyBox.getZsize()));
+                final var v4 = Convert.toMinecraft(new Vector3f((float) rigidBodyBox.getXsize(), 0, (float) rigidBodyBox.getZsize()));
+
+                v1.transform(rotation);
+                v2.transform(rotation);
+                v3.transform(rotation);
+                v4.transform(rotation);
+
+                rigidBody.applyForce(new Vector3f(0.0f, force, 0.0f), Convert.toBullet(v1));
+                rigidBody.applyForce(new Vector3f(0.0f, force, 0.0f), Convert.toBullet(v2));
+                rigidBody.applyForce(new Vector3f(0.0f, force, 0.0f), Convert.toBullet(v3));
+                rigidBody.applyForce(new Vector3f(0.0f, force, 0.0f), Convert.toBullet(v4));
             } else {
                 rigidBody.applyDragForce(1.2f);
             }

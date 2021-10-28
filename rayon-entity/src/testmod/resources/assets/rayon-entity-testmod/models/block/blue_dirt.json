@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "testmod_entity:block/blue_dirt"
+    "all": "rayon-entity-testmod:block/blue_dirt"
   }
 }
