@@ -1,11 +1,3 @@
-configurations {
-    dev
-}
-
-artifacts {
-    dev jar
-}
-
 dependencies {
     include "com.github.stephengold:Libbulletjme:$libbulletjme_version"
     include "dev.lazurite:toolbox:$toolbox_version"

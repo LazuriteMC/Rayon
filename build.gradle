@@ -72,7 +72,7 @@ subprojects {
 		}
 
 		dependencies {
-			api project(path: ':rayon-core', configuration: 'dev')
+			api project(path: ':rayon-core', configuration: 'namedElements')
 			testmodImplementation sourceSets.main.output
 		}
 	}
