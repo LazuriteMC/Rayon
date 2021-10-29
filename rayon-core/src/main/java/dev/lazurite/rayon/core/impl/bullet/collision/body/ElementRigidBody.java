@@ -38,7 +38,6 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
-
     }
 
     public PhysicsElement getElement() {

@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space.generator;
 
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
@@ -7,7 +9,6 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.core.impl.util.BlockProps;
-import dev.lazurite.toolbox.api.math.VectorHelper;
 import dev.lazurite.transporter.Transporter;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.pattern.Pattern;
@@ -15,7 +16,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,14 +39,8 @@ public class TerrainGenerator {
             }
 
             final var blocks = new ArrayList<BlockPos>();
-
-            final var d = VectorHelper.toVec3(Convert.toMinecraft(rigidBody.getLinearVelocity(null)));
-            final var x = Math.min(Math.abs(d.x), 1);
-            final var y = Math.min(Math.abs(d.y), 1);
-            final var z = Math.min(Math.abs(d.z), 1);
-            final var box = Convert.toMinecraft(rigidBody.boundingBox(null)).inflate(0.5f).expandTowards(x, y, z);
             final var pos = rigidBody.getPhysicsLocation(null);
-            final var chunk = level.getChunk(SectionPos.posToSectionCoord(pos.x), SectionPos.posToSectionCoord(pos.z));
+            final var box = Convert.toMinecraft(rigidBody.getCollisionShape().boundingBox(pos, new Quaternion(), null)).inflate(1.5f);
 
             for (int i = (int) Math.floor(box.minX); i < Math.ceil(box.maxX); i++) {
                 for (int j = (int) Math.floor(box.minY); j < Math.ceil(box.maxY); j++) {
@@ -59,7 +53,7 @@ public class TerrainGenerator {
 
                             if (terrainObject != null) {
                                 terrainObject.getBlockState().ifPresent(blockState -> {
-                                    if (!chunk.getBlockState(blockPos).equals(blockState)) {
+                                    if (!level.getBlockState(blockPos).equals(blockState)) {
                                         rigidBody.activate();
                                     }
                                 });
@@ -70,15 +64,15 @@ public class TerrainGenerator {
             }
 
             for (var blockPos : blocks) {
+                final var blockState = level.getBlockState(blockPos);
+                final var fluidState = level.getFluidState(blockPos);
+
                 space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrainObject -> {
-                    if (rigidBody.isActive() && !chunk.getBlockState(terrainObject.getBlockPos()).getBlock().equals(Blocks.AIR) || !chunk.getFluidState(terrainObject.getBlockPos()).getType().equals(Fluids.EMPTY)) {
+                    if (rigidBody.isActive() && !(blockState.getBlock().equals(Blocks.AIR) && fluidState.getType().equals(Fluids.EMPTY))) {
                         toKeep.put(blockPos, terrainObject);
                     }
                 }, () -> {
                     if (rigidBody.isActive()) {
-                        var blockState = chunk.getBlockState(blockPos);
-                        var fluidState = chunk.getFluidState(blockPos);
-
                         if (fluidState.getType() != Fluids.EMPTY) {
                             var newTerrainObject = new TerrainObject(space, blockPos, fluidState);
                             space.addTerrainObject(newTerrainObject);

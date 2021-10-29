@@ -36,7 +36,7 @@ public class EntityTestMod implements ModInitializer {
                 new ResourceLocation(MODID, "stone_block_entity"),
                 FabricEntityTypeBuilder.createLiving()
                         .entityFactory(StoneBlockEntity::new)
-                        .spawnGroup(MobCategory.AMBIENT.MISC)
+                        .spawnGroup(MobCategory.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
                         .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
                         .trackRangeBlocks(80)
