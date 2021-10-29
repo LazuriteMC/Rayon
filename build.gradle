@@ -106,6 +106,7 @@ allprojects { project ->
     configurations {
         library
         implementation.extendsFrom library
+        api.extendsFrom library
         testmodImplementation.extendsFrom implementation
     }
     minecraft.runs.all {
@@ -125,14 +126,14 @@ allprojects { project ->
     dependencies {
         minecraft 'net.minecraftforge:forge:1.17.1-37.0.82'
         // Bullet
-        library "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
+        api "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
         shadow "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
 
         // Transporter
-        implementation "dev.lazurite:transporter:${rootProject.transporter_version}"
+        api "dev.lazurite:transporter:${rootProject.transporter_version}"
 
         // Lazurite Toolbox
-        implementation "dev.lazurite:toolbox:${rootProject.toolbox_version}"
+        api "dev.lazurite:toolbox:${rootProject.toolbox_version}"
 
         annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
@@ -178,9 +179,10 @@ allprojects { project ->
             }
         }
         repositories {
-            maven {
-                url "file://${rootProject.projectDir}/mcmodsrepo"
-            }
+            mavenLocal()
+            //maven {
+            //    url "file://${rootProject.projectDir}/mcmodsrepo"
+            //}
         }
     }
 }
