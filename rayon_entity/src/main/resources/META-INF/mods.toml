@@ -16,6 +16,12 @@ license="MIT"
     ordering="NONE"
     side="BOTH"
 [[dependencies.rayon_entity]]
+    modId="rayon_core"
+    mandatory=true
+    versionRange="[1.4.0,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.rayon_entity]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.17.1,1.18)"

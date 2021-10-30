@@ -1,6 +1,6 @@
 modLoader="javafml"
-    loaderVersion="[37,)"
-    license="MIT"
+loaderVersion="[37,)"
+license="MIT"
 [[mods]]
     modId="rayon_core"
     version="1.4.0"
@@ -14,6 +14,12 @@ modLoader="javafml"
     mandatory=true
     versionRange="[37,)"
     ordering="NONE"
+    side="BOTH"
+[[dependencies.rayon_core]]
+    modId="rayon"
+    mandatory=false
+    versionRange="[1.4.0,)"
+    ordering="AFTER"
     side="BOTH"
 [[dependencies.rayon_core]]
     modId="minecraft"

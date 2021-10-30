@@ -43,6 +43,7 @@ allprojects { project ->
 
     sourceSets{
         testmod{}
+        main
     }
 
     minecraft {
@@ -108,6 +109,9 @@ allprojects { project ->
         implementation.extendsFrom library
         api.extendsFrom library
         testmodImplementation.extendsFrom implementation
+        shadow {
+            "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
+        }
     }
     minecraft.runs.all {
         lazyToken('minecraft_classpath') {
@@ -117,6 +121,13 @@ allprojects { project ->
 
     sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+    reobf {
+        shadowJar
+    }
+
+    shadowJar {
+        configurations = [project.configurations.shadow]
+    }
 
     repositories {
         mavenCentral()
@@ -126,9 +137,9 @@ allprojects { project ->
     dependencies {
         minecraft 'net.minecraftforge:forge:1.17.1-37.0.82'
         // Bullet
+        library "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
         api "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
         shadow "com.github.stephengold:Libbulletjme:${rootProject.libbulletjme_version}"
-
         // Transporter
         api "dev.lazurite:transporter:${rootProject.transporter_version}"
 
@@ -166,7 +177,7 @@ allprojects { project ->
                     "Implementation-Title"    : project.name,
                     "Implementation-Version"  : project.jar.archiveVersion,
                     "Implementation-Vendor"   : "examplemodsareus",
-                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             ])
         }
     }
@@ -176,6 +187,7 @@ allprojects { project ->
         publications {
             mavenJava(MavenPublication) {
                 artifact jar
+                artifactId archivesBaseName
             }
         }
         repositories {

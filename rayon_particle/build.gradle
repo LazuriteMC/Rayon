@@ -3,10 +3,4 @@ archivesBaseName = "rayon_particle"
 
 dependencies {
     implementation project(path: ":rayon_core")
-    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
-}
-mixin {
-    // MixinGradle Settings
-    add project.sourceSets.main, "${project.archivesBaseName}.mixins.refmap.json"
-    config "${project.archivesBaseName}.mixins.json"
 }
