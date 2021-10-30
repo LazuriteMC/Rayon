@@ -1,4 +1,4 @@
-odLoader="javafml"
+modLoader="javafml"
 loaderVersion="[37,)"
 license="MIT"
 [[mods]]
