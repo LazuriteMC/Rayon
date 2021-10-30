@@ -1,5 +1,9 @@
 archivesBaseName = "rayon_core"
 
+dependencies{
+    implementation project(path: ":")
+}
+
 shadowJar {
     configurations = [project.configurations.shadow]
 }

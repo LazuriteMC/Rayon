@@ -17,7 +17,7 @@ license="MIT"
     side="BOTH"
 [[dependencies.rayon_core]]
     modId="rayon"
-    mandatory=false
+    mandatory=true
     versionRange="[1.4.0,)"
     ordering="AFTER"
     side="BOTH"
