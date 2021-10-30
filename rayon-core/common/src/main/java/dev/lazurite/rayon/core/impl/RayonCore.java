@@ -21,6 +21,11 @@ public class RayonCore implements ModInitializer {
 		ServerEventHandler.register();
 	}
 
+	/*
+	depth (m) * water density (kg/m3) * gravity (m/s2) = pressure (Pa)
+	pressure (Pa) * area (m2) = force (N)
+	 */
+
 	public static PhysicsThread getThread(boolean isClient) {
 		return isClient ? ClientEventHandler.getThread() : ServerEventHandler.getThread();
 	}

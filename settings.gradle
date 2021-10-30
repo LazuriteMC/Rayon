@@ -25,4 +25,12 @@ abacus {
 
 rootProject.name = 'rayon'
 
-include 'rayon-core', 'rayon-entity', 'rayon-particle'
+include 'rayon-core:common',
+        'rayon-core:fabric',
+        'rayon-core:forge',
+        'rayon-entity:common',
+        'rayon-entity:fabric',
+        'rayon-entity:forge',
+        'rayon-particle:common',
+        'rayon-particle:fabric',
+        'rayon-particle:forge'

@@ -72,14 +72,8 @@ subprojects {
 		}
 
 		dependencies {
-			api project(path: ':rayon-core', configuration: 'namedElements')
+			api project(path: ':rayon-core:common', configuration: 'namedElements')
 			testmodImplementation sourceSets.main.output
 		}
 	}
-}
-
-dependencies {
-	include project(':rayon-core')
-	include project(':rayon-entity')
-	include project(':rayon-particle')
 }
