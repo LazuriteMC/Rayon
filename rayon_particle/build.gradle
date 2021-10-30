@@ -4,3 +4,16 @@ archivesBaseName = "rayon_particle"
 dependencies {
     implementation project(path: ":rayon_core")
 }
+minecraft {
+    runs.client.mods {
+        "${archivesBaseName}_test" {
+            source sourceSets.testmod
+        }
+    }
+
+    runs.server.mods {
+        "${archivesBaseName}_test" {
+            source sourceSets.testmod
+        }
+    }
+}

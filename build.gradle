@@ -61,9 +61,9 @@ allprojects { project ->
                     "${archivesBaseName}" {
                         source sourceSets.main
                     }
-                    "${archivesBaseName}_test" {
+                    /*"${archivesBaseName}_test" {
                         source sourceSets.testmod
-                    }
+                    }*/
                 }
             }
 
@@ -78,9 +78,9 @@ allprojects { project ->
                     "${archivesBaseName}" {
                         source sourceSets.main
                     }
-                    "${archivesBaseName}_test" {
+                    /*"${archivesBaseName}_test" {
                         source sourceSets.testmod
-                    }
+                    }*/
                 }
             }
 
@@ -96,9 +96,6 @@ allprojects { project ->
                 mods {
                     "${archivesBaseName}" {
                         source sourceSets.main
-                    }
-                    "${archivesBaseName}_test" {
-                        source sourceSets.testmod
                     }
                 }
             }

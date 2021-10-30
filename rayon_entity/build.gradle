@@ -4,8 +4,19 @@ dependencies {
     implementation project(path: ":rayon_core")
 }
 
-minecraft{
+minecraft {
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    runs.client.mods {
+        "${archivesBaseName}_test" {
+            source sourceSets.testmod
+        }
+    }
+
+    runs.server.mods {
+        "${archivesBaseName}_test" {
+            source sourceSets.testmod
+        }
+    }
 }
 
 mixin {
