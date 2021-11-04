@@ -6,8 +6,12 @@
   "environment": "*",
 
   "entrypoints": {
-    "main": [ "dev.lazurite.rayon.entity.testmod.EntityTestMod" ],
-    "client": [ "dev.lazurite.rayon.entity.testmod.client.EntityTestModClient" ]
+    "main": [
+      "dev.lazurite.rayon.entity.testmod.EntityTestMod"
+    ],
+    "client": [
+      "dev.lazurite.rayon.entity.testmod.client.EntityTestModClient"
+    ]
   },
 
   "depends": {

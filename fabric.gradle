@@ -1,0 +1,36 @@
+configurations {
+    developmentFabric.extendsFrom common
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+
+    modImplementation fabricApi.module('fabric-api-base', fabric_api_version)
+    modImplementation fabricApi.module('fabric-rendering-v1', fabric_api_version)
+    modImplementation fabricApi.module('fabric-networking-api-v1', fabric_api_version)
+    modImplementation fabricApi.module('fabric-lifecycle-events-v1', fabric_api_version)
+    modImplementation fabricApi.module('fabric-object-builder-api-v1', fabric_api_version)
+
+    modApi "dev.architectury:architectury-fabric:$architectury_version"
+    shadowCommon(project(path: ":${project.parent.name}:common", configuration: "transformProductionFabric")) { transitive false }
+
+    modApi "dev.lazurite:transporter-fabric:$transporter_version"
+    modApi "dev.lazurite:toolbox-fabric:$toolbox_version"
+}
+
+processResources {
+    inputs.property "version", version
+
+    filesMatching "fabric.mod.json", {
+        expand "version": version
+    }
+}
+
+publishing {
+    publications {
+        fabric(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}

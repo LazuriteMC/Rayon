@@ -1,11 +1,5 @@
-publishing {
-    publications {
-        entity(MavenPublication) {
-            artifact(remapJar)
+apply from: '../../common.gradle'
 
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
+dependencies {
+    api project(path: ':rayon-core:common', configuration: 'namedElements')
 }

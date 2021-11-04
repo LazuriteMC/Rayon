@@ -1,24 +1,32 @@
 plugins {
-	id 'fabric-loom' version "$fabric_loom_version" apply false
+	id 'architectury-plugin' version "$architectury_plugin_version"
+	id 'com.github.johnrengelman.shadow' version "$shadow_version"
+	id 'dev.architectury.loom' version "$loom_version" apply false
 }
 
 allprojects {
-	apply plugin: 'fabric-loom'
-	apply plugin: 'dev.lazurite.abacus'
+	apply plugin: 'java'
+//	apply plugin: 'dev.lazurite.abacus'
 
 	version rayon_version
+	group maven_group
 
-	processResources {
-		inputs.property 'version', version
-
-		filesMatching 'fabric.mod.json', {
-			expand 'version': version
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(16)
 		}
+
+		withSourcesJar()
 	}
 }
 
 subprojects {
+	apply plugin: 'dev.architectury.loom'
+	apply plugin: 'architectury-plugin'
 	apply plugin: 'maven-publish'
+
+	archivesBaseName = rootProject.archivesBaseName + '-' + name
+	loom.silentMojangMappingsLicense()
 
 	repositories {
 		maven {
@@ -28,16 +36,55 @@ subprojects {
 	}
 
 	dependencies {
-		modImplementation fabricApi.module('fabric-api-base', fabric_api_version)
-		modImplementation fabricApi.module('fabric-rendering-v1', fabric_api_version)
-		modImplementation fabricApi.module('fabric-networking-api-v1', fabric_api_version)
-		modImplementation fabricApi.module('fabric-lifecycle-events-v1', fabric_api_version)
-		modImplementation fabricApi.module('fabric-object-builder-api-v1', fabric_api_version)
+		minecraft "com.mojang:minecraft:$minecraft_version"
+		mappings loom.officialMojangMappings()
 
 		api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+	}
 
-		modApi "dev.lazurite:transporter:$transporter_version"
-		modApi "dev.lazurite:toolbox:$toolbox_version"
+	if (name == 'fabric' || name == 'forge') {
+		apply plugin: 'com.github.johnrengelman.shadow'
+		architectury.platformSetupLoomIde()
+		architectury."$name"()
+
+		sourceSets {
+			testmod {
+				compileClasspath += main.compileClasspath
+				runtimeClasspath += main.runtimeClasspath
+			}
+		}
+
+		configurations {
+			common
+			shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+			compileClasspath.extendsFrom common
+			runtimeClasspath.extendsFrom common
+		}
+
+		dependencies {
+			common(project(path: ":${project.parent.name}:common", configuration: "namedElements")) { transitive false }
+			testmodImplementation sourceSets.main.output
+		}
+
+		shadowJar {
+			configurations = [project.configurations.shadowCommon]
+		}
+
+		remapJar {
+			dependsOn shadowJar
+			input.set shadowJar.archiveFile
+		}
+
+		sourcesJar {
+//			from project(":${project.parent.name}:${project.name}").sourceSets.main.allSource
+			from sourceSets.main.allSource // somewhat monka
+		}
+
+		components.java {
+			withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+				skip()
+			}
+		}
 	}
 
 	publishing {
@@ -51,29 +98,6 @@ subprojects {
 					password property('publish.lazurite.secret')
 				}
 			}
-		}
-	}
-
-	// apply testmod configuration and core dependency to non-core subprojects
-	if (name != 'rayon-core') {
-		sourceSets {
-			testmod {
-				compileClasspath += main.compileClasspath
-				runtimeClasspath += main.runtimeClasspath
-			}
-		}
-
-		processTestmodResources {
-			inputs.property 'version', version
-
-			filesMatching 'fabric.mod.json', {
-				expand 'version': version
-			}
-		}
-
-		dependencies {
-			api project(path: ':rayon-core:common', configuration: 'namedElements')
-			testmodImplementation sourceSets.main.output
 		}
 	}
 }

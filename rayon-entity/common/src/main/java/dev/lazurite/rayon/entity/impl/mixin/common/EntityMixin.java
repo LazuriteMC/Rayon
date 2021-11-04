@@ -3,7 +3,6 @@ package dev.lazurite.rayon.entity.impl.mixin.common;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.RayonCore;
-import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;

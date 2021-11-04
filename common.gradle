@@ -1,0 +1,19 @@
+architectury.common(forge_enabled.toBoolean())
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+    modApi "dev.architectury:architectury:$architectury_version"
+
+//    include "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+//    include "dev.lazurite:toolbox:$toolbox_version"
+//    include "dev.lazurite:transporter:$transporter_version"
+}
+
+publishing {
+    publications {
+        common(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}

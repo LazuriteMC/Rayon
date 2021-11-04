@@ -1,0 +1,5 @@
+apply from: '../../fabric.gradle'
+
+dependencies {
+    api project(path: ':rayon-core:fabric', configuration: 'namedElements')
+}

@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.core.impl.bullet.collision.space.generator;
 
 import com.jme3.math.Quaternion;
-import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;

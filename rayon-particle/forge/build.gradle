@@ -1,0 +1,5 @@
+apply from: '../../forge.gradle'
+
+dependencies {
+    api project(path: ':rayon-core:forge', configuration: 'namedElements')
+}

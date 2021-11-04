@@ -6,8 +6,6 @@ import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 
-import java.util.ArrayList;
-
 public class PressureGenerator {
     public static void step(MinecraftSpace space) {
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {

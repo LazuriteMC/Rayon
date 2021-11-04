@@ -10,18 +10,28 @@ pluginManagement {
             url 'https://lazurite.dev/releases'
         }
 
+        maven {
+            name 'Forge'
+            url 'https://maven.minecraftforge.net/'
+        }
+
+        maven {
+            name 'Architectury'
+            url 'https://maven.architectury.dev/'
+        }
+
         gradlePluginPortal()
     }
 }
 
-plugins {
-    id 'dev.lazurite.abacus' version "$abacus_version"
-}
-
-abacus {
-    minecraftVersion = minecraft_version
-    fabricLoaderVersion = fabric_loader_version
-}
+//plugins {
+//    id 'dev.lazurite.abacus' version "$abacus_version"
+//}
+//
+//abacus {
+//    minecraftVersion = minecraft_version
+//    fabricLoaderVersion = fabric_loader_version
+//}
 
 rootProject.name = 'rayon'
 
