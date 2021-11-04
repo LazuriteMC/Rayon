@@ -76,8 +76,7 @@ subprojects {
 		}
 
 		sourcesJar {
-//			from project(":${project.parent.name}:${project.name}").sourceSets.main.allSource
-			from sourceSets.main.allSource // somewhat monka
+			from project(":${project.parent.name}:common").sourceSets.main.allSource
 		}
 
 		components.java {

@@ -4,6 +4,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
     modApi "dev.architectury:architectury:$architectury_version"
 
+    modApi "dev.lazurite:transporter-common:$transporter_version"
+    modApi "dev.lazurite:toolbox-common:$toolbox_version"
 //    include "com.github.stephengold:Libbulletjme:$libbulletjme_version"
 //    include "dev.lazurite:toolbox:$toolbox_version"
 //    include "dev.lazurite:transporter:$transporter_version"
