@@ -1,102 +1,102 @@
 plugins {
-	id 'architectury-plugin' version "$architectury_plugin_version"
-	id 'com.github.johnrengelman.shadow' version "$shadow_version"
-	id 'dev.architectury.loom' version "$loom_version" apply false
+    id 'architectury-plugin' version "$architectury_plugin_version"
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
+    id 'dev.architectury.loom' version "$loom_version" apply false
 }
 
 allprojects {
-	apply plugin: 'java'
+    apply plugin: 'java'
 //	apply plugin: 'dev.lazurite.abacus'
 
-	version rayon_version
-	group maven_group
+    version rayon_version
+    group maven_group
 
-	java {
-		toolchain {
-			languageVersion = JavaLanguageVersion.of(16)
-		}
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(16)
+        }
 
-		withSourcesJar()
-	}
+        withSourcesJar()
+    }
 }
 
 subprojects {
-	apply plugin: 'dev.architectury.loom'
-	apply plugin: 'architectury-plugin'
-	apply plugin: 'maven-publish'
+    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'maven-publish'
 
-	archivesBaseName = rootProject.archivesBaseName + '-' + name
-	loom.silentMojangMappingsLicense()
+    archivesBaseName = rootProject.archivesBaseName + '-' + name
+    loom.silentMojangMappingsLicense()
 
-	repositories {
-		maven {
-			name 'Lazurite'
-			url 'https://lazurite.dev/releases'
-		}
-	}
+    repositories {
+        maven {
+            name 'Lazurite'
+            url 'https://lazurite.dev/releases'
+        }
+    }
 
-	dependencies {
-		minecraft "com.mojang:minecraft:$minecraft_version"
-		mappings loom.officialMojangMappings()
+    dependencies {
+        minecraft "com.mojang:minecraft:$minecraft_version"
+        mappings loom.officialMojangMappings()
 
-		api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
-	}
+        api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
+    }
 
-	if (name == 'fabric' || name == 'forge') {
-		apply plugin: 'com.github.johnrengelman.shadow'
-		architectury.platformSetupLoomIde()
-		architectury."$name"()
+    if (name == 'fabric' || name == 'forge') {
+        apply plugin: 'com.github.johnrengelman.shadow'
+        architectury.platformSetupLoomIde()
+        architectury."$name"()
 
-		sourceSets {
-			testmod {
-				compileClasspath += main.compileClasspath
-				runtimeClasspath += main.runtimeClasspath
-			}
-		}
+        sourceSets {
+            testmod {
+                compileClasspath += main.compileClasspath
+                runtimeClasspath += main.runtimeClasspath
+            }
+        }
 
-		configurations {
-			common
-			shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-			compileClasspath.extendsFrom common
-			runtimeClasspath.extendsFrom common
-		}
+        configurations {
+            common
+            shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+            compileClasspath.extendsFrom common
+            runtimeClasspath.extendsFrom common
+        }
 
-		dependencies {
-			common(project(path: ":${project.parent.name}:common", configuration: "namedElements")) { transitive false }
-			testmodImplementation sourceSets.main.output
-		}
+        dependencies {
+            common(project(path: ":${project.parent.name}:common", configuration: "namedElements")) { transitive false }
+            testmodImplementation sourceSets.main.output
+        }
 
-		shadowJar {
-			configurations = [project.configurations.shadowCommon]
-		}
+        shadowJar {
+            configurations = [project.configurations.shadowCommon]
+        }
 
-		remapJar {
-			dependsOn shadowJar
-			input.set shadowJar.archiveFile
-		}
+        remapJar {
+            dependsOn shadowJar
+            input.set shadowJar.archiveFile
+        }
 
-		sourcesJar {
+        sourcesJar {
 			from project(":${project.parent.name}:common").sourceSets.main.allSource
-		}
+        }
 
-		components.java {
-			withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-				skip()
-			}
-		}
-	}
+        components.java {
+            withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+                skip()
+            }
+        }
+    }
 
-	publishing {
-		repositories {
-			maven {
-				name 'Lazurite'
-				url 'https://lazurite.dev/releases'
+    publishing {
+        repositories {
+            maven {
+                name 'Lazurite'
+                url 'https://lazurite.dev/releases'
 
-				credentials {
-					username property('publish.lazurite.alias')
-					password property('publish.lazurite.secret')
-				}
-			}
-		}
-	}
+                credentials {
+                    username property('publish.lazurite.alias')
+                    password property('publish.lazurite.secret')
+                }
+            }
+        }
+    }
 }

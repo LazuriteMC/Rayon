@@ -8,28 +8,22 @@
   "license": "MIT",
   "environment": "*",
   "icon": "assets/rayon-core/icon.png",
-  "mixins": [
-    "rayon-core.mixins.json"
-  ],
+  "mixins": [ "rayon-core.mixins.json" ],
 
   "entrypoints": {
-    "main": [
-      "dev.lazurite.rayon.core.impl.RayonCore"
-    ],
-    "client": [
-      "dev.lazurite.rayon.core.impl.RayonCoreClient"
-    ]
+    "main": [ "dev.lazurite.rayon.core.fabric.RayonCoreFabric" ],
+    "client": [ "dev.lazurite.rayon.core.fabric.RayonCoreFabric" ]
   },
 
   "depends": {
-    "minecraft": "1.18.x",
-    "fabricloader": ">=0.11",
+    "minecraft": "1.17.x",
+    "fabricloader": ">=0.12",
     "fabric-api-base": "*"
   },
 
   "contact": {
     "homepage": "https://lazurite.dev",
-    "sources": "https://github.com/lazuritemc/Rayon",
+    "sources": "https://github.com/lazuriteMC/Rayon",
     "issues": "https://github.com/LazuriteMC/Rayon/issues"
   },
 
