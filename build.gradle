@@ -38,8 +38,6 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:$minecraft_version"
         mappings loom.officialMojangMappings()
-
-        api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
     }
 
     if (name == 'fabric' || name == 'forge') {
@@ -47,10 +45,16 @@ subprojects {
         architectury.platformSetupLoomIde()
         architectury."$name"()
 
-        sourceSets {
-            testmod {
-                compileClasspath += main.compileClasspath
-                runtimeClasspath += main.runtimeClasspath
+        if (parent.name != 'rayon-core') {
+            sourceSets {
+                testmod {
+                    compileClasspath += main.compileClasspath
+                    runtimeClasspath += main.runtimeClasspath
+                }
+            }
+
+            dependencies {
+                testmodImplementation sourceSets.main.output
             }
         }
 
@@ -63,7 +67,7 @@ subprojects {
 
         dependencies {
             common(project(path: ":${project.parent.name}:common", configuration: "namedElements")) { transitive false }
-            testmodImplementation sourceSets.main.output
+            common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
         }
 
         shadowJar {

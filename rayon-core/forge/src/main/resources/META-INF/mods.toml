@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[37,)"
+license = "MIT"
+
+[[mods]]
+modId = "rayon_core"
+version = "${version}"
+displayName = "Rayon Core"
+authors = "Lazurite Team"
+description = "The core API for Rayon."
+logoFile = "icon.png"
+
+[[dependencies.rayon_core]]
+modId = "forge"
+mandatory = true
+versionRange = "[37,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.rayon_core]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.17.1,)"
+ordering = "NONE"
+side = "BOTH"

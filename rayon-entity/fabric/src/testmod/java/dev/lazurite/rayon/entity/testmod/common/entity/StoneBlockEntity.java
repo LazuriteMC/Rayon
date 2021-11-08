@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.entity.testmod.common.entity;
 
-import dev.lazurite.rayon.entity.api.EntityPhysicsElement;
-import dev.lazurite.rayon.entity.impl.collision.body.EntityRigidBody;
+import dev.lazurite.rayon.entity.common.api.EntityPhysicsElement;
+import dev.lazurite.rayon.entity.common.impl.collision.body.EntityRigidBody;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;

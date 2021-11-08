@@ -13,10 +13,10 @@
 
   "entrypoints": {
     "main": [
-      "dev.lazurite.rayon.entity.impl.RayonEntity"
+      "dev.lazurite.rayon.entity.common.impl.RayonEntity"
     ],
     "client": [
-      "dev.lazurite.rayon.entity.impl.RayonEntity"
+      "dev.lazurite.rayon.entity.common.impl.RayonEntity"
     ]
   },
 

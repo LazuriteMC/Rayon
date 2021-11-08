@@ -1,1 +1,3 @@
 apply from: '../../forge.gradle'
+
+loom.forge.mixinConfig "rayon-core.mixins.json"
