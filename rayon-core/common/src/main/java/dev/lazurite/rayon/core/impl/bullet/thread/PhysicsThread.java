@@ -4,7 +4,7 @@ import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.level.LevelSupplier;
-import dev.lazurite.rayon.core.impl.bullet.thread.util.Pausable;
+import dev.lazurite.rayon.core.impl.bullet.thread.util.ClientUtil;
 import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
 import net.minecraft.server.MinecraftServer;
@@ -25,7 +25,7 @@ import java.util.concurrent.Executor;
  * @see PhysicsElement
  * @see MinecraftSpace
  */
-public class PhysicsThread extends Thread implements Executor, Pausable {
+public class PhysicsThread extends Thread implements Executor {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
     private final Executor parentExecutor;
     private final Thread parentThread;
@@ -67,7 +67,7 @@ public class PhysicsThread extends Thread implements Executor, Pausable {
     @Override
     public void run() {
         while (running) {
-            if (!isPaused()) {
+            if (!ClientUtil.isPaused()) {
                 /* Run all queued tasks */
                 while (!tasks.isEmpty()) {
                     tasks.poll().run();

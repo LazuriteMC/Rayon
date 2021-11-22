@@ -2,10 +2,9 @@ package dev.lazurite.rayon.core.api.event.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.lazurite.rayon.core.impl.util.debug.CollisionObjectDebugger;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
+import dev.lazurite.toolbox.api.event.Event;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -16,11 +15,7 @@ import net.minecraft.world.phys.Vec3;
  * @since 1.3.0
  */
 public class DebugRenderEvents {
-    public static final Event<BeforeRender> BEFORE_RENDER = EventFactory.of((callbacks) -> (context) -> {
-        for (final var event : callbacks) {
-            event.onRender(context);
-        }
-    });
+    public static final Event<BeforeRender> BEFORE_RENDER = Event.create();
 
     private DebugRenderEvents() { }
 

@@ -4,8 +4,8 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
-import dev.lazurite.toolbox.common.math.QuaternionHelper;
-import dev.lazurite.toolbox.common.math.VectorHelper;
+import dev.lazurite.toolbox.api.math.QuaternionHelper;
+import dev.lazurite.toolbox.api.math.VectorHelper;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.

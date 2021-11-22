@@ -1,18 +1,16 @@
 package dev.lazurite.rayon.core.api.event.collision;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.lazurite.rayon.core.api.PhysicsElement;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.TerrainObject;
+import dev.lazurite.toolbox.api.event.Event;
 
 /**
  * @since 1.0.0
  */
 public class ElementCollisionEvents {
-    public static final Event<TerrainCollision> TERRAIN_COLLISION = EventFactory.createLoop();
-
-    public static final Event<ElementCollision> ELEMENT_COLLISION = EventFactory.createLoop();
+    public static final Event<TerrainCollision> TERRAIN_COLLISION = Event.create();
+    public static final Event<ElementCollision> ELEMENT_COLLISION = Event.create();
 
     private ElementCollisionEvents() { }
 

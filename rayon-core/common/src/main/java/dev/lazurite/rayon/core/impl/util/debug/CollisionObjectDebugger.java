@@ -46,7 +46,7 @@ public final class CollisionObjectDebugger {
         final var builder = Tesselator.getInstance().getBuilder();
         final var stack = new PoseStack();
 
-        DebugRenderEvents.BEFORE_RENDER.invoker().onRender(new DebugRenderEvents.Context(space, builder, stack, cameraPos, tickDelta));
+        DebugRenderEvents.BEFORE_RENDER.invoke(new DebugRenderEvents.Context(space, builder, stack, cameraPos, tickDelta));
         builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 

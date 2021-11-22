@@ -9,7 +9,7 @@ import dev.lazurite.rayon.core.impl.bullet.math.Convert;
 import dev.lazurite.rayon.core.impl.util.Frame;
 import dev.lazurite.rayon.core.impl.util.debug.Debuggable;
 import com.jme3.math.Vector3f;
-import dev.lazurite.toolbox.common.math.VectorHelper;
+import dev.lazurite.toolbox.api.math.VectorHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;

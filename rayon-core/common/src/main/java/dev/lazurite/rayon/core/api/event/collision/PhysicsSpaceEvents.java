@@ -1,21 +1,17 @@
 package dev.lazurite.rayon.core.api.event.collision;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.lazurite.rayon.core.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
+import dev.lazurite.toolbox.api.event.Event;
 
 /**
  * @since 1.0.0
  */
 public final class PhysicsSpaceEvents {
-    public static final Event<Init> INIT = EventFactory.createLoop();
-
-    public static final Event<Step> STEP = EventFactory.createLoop();
-
-    public static final Event<ElementAdded> ELEMENT_ADDED = EventFactory.createLoop();
-
-    public static final Event<ElementRemoved> ELEMENT_REMOVED = EventFactory.createLoop();
+    public static final Event<Init> INIT = Event.create();
+    public static final Event<Step> STEP = Event.create();
+    public static final Event<ElementAdded> ELEMENT_ADDED = Event.create();
+    public static final Event<ElementRemoved> ELEMENT_REMOVED = Event.create();
 
     private PhysicsSpaceEvents() { }
 

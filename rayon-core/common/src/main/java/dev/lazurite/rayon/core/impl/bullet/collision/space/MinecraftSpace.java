@@ -107,7 +107,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                     this.distributeEvents();
 
                     /* World Step Event */
-                    PhysicsSpaceEvents.STEP.invoker().onStep(this);
+                    PhysicsSpaceEvents.STEP.invoke(this);
 
                     if (presimSteps > MAX_PRESIM_STEPS) {
                         this.update(1f/60f);
@@ -125,7 +125,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (!collisionObject.isInWorld()) {
             if (collisionObject instanceof ElementRigidBody rigidBody) {
-                PhysicsSpaceEvents.ELEMENT_ADDED.invoker().onElementAdded(this, rigidBody);
+                PhysicsSpaceEvents.ELEMENT_ADDED.invoke(this, rigidBody);
 
                 if (!rigidBody.isInWorld()) {
                     rigidBody.activate();
@@ -147,7 +147,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             super.removeCollisionObject(collisionObject);
 
             if (collisionObject instanceof ElementRigidBody rigidBody) {
-                PhysicsSpaceEvents.ELEMENT_REMOVED.invoker().onElementRemoved(this, rigidBody);
+                PhysicsSpaceEvents.ELEMENT_REMOVED.invoke(this, rigidBody);
             }
         }
     }
@@ -220,15 +220,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         /* Element on Element */
         if (event.getObjectA() instanceof ElementRigidBody rigidBodyA && event.getObjectB() instanceof ElementRigidBody rigidBodyB) {
-            ElementCollisionEvents.ELEMENT_COLLISION.invoker().onCollide(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse);
+            ElementCollisionEvents.ELEMENT_COLLISION.invoke(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse);
 
         /* Terrain on Element */
         } else if (event.getObjectA() instanceof TerrainObject.Terrain terrain && event.getObjectB() instanceof ElementRigidBody rigidBody) {
-            ElementCollisionEvents.TERRAIN_COLLISION.invoker().onCollide(rigidBody.getElement(), terrain.getParent(), impulse);
+            ElementCollisionEvents.TERRAIN_COLLISION.invoke(rigidBody.getElement(), terrain.getParent(), impulse);
 
         /* Element on Terrain */
         } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainObject.Terrain terrain) {
-            ElementCollisionEvents.TERRAIN_COLLISION.invoker().onCollide(rigidBody.getElement(), terrain.getParent(), impulse);
+            ElementCollisionEvents.TERRAIN_COLLISION.invoke(rigidBody.getElement(), terrain.getParent(), impulse);
         }
     }
 }

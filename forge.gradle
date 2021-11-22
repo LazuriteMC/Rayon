@@ -5,7 +5,7 @@ configurations {
 dependencies {
     forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
 
-    modApi "dev.architectury:architectury-forge:$architectury_version"
+//    modApi "dev.architectury:architectury-forge:$architectury_version"
     shadowCommon(project(path: ":${project.parent.name}:common", configuration: "transformProductionForge")) { transitive false }
 
     modApi "dev.lazurite:transporter-forge:$transporter_version"

@@ -1,15 +1,14 @@
 package dev.lazurite.rayon.core.impl.event;
 
-import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.event.events.common.TickEvent;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.lazurite.rayon.core.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.supplier.level.ServerLevelSupplier;
 import dev.lazurite.rayon.core.impl.bullet.thread.PhysicsThread;
-import dev.lazurite.rayon.core.impl.bullet.collision.space.generator.PressureGenerator;
 import dev.lazurite.rayon.core.impl.bullet.collision.space.MinecraftSpace;
+import dev.lazurite.rayon.core.impl.bullet.thread.util.ClientUtil;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 
 public final class ServerEventHandler {
     private static PhysicsThread thread;
@@ -18,45 +17,36 @@ public final class ServerEventHandler {
         return thread;
     }
 
+    @ExpectPlatform
     public static void register() {
-        // Server Events
-        LifecycleEvent.SERVER_BEFORE_START.register(ServerEventHandler::onServerStart);
-        LifecycleEvent.SERVER_STOPPED.register(ServerEventHandler::onServerStop);
-        TickEvent.SERVER_POST.register(ServerEventHandler::onServerTick);
-
-        // World Events
-        TickEvent.SERVER_LEVEL_POST.register(ServerEventHandler::onStartLevelTick);
-        LifecycleEvent.SERVER_LEVEL_LOAD.register(ServerEventHandler::onLevelLoad);
-
-        // Space Events
-        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
+        throw new AssertionError();
     }
 
-    private static void onServerStart(MinecraftServer server) {
+    public static void onServerStart(MinecraftServer server) {
         thread = new PhysicsThread(server, Thread.currentThread(), new ServerLevelSupplier(server), "Server Physics Thread");
     }
 
-    private static void onServerStop(MinecraftServer server) {
+    public static void onServerStop(MinecraftServer server) {
         thread.destroy();
     }
 
-    private static void onServerTick(MinecraftServer server) {
+    public static void onServerTick() {
         if (thread.throwable != null) {
             throw new RuntimeException(thread.throwable);
         }
     }
 
-    private static void onStartLevelTick(ServerLevel level) {
+    public static void onStartLevelTick(Level level) {
         final var space = MinecraftSpace.get(level);
 
-        if (!space.getWorkerThread().isPaused()) {
+        if (!ClientUtil.isPaused()) {
             space.step();
         }
     }
 
-    private static void onLevelLoad(ServerLevel level) {
+    public static void onLevelLoad(Level level) {
         final var space = new MinecraftSpace(thread, level);
         ((SpaceStorage) level).setSpace(space);
-        PhysicsSpaceEvents.INIT.invoker().onInit(space);
+        PhysicsSpaceEvents.INIT.invoke(space);
     }
 }

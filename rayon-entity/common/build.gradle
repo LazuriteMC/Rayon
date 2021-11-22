@@ -1,5 +1,5 @@
 apply from: '../../common.gradle'
 
 dependencies {
-    api project(path: ":rayon-core:common", configuration: 'namedElements')
+    api project(path: ':rayon-core:common', configuration: 'namedElements')
 }

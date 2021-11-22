@@ -4,7 +4,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.core.impl.bullet.math.Convert;
-import dev.lazurite.transporter.common.api.pattern.Pattern;
+import dev.lazurite.transporter.api.pattern.Pattern;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
