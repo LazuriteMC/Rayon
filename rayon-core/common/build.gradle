@@ -2,6 +2,5 @@ apply from: '../../common.gradle'
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
-
     api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
 }

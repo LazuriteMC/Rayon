@@ -40,12 +40,13 @@ subprojects {
         mappings loom.officialMojangMappings()
     }
 
-    if (name == 'fabric' || name == 'forge') {
+    if (name.contains('fabric') || name.contains('forge')) {
         apply plugin: 'com.github.johnrengelman.shadow'
         architectury.platformSetupLoomIde()
-        architectury."$name"()
+        architectury.fabric()
+        architectury.forge()
 
-        if (parent.name != 'rayon-core') {
+        if (!name.contains('rayon-core')) {
             sourceSets {
                 testmod {
                     compileClasspath += main.compileClasspath
@@ -66,7 +67,6 @@ subprojects {
         }
 
         dependencies {
-            common(project(path: ":${project.parent.name}:common", configuration: "namedElements")) { transitive false }
             common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
         }
 
@@ -80,7 +80,7 @@ subprojects {
         }
 
         sourcesJar {
-			from project(":${project.parent.name}:common").sourceSets.main.allSource
+			from project(":" + project.name.split("-")[0] + '-' + project.name.split("-")[1] + "-common").sourceSets.main.allSource
         }
 
         components.java {

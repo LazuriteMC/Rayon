@@ -10,10 +10,6 @@ import dev.lazurite.rayon.entity.common.api.EntityPhysicsElement;
 import dev.lazurite.rayon.entity.common.impl.RayonEntity;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
@@ -35,7 +31,7 @@ public class EntityRigidBody extends ElementRigidBody {
      * @param element the element to base this body around
      */
     public EntityRigidBody(EntityPhysicsElement element) {
-        this(element, MinecraftSpace.get(element.asEntity().getLevel()), element.genShape());
+        this(element, MinecraftSpace.get(element.asEntity().level), element.genShape());
     }
 
     @Override

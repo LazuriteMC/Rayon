@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.entity.common.api;
 
-import dev.lazurite.rayon.core.common.api.PhysicsElement;
+import dev.lazurite.rayon.core.api.PhysicsElement;
+import dev.lazurite.rayon.core.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.entity.common.impl.collision.body.EntityRigidBody;
 import net.minecraft.world.entity.Entity;
 

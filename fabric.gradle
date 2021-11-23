@@ -2,12 +2,10 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
+
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
     modApi "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
-
-//    modApi "dev.architectury:architectury-fabric:$architectury_version"
-    shadowCommon(project(path: ":${project.parent.name}:common", configuration: "transformProductionFabric")) { transitive false }
 
     modApi "dev.lazurite:transporter-fabric:$transporter_version"
     modApi "dev.lazurite:toolbox-fabric:$toolbox_version"

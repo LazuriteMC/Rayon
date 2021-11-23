@@ -1,5 +1,7 @@
 apply from: '../../fabric.gradle'
 
 dependencies {
-    api project(path: ':rayon-core:fabric', configuration: 'namedElements')
+    api project(path: ':rayon-core-fabric', configuration: 'namedElements')
+    common(project(path: ":rayon-entity-common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":rayon-entity-common", configuration: "transformProductionFabric")) { transitive false }
 }

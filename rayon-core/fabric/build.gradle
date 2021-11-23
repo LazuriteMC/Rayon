@@ -1,1 +1,6 @@
 apply from: '../../fabric.gradle'
+
+dependencies {
+    common(project(path: ":rayon-core-common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":rayon-core-common", configuration: "transformProductionFabric")) { transitive false }
+}

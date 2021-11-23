@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.entity.common.impl;
 
-import dev.lazurite.rayon.core.impl.RayonCore;
 import dev.lazurite.rayon.entity.common.impl.event.ClientEventHandler;
 import dev.lazurite.rayon.entity.common.impl.event.ServerEventHandler;
 import net.fabricmc.api.ClientModInitializer;
