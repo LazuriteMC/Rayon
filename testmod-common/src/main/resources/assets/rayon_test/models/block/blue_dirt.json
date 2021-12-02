@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "rayon_test:block/blue_dirt"
+  }
+}

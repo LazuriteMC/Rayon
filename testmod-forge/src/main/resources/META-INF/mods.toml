@@ -1,0 +1,23 @@
+modLoader = "javafml"
+loaderVersion = "[37,)"
+license = "MIT"
+
+[[mods]]
+modId = "rayon_test"
+version = "${version}"
+displayName = "Rayon Test"
+authors = "Lazurite Team"
+
+[[dependencies.rayon_test]]
+modId = "forge"
+mandatory = true
+versionRange = "[37,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.rayon_test]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.17.1,)"
+ordering = "NONE"
+side = "BOTH"

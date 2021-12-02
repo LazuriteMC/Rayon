@@ -6,7 +6,6 @@ plugins {
 
 allprojects {
     apply plugin: 'java'
-//	apply plugin: 'dev.lazurite.abacus'
 
     version rayon_version
     group maven_group
@@ -25,7 +24,8 @@ subprojects {
     apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
 
-    archivesBaseName = rootProject.archivesBaseName + '-' + name
+//    archivesBaseName = rootProject.archivesBaseName + '-' + name
+    project.archivesBaseName = name
     loom.silentMojangMappingsLicense()
 
     repositories {
@@ -38,56 +38,7 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:$minecraft_version"
         mappings loom.officialMojangMappings()
-    }
-
-    if (name.contains('fabric') || name.contains('forge')) {
-        apply plugin: 'com.github.johnrengelman.shadow'
-        architectury.platformSetupLoomIde()
-        architectury.fabric()
-        architectury.forge()
-
-        if (!name.contains('rayon-core')) {
-            sourceSets {
-                testmod {
-                    compileClasspath += main.compileClasspath
-                    runtimeClasspath += main.runtimeClasspath
-                }
-            }
-
-            dependencies {
-                testmodImplementation sourceSets.main.output
-            }
-        }
-
-        configurations {
-            common
-            shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-            compileClasspath.extendsFrom common
-            runtimeClasspath.extendsFrom common
-        }
-
-        dependencies {
-            common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
-        }
-
-        shadowJar {
-            configurations = [project.configurations.shadowCommon]
-        }
-
-        remapJar {
-            dependsOn shadowJar
-            input.set shadowJar.archiveFile
-        }
-
-        sourcesJar {
-			from project(":" + project.name.split("-")[0] + '-' + project.name.split("-")[1] + "-common").sourceSets.main.allSource
-        }
-
-        components.java {
-            withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-                skip()
-            }
-        }
+        api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
     }
 
     publishing {

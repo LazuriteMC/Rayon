@@ -1,0 +1,62 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+configurations {
+    common
+    shadowCommon
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+dependencies {
+    common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+
+    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+    modApi "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
+
+    modApi "dev.lazurite:transporter-fabric:$transporter_version"
+    modApi "dev.lazurite:toolbox-fabric:$toolbox_version"
+}
+
+remapJar {
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+tasks.withType(ProcessResources) {
+    inputs.property "version", version
+
+    filesMatching "fabric.mod.json", {
+        expand "version": version
+    }
+}
+
+sourcesJar {
+    from project(":common").sourceSets.main.allSource
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+}
+
+publishing {
+    publications {
+        fabric(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}

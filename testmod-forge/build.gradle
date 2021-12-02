@@ -1,0 +1,39 @@
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+configurations {
+    common
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    implementation project(path: ':forge', configuration: 'namedElements')
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    common(project(path: ':testmod-common', configuration: 'namedElements'))
+}
+
+tasks.withType(ProcessResources) {
+    inputs.property "version", version
+
+    filesMatching "META-INF/mods.toml", {
+        expand "version": version
+    }
+}
+
+loom {
+    forge {
+        mixinConfig 'rayon.mixins.json'
+
+        localMods {
+            forge {
+                it.add(project(":forge").sourceSets.main)
+            }
+        }
+    }
+}

@@ -24,33 +24,6 @@ pluginManagement {
     }
 }
 
-//plugins {
-//    id 'dev.lazurite.abacus' version "$abacus_version"
-//}
-//
-//abacus {
-//    minecraftVersion = minecraft_version
-//    fabricLoaderVersion = fabric_loader_version
-//}
-
 rootProject.name = 'rayon'
 
-include 'rayon-core-common',
-        'rayon-core-fabric',
-        'rayon-core-forge',
-        'rayon-entity-common',
-        'rayon-entity-fabric',
-        'rayon-entity-forge',
-        'rayon-particle-common',
-        'rayon-particle-fabric',
-        'rayon-particle-forge'
-
-project(':rayon-core-common').projectDir = file(rootProject.projectDir.path + '/rayon-core/common')
-project(':rayon-core-fabric').projectDir = file(rootProject.projectDir.path + '/rayon-core/fabric')
-project(':rayon-core-forge').projectDir = file(rootProject.projectDir.path + '/rayon-core/forge')
-project(':rayon-entity-common').projectDir = file(rootProject.projectDir.path + '/rayon-entity/common')
-project(':rayon-entity-fabric').projectDir = file(rootProject.projectDir.path + '/rayon-entity/fabric')
-project(':rayon-entity-forge').projectDir = file(rootProject.projectDir.path + '/rayon-entity/forge')
-project(':rayon-particle-common').projectDir = file(rootProject.projectDir.path + '/rayon-particle/common')
-project(':rayon-particle-fabric').projectDir = file(rootProject.projectDir.path + '/rayon-particle/fabric')
-project(':rayon-particle-forge').projectDir = file(rootProject.projectDir.path + '/rayon-particle/forge')
+include 'common', 'fabric', 'forge', 'testmod-common', 'testmod-fabric', 'testmod-forge'

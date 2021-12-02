@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[37,)"
+license = "MIT"
+
+[[mods]]
+modId = "rayon"
+version = "${version}"
+displayName = "Rayon"
+authors = "Lazurite Team"
+description = "A physics API for Minecraft."
+logoFile = "icon.png"
+
+[[dependencies.rayon]]
+modId = "forge"
+mandatory = true
+versionRange = "[37,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.rayon]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.17.1,)"
+ordering = "NONE"
+side = "BOTH"

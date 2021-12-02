@@ -1,8 +1,0 @@
-apply from: '../../forge.gradle'
-
-loom.forge.mixinConfig "rayon-core.mixins.json"
-
-dependencies {
-    common(project(path: ":rayon-core-common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":rayon-core-common", configuration: "transformProductionForge")) { transitive false }
-}

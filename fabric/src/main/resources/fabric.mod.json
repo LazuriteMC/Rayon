@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "rayon",
+  "version": "${version}",
+  "license": "MIT",
+  "environment": "*",
+  "mixins": [ "rayon.mixins.json" ],
+
+  "entrypoints": {
+    "main": [ "dev.lazurite.rayon.impl.fabric.RayonFabric" ],
+    "client": [ "dev.lazurite.rayon.impl.fabric.RayonFabric" ]
+  },
+
+  "depends": {
+    "minecraft": "1.17.x",
+    "fabricloader": ">=0.11",
+    "fabric-api-base": "*"
+  }
+}

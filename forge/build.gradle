@@ -1,0 +1,64 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+loom.forge.mixinConfig "rayon.mixins.json"
+shadowJar.exclude "fabric.mod.json"
+
+configurations {
+    common
+    shadowCommon
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+dependencies {
+    common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+
+    forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
+
+    modApi "dev.lazurite:transporter-forge:$transporter_version"
+    modApi "dev.lazurite:toolbox-forge:$toolbox_version"
+}
+
+remapJar {
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+tasks.withType(ProcessResources) {
+    inputs.property "version", version
+
+    filesMatching "META-INF/mods.toml", {
+        expand "version": version
+    }
+}
+
+sourcesJar {
+    from project(":common").sourceSets.main.allSource
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+}
+
+publishing {
+    publications {
+        forge(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}

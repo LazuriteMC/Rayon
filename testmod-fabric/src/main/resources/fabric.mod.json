@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "rayon-test",
+  "version": "${version}",
+  "license": "MIT",
+  "environment": "*",
+
+  "entrypoints": {
+    "main": [ "dev.lazurite.rayon.test.fabric.RayonTestFabric" ],
+    "client": [ "dev.lazurite.rayon.test.fabric.RayonTestClientFabric" ]
+  },
+
+  "depends": {
+    "minecraft": "1.17.x",
+    "fabricloader": ">=0.11",
+    "fabric-api-base": "*"
+  },
+
+  "custom": {
+    "rayon": {
+      "blocks": [
+        {
+          "name": "blue_dirt",
+          "friction": 1.0,
+          "restitution": 0.25,
+          "collidable": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,28 @@
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+configurations {
+    common
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
+
+    implementation project(path: ':fabric', configuration: 'namedElements')
+    common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
+    common(project(path: ':testmod-common', configuration: 'namedElements')) { transitive = false }
+}
+
+tasks.withType(ProcessResources) {
+    inputs.property "version", version
+
+    filesMatching "fabric.mod.json", {
+        expand "version": version
+    }
+}

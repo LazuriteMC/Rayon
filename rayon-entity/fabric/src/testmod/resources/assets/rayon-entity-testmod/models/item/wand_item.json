@@ -1,6 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "rayon-entity-testmod:item/wand_item"
-  }
-}
