@@ -23,8 +23,11 @@ public class EntityNetworkingImpl {
         final var packet = new EntityRigidBodyMovementBidirectional(rigidBody);
 
         if (rigidBody.getSpace().isServer()) {
-            PlayerUtil.tracking(rigidBody.getElement().cast()).forEach(player ->
-                    ServerPlayNetworking.send(player, MOVEMENT, packet.encode(PacketByteBufs.create())));
+            PlayerUtil.tracking(rigidBody.getElement().cast()).forEach(player -> {
+                    if (!player.equals(rigidBody.getPriorityPlayer())) {
+                        ServerPlayNetworking.send(player, MOVEMENT, packet.encode(PacketByteBufs.create()));
+                    }
+            });
         } else {
             ClientPlayNetworking.send(MOVEMENT, packet.encode(PacketByteBufs.create()));
         }

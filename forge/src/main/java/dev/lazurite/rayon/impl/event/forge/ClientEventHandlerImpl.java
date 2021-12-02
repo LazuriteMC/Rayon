@@ -38,7 +38,7 @@ public class ClientEventHandlerImpl {
 
     @SubscribeEvent
     public static void onDebugRender(RenderWorldLastEvent event) {
-        ClientEventHandler.onDebugRender(Minecraft.getInstance().level, event.getPartialTicks());
+        ClientEventHandler.onDebugRender(Minecraft.getInstance().level, event.getMatrixStack(), event.getPartialTicks());
     }
 
     @SubscribeEvent

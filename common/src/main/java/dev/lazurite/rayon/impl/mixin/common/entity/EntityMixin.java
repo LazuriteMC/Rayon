@@ -23,6 +23,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin {
     // TODO removed immersive portals code here.
 
+    @Inject(method = "lerpMotion", at = @At("HEAD"), cancellable = true)
+    public void lerpMotion(double x, double y, double z, CallbackInfo info) {
+        if (this instanceof EntityPhysicsElement) {
+            System.out.println("NOOOOOOOOOOOOOOOOOOOOOO");
+            info.cancel();
+        }
+    }
+
     @Inject(method = "push(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
     public void pushAwayFrom(Entity entity, CallbackInfo info) {
         if (this instanceof EntityPhysicsElement && entity instanceof EntityPhysicsElement) {

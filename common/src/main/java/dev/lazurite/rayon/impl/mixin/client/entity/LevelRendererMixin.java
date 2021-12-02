@@ -33,8 +33,8 @@ public class LevelRendererMixin {
     )
     public void render(Args args) {
         if (args.get(0) instanceof EntityPhysicsElement) {
-            var location = ((EntityPhysicsElement) args.get(0)).getPhysicsLocation(new Vector3f(), args.get(5));
-            var cameraPos = this.minecraft.gameRenderer.getMainCamera().getPosition();
+            final var location = ((EntityPhysicsElement) args.get(0)).getPhysicsLocation(new Vector3f(), args.get(5));
+            final var cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
             args.set(1, location.x - cameraPos.x);
             args.set(2, location.y - cameraPos.y);
             args.set(3, location.z - cameraPos.z);

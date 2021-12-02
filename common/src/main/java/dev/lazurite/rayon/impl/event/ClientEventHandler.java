@@ -1,7 +1,7 @@
 package dev.lazurite.rayon.impl.event;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
@@ -34,10 +34,8 @@ public final class ClientEventHandler {
     }
 
     public static void onStartLevelTick(Level level) {
-        final var space = MinecraftSpace.get(level);
-
         if (!ClientUtil.isPaused()) {
-            space.step();
+            MinecraftSpace.get(level).step();
         }
     }
 
@@ -63,9 +61,9 @@ public final class ClientEventHandler {
         thread.destroy();
     }
 
-    public static void onDebugRender(Level level, float tickDelta) {
+    public static void onDebugRender(Level level, PoseStack stack, float tickDelta) {
         if (CollisionObjectDebugger.isEnabled()) {
-            CollisionObjectDebugger.renderSpace(MinecraftSpace.get(level), tickDelta);
+            CollisionObjectDebugger.renderSpace(MinecraftSpace.get(level), stack, tickDelta);
         }
     }
 
@@ -100,10 +98,8 @@ public final class ClientEventHandler {
             }
 
             /* Set entity position */
-            final var element = ((EntityPhysicsElement) rigidBody.getElement());
             final var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
-            final var offset = rigidBody.boundingBox(new BoundingBox()).getYExtent();
-            element.cast().absMoveTo(location.x, location.y - offset, location.z);
+            rigidBody.getElement().cast().absMoveTo(location.x, location.y, location.z);
         }
     }
 }

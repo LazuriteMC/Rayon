@@ -48,10 +48,8 @@ public final class ServerEventHandler {
     }
 
     public static void onStartLevelTick(Level level) {
-        final var space = MinecraftSpace.get(level);
-
         if (!ClientUtil.isPaused()) {
-            space.step();
+            MinecraftSpace.get(level).step();
         }
     }
 
@@ -97,7 +95,7 @@ public final class ServerEventHandler {
         for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
             if (rigidBody.isActive()) {
                 /* Movement */
-                if (rigidBody.isPositionDirty() && rigidBody.getPriorityPlayer() == null) {
+                if (rigidBody.isPositionDirty()) {
                     EntityNetworking.sendMovement(rigidBody);
                 }
 
@@ -108,10 +106,8 @@ public final class ServerEventHandler {
             }
 
             /* Set entity position */
-            final var entity = rigidBody.getElement().cast();
             final var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
-            final var offset = rigidBody.boundingBox(new BoundingBox()).getYExtent();
-            entity.absMoveTo(location.x, location.y - offset, location.z);
+            rigidBody.getElement().cast().absMoveTo(location.x, location.y, location.z);
         }
     }
 }

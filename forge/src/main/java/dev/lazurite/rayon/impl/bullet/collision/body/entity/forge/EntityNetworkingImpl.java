@@ -28,8 +28,11 @@ public class EntityNetworkingImpl {
         final var packet = new EntityRigidBodyMovementBidirectional(rigidBody);
 
         if (rigidBody.getSpace().isServer()) {
-            PlayerUtil.tracking(rigidBody.getElement().cast()).forEach(player ->
-                    PACKET_HANDLER.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT));
+            PlayerUtil.tracking(rigidBody.getElement().cast()).forEach(player -> {
+                if (!player.equals(rigidBody.getPriorityPlayer())) {
+                    PACKET_HANDLER.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                }
+            });
         } else {
             PACKET_HANDLER.sendToServer(packet);
         }

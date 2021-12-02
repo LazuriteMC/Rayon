@@ -37,26 +37,20 @@ public final class CollisionObjectDebugger {
         return enabled;
     }
 
-    @ExpectPlatform
-    public static void setupRender() {
-
-    }
-
-    public static void renderSpace(MinecraftSpace space, float tickDelta) {
+    public static void renderSpace(MinecraftSpace space, PoseStack stack, float tickDelta) {
         final var cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         final var builder = Tesselator.getInstance().getBuilder();
-        final var stack = new PoseStack();
 
         DebugRenderEvents.BEFORE_RENDER.invoke(new DebugRenderEvents.Context(space, builder, stack, cameraPos, tickDelta));
         builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        space.getTerrainObjects().stream().map(TerrainObject::getCollisionObject).forEach(physicsCollisionObject -> renderBody(physicsCollisionObject, builder, stack, cameraPos, tickDelta));
-        space.getRigidBodiesByClass(ElementRigidBody.class).forEach(elementRigidBody -> renderBody(elementRigidBody, builder, stack, cameraPos, tickDelta));
+        space.getTerrainObjects().stream().map(TerrainObject::getCollisionObject).forEach(physicsCollisionObject -> CollisionObjectDebugger.renderBody(physicsCollisionObject, builder, stack, cameraPos, tickDelta));
+        space.getRigidBodiesByClass(ElementRigidBody.class).forEach(elementRigidBody -> CollisionObjectDebugger.renderBody(elementRigidBody, builder, stack, cameraPos, tickDelta));
         Tesselator.getInstance().end();
     }
 
-    private static void renderBody(PhysicsCollisionObject body, BufferBuilder builder, PoseStack stack, Vec3 cameraPos, float tickDelta) {
+    public static void renderBody(PhysicsCollisionObject body, BufferBuilder builder, PoseStack stack, Vec3 cameraPos, float tickDelta) {
         if (body instanceof Debuggable debuggable) {
             var points = ((MinecraftShape) body.getCollisionShape()).copyHullVertices();
             var color = debuggable.getOutlineColor();
