@@ -9,11 +9,11 @@ import java.util.Optional;
 
 public class EntityNetworkingServerHandler {
     public static void register() {
-        EntityNetworkingImpl.PACKET_HANDLER.registerMessage(0, EntityRigidBodyMovementBidirectional.class, EntityRigidBodyMovementBidirectional::encode, EntityRigidBodyMovementBidirectional::decode,
+        EntityNetworkingImpl.MOVEMENT.registerMessage(0, EntityRigidBodyMovementBidirectional.class, EntityRigidBodyMovementBidirectional::encode, EntityRigidBodyMovementBidirectional::decode,
                 (message, context) -> {
                     final var level = context.get().getSender().level;
-                    PhysicsThread.get(level).execute(() ->
-                            EntityRigidBodyMovementBidirectional.accept(message, level));
+                    PhysicsThread.get(level).execute(() -> EntityRigidBodyMovementBidirectional.accept(message, level));
+                    context.get().setPacketHandled(true); // forg moment
                 }, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 }

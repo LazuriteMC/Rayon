@@ -13,8 +13,14 @@ import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 
 public class EntityNetworkingImpl {
     private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel PACKET_HANDLER = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(Rayon.MODID, "packet_handler"),
+    public static final SimpleChannel MOVEMENT = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(Rayon.MODID, "movement"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
+    public static final SimpleChannel PROPERTIES = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(Rayon.MODID, "properties"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
@@ -30,11 +36,11 @@ public class EntityNetworkingImpl {
         if (rigidBody.getSpace().isServer()) {
             PlayerUtil.tracking(rigidBody.getElement().cast()).forEach(player -> {
                 if (!player.equals(rigidBody.getPriorityPlayer())) {
-                    PACKET_HANDLER.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                    MOVEMENT.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
                 }
             });
         } else {
-            PACKET_HANDLER.sendToServer(packet);
+            MOVEMENT.sendToServer(packet);
         }
     }
 
@@ -46,6 +52,6 @@ public class EntityNetworkingImpl {
         final var packet = new EntityRigidBodyPropertiesS2C(rigidBody);
 
         PlayerUtil.tracking(rigidBody.getElement().cast()).forEach(player ->
-            PACKET_HANDLER.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT));
+            PROPERTIES.sendTo(packet, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT));
     }
 }

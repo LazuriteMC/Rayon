@@ -14,7 +14,6 @@ import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainObject;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
-import dev.lazurite.rayon.impl.bullet.thread.util.Clock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This is the main physics simulation used by Rayon. Each bullet simulation update
@@ -37,12 +35,11 @@ import java.util.concurrent.TimeUnit;
  * @see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
-    private static final int MAX_PRESIM_STEPS = 10;
+    private static final int MAX_PRESIM_STEPS = 30; // half a second
 
     private final List<TerrainObject> terrainObjects;
     private final PhysicsThread thread;
     private final Level level;
-    private final Clock clock;
     private int presimSteps;
 
     private volatile boolean stepping;
@@ -71,12 +68,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         this.thread = thread;
         this.level = level;
-        this.clock = new Clock();
         this.terrainObjects = new ArrayList<>();
         this.setGravity(new Vector3f(0, -9.807f, 0));
         this.addCollisionListener(this);
-//        this.setAccuracy(1f/60f);
-        this.setMaxSubSteps(10);
+        this.setAccuracy(1f/60f);
+//        this.setMaxSubSteps(10);
     }
 
     /**
@@ -109,18 +105,19 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             for (int i = 0; i < 3; ++i) {
                 // Hop threads...
                 futures[i] = CompletableFuture.runAsync(() -> {
-                    /* Call collision events */
-                    this.distributeEvents();
-
-                    /* World Step Event */
-                    PhysicsSpaceEvents.STEP.invoke(this);
-
                     if (presimSteps > MAX_PRESIM_STEPS) {
+                        /* Call collision events */
+                        this.distributeEvents();
+
+                        /* World Step Event */
+                        PhysicsSpaceEvents.STEP.invoke(this);
+
+                        /* Step the Simulation */
                         this.update(1/60f);
                     } else {
                         ++presimSteps;
                     }
-                }, getWorkerThread()); //CompletableFuture.delayedExecutor(1000L * i / 6, TimeUnit.MILLISECONDS, getWorkerThread()));
+                }, getWorkerThread());
             }
 
             CompletableFuture.allOf(futures).thenRun(() -> this.stepping = false);

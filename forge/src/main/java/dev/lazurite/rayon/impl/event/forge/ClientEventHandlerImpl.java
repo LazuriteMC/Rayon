@@ -9,7 +9,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 
 public class ClientEventHandlerImpl {
     public static void register() {
@@ -25,14 +24,12 @@ public class ClientEventHandlerImpl {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             ClientEventHandler.onClientTick(Minecraft.getInstance());
-        }
-    }
+            final var level = Minecraft.getInstance().level;
 
-    @SubscribeEvent
-    public static void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.START) {
-            ClientEventHandler.onStartLevelTick(event.world);
-            ClientEventHandler.onEntityStartLevelTick(event.world);
+            if (level != null) {
+                ClientEventHandler.onStartLevelTick(level);
+                ClientEventHandler.onEntityStartLevelTick(level);
+            }
         }
     }
 
