@@ -4,7 +4,7 @@ import dev.lazurite.rayon.impl.event.ClientEventHandler;
 import dev.lazurite.toolbox.api.event.ClientLifecycleEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
@@ -34,8 +34,8 @@ public class ClientEventHandlerImpl {
     }
 
     @SubscribeEvent
-    public static void onDebugRender(RenderWorldLastEvent event) {
-        ClientEventHandler.onDebugRender(Minecraft.getInstance().level, event.getMatrixStack(), event.getPartialTicks());
+    public static void onDebugRender(RenderLevelLastEvent event) {
+        ClientEventHandler.onDebugRender(Minecraft.getInstance().level, event.getPoseStack(), event.getPartialTick());
     }
 
     @SubscribeEvent

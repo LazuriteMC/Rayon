@@ -20,7 +20,8 @@ public class StoneBlockEntity extends LivingEntity implements EntityPhysicsEleme
     }
 
     @Override
-    protected void checkFallDamage(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+    public boolean isSilent() {
+        return true;
     }
 
     @Override

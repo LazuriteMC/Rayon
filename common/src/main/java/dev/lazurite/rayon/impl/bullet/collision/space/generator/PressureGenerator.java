@@ -9,6 +9,8 @@ import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 public class PressureGenerator {
     public static void step(MinecraftSpace space) {
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
+            if (!rigidBody.buoyantForcesEnabled()) continue; // TODO improve this
+
             var rigidBodyBox = Convert.toMinecraft(rigidBody.getCollisionShape().boundingBox(rigidBody.getPhysicsLocation(null), new Quaternion(), null));
             rigidBodyBox = rigidBodyBox.contract(rigidBodyBox.getXsize() * 0.2, rigidBodyBox.getYsize() * 0.2, rigidBodyBox.getZsize() * 0.2);
 

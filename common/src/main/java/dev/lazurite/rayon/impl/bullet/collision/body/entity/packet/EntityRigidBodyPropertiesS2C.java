@@ -13,7 +13,9 @@ public class EntityRigidBodyPropertiesS2C {
     private final float dragCoefficient;
     private final float friction;
     private final float restitution;
-    private final boolean doTerrainLoading;
+    private final boolean terrainLoading;
+    private final boolean dragForces;
+    private final boolean buoyantForces;
     private final UUID priorityPlayer;
 
     public EntityRigidBodyPropertiesS2C(EntityRigidBody rigidBody) {
@@ -23,17 +25,21 @@ public class EntityRigidBodyPropertiesS2C {
                 rigidBody.getDragCoefficient(),
                 rigidBody.getFriction(),
                 rigidBody.getRestitution(),
-                rigidBody.shouldDoTerrainLoading(),
+                rigidBody.terrainLoadingEnabled(),
+                rigidBody.dragForcesEnabled(),
+                rigidBody.buoyantForcesEnabled(),
                 rigidBody.getPriorityPlayer() == null ? new UUID(0, 0) : rigidBody.getPriorityPlayer().getUUID());
     }
 
-    public EntityRigidBodyPropertiesS2C(int entityId, float mass, float dragCoefficient, float friction, float restitution, boolean doTerrainLoading, UUID priorityPlayer) {
+    public EntityRigidBodyPropertiesS2C(int entityId, float mass, float dragCoefficient, float friction, float restitution, boolean terrainLoading, boolean dragForces, boolean buoyantForces, UUID priorityPlayer) {
         this.entityId = entityId;
         this.mass = mass;
         this.dragCoefficient = dragCoefficient;
         this.friction = friction;
         this.restitution = restitution;
-        this.doTerrainLoading = doTerrainLoading;
+        this.terrainLoading = terrainLoading;
+        this.dragForces = dragForces;
+        this.buoyantForces = buoyantForces;
         this.priorityPlayer = priorityPlayer;
     }
 
@@ -43,13 +49,25 @@ public class EntityRigidBodyPropertiesS2C {
         buf.writeFloat(dragCoefficient);
         buf.writeFloat(friction);
         buf.writeFloat(restitution);
-        buf.writeBoolean(doTerrainLoading);
+        buf.writeBoolean(terrainLoading);
+        buf.writeBoolean(dragForces);
+        buf.writeBoolean(buoyantForces);
         buf.writeUUID(priorityPlayer);
         return buf;
     }
 
     public static EntityRigidBodyPropertiesS2C decode(FriendlyByteBuf buf) {
-        return new EntityRigidBodyPropertiesS2C(buf.readInt(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readBoolean(), buf.readUUID());
+        return new EntityRigidBodyPropertiesS2C(
+                buf.readInt(),
+                buf.readFloat(),
+                buf.readFloat(),
+                buf.readFloat(),
+                buf.readFloat(),
+                buf.readBoolean(),
+                buf.readBoolean(),
+                buf.readBoolean(),
+                buf.readUUID()
+        );
     }
 
     public static void accept(EntityRigidBodyPropertiesS2C packet, Level level){
@@ -62,7 +80,9 @@ public class EntityRigidBodyPropertiesS2C {
             rigidBody.setDragCoefficient(packet.dragCoefficient);
             rigidBody.setFriction(packet.friction);
             rigidBody.setRestitution(packet.restitution);
-            rigidBody.setDoTerrainLoading(packet.doTerrainLoading);
+            rigidBody.setTerrainLoadingEnabled(packet.terrainLoading);
+            rigidBody.setDragForcesEnabled(packet.dragForces);
+            rigidBody.setBuoyantForcesEnabled(packet.buoyantForces);
             rigidBody.prioritize(rigidBody.getSpace().getLevel().getPlayerByUUID(packet.priorityPlayer));
             rigidBody.activate();
         }

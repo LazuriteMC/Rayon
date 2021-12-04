@@ -10,6 +10,7 @@ import dev.lazurite.rayon.impl.util.Frame;
 import dev.lazurite.rayon.impl.util.debug.Debuggable;
 import com.jme3.math.Vector3f;
 import dev.lazurite.toolbox.api.math.VectorHelper;
+import dev.lazurite.toolbox.api.util.PlayerUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -23,7 +24,9 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     protected final MinecraftSpace space;
 
     private final Frame frame;
-    private boolean doTerrainLoading;
+    private boolean terrainLoading;
+    private boolean dragForces;
+    private boolean buoyantForces;
     private float dragCoefficient;
     private Map<BlockPos, TerrainObject> terrainObjects = new HashMap<>();
 
@@ -33,7 +36,9 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         this.element = element;
         this.frame = new Frame();
 
-        this.setDoTerrainLoading(!this.isStatic());
+        this.setTerrainLoadingEnabled(!this.isStatic());
+        this.setDragForcesEnabled(true);
+        this.setBuoyantForcesEnabled(true);
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
@@ -43,12 +48,28 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         return this.element;
     }
 
-    public boolean shouldDoTerrainLoading() {
-        return this.doTerrainLoading && !this.isStatic();
+    public boolean terrainLoadingEnabled() {
+        return this.terrainLoading && !this.isStatic();
     }
 
-    public void setDoTerrainLoading(boolean doTerrainLoading) {
-        this.doTerrainLoading = doTerrainLoading;
+    public void setTerrainLoadingEnabled(boolean terrainLoading) {
+        this.terrainLoading = terrainLoading;
+    }
+
+    public boolean buoyantForcesEnabled() {
+        return this.buoyantForces;
+    }
+
+    public void setBuoyantForcesEnabled(boolean buoyantForces) {
+        this.buoyantForces = buoyantForces;
+    }
+
+    public boolean dragForcesEnabled() {
+        return this.dragForces && !this.isStatic();
+    }
+
+    public void setDragForcesEnabled(boolean dragForces) {
+        this.dragForces = dragForces;
     }
 
     public float getDragCoefficient() {
@@ -69,10 +90,10 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
 
     public Collection<? extends Player> getPlayersAround() {
         if (getSpace().isServer()) {
-            var location = VectorHelper.toVec3(Convert.toMinecraft(getPhysicsLocation(new Vector3f())));
-            var world = (ServerLevel) getSpace().getLevel();
-            var viewDistance = world.getServer().getPlayerList().getViewDistance();
-            return null; // TODO !!!!!!!!!!!!! PlayerLookup.around(world, location, viewDistance);
+            final var location = VectorHelper.toVec3(Convert.toMinecraft(getPhysicsLocation(new Vector3f())));
+            final var level = (ServerLevel) getSpace().getLevel();
+            final var viewDistance = level.getServer().getPlayerList().getViewDistance();
+            return PlayerUtil.around(level, location, viewDistance);
         } else {
             return getSpace().getLevel().players();
         }

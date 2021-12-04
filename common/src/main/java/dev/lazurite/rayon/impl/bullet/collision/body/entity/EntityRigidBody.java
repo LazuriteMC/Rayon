@@ -80,8 +80,8 @@ public class EntityRigidBody extends ElementRigidBody {
     }
 
     @Override
-    public void setDoTerrainLoading(boolean doTerrainLoading) {
-        super.setDoTerrainLoading(doTerrainLoading);
+    public void setTerrainLoadingEnabled(boolean doTerrainLoading) {
+        super.setTerrainLoadingEnabled(doTerrainLoading);
         this.dirtyProperties = true;
     }
 }

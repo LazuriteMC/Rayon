@@ -10,11 +10,11 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStoppedEvent;
 
 public class ServerEventHandlerImpl {
     public static void register() {
@@ -26,12 +26,12 @@ public class ServerEventHandlerImpl {
     }
 
     @SubscribeEvent
-    public static void onServerStart(FMLServerAboutToStartEvent event) {
+    public static void onServerStart(ServerAboutToStartEvent event) {
         ServerEventHandler.onServerStart(event.getServer());
     }
 
     @SubscribeEvent
-    public static void onServerStop(FMLServerStoppedEvent event) {
+    public static void onServerStop(ServerStoppedEvent event) {
         ServerEventHandler.onServerStop(event.getServer());
     }
 

@@ -33,7 +33,7 @@ public class TerrainGenerator {
         final var toKeep = new HashMap<BlockPos, TerrainObject>();
 
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
-            if (!rigidBody.shouldDoTerrainLoading()) {
+            if (!rigidBody.terrainLoadingEnabled()) {
                 continue;
             }
 

@@ -1,6 +1,5 @@
 package dev.lazurite.rayon.impl.event;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
