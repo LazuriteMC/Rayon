@@ -11,7 +11,6 @@ public class Rayon {
 	public static final String MODID = "rayon";
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
 
-
 	public static void init() {
 		NativeLoader.load();
 //		BlockProps.load();
@@ -21,11 +20,6 @@ public class Rayon {
 	public static void initClient() {
 		ClientEventHandler.register();
 	}
-
-	/*
-	depth (m) * water density (kg/m3) * gravity (m/s2) = pressure (Pa)
-	pressure (Pa) * area (m2) = force (N)
-	 */
 
 	public static PhysicsThread getThread(boolean isClient) {
 		return isClient ? ClientEventHandler.getThread() : ServerEventHandler.getThread();

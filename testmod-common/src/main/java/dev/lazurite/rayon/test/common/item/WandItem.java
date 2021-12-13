@@ -1,9 +1,11 @@
 package dev.lazurite.rayon.test.common.item;
 
 import com.jme3.math.Vector3f;
+import com.mojang.math.Quaternion;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.test.RayonTest;
+import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -30,15 +32,19 @@ public class WandItem extends Item {
         if (!level.isClientSide()) {
             final var entity = new StoneBlockEntity(RayonTest.STONE_BLOCK_ENTITY, level);
             final var rigidBody = entity.getRigidBody();
-            rigidBody.setMass(20);
 
             if (user.isCrouching()) {
-                final var random = new Random();
-                final var unit = hitResult.getLocation().subtract(user.position()).normalize();
-                entity.absMoveTo(user.position().x + unit.x, user.position().y + user.getEyeHeight(), user.position().z + unit.z);
-                rigidBody.setLinearVelocity(Convert.toBullet(unit).multLocal(20));
-                rigidBody.setAngularVelocity(new Vector3f(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+//                final var random = new Random();
+//                final var unit = hitResult.getLocation().subtract(user.position()).normalize();
+//                entity.absMoveTo(user.position().x + unit.x, user.position().y + user.getEyeHeight(), user.position().z + unit.z);
+//                rigidBody.setLinearVelocity(Convert.toBullet(unit).multLocal(20));
+//                rigidBody.setAngularVelocity(new Vector3f(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+                entity.absMoveTo(hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z);
             } else {
+                final var radHalfAngle = Math.toRadians(90) / 2.0;
+                final var quat = new Quaternion(0,0,0,1);
+                quat.mul(new Quaternion((float) Math.sin(radHalfAngle), 0, 0, (float) Math.cos(radHalfAngle)));
+                rigidBody.setPhysicsRotation(Convert.toBullet(quat));
                 entity.absMoveTo(hitResult.getLocation().x, hitResult.getLocation().y, hitResult.getLocation().z);
             }
 

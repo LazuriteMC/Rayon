@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.TerrainObject;
+import dev.lazurite.rayon.impl.bullet.collision.body.terrain.Terrain;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.util.BlockProps;
 import dev.lazurite.transporter.api.Disassembler;
@@ -30,7 +30,7 @@ import java.util.*;
 public class TerrainGenerator {
     public static void step(MinecraftSpace space) {
         final var level = space.getLevel();
-        final var toKeep = new HashMap<BlockPos, TerrainObject>();
+        final var toKeep = new HashMap<BlockPos, Terrain>();
 
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
             if (!rigidBody.terrainLoadingEnabled()) {
@@ -68,12 +68,25 @@ public class TerrainGenerator {
 
                 space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrainObject -> {
                     if (rigidBody.isActive() && !(blockState.getBlock().equals(Blocks.AIR) && fluidState.getType().equals(Fluids.EMPTY))) {
+                        final var facing = blockState.getOptionalValue(HorizontalDirectionalBlock.FACING);
+                        Pattern pattern;
+
+                        if (facing.isPresent()) {
+                            pattern = Transporter.getPatternBuffer().get(Registry.BLOCK.getKey(blockState.getBlock()), facing.get());
+                        } else {
+                            pattern = Transporter.getPatternBuffer().get(Registry.BLOCK.getKey(blockState.getBlock()));
+                        }
+
+                        if (pattern != null) {
+                            terrainObject.getCollisionObject().setCollisionShape(MinecraftShape.of(pattern));
+                        }
+
                         toKeep.put(blockPos, terrainObject);
                     }
                 }, () -> {
                     if (rigidBody.isActive()) {
                         if (fluidState.getType() != Fluids.EMPTY) {
-                            var newTerrainObject = new TerrainObject(space, blockPos, fluidState);
+                            var newTerrainObject = new Terrain(space, blockPos, fluidState);
                             space.addTerrainObject(newTerrainObject);
                             toKeep.put(blockPos, newTerrainObject);
                         } else if (blockState.getBlock() != Blocks.AIR) {
@@ -99,7 +112,7 @@ public class TerrainGenerator {
                             }
 
                             if (!blockState.getBlock().isPossibleToRespawnInThis() || collidable) {
-                                final var newTerrainObject = new TerrainObject(space, blockPos, blockState, friction, restitution);
+                                final var newTerrainObject = new Terrain(space, blockPos, blockState, friction, restitution);
 
                                 /* Make a pattern shape if applicable */
                                 if (!blockState.isCollisionShapeFullBlock(level, blockPos)) {

@@ -24,8 +24,7 @@ subprojects {
     apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
 
-//    archivesBaseName = rootProject.archivesBaseName + '-' + name
-    project.archivesBaseName = name
+    archivesBaseName = rootProject.archivesBaseName + '-' + name
     loom.silentMojangMappingsLicense()
 
     repositories {

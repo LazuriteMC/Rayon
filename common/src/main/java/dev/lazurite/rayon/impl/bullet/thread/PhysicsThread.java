@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * In order to access an instance of this, all you need is a {@link Level} or {@link ReentrantBlockableEventLoop} object.
@@ -30,6 +31,7 @@ public class PhysicsThread extends Thread implements Executor {
     private final Executor parentExecutor;
     private final Thread parentThread;
     private final LevelSupplier levelSupplier;
+    private final ForkJoinPool pool;
 
     public volatile Throwable throwable;
     public volatile boolean running = true;
@@ -50,6 +52,7 @@ public class PhysicsThread extends Thread implements Executor {
         this.parentExecutor = parentExecutor;
         this.parentThread = parentThread;
         this.levelSupplier = levelSupplier;
+        this.pool = new ForkJoinPool(2);
 
         this.setName(name);
         this.setUncaughtExceptionHandler((thread, throwable) -> {
@@ -113,6 +116,10 @@ public class PhysicsThread extends Thread implements Executor {
      */
     public Thread getParentThread() {
         return this.parentThread;
+    }
+
+    public ForkJoinPool getPool() {
+        return this.pool;
     }
 
     /**

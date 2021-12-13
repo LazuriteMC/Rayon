@@ -16,8 +16,11 @@ import java.util.List;
  * methods to allow for easier creation (e.g. from a {@link AABB} or a {@link Pattern}).
  */
 public class MinecraftShape extends HullCollisionShape {
+    private final List<Vector3f> triangles;
+
     public MinecraftShape(List<Vector3f> triangles) {
         super(triangles);
+        this.triangles = triangles;
     }
 
     public static MinecraftShape of(AABB box) {
@@ -30,29 +33,41 @@ public class MinecraftShape extends HullCollisionShape {
         final var z = box.getZExtent() * 0.5f;
 
         final Vector3f[] points = {
-                // east
-                new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(-x, -y, z),
-                new Vector3f(-x, -y, z), new Vector3f(x, -y, z), new Vector3f(x, y, z),
-
-                // west
-                new Vector3f(x, y, -z), new Vector3f(-x, y, -z), new Vector3f(-x, -y, -z),
-                new Vector3f(-x, -y, -z), new Vector3f(x, -y, -z), new Vector3f(x, y, -z),
+                // south
+                new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(0, 0, z),
+                new Vector3f(-x, y, z), new Vector3f(-x, -y, z), new Vector3f(0, 0, z),
+                new Vector3f(-x, -y, z), new Vector3f(x, -y, z), new Vector3f(0, 0, z),
+                new Vector3f(x, -y, z), new Vector3f(x, y, z), new Vector3f(0, 0, z),
 
                 // north
-                new Vector3f(-x, y, z), new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z),
-                new Vector3f(-x, -y, -z), new Vector3f(-x, y, -z), new Vector3f(-x, y, z),
+                new Vector3f(-x, y, -z), new Vector3f(x, y, -z), new Vector3f(0, 0, -z),
+                new Vector3f(x, y, -z), new Vector3f(x, -y, -z), new Vector3f(0, 0, -z),
+                new Vector3f(x, -y, -z), new Vector3f(-x, -y, -z), new Vector3f(0, 0, -z),
+                new Vector3f(-x, -y, -z), new Vector3f(-x, y, -z), new Vector3f(0, 0, -z),
 
-                // south
-                new Vector3f(x, y, z), new Vector3f(x, -y, z), new Vector3f(x, -y, -z),
-                new Vector3f(x, -y, -z), new Vector3f(x, y, -z), new Vector3f(x, y, z),
+                // east
+                new Vector3f(x, y, -z), new Vector3f(x, y, z), new Vector3f(x, 0, 0),
+                new Vector3f(x, y, z), new Vector3f(x, -y, z), new Vector3f(x, 0, 0),
+                new Vector3f(x, -y, z), new Vector3f(x, -y, -z), new Vector3f(x, 0, 0),
+                new Vector3f(x, -y, -z), new Vector3f(x, y, -z), new Vector3f(x, 0, 0),
+
+                // west
+                new Vector3f(-x, y, z), new Vector3f(-x, y, -z), new Vector3f(-x, 0, 0),
+                new Vector3f(-x, y, -z), new Vector3f(-x, -y, -z), new Vector3f(-x, 0, 0),
+                new Vector3f(-x, -y, -z), new Vector3f(-x, -y, z), new Vector3f(-x, 0, 0),
+                new Vector3f(-x, -y, z), new Vector3f(-x, y, z), new Vector3f(-x, 0, 0),
 
                 // up
-                new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(-x, y, -z),
-                new Vector3f(-x, y, -z), new Vector3f(x, y, -z), new Vector3f(x, y, z),
+                new Vector3f(x, y, -z), new Vector3f(-x, y, -z), new Vector3f(0, y, 0),
+                new Vector3f(-x, y, -z), new Vector3f(-x, y, z), new Vector3f(0, y, 0),
+                new Vector3f(-x, y, z), new Vector3f(x, y, z), new Vector3f(0, y, 0),
+                new Vector3f(x, y, z), new Vector3f(x, y, -z), new Vector3f(0, y, 0),
 
                 // down
-                new Vector3f(x, -y, z), new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z),
-                new Vector3f(-x, -y, -z), new Vector3f(x, -y, -z), new Vector3f(x, -y, z)
+                new Vector3f(x, -y, z), new Vector3f(-x, -y, z), new Vector3f(0, -y, 0),
+                new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z), new Vector3f(0, -y, 0),
+                new Vector3f(-x, -y, -z), new Vector3f(x, -y, -z), new Vector3f(0, -y, 0),
+                new Vector3f(x, -y, -z), new Vector3f(x, -y, z), new Vector3f(0, -y, 0)
         };
 
         return new MinecraftShape(Arrays.asList(points));
@@ -69,5 +84,9 @@ public class MinecraftShape extends HullCollisionShape {
         }
 
         return new MinecraftShape(points);
+    }
+
+    public List<Vector3f> getTriangles() {
+        return this.triangles;
     }
 }

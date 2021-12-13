@@ -20,11 +20,14 @@ dependencies {
     common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+    shadowCommon("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
 
     forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
 
     modApi "dev.lazurite:transporter-forge:$transporter_version"
     modApi "dev.lazurite:toolbox-forge:$toolbox_version"
+    shadowCommon "dev.lazurite:transporter-forge:$transporter_version"
+    shadowCommon "dev.lazurite:toolbox-forge:$toolbox_version"
 }
 
 remapJar {

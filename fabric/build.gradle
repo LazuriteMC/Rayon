@@ -17,12 +17,15 @@ dependencies {
     common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+    shadowCommon("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
 
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
     modApi "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
 
     modApi "dev.lazurite:transporter-fabric:$transporter_version"
     modApi "dev.lazurite:toolbox-fabric:$toolbox_version"
+    include "dev.lazurite:transporter-fabric:$transporter_version"
+    include "dev.lazurite:toolbox-fabric:$toolbox_version"
 }
 
 remapJar {

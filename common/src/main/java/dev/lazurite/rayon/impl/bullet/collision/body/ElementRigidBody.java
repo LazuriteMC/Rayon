@@ -4,6 +4,7 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
+import dev.lazurite.rayon.impl.bullet.collision.body.terrain.Terrain;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.util.Frame;
@@ -28,7 +29,7 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     private boolean dragForces;
     private boolean buoyantForces;
     private float dragCoefficient;
-    private Map<BlockPos, TerrainObject> terrainObjects = new HashMap<>();
+    private Map<BlockPos, Terrain> terrainObjects = new HashMap<>();
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(shape, mass);
@@ -80,6 +81,10 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         this.dragCoefficient = dragCoefficient;
     }
 
+    public BlockPos getBlockPos() {
+        return new BlockPos(VectorHelper.toVec3(Convert.toMinecraft(getPhysicsLocation(null))));
+    }
+
     public Frame getFrame() {
         return this.frame;
     }
@@ -109,11 +114,11 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         return 1.0f;
     }
 
-    public Map<BlockPos, TerrainObject> getTerrainObjects() {
+    public Map<BlockPos, Terrain> getTerrainObjects() {
         return this.terrainObjects;
     }
 
-    public void setTerrainObjects(Map<BlockPos, TerrainObject> terrainObjects) {
+    public void setTerrainObjects(Map<BlockPos, Terrain> terrainObjects) {
         this.terrainObjects = terrainObjects;
     }
 
@@ -124,29 +129,5 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     @Override
     public MinecraftShape getCollisionShape() {
         return (MinecraftShape) super.getCollisionShape();
-    }
-
-    /**
-     * @param density the density of the surrounding fluid (air, water, etc. - not the rigid body)
-     */
-    public void applyDragForce(float density) {
-        final var area = (float) Math.pow(Convert.toMinecraft(
-                this.getCollisionShape().boundingBox(this.getPhysicsLocation(null), new Quaternion(), null))
-                .getSize(), 2);
-        final var v2 = this.getLinearVelocity(null).lengthSquared();
-        final var direction = getLinearVelocity(null).normalize();
-
-        /*
-            0.5CpAv2
-            C = drag coefficient of object
-            p = density of fluid
-            A = area of object
-            v2 = velocity squared of object
-        */
-        final var force = new Vector3f().set(direction).multLocal(-0.5f * this.getDragCoefficient() * density * area * v2);
-
-        if (Float.isFinite(force.lengthSquared()) && force.lengthSquared() > 0.001f) {
-            this.applyCentralForce(force);
-        }
     }
 }

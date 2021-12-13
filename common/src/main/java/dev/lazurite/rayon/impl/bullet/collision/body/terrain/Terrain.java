@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.bullet.collision.body;
+package dev.lazurite.rayon.impl.bullet.collision.body.terrain;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsGhostObject;
@@ -15,13 +15,13 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
 
-public class TerrainObject {
+public class Terrain {
     private final PhysicsCollisionObject collisionObject;
     private final MinecraftSpace space;
     private final BlockPos blockPos;
     private final StateHolder state;
 
-    public TerrainObject(MinecraftSpace space, BlockPos blockPos, FluidState fluidState) {
+    public Terrain(MinecraftSpace space, BlockPos blockPos, FluidState fluidState) {
         this.space = space;
         this.blockPos = blockPos;
         this.state = fluidState;
@@ -31,7 +31,7 @@ public class TerrainObject {
         this.collisionObject = new Fluid(this, space, MinecraftShape.of(boundingBox));
     }
 
-    public TerrainObject(MinecraftSpace space, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
+    public Terrain(MinecraftSpace space, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
         this.space = space;
         this.blockPos = blockPos;
         this.state = blockState;
@@ -71,23 +71,18 @@ public class TerrainObject {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof TerrainObject terrainObject) {
+        if (obj instanceof dev.lazurite.rayon.impl.bullet.collision.body.terrain.Terrain terrainObject) {
             return terrainObject.getBlockPos().equals(blockPos) && terrainObject.getState().equals(state);
         }
 
         return false;
     }
 
-    // Marker interface
-    public interface Terrain {
-        TerrainObject getParent();
-    }
-
-    public static class Block extends PhysicsRigidBody implements Terrain, Debuggable {
+    public static class Block extends PhysicsRigidBody implements Debuggable {
         private final MinecraftSpace space;
-        private final TerrainObject parent;
+        private final Terrain parent;
 
-        public Block(TerrainObject parent, MinecraftSpace space, MinecraftShape shape, float friction, float restitution) {
+        public Block(Terrain parent, MinecraftSpace space, MinecraftShape shape, float friction, float restitution) {
             super(shape, 0.0f);
             this.parent = parent;
             this.space = space;
@@ -102,8 +97,7 @@ public class TerrainObject {
             return this.space;
         }
 
-        @Override
-        public TerrainObject getParent() {
+        public Terrain getParent() {
             return this.parent;
         }
 
@@ -123,11 +117,11 @@ public class TerrainObject {
         }
     }
 
-    public static class Fluid extends PhysicsGhostObject implements Terrain, Debuggable {
-        private final TerrainObject parent;
+    public static class Fluid extends PhysicsGhostObject implements Debuggable {
+        private final Terrain parent;
         private final MinecraftSpace space;
 
-        public Fluid(TerrainObject parent, MinecraftSpace space, MinecraftShape shape) {
+        public Fluid(Terrain parent, MinecraftSpace space, MinecraftShape shape) {
             super(shape);
             this.parent = parent;
             this.space = space;
@@ -140,8 +134,7 @@ public class TerrainObject {
             return this.space;
         }
 
-        @Override
-        public TerrainObject getParent() {
+        public Terrain getParent() {
             return this.parent;
         }
 

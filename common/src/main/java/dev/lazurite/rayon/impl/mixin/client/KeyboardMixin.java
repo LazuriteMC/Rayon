@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(KeyboardHandler.class)
 @Environment(EnvType.CLIENT)
 public abstract class KeyboardMixin {
-    @Shadow protected abstract void debugFeedback(String string, Object... objects);
+    @Shadow protected abstract void debugFeedbackTranslated(String string, Object... objects);
 
     @Inject(method = "handleDebugKeys", at = @At("HEAD"), cancellable = true)
     private void processF3(int key, CallbackInfoReturnable<Boolean> info) {
@@ -26,9 +26,9 @@ public abstract class KeyboardMixin {
             boolean enabled = CollisionObjectDebugger.toggle();
 
             if (enabled) {
-                debugFeedback("debug.rayon.on");
+                debugFeedbackTranslated("debug.rayon.on");
             } else {
-                debugFeedback("debug.rayon.off");
+                debugFeedbackTranslated("debug.rayon.off");
             }
 
             info.setReturnValue(true);

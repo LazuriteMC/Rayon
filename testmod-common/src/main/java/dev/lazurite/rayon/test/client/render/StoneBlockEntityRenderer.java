@@ -7,6 +7,7 @@ import dev.lazurite.rayon.test.RayonTest;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -29,12 +30,18 @@ public class StoneBlockEntityRenderer extends EntityRenderer<StoneBlockEntity> {
 
         matrixStack.pushPose();
         matrixStack.mulPose(rot);
-        matrixStack.translate(box.getXExtent() * -0.5, box.getYExtent() * -0.5, box.getZExtent() * -0.5);
+        matrixStack.translate(box.getXExtent() * -2.0, box.getYExtent() * -2.0, box.getZExtent() * -0.5);
+//        matrixStack.translate(box.getXExtent() * -0.5, box.getYExtent() * -0.5f, box.getZExtent() * -0.5);
         var vertexConsumer = multiBufferSource.getBuffer(model.renderType(this.getTextureLocation(cubeEntity)));
         model.renderToBuffer(matrixStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStack.popPose();
 
         super.render(cubeEntity, yaw, delta, matrixStack, multiBufferSource, i);
+    }
+
+    @Override
+    public boolean shouldRender(StoneBlockEntity entity, Frustum frustum, double d, double e, double f) {
+        return true;
     }
 
     @Override

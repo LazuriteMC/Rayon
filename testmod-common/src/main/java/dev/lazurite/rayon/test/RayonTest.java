@@ -19,7 +19,7 @@ public class RayonTest {
 
     public static void init() {
         /* An example of a block collision event */
-        ElementCollisionEvents.TERRAIN_COLLISION.register((element, terrainObject, impulse) -> {
+        ElementCollisionEvents.BLOCK_COLLISION.register((element, terrainObject, impulse) -> {
             if (element instanceof StoneBlockEntity) {
                 terrainObject.getBlockState().ifPresent(blockState -> {
                     if (blockState.getBlock().equals(Blocks.BRICKS)) {

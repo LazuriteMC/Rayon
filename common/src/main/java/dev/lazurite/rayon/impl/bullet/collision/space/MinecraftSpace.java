@@ -12,7 +12,7 @@ import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.TerrainObject;
+import dev.lazurite.rayon.impl.bullet.collision.body.terrain.Terrain;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -37,7 +37,7 @@ import java.util.concurrent.CompletableFuture;
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 30; // half a second
 
-    private final List<TerrainObject> terrainObjects;
+    private final List<Terrain> terrainObjects;
     private final PhysicsThread thread;
     private final Level level;
     private int presimSteps;
@@ -155,14 +155,14 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
     }
 
-    public void addTerrainObject(TerrainObject terrainObject) {
+    public void addTerrainObject(Terrain terrainObject) {
         if (!this.terrainObjects.contains(terrainObject)) {
             this.terrainObjects.add(terrainObject);
             this.addCollisionObject(terrainObject.getCollisionObject());
         }
     }
 
-    public void removeTerrainObject(TerrainObject terrainObject) {
+    public void removeTerrainObject(Terrain terrainObject) {
         this.terrainObjects.remove(terrainObject);
         this.removeCollisionObject(terrainObject.getCollisionObject());
     }
@@ -179,11 +179,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return presimSteps < MAX_PRESIM_STEPS;
     }
 
-    public List<TerrainObject> getTerrainObjects() {
+    public List<Terrain> getTerrainObjects() {
         return new ArrayList<>(this.terrainObjects);
     }
 
-    public Optional<TerrainObject> getTerrainObjectAt(BlockPos blockPos) {
+    public Optional<Terrain> getTerrainObjectAt(BlockPos blockPos) {
         for (var terrainObject : getTerrainObjects()) {
             if (terrainObject.getBlockPos().equals(blockPos)) {
                 return Optional.of(terrainObject);
@@ -225,13 +225,21 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         if (event.getObjectA() instanceof ElementRigidBody rigidBodyA && event.getObjectB() instanceof ElementRigidBody rigidBodyB) {
             ElementCollisionEvents.ELEMENT_COLLISION.invoke(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse);
 
-        /* Terrain on Element */
-        } else if (event.getObjectA() instanceof TerrainObject.Terrain terrain && event.getObjectB() instanceof ElementRigidBody rigidBody) {
-            ElementCollisionEvents.TERRAIN_COLLISION.invoke(rigidBody.getElement(), terrain.getParent(), impulse);
+        /* Block on Element */
+        } else if (event.getObjectA() instanceof Terrain.Block block && event.getObjectB() instanceof ElementRigidBody rigidBody) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), block.getParent(), impulse);
 
-        /* Element on Terrain */
-        } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainObject.Terrain terrain) {
-            ElementCollisionEvents.TERRAIN_COLLISION.invoke(rigidBody.getElement(), terrain.getParent(), impulse);
+        /* Element on Block */
+        } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof Terrain.Block block) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), block.getParent(), impulse);
+
+        /* Fluid on Element */
+        } else if (event.getObjectA() instanceof Terrain.Fluid fluid && event.getObjectB() instanceof ElementRigidBody rigidBody) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), fluid.getParent(), impulse);
+
+        /* Element on Fluid */
+        } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof Terrain.Fluid fluid) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), fluid.getParent(), impulse);
         }
     }
 }
