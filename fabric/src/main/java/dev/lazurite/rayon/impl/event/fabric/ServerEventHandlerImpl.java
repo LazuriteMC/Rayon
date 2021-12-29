@@ -13,7 +13,7 @@ public class ServerEventHandlerImpl {
     public static void register() {
         // Server Events
         ServerLifecycleEvents.SERVER_STARTING.register(ServerEventHandler::onServerStart);
-        ServerLifecycleEvents.SERVER_STOPPED.register(ServerEventHandler::onServerStop);
+        ServerLifecycleEvents.SERVER_STOPPING.register(ServerEventHandler::onServerStop);
         ServerTickEvents.END_SERVER_TICK.register(server -> ServerEventHandler.onServerTick());
 
         // Level Events

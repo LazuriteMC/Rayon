@@ -24,12 +24,13 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     protected final PhysicsElement element;
     protected final MinecraftSpace space;
 
+    private Map<BlockPos, Terrain> terrainObjects = new HashMap<>();
     private final Frame frame;
     private boolean terrainLoading;
     private boolean dragForces;
     private boolean buoyantForces;
     private float dragCoefficient;
-    private Map<BlockPos, Terrain> terrainObjects = new HashMap<>();
+    private DragType dragType;
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(shape, mass);
@@ -43,6 +44,7 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
+        this.setDragType(DragType.SIMPLE);
     }
 
     public PhysicsElement getElement() {
@@ -79,6 +81,14 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
 
     public void setDragCoefficient(float dragCoefficient) {
         this.dragCoefficient = dragCoefficient;
+    }
+
+    public DragType getDragType() {
+        return this.dragType;
+    }
+
+    public void setDragType(DragType dragType) {
+        this.dragType = dragType;
     }
 
     public BlockPos getBlockPos() {
@@ -129,5 +139,10 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     @Override
     public MinecraftShape getCollisionShape() {
         return (MinecraftShape) super.getCollisionShape();
+    }
+
+    public enum DragType {
+        SIMPLE,
+        REALISTIC
     }
 }

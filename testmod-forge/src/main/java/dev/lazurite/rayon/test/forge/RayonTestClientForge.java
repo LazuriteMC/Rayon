@@ -10,6 +10,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public class RayonTestClientForge {
     @SubscribeEvent
     public static void onInitializeClient(FMLClientSetupEvent event) {
-        EntityRenderers.register(RayonTest.STONE_BLOCK_ENTITY, (context) -> new StoneBlockEntityRenderer(context, new StoneBlockEntityModel(24, 24, 8)));
+        EntityRenderers.register(RayonTest.STONE_BLOCK_ENTITY, (context) -> new StoneBlockEntityRenderer(context, new StoneBlockEntityModel(24, 8, 24)));
     }
 }
