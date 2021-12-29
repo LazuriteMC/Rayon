@@ -29,7 +29,7 @@ public interface PhysicsElement<T> {
      * in rayon sub-modules to handle default behavior (see entity module).
      * @return the newly created {@link MinecraftShape}
      */
-    MinecraftShape genShape();
+    MinecraftShape createShape();
 
     /**
      * Mainly used for lerping within your renderer.

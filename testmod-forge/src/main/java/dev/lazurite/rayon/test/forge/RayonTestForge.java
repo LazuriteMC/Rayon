@@ -32,7 +32,7 @@ public class RayonTestForge {
 
     public static final RegistryObject<EntityType<? extends LivingEntity>> STONE_BLOCK_ENTITY = ENTITIES.register("stone_block_entity",
             () -> EntityType.Builder.of(StoneBlockEntity::new, MobCategory.MISC)
-                    .sized(0.5f, 0.5f)
+                    .sized(1.5f, 0.5f)
                     .setTrackingRange(80)
                     .build(new ResourceLocation(RayonTest.MODID, "stone_block_entity").toString()));
 

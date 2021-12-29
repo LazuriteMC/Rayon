@@ -29,7 +29,7 @@ public class RayonTestFabric implements ModInitializer {
                         .entityFactory(StoneBlockEntity::new)
                         .spawnGroup(MobCategory.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
-                        .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
+                        .dimensions(EntityDimensions.fixed(1.5f, 0.5f))
                         .trackRangeBlocks(80)
                         .build()
         );

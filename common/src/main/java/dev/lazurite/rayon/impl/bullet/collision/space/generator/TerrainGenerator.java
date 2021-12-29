@@ -77,19 +77,15 @@ public class TerrainGenerator {
                             pattern = Transporter.getPatternBuffer().get(Registry.BLOCK.getKey(blockState.getBlock()));
                         }
 
-                        if (pattern != null) {
-                            terrainObject.getCollisionObject().setCollisionShape(MinecraftShape.of(pattern));
-                        }
+//                        if (pattern != null) {
+//                            terrainObject.getCollisionObject().setCollisionShape(MinecraftShape.of(pattern));
+//                        }
 
                         toKeep.put(blockPos, terrainObject);
                     }
                 }, () -> {
                     if (rigidBody.isActive()) {
-                        if (fluidState.getType() != Fluids.EMPTY) {
-                            var newTerrainObject = new Terrain(space, blockPos, fluidState);
-                            space.addTerrainObject(newTerrainObject);
-                            toKeep.put(blockPos, newTerrainObject);
-                        } else if (blockState.getBlock() != Blocks.AIR) {
+                        if (blockState.getBlock() != Blocks.AIR && fluidState.getType().equals(Fluids.EMPTY)) {
                             var optional = BlockProps.get(Registry.BLOCK.getKey(blockState.getBlock()));
 
                             float friction = 0.75f;
@@ -123,7 +119,7 @@ public class TerrainGenerator {
                                     }
 
                                     if (pattern != null && ((MinecraftShape) newTerrainObject.getCollisionObject().getCollisionShape()).copyHullVertices().length == 108) {
-                                        newTerrainObject.getCollisionObject().setCollisionShape(MinecraftShape.of(pattern));
+//                                        newTerrainObject.getCollisionObject().setCollisionShape(MinecraftShape.of(pattern));
                                     }
                                 }
 

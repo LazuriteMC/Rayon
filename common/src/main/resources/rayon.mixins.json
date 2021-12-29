@@ -5,10 +5,14 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "common.ExplosionMixin",
-    "common.LevelMixin"
+    "common.LevelMixin",
+    "common.entity.EntityMixin",
+    "common.entity.EntityTrackerEntryMixin"
   ],
   "client": [
-    "client.KeyboardMixin"
+    "client.KeyboardMixin",
+    "client.entity.EntityRenderDispatcherMixin",
+    "client.entity.LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

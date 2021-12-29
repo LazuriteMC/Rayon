@@ -1,5 +1,7 @@
 package dev.lazurite.rayon.test.client.render;
 
+import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Quaternion;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
@@ -25,14 +27,18 @@ public class StoneBlockEntityRenderer extends EntityRenderer<StoneBlockEntity> {
     }
 
     public void render(StoneBlockEntity cubeEntity, float yaw, float delta, PoseStack matrixStack, MultiBufferSource multiBufferSource, int i) {
-        var box = Convert.toBullet(cubeEntity.getBoundingBox());
-        var rot = Convert.toMinecraft(cubeEntity.getPhysicsRotation(new com.jme3.math.Quaternion(), delta));
+//        final var box = cubeEntity.getBoundingBox();
+        final var box = Convert.toMinecraft(cubeEntity.getRigidBody().boundingBox(new BoundingBox()));
+        final var rot = Convert.toMinecraft(cubeEntity.getPhysicsRotation(new Quaternion(), delta));
+//        rot.mul(com.mojang.math.Quaternion.fromXYZDegrees(new Vector3f(90, 0, 0)));
 
         matrixStack.pushPose();
         matrixStack.mulPose(rot);
-        matrixStack.translate(box.getXExtent() * -2.0, box.getYExtent() * -2.0, box.getZExtent() * -0.5);
-//        matrixStack.translate(box.getXExtent() * -0.5, box.getYExtent() * -0.5f, box.getZExtent() * -0.5);
-        var vertexConsumer = multiBufferSource.getBuffer(model.renderType(this.getTextureLocation(cubeEntity)));
+//        matrixStack.translate(box.getXsize() * -0.5, box.getYsize() * -0.5, box.getZsize() * -0.5);
+//        matrixStack.translate(0.0f, box.getYsize() * -0.5f, 0.0f);
+//        matrixStack.translate(box.getXExtent(), box.getYExtent(), box.getZExtent());
+
+        final var vertexConsumer = multiBufferSource.getBuffer(model.renderType(this.getTextureLocation(cubeEntity)));
         model.renderToBuffer(matrixStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         matrixStack.popPose();
 

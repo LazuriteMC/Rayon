@@ -1,16 +1,14 @@
 package dev.lazurite.rayon.test.common.entity;
 
-import com.mojang.math.Quaternion;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 
@@ -20,14 +18,16 @@ public class StoneBlockEntity extends LivingEntity implements EntityPhysicsEleme
     public StoneBlockEntity(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
         this.rigidBody.setMass(500);
-        this.rigidBody.setDragCoefficient(1.0f);
-        this.rigidBody.setCollisionShape(MinecraftShape.of(AABB.ofSize(this.position(), 2.0f, 2.0f, 0.5f)));
-
     }
 
     @Override
     public boolean isSilent() {
         return true;
+    }
+
+    @Override
+    protected void checkFallDamage(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+
     }
 
     @Override

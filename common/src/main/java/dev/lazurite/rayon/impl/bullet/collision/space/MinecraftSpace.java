@@ -232,14 +232,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         /* Element on Block */
         } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof Terrain.Block block) {
             ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), block.getParent(), impulse);
-
-        /* Fluid on Element */
-        } else if (event.getObjectA() instanceof Terrain.Fluid fluid && event.getObjectB() instanceof ElementRigidBody rigidBody) {
-            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), fluid.getParent(), impulse);
-
-        /* Element on Fluid */
-        } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof Terrain.Fluid fluid) {
-            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), fluid.getParent(), impulse);
         }
     }
 }

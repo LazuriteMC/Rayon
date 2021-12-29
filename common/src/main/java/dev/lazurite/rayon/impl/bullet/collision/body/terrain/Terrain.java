@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.impl.bullet.collision.body.terrain;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
-import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
@@ -20,16 +19,6 @@ public class Terrain {
     private final MinecraftSpace space;
     private final BlockPos blockPos;
     private final StateHolder state;
-
-    public Terrain(MinecraftSpace space, BlockPos blockPos, FluidState fluidState) {
-        this.space = space;
-        this.blockPos = blockPos;
-        this.state = fluidState;
-
-        final var voxelShape = fluidState.getShape(space.getLevel(), blockPos);
-        final var boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
-        this.collisionObject = new Fluid(this, space, MinecraftShape.of(boundingBox));
-    }
 
     public Terrain(MinecraftSpace space, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
         this.space = space;
@@ -104,43 +93,6 @@ public class Terrain {
         @Override
         public Vector3f getOutlineColor() {
             return new Vector3f(0.25f, 0.25f, 1.0f);
-        }
-
-        @Override
-        public float getOutlineAlpha() {
-            return 1.0f;
-        }
-
-        @Override
-        public MinecraftShape getCollisionShape() {
-            return (MinecraftShape) super.getCollisionShape();
-        }
-    }
-
-    public static class Fluid extends PhysicsGhostObject implements Debuggable {
-        private final Terrain parent;
-        private final MinecraftSpace space;
-
-        public Fluid(Terrain parent, MinecraftSpace space, MinecraftShape shape) {
-            super(shape);
-            this.parent = parent;
-            this.space = space;
-
-            var blockPos = parent.getBlockPos();
-            this.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
-        }
-
-        public MinecraftSpace getSpace() {
-            return this.space;
-        }
-
-        public Terrain getParent() {
-            return this.parent;
-        }
-
-        @Override
-        public Vector3f getOutlineColor() {
-            return new Vector3f(0.0f, 1.0f, 1.0f);
         }
 
         @Override
