@@ -11,8 +11,7 @@
   ],
   "client": [
     "client.KeyboardMixin",
-    "client.entity.EntityRenderDispatcherMixin",
-    "client.entity.LevelRendererMixin"
+    "client.EntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

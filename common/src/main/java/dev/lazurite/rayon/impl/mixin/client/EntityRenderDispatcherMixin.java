@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.impl.mixin.client.entity;
+package dev.lazurite.rayon.impl.mixin.client;
 
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Corrects the positions of shadows and debug hitboxes.
- * @see LevelRendererMixin
  */
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {

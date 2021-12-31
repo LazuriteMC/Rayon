@@ -55,8 +55,8 @@ public class PressureGenerator {
                 final var waterHeight = blockPos.getY() - location.y - centroid.y;
                 final var density = waterHeight > 0 ? WATER_DENSITY : AIR_DENSITY;
 
-                if (rigidBody.buoyantForcesEnabled()) {
-                    final var pressure = gravity.y * density * (waterHeight > 0 ? waterHeight : (centroid.y + location.y));
+                if (rigidBody.buoyantForcesEnabled() && isUnderwater) {
+                    final var pressure = gravity.y * density * (waterHeight > 0 ? waterHeight : centroid.y);
                     final var buoyantForce = v4.set(area).multLocal(pressure);
 
                     if (Float.isFinite(buoyantForce.lengthSquared()) && buoyantForce.lengthSquared() > 0.0f) {

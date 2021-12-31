@@ -6,6 +6,7 @@ architectury {
 }
 
 loom.forge.mixinConfig "rayon.mixins.json"
+loom.forge.mixinConfig "rayon-forge.mixins.json"
 shadowJar.exclude "fabric.mod.json"
 
 configurations {

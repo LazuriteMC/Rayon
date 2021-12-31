@@ -6,11 +6,6 @@ pluginManagement {
         }
 
         maven {
-            name 'Lazurite'
-            url 'https://lazurite.dev/releases'
-        }
-
-        maven {
             name 'Forge'
             url 'https://maven.minecraftforge.net/'
         }

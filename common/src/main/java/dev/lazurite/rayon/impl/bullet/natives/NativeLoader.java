@@ -3,6 +3,7 @@ package dev.lazurite.rayon.impl.bullet.natives;
 import com.jme3.system.JmeSystem;
 import com.jme3.system.NativeLibraryLoader;
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.lazurite.rayon.impl.Rayon;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -28,14 +29,17 @@ public class NativeLoader {
             final var destinationFile = destination.toFile();
 
             if (Files.exists(destination)) {
-                boolean success = destinationFile.delete();
-
-                if (!success) {
-                    throw new RuntimeException("Failed to remove old bullet natives.");
+                if (!destinationFile.delete()) {
+                    Rayon.LOGGER.warn("Failed to remove old bullet natives.");
                 }
             }
 
-            FileUtils.copyURLToFile(url, destinationFile);
+            try {
+                FileUtils.copyURLToFile(url, destinationFile);
+            } catch (IOException e) {
+                Rayon.LOGGER.warn("Unable to copy natives.");
+            }
+
             NativeLibraryLoader.loadLibbulletjme(true, nativesFolder.toFile(), "Release", "Sp");
         } catch (IOException | NoSuchElementException e) {
             e.printStackTrace();

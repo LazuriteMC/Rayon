@@ -1,9 +1,8 @@
-package dev.lazurite.rayon.impl.mixin.client.entity;
+package dev.lazurite.rayon.impl.mixin.forge;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import dev.lazurite.rayon.impl.mixin.client.EntityRenderDispatcherMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import org.spongepowered.asm.mixin.Final;
@@ -20,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
  * @see EntityRenderDispatcherMixin
  */
 @Mixin(LevelRenderer.class)
-@Environment(EnvType.CLIENT)
 public class LevelRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 
