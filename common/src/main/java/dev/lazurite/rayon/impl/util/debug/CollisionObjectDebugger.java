@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.*;
 import dev.lazurite.rayon.api.event.render.DebugRenderEvents;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.terrain.Terrain;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import net.fabricmc.api.EnvType;
@@ -44,7 +43,7 @@ public final class CollisionObjectDebugger {
         builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        space.getTerrainObjects().stream().map(Terrain::getCollisionObject).forEach(physicsCollisionObject -> CollisionObjectDebugger.renderBody(physicsCollisionObject, builder, stack, cameraPos, tickDelta));
+        space.getTerrainMap().values().forEach(terrain -> CollisionObjectDebugger.renderBody(terrain, builder, stack, cameraPos, tickDelta));
         space.getRigidBodiesByClass(ElementRigidBody.class).forEach(elementRigidBody -> CollisionObjectDebugger.renderBody(elementRigidBody, builder, stack, cameraPos, tickDelta));
         Tesselator.getInstance().end();
     }

@@ -32,6 +32,15 @@ public class MinecraftShape extends HullCollisionShape {
         return Collections.unmodifiableList(this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList());
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MinecraftShape shape) {
+            return shape.getTriangles(Quaternion.IDENTITY).equals(this.getTriangles(Quaternion.IDENTITY));
+        }
+
+        return false;
+    }
+
     public static MinecraftShape of(AABB box) {
         return MinecraftShape.of(Convert.toBullet(box));
     }

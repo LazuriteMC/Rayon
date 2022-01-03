@@ -2,6 +2,7 @@ package dev.lazurite.rayon.impl.event.forge;
 
 import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.PressureGenerator;
+import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.impl.event.ServerEventHandler;
 import dev.lazurite.toolbox.api.util.PlayerUtil;
 import net.minecraft.server.level.ServerLevel;
@@ -19,7 +20,8 @@ import net.minecraftforge.fml.LogicalSide;
 public class ServerEventHandlerImpl {
     public static void register() {
         // Space Events
-        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
+//        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
+        PhysicsSpaceEvents.STEP.register(TerrainGenerator::step);
 
         // Entity Events
         PhysicsSpaceEvents.ELEMENT_ADDED.register(ServerEventHandler::onElementAddedToSpace);

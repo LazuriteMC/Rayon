@@ -9,19 +9,19 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.event.collision.ElementCollisionEvents;
 import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
 import dev.lazurite.rayon.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.terrain.Terrain;
+import dev.lazurite.rayon.impl.bullet.collision.body.terrain.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is the main physics simulation used by Rayon. Each bullet simulation update
@@ -37,10 +37,13 @@ import java.util.concurrent.CompletableFuture;
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private static final int MAX_PRESIM_STEPS = 30; // half a second
 
-    private final List<Terrain> terrainObjects;
+    private final CompletableFuture[] futures = new CompletableFuture[3];
+    private final Map<BlockPos, TerrainRigidBody> terrainMap;
     private final PhysicsThread thread;
     private final Level level;
+    private final ChunkCache chunkCache;
     private int presimSteps;
+
 
     private volatile boolean stepping;
 
@@ -68,11 +71,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         this.thread = thread;
         this.level = level;
-        this.terrainObjects = new ArrayList<>();
+        this.chunkCache = ChunkCache.create(this);
+        this.terrainMap = new ConcurrentHashMap<>();
         this.setGravity(new Vector3f(0, -9.807f, 0));
         this.addCollisionListener(this);
         this.setAccuracy(1f/60f);
-//        this.setMaxSubSteps(10);
     }
 
     /**
@@ -96,15 +99,14 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         if (!isStepping() && (isInPresim() || !isEmpty())) {
             this.stepping = true;
 
-            // This can only be done on each tick
-            TerrainGenerator.step(this);
-
-            final var futures = new CompletableFuture[3];
+            if (!isEmpty()) {
+                this.chunkCache.refreshAll();
+            }
 
             // Step 3 times per tick, re-evaluating forces each step
             for (int i = 0; i < 3; ++i) {
                 // Hop threads...
-                futures[i] = CompletableFuture.runAsync(() -> {
+                this.futures[i] = CompletableFuture.runAsync(() -> {
                     if (presimSteps > MAX_PRESIM_STEPS) {
                         /* Call collision events */
                         this.distributeEvents();
@@ -138,6 +140,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                             rigidBody.getPhysicsRotation(new Quaternion()),
                             rigidBody.getPhysicsRotation(new Quaternion()));
                 }
+            } else if (collisionObject instanceof TerrainRigidBody terrain) {
+                this.terrainMap.put(terrain.getBlockPos(), terrain);
             }
 
             super.addCollisionObject(collisionObject);
@@ -151,20 +155,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
             if (collisionObject instanceof ElementRigidBody rigidBody) {
                 PhysicsSpaceEvents.ELEMENT_REMOVED.invoke(this, rigidBody);
+            } else if (collisionObject instanceof TerrainRigidBody terrain) {
+                this.removeTerrainObjectAt(terrain.getBlockPos());
             }
         }
-    }
-
-    public void addTerrainObject(Terrain terrainObject) {
-        if (!this.terrainObjects.contains(terrainObject)) {
-            this.terrainObjects.add(terrainObject);
-            this.addCollisionObject(terrainObject.getCollisionObject());
-        }
-    }
-
-    public void removeTerrainObject(Terrain terrainObject) {
-        this.terrainObjects.remove(terrainObject);
-        this.removeCollisionObject(terrainObject.getCollisionObject());
     }
 
     public boolean isServer() {
@@ -179,18 +173,32 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return presimSteps < MAX_PRESIM_STEPS;
     }
 
-    public List<Terrain> getTerrainObjects() {
-        return new ArrayList<>(this.terrainObjects);
-    }
+    public void wakeNearbyElementRigidBodies(BlockPos blockPos) {
+        for (var rigidBody : getRigidBodiesByClass(ElementRigidBody.class)) {
+            if (!rigidBody.terrainLoadingEnabled()) {
+                continue;
+            }
 
-    public Optional<Terrain> getTerrainObjectAt(BlockPos blockPos) {
-        for (var terrainObject : getTerrainObjects()) {
-            if (terrainObject.getBlockPos().equals(blockPos)) {
-                return Optional.of(terrainObject);
+            if (rigidBody.isNear(blockPos)) {
+                rigidBody.activate();
             }
         }
+    }
 
-        return Optional.empty();
+    public Map<BlockPos, TerrainRigidBody> getTerrainMap() {
+        return new HashMap<>(this.terrainMap);
+    }
+
+    public Optional<TerrainRigidBody> getTerrainObjectAt(BlockPos blockPos) {
+        return Optional.ofNullable(terrainMap.get(blockPos));
+    }
+
+    public void removeTerrainObjectAt(BlockPos blockPos) {
+        final var removed = terrainMap.remove(blockPos);
+
+        if (removed != null) {
+            this.removeCollisionObject(removed);
+        }
     }
 
     public <T> List<T> getRigidBodiesByClass(Class<T> type) {
@@ -213,6 +221,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return this.level;
     }
 
+    public ChunkCache getChunkCache() {
+        return this.chunkCache;
+    }
+
     /**
      * Trigger all collision events (e.g. block/element or element/element).
      * @param event the event context
@@ -226,12 +238,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             ElementCollisionEvents.ELEMENT_COLLISION.invoke(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse);
 
         /* Block on Element */
-        } else if (event.getObjectA() instanceof Terrain.Block block && event.getObjectB() instanceof ElementRigidBody rigidBody) {
-            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), block.getParent(), impulse);
+        } else if (event.getObjectA() instanceof TerrainRigidBody terrain && event.getObjectB() instanceof ElementRigidBody rigidBody) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), terrain, impulse);
 
         /* Element on Block */
-        } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof Terrain.Block block) {
-            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), block.getParent(), impulse);
+        } else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainRigidBody terrain) {
+            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), terrain, impulse);
         }
     }
 }

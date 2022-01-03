@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.test.fabric;
 
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.test.RayonTest;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.test.common.item.WandItem;
@@ -22,6 +23,7 @@ public class RayonTestFabric implements ModInitializer {
     public void onInitialize() {
         RayonTest.init();
 
+        // Entity Registration
         RayonTest.STONE_BLOCK_ENTITY = Registry.register(
                 Registry.ENTITY_TYPE,
                 new ResourceLocation(RayonTest.MODID, "stone_block_entity"),
@@ -29,16 +31,18 @@ public class RayonTestFabric implements ModInitializer {
                         .entityFactory(StoneBlockEntity::new)
                         .spawnGroup(MobCategory.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
-                        .dimensions(EntityDimensions.fixed(1.5f, 0.5f))
+                        .dimensions(EntityDimensions.fixed(0.75f, 0.25f))
                         .trackRangeBlocks(80)
                         .build()
         );
 
+        // Item Registration
         RayonTest.WAND_ITEM = Registry.register(
                 Registry.ITEM,
                 new ResourceLocation(RayonTest.MODID, "wand_item"),
                 new WandItem(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC)));
 
+        // Block Registration
         RayonTest.BLUE_DIRT = Registry.register(
                 Registry.BLOCK,
                 new ResourceLocation(RayonTest.MODID, "blue_dirt"),
@@ -48,5 +52,7 @@ public class RayonTestFabric implements ModInitializer {
                 Registry.ITEM,
                 new ResourceLocation(RayonTest.MODID, "blue_dirt"),
                 new BlockItem(RayonTest.BLUE_DIRT, new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
+
+        Rayon.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true);
     }
 }

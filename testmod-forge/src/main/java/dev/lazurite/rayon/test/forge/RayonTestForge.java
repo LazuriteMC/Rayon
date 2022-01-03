@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.test.forge;
 
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.test.RayonTest;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.test.common.item.WandItem;
@@ -32,7 +33,7 @@ public class RayonTestForge {
 
     public static final RegistryObject<EntityType<? extends LivingEntity>> STONE_BLOCK_ENTITY = ENTITIES.register("stone_block_entity",
             () -> EntityType.Builder.of(StoneBlockEntity::new, MobCategory.MISC)
-                    .sized(1.5f, 0.5f)
+                    .sized(0.75f, 0.25f)
                     .setTrackingRange(80)
                     .build(new ResourceLocation(RayonTest.MODID, "stone_block_entity").toString()));
 
@@ -40,6 +41,7 @@ public class RayonTestForge {
         RayonTest.init();
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
         FMLJavaModLoadingContext.get().getModEventBus().register(RayonTestClientForge.class);
+
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -50,6 +52,8 @@ public class RayonTestForge {
         RayonTest.BLUE_DIRT = BLUE_DIRT.get();
         RayonTest.WAND_ITEM = (WandItem) WAND_ITEM.get();
         RayonTest.STONE_BLOCK_ENTITY = (EntityType<StoneBlockEntity>) STONE_BLOCK_ENTITY.get();
+
+        Rayon.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true);
     }
 
     @SubscribeEvent

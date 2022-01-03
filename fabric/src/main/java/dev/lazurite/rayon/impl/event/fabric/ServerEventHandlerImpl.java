@@ -2,6 +2,7 @@ package dev.lazurite.rayon.impl.event.fabric;
 
 import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.PressureGenerator;
+import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.impl.event.ServerEventHandler;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -20,7 +21,8 @@ public class ServerEventHandlerImpl {
         ServerWorldEvents.LOAD.register((server, level) -> ServerEventHandler.onLevelLoad(level));
         ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onStartLevelTick);
         ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onEntityStartLevelTick);
-        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
+//        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
+        PhysicsSpaceEvents.STEP.register(TerrainGenerator::step);
 
         // Entity Events
         PhysicsSpaceEvents.ELEMENT_ADDED.register(ServerEventHandler::onElementAddedToSpace);

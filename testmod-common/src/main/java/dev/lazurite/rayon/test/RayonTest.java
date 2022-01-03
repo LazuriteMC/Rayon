@@ -18,15 +18,14 @@ public class RayonTest {
     public static Block BLUE_DIRT;
 
     public static void init() {
+
         /* An example of a block collision event */
         ElementCollisionEvents.BLOCK_COLLISION.register((element, terrainObject, impulse) -> {
             if (element instanceof StoneBlockEntity) {
-                terrainObject.getBlockState().ifPresent(blockState -> {
-                    if (blockState.getBlock().equals(Blocks.BRICKS)) {
-                        LOGGER.info("Touching bricks!!" + impulse);
-                        ((StoneBlockEntity) element).kill();
-                    }
-                });
+                if (terrainObject.getBlockState().getBlock().equals(Blocks.BRICKS)) {
+                    LOGGER.info("Touching bricks!!" + impulse);
+                    ((StoneBlockEntity) element).kill();
+                }
             }
         });
     }

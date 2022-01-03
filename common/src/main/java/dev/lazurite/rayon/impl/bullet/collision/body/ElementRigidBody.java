@@ -1,30 +1,23 @@
 package dev.lazurite.rayon.impl.bullet.collision.body;
 
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
-import dev.lazurite.rayon.impl.bullet.collision.body.terrain.Terrain;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.util.Frame;
 import dev.lazurite.rayon.impl.util.debug.Debuggable;
 import com.jme3.math.Vector3f;
 import dev.lazurite.toolbox.api.math.VectorHelper;
-import dev.lazurite.toolbox.api.util.PlayerUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import net.minecraft.world.phys.AABB;
 
 public abstract class ElementRigidBody extends PhysicsRigidBody implements Debuggable {
     protected final PhysicsElement element;
     protected final MinecraftSpace space;
 
-    private Map<BlockPos, Terrain> terrainObjects = new HashMap<>();
     private final Frame frame;
     private boolean terrainLoading;
     private boolean dragForces;
@@ -91,27 +84,12 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         this.dragType = dragType;
     }
 
-    public BlockPos getBlockPos() {
-        return new BlockPos(VectorHelper.toVec3(Convert.toMinecraft(getPhysicsLocation(null))));
-    }
-
     public Frame getFrame() {
         return this.frame;
     }
 
     public MinecraftSpace getSpace() {
         return this.space;
-    }
-
-    public Collection<? extends Player> getPlayersAround() {
-        if (getSpace().isServer()) {
-            final var location = VectorHelper.toVec3(Convert.toMinecraft(getPhysicsLocation(new Vector3f())));
-            final var level = (ServerLevel) getSpace().getLevel();
-            final var viewDistance = level.getServer().getPlayerList().getViewDistance();
-            return PlayerUtil.around(level, location, viewDistance);
-        } else {
-            return getSpace().getLevel().players();
-        }
     }
 
     @Override
@@ -124,16 +102,12 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         return 1.0f;
     }
 
-    public Map<BlockPos, Terrain> getTerrainObjects() {
-        return this.terrainObjects;
-    }
-
-    public void setTerrainObjects(Map<BlockPos, Terrain> terrainObjects) {
-        this.terrainObjects = terrainObjects;
-    }
-
     public void updateFrame() {
         getFrame().from(getFrame(), getPhysicsLocation(new Vector3f()), getPhysicsRotation(new Quaternion()));
+    }
+
+    public boolean isNear(BlockPos blockPos) {
+        return Convert.toMinecraft(this.boundingBox(new BoundingBox())).intersects(new AABB(blockPos).inflate(0.5f));
     }
 
     @Override
