@@ -21,7 +21,7 @@ public class ServerEventHandlerImpl {
         ServerWorldEvents.LOAD.register((server, level) -> ServerEventHandler.onLevelLoad(level));
         ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onStartLevelTick);
         ServerTickEvents.START_WORLD_TICK.register(ServerEventHandler::onEntityStartLevelTick);
-//        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
+        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
         PhysicsSpaceEvents.STEP.register(TerrainGenerator::step);
 
         // Entity Events

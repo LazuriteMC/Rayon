@@ -1,5 +1,6 @@
 package dev.lazurite.rayon.impl.bullet.collision.body.terrain;
 
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsBody;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
@@ -22,7 +23,7 @@ public class TerrainRigidBody extends PhysicsRigidBody implements Debuggable {
     }
 
     public TerrainRigidBody(MinecraftShape shape, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
-        super(shape, PhysicsBody.massForStatic);
+        super((CollisionShape) shape, PhysicsBody.massForStatic);
         this.blockPos = blockPos;
         this.state = blockState;
 
@@ -56,10 +57,5 @@ public class TerrainRigidBody extends PhysicsRigidBody implements Debuggable {
     @Override
     public float getOutlineAlpha() {
         return 1.0f;
-    }
-
-    @Override
-    public MinecraftShape getCollisionShape() {
-        return (MinecraftShape) super.getCollisionShape();
     }
 }

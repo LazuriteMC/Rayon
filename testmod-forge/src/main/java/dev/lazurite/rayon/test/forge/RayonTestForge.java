@@ -53,7 +53,7 @@ public class RayonTestForge {
         RayonTest.WAND_ITEM = (WandItem) WAND_ITEM.get();
         RayonTest.STONE_BLOCK_ENTITY = (EntityType<StoneBlockEntity>) STONE_BLOCK_ENTITY.get();
 
-        Rayon.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true);
+        Rayon.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true, true);
     }
 
     @SubscribeEvent

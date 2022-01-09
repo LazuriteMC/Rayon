@@ -6,6 +6,7 @@ import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.terrain.TerrainRigidBody;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
 
 import java.util.HashSet;
 
@@ -14,8 +15,6 @@ import java.util.HashSet;
  * @see MinecraftSpace
  */
 public class TerrainGenerator {
-    private static final BoundingBox b1 = new BoundingBox();
-
     public static void step(MinecraftSpace space) {
         final var chunkCache = space.getChunkCache();
         final var keep = new HashSet<TerrainRigidBody>();
@@ -25,11 +24,21 @@ public class TerrainGenerator {
                 continue;
             }
 
-            final var aabb = Convert.toMinecraft(rigidBody.boundingBox(b1)).inflate(0.25f);
+            final var aabb = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox())).inflate(0.5f);
 
             BlockPos.betweenClosedStream(aabb).forEach(blockPos -> {
                 chunkCache.getBlockData(blockPos).ifPresent(blockData -> {
-                    space.getTerrainObjectAt(blockPos).ifPresentOrElse(keep::add, () -> {
+                    space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrain -> {
+                        if (Block.getId(blockData.blockState()) != Block.getId(terrain.getBlockState())) {
+                            space.removeCollisionObject(terrain);
+
+                            final var terrain2 = TerrainRigidBody.from(blockData);
+                            space.addCollisionObject(terrain2);
+                            keep.add(terrain2);
+                        } else {
+                            keep.add(terrain);
+                        }
+                    }, () -> {
                         final var terrain = TerrainRigidBody.from(blockData);
                         space.addCollisionObject(terrain);
                         keep.add(terrain);

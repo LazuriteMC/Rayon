@@ -18,9 +18,9 @@ public class StoneBlockEntity extends LivingEntity implements EntityPhysicsEleme
 
     public StoneBlockEntity(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
-        this.rigidBody.setMass(25.0f);
-        this.rigidBody.setDragCoefficient(0.5f);
-        this.rigidBody.setDragType(ElementRigidBody.DragType.REALISTIC);
+        this.rigidBody.setMass(10f);
+        this.rigidBody.setDragType(ElementRigidBody.DragType.NONE);
+        this.rigidBody.setBuoyancyType(ElementRigidBody.BuoyancyType.NONE);
     }
 
     @Override

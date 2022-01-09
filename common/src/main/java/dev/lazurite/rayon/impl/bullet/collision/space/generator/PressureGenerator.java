@@ -2,10 +2,13 @@ package dev.lazurite.rayon.impl.bullet.collision.space.generator;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.impl.bullet.collision.body.shape.Triangle;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.material.Fluids;
+
+import java.util.List;
 
 public class PressureGenerator {
     public static final float WATER_DENSITY = 1000f;
@@ -17,71 +20,118 @@ public class PressureGenerator {
     public static final float TEMPERATURE = 300; // K
     public static final int SEA_LEVEL = 62; // m
 
-    private static final BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-    private static final Vector3f v1 = new Vector3f();
-    private static final Vector3f v2 = new Vector3f();
-    private static final Vector3f v3 = new Vector3f();
-    private static final Vector3f v4 = new Vector3f();
-    private static final Vector3f v5 = new Vector3f();
-    private static final Vector3f v6 = new Vector3f();
-    private static final Vector3f v7 = new Vector3f();
-    private static final Vector3f v8 = new Vector3f();
-    private static final Vector3f v9 = new Vector3f();
-    private static final Vector3f v10 = new Vector3f();
-    private static final Quaternion q1 = new Quaternion();
+    public static final float WATER_BLOCK_OFFSET = 0.125f;
+
+    public static float getAddedMassForceAdjustment(List<Triangle> triangles, float mass) {
+        final var n = triangles.size();
+        final var sum = triangles.stream().mapToDouble(triangle -> triangle.getArea().length() * triangle.getCentroid().length()).sum();
+        final var addedMass = WATER_DENSITY / (6 * n) * sum;
+        return (float) (mass / (mass + addedMass));
+    }
+
+    public static float getWaterSurfaceHeight(ChunkCache chunkCache, Vector3f location) {
+        return chunkCache.getFluidColumn(new BlockPos(location.x, location.y, location.z))
+                .map(fluidColumn -> (float) fluidColumn.getTop().blockPos().getY()).orElse(0.0f);
+    }
 
     public static void step(MinecraftSpace space) {
         final var gravity = space.getGravity(null);
-        final var level = space.getLevel();
+        final var chunkCache = space.getChunkCache();
 
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
-            if (rigidBody.isStatic() || !rigidBody.isActive() || (!rigidBody.buoyantForcesEnabled() && !rigidBody.dragForcesEnabled())) {
+            if (!rigidBody.isActive() || (rigidBody.getBuoyancyType() == ElementRigidBody.BuoyancyType.NONE && rigidBody.getDragType() == ElementRigidBody.DragType.NONE)) {
                 continue;
             }
 
-            final var location = rigidBody.getPhysicsLocation(v1);
-            final var linearVelocity = rigidBody.getLinearVelocity(v2);
-            final var angularVelocity = rigidBody.getAngularVelocity(v3);
-            final var rotation = rigidBody.getPhysicsRotation(q1);
+            final var mass = rigidBody.getMass();
+            final var volume = rigidBody.getCollisionShape().aabbVolume();
+            final var rigidBodyDensity = mass / volume;
+
+            final var location = rigidBody.getPhysicsLocation(new Vector3f());
+            final var linearVelocity = rigidBody.getLinearVelocity(new Vector3f());
+            final var angularVelocity = rigidBody.getAngularVelocity(new Vector3f());
+            final var rotation = rigidBody.getPhysicsRotation(new Quaternion());
+            final var momentum = new Vector3f(linearVelocity).multLocal(mass);
             final var triangles = rigidBody.getCollisionShape().getTriangles(rotation);
             final var dragCoefficient = rigidBody.getDragCoefficient();
 
-            blockPos.set(location.x, location.y, location.z);
+            final var waterHeight = getWaterSurfaceHeight(chunkCache, location);
 
-            while (!level.getFluidState(blockPos).equals(Fluids.EMPTY.defaultFluidState())) {
-                blockPos.set(blockPos.above());
-            }
+            final var submergedTriangles = triangles.stream().filter(triangle -> chunkCache.getFluidColumn(new BlockPos(
+                    location.x + triangle.getCentroid().x,
+                    location.y + triangle.getCentroid().y,
+                    location.z + triangle.getCentroid().z
+            )).isPresent()).toList();
 
-            for (var triangle : triangles) {
+            final var forceAdjustment = getAddedMassForceAdjustment(submergedTriangles, mass);
+
+            for (var triangle : submergedTriangles) {
                 final var centroid = triangle.getCentroid();
                 final var area = triangle.getArea();
+                final var waterHeightOffset = waterHeight - location.y - centroid.y - WATER_BLOCK_OFFSET;
 
-                boolean isUnderwater = !level.getFluidState(new BlockPos(location.x + centroid.x, location.y + centroid.y, location.z + centroid.z)).equals(Fluids.EMPTY.defaultFluidState());
+                if (waterHeightOffset > 0.0f) {
+                    if (rigidBody.isWaterBuoyancyEnabled()) {
+                        final var pressure = gravity.y * WATER_DENSITY * waterHeightOffset;
+                        final var buoyantForce = new Vector3f(area).multLocal(pressure); // area * pressure = buoyant force
 
-                if (rigidBody.buoyantForcesEnabled()) {
-                    final var pressure = (float) (isUnderwater ? gravity.y * WATER_DENSITY * (blockPos.getY() - location.y - centroid.y):
-                            SEA_LEVEL_PRESSURE * Math.exp(MOLAR_MASS_OF_AIR * gravity.y *
-                                    (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
-                    final var buoyantForce = v4.set(area).multLocal(pressure);
-
-                    if (Float.isFinite(buoyantForce.lengthSquared()) && buoyantForce.lengthSquared() > 0.0f) {
-                        rigidBody.applyForce(buoyantForce, centroid);
+                        if (Float.isFinite(buoyantForce.lengthSquared()) && buoyantForce.lengthSquared() > 0.0f) {
+                            rigidBody.applyForce(buoyantForce.multLocal(forceAdjustment), centroid);
+                        }
                     }
-                }
 
-                if (rigidBody.dragForcesEnabled()) {
-                    final var tangentialVelocity = v5.set(angularVelocity).cross(centroid);
-                    final var netVelocity = v6.set(tangentialVelocity).addLocal(linearVelocity);
-                    final var density = (float) (isUnderwater ? WATER_DENSITY : AIR_DENSITY * Math.exp(gravity.y * MOLAR_MASS_OF_AIR * (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
+                    if (rigidBody.isWaterDragEnabled()) {
+                        /* FUDGE ZONE */
+                        // monka math right here
+                        if (linearVelocity.length() > 2 && rigidBodyDensity < 100) {
+                            final var time = 1.0f;
+                            final var stopForce = new Vector3f(0.0f, -1.0f * linearVelocity.y * mass / time, 0.0f);
+                            rigidBody.applyForce(stopForce, centroid);
+                        } else {
+                            final var tangentialVelocity = new Vector3f(angularVelocity).cross(centroid); // angular velocity converted to linear parallel to edge of circle (tangential)
+                            final var netVelocity = new Vector3f(tangentialVelocity).addLocal(linearVelocity); // total linear + tangential velocity
 
-                    final var dragForce = v7.set(area).multLocal(-0.5f * dragCoefficient * density * netVelocity.lengthSquared());
-                    dragForce.multLocal(-1.0f * Math.signum(netVelocity.dot(dragForce)));
+                            final var dragForce = new Vector3f(area).multLocal(-0.5f * dragCoefficient * WATER_DENSITY * netVelocity.lengthSquared());
+                            dragForce.multLocal(-1.0f * Math.signum(netVelocity.dot(dragForce)));
 
-                    if (Float.isFinite(dragForce.lengthSquared()) && dragForce.lengthSquared() > 0.0f) {
-                        rigidBody.applyForce(dragForce, centroid);
+                            if (Float.isFinite(dragForce.lengthSquared()) && dragForce.lengthSquared() > 0.0f) {
+                                rigidBody.applyForce(dragForce.multLocal(forceAdjustment), centroid);
+                            }
+                        }
                     }
                 }
             }
+
+            final var theOtherTriangles = triangles.stream().filter(submergedTriangles::contains).toList();
+
+            for (var triangle : theOtherTriangles) {
+                final var centroid = triangle.getCentroid();
+                final var area = triangle.getArea();
+                final var netForce = new Vector3f();
+
+                if (rigidBody.isAirBuoyancyEnabled()) {
+                    final var pressure = (float) (SEA_LEVEL_PRESSURE * Math.exp(MOLAR_MASS_OF_AIR * gravity.y * (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
+                    netForce.addLocal(new Vector3f(area).multLocal(pressure)); // area * pressure = buoyant force
+                }
+
+                if (rigidBody.isAirDragEnabled()) {
+                    /* air_density_at_sea_level * e^(gravity * molar_mass_of_air * sea_level / (gas_constant * temperature)) */
+                    /* 1.2 * e^(-9.8 * 0.0289644 * 62 / (8.3144598 * 300) */
+                    final var density = (float) (AIR_DENSITY * Math.exp(MOLAR_MASS_OF_AIR * gravity.y * (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
+
+                    final var tangentialVelocity = new Vector3f(angularVelocity).cross(centroid); // angular velocity converted to linear parallel to edge of circle (tangential)
+                    final var netVelocity = new Vector3f(tangentialVelocity).addLocal(linearVelocity); // total linear + tangential velocity
+
+                    final var dragForce = new Vector3f(area).multLocal(-0.5f * dragCoefficient * density * netVelocity.lengthSquared());
+                    dragForce.multLocal(-1.0f * Math.signum(netVelocity.dot(dragForce))); // make sure all the vectors are facing the same way
+                    netForce.addLocal(dragForce);
+                }
+
+                if (Float.isFinite(netForce.lengthSquared()) && netForce.lengthSquared() > 0.0f) {
+                    rigidBody.applyForce(netForce, centroid);
+                }
+            }
+
 //            } else if (rigidBody.dragForcesEnabled()) {
 //                final var box = rigidBody.getCollisionShape().boundingBox(v8, q1, new BoundingBox());
 //                final var area = box.getExtent(v9).lengthSquared();

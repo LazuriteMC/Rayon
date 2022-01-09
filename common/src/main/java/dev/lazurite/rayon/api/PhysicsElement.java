@@ -25,11 +25,10 @@ public interface PhysicsElement<T> {
     ElementRigidBody getRigidBody();
 
     /**
-     * For generating a new {@link MinecraftShape}. Optionally can be overriden
-     * in rayon sub-modules to handle default behavior (see entity module).
-     * @return the newly created {@link MinecraftShape}
+     * For generating a new {@link MinecraftShape.Convex}.
+     * @return the newly created {@link MinecraftShape.Convex}
      */
-    MinecraftShape createShape();
+    MinecraftShape.Convex createShape();
 
     /**
      * Mainly used for lerping within your renderer.

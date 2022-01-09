@@ -35,15 +35,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
-    private static final int MAX_PRESIM_STEPS = 30; // half a second
-
     private final CompletableFuture[] futures = new CompletableFuture[3];
     private final Map<BlockPos, TerrainRigidBody> terrainMap;
     private final PhysicsThread thread;
     private final Level level;
     private final ChunkCache chunkCache;
-    private int presimSteps;
-
 
     private volatile boolean stepping;
 
@@ -96,29 +92,22 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public void step() {
         MinecraftSpace.get(level).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
 
-        if (!isStepping() && (isInPresim() || !isEmpty())) {
+        if (!isStepping() && !isEmpty()) {
             this.stepping = true;
-
-            if (!isEmpty()) {
-                this.chunkCache.refreshAll();
-            }
+            this.chunkCache.refreshAll();
 
             // Step 3 times per tick, re-evaluating forces each step
             for (int i = 0; i < 3; ++i) {
                 // Hop threads...
                 this.futures[i] = CompletableFuture.runAsync(() -> {
-                    if (presimSteps > MAX_PRESIM_STEPS) {
-                        /* Call collision events */
-                        this.distributeEvents();
+                    /* Call collision events */
+                    this.distributeEvents();
 
-                        /* World Step Event */
-                        PhysicsSpaceEvents.STEP.invoke(this);
+                    /* World Step Event */
+                    PhysicsSpaceEvents.STEP.invoke(this);
 
-                        /* Step the Simulation */
-                        this.update(1/60f);
-                    } else {
-                        ++presimSteps;
-                    }
+                    /* Step the Simulation */
+                    this.update(1/60f);
                 }, getWorkerThread());
             }
 
@@ -169,8 +158,10 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return this.stepping;
     }
 
-    public boolean isInPresim() {
-        return presimSteps < MAX_PRESIM_STEPS;
+    public void doBlockUpdate(BlockPos blockPos) {
+        this.chunkCache.loadBlockData(blockPos);
+        this.chunkCache.loadFluidData(blockPos);
+        this.wakeNearbyElementRigidBodies(blockPos);
     }
 
     public void wakeNearbyElementRigidBodies(BlockPos blockPos) {

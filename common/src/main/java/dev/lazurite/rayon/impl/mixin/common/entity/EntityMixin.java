@@ -37,21 +37,25 @@ public abstract class EntityMixin {
 
     @Inject(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
     public void saveWithoutId(CompoundTag tag, CallbackInfoReturnable<CompoundTag> info) {
-        if (this instanceof EntityPhysicsElement) {
-            final var rigidBody = ((EntityPhysicsElement) this).getRigidBody();
+        if (this instanceof EntityPhysicsElement element) {
+            final var rigidBody = element.getRigidBody();
             tag.put("orientation", QuaternionHelper.toTag(Convert.toMinecraft(rigidBody.getPhysicsRotation(new Quaternion()))));
-            tag.put("linear_velocity", VectorHelper.toTag(Convert.toMinecraft(rigidBody.getLinearVelocity(new Vector3f()))));
-            tag.put("angular_velocity", VectorHelper.toTag(Convert.toMinecraft(rigidBody.getAngularVelocity(new Vector3f()))));
+            tag.put("linearVelocity", VectorHelper.toTag(Convert.toMinecraft(rigidBody.getLinearVelocity(new Vector3f()))));
+            tag.put("angularVelocity", VectorHelper.toTag(Convert.toMinecraft(rigidBody.getAngularVelocity(new Vector3f()))));
+            tag.putFloat("mass", rigidBody.getMass());
+            tag.putFloat("dragCoefficient", rigidBody.getDragCoefficient());
+            tag.putFloat("friction", rigidBody.getFriction());
+            tag.putFloat("restitution", rigidBody.getRestitution());
+            tag.putBoolean("terrainLoadingEnabled", rigidBody.terrainLoadingEnabled());
+            tag.putInt("buoyancyType", rigidBody.getBuoyancyType().ordinal());
+            tag.putInt("dragType", rigidBody.getDragType().ordinal());
         }
     }
 
     @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
     public void load(CompoundTag tag, CallbackInfo info) {
-        if (this instanceof EntityPhysicsElement) {
-            final var rigidBody = ((EntityPhysicsElement) this).getRigidBody();
-            rigidBody.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
-            rigidBody.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linear_velocity"))));
-            rigidBody.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angular_velocity"))));
+        if (this instanceof EntityPhysicsElement element) {
+            element.getRigidBody().readTagInfo(tag);
         }
     }
 }

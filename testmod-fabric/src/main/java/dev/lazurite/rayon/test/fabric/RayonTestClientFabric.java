@@ -9,6 +9,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 public class RayonTestClientFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        EntityRendererRegistry.register(RayonTest.STONE_BLOCK_ENTITY, (context) -> new StoneBlockEntityRenderer(context, new StoneBlockEntityModel(12, 4, 12)));
+        EntityRendererRegistry.register(RayonTest.STONE_BLOCK_ENTITY, (context) -> new StoneBlockEntityRenderer(context, new StoneBlockEntityModel(6, 2, 6)));
     }
 }

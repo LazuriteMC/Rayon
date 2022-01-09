@@ -10,8 +10,10 @@ import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.util.Frame;
 import dev.lazurite.rayon.impl.util.debug.Debuggable;
 import com.jme3.math.Vector3f;
+import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 
 public abstract class ElementRigidBody extends PhysicsRigidBody implements Debuggable {
@@ -20,28 +22,38 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
 
     private final Frame frame;
     private boolean terrainLoading;
-    private boolean dragForces;
-    private boolean buoyantForces;
     private float dragCoefficient;
+    private BuoyancyType buoyancyType;
     private DragType dragType;
 
-    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
+    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape.Convex shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(shape, mass);
         this.space = space;
         this.element = element;
         this.frame = new Frame();
 
         this.setTerrainLoadingEnabled(!this.isStatic());
-        this.setDragForcesEnabled(true);
-        this.setBuoyantForcesEnabled(true);
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
-        this.setDragType(DragType.SIMPLE);
+        this.setBuoyancyType(BuoyancyType.ALL);
+        this.setDragType(DragType.ALL);
     }
 
     public PhysicsElement getElement() {
         return this.element;
+    }
+
+    public void readTagInfo(CompoundTag tag) {
+        this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
+        this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
+        this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
+//        this.setMass(tag.getFloat("mass"));
+//        this.setDragCoefficient(tag.getFloat("dragCoefficient"));
+//        this.setFriction(tag.getFloat("friction"));
+//        this.setRestitution(tag.getFloat("restitution"));
+//        this.setBuoyancyType(ElementRigidBody.BuoyancyType.values()[tag.getInt("buoyancyType")]);
+//        this.setDragType(ElementRigidBody.DragType.values()[tag.getInt("dragType")]);
     }
 
     public boolean terrainLoadingEnabled() {
@@ -52,28 +64,20 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         this.terrainLoading = terrainLoading;
     }
 
-    public boolean buoyantForcesEnabled() {
-        return this.buoyantForces;
-    }
-
-    public void setBuoyantForcesEnabled(boolean buoyantForces) {
-        this.buoyantForces = buoyantForces;
-    }
-
-    public boolean dragForcesEnabled() {
-        return this.dragForces && !this.isStatic();
-    }
-
-    public void setDragForcesEnabled(boolean dragForces) {
-        this.dragForces = dragForces;
-    }
-
     public float getDragCoefficient() {
         return dragCoefficient;
     }
 
     public void setDragCoefficient(float dragCoefficient) {
         this.dragCoefficient = dragCoefficient;
+    }
+
+    public BuoyancyType getBuoyancyType() {
+        return this.buoyancyType;
+    }
+
+    public void setBuoyancyType(BuoyancyType buoyancyType) {
+        this.buoyancyType = buoyancyType;
     }
 
     public DragType getDragType() {
@@ -111,12 +115,37 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     }
 
     @Override
-    public MinecraftShape getCollisionShape() {
-        return (MinecraftShape) super.getCollisionShape();
+    public MinecraftShape.Convex getCollisionShape() {
+        return (MinecraftShape.Convex) super.getCollisionShape();
+    }
+
+    public boolean isWaterBuoyancyEnabled() {
+        return buoyancyType == BuoyancyType.WATER || buoyancyType == BuoyancyType.ALL;
+    }
+
+    public boolean isAirBuoyancyEnabled() {
+        return buoyancyType == BuoyancyType.AIR || buoyancyType == BuoyancyType.ALL;
+    }
+
+    public boolean isWaterDragEnabled() {
+        return dragType == DragType.WATER || dragType == DragType.ALL;
+    }
+
+    public boolean isAirDragEnabled() {
+        return dragType == DragType.AIR || dragType == DragType.ALL;
+    }
+
+    public enum BuoyancyType {
+        NONE,
+        AIR,
+        WATER,
+        ALL
     }
 
     public enum DragType {
-        SIMPLE,
-        REALISTIC
+        NONE,
+        AIR,
+        WATER,
+        ALL
     }
 }
