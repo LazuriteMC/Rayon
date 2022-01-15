@@ -13,11 +13,11 @@ repositories {
 }
 
 dependencies {
-    modImplementation 'dev.lazurite:rayon-core:VERSION'
-    modImplementation 'dev.lazurite:rayon-entity:VERSION'
+    modImplementation 'dev.lazurite:rayon-fabric:VERSION'
 }
 ```
 
+For a list of versions, visit our [maven](https://lazurite.dev/maven/releases/dev/lazurite/rayon-fabric).
 More information can be found on [our wiki](https://docs.lazurite.dev/rayon/getting-started).
 
 ## Community
