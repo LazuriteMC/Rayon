@@ -1,9 +1,11 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
+import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
 import dev.lazurite.transporter.impl.Transporter;
@@ -50,9 +52,10 @@ public class SimpleChunkCache implements ChunkCache {
         final var blockPos2 = new BlockPos(blockPos);
 
         if (ChunkCache.isValidBlock(blockState)) {
+            final var properties = BlockProperty.getBlockProperty(blockState.getBlock());
             MinecraftShape shape = null;
 
-            if (!blockState.isCollisionShapeFullBlock(level, blockPos)) {
+            if (!blockState.isCollisionShapeFullBlock(level, blockPos) || (properties != null && !properties.isFullBlock())) {
                 Pattern pattern;
 
                 if (space.isServer()) {
@@ -72,7 +75,7 @@ public class SimpleChunkCache implements ChunkCache {
                 shape = MinecraftShape.convex(boundingBox);
             }
 
-            this.blockData.put(blockPos2, new BlockData(blockPos2, blockState, shape));
+            this.blockData.put(blockPos2, new BlockData(level, blockPos2, blockState, shape));
         }
     }
 
@@ -107,6 +110,11 @@ public class SimpleChunkCache implements ChunkCache {
 
         this.blockData.keySet().removeIf(blockPos -> !this.activePositions.contains(blockPos));
         this.fluidColumns.removeIf(column -> this.activePositions.stream().noneMatch(column::contains));
+    }
+
+    @Override
+    public MinecraftSpace getSpace() {
+        return this.space;
     }
 
     @Override

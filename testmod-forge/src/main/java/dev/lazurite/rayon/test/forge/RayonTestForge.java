@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.test.forge;
 
-import dev.lazurite.rayon.impl.Rayon;
+import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.test.RayonTest;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.test.common.item.WandItem;
@@ -53,7 +53,7 @@ public class RayonTestForge {
         RayonTest.WAND_ITEM = (WandItem) WAND_ITEM.get();
         RayonTest.STONE_BLOCK_ENTITY = (EntityType<StoneBlockEntity>) STONE_BLOCK_ENTITY.get();
 
-        Rayon.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true, true);
+        BlockProperty.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true, true);
     }
 
     @SubscribeEvent

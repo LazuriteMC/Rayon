@@ -4,7 +4,7 @@ import com.jme3.bounding.BoundingBox;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.terrain.TerrainRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 

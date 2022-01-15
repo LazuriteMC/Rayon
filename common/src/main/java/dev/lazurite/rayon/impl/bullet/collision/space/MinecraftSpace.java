@@ -13,7 +13,7 @@ import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
 import dev.lazurite.rayon.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.terrain.TerrainRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;

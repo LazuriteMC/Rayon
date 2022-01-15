@@ -1,9 +1,11 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.cache;
 
+import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
+import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.pattern.Pattern;
 import net.fabricmc.api.EnvType;
@@ -12,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 
 import java.util.*;
@@ -33,8 +36,16 @@ public interface ChunkCache {
         }
 
         final var block = blockState.getBlock();
-        final var properties = Rayon.getBlockProperty(block);
-        return properties != null ? properties.collidable() : !blockState.isAir() && !block.isPossibleToRespawnInThis() && blockState.getFluidState().isEmpty();
+        final var properties = BlockProperty.getBlockProperty(block);
+
+        return properties != null ? properties.collidable() :
+                !blockState.isAir() &&
+                !block.isPossibleToRespawnInThis() && (
+                        blockState.getFluidState().isEmpty() || (
+                                blockState.hasProperty(BlockStateProperties.WATERLOGGED) &&
+                                blockState.getValue(BlockStateProperties.WATERLOGGED)
+                        )
+                );
     }
 
     @Environment(EnvType.CLIENT)
@@ -59,17 +70,21 @@ public interface ChunkCache {
     void refreshAll();
     void loadBlockData(BlockPos blockPos);
     void loadFluidData(BlockPos blockPos);
+
+    MinecraftSpace getSpace();
     List<BlockData> getBlockData();
     List<FluidColumn> getFluidColumns();
     Optional<BlockData> getBlockData(BlockPos blockPos);
     Optional<FluidColumn> getFluidColumn(BlockPos blockPos);
 
-    record BlockData (BlockPos blockPos, BlockState blockState, MinecraftShape shape) { }
-    record FluidData (BlockPos blockPos, FluidState fluidState) { }
+    record BlockData (Level level, BlockPos blockPos, BlockState blockState, MinecraftShape shape) { }
+    record FluidData (Level level, BlockPos blockPos, FluidState fluidState) { }
 
     class FluidColumn {
         private final FluidData top;
         private final FluidData bottom;
+        private final Vector3f flow;
+        private final float topHeight;
 
         public FluidColumn(BlockPos start, Level level) {
             final var cursor = new BlockPos(start).mutable();
@@ -83,7 +98,7 @@ public interface ChunkCache {
 
             cursor.set(cursor.above()); // the above loop ends at one below the bottom
             fluidState = level.getFluidState(cursor);
-            this.bottom = new FluidData(new BlockPos(cursor), level.getFluidState(cursor));
+            this.bottom = new FluidData(level, new BlockPos(cursor), level.getFluidState(cursor));
 
             // find top block
             while (!fluidState.isEmpty()) {
@@ -91,7 +106,13 @@ public interface ChunkCache {
                 fluidState = level.getFluidState(cursor);
             }
 
-            this.top = new FluidData(new BlockPos(cursor), level.getFluidState(cursor));
+            // Water height (in case of flowing water)
+            this.top = new FluidData(level, new BlockPos(cursor), level.getFluidState(cursor.below()));
+            final var voxelShape = top.fluidState().getShape(level, top.blockPos().below());
+            this.topHeight = voxelShape.isEmpty() ? 0.875f : (float) voxelShape.bounds().getYsize();
+
+            // Water flow direction
+            this.flow = Convert.toBullet(top.fluidState().getFlow(level, cursor.below()));
         }
 
         public boolean contains(BlockPos blockPos) {
@@ -109,8 +130,20 @@ public interface ChunkCache {
             return this.bottom;
         }
 
+        public float getTopHeight(Vector3f pos) {
+            if (pos.lengthSquared() > 1.0f) {
+                throw new RuntimeException("Top height coordinates should be local (<= 1.0)");
+            }
+
+            return this.topHeight;
+        }
+
         public int getHeight() {
             return this.top.blockPos.getY() - this.bottom.blockPos.getY();
+        }
+
+        public Vector3f getFlow() {
+            return this.flow;
         }
     }
 }

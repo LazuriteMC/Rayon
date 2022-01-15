@@ -1,14 +1,13 @@
 package dev.lazurite.rayon.impl.bullet.collision.body;
 
 import com.jme3.bounding.BoundingBox;
-import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
+import dev.lazurite.rayon.impl.bullet.thread.util.Clock;
 import dev.lazurite.rayon.impl.util.Frame;
-import dev.lazurite.rayon.impl.util.debug.Debuggable;
 import com.jme3.math.Vector3f;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
@@ -16,28 +15,30 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 
-public abstract class ElementRigidBody extends PhysicsRigidBody implements Debuggable {
+public abstract class ElementRigidBody extends MinecraftRigidBody {
+    public static final float SLEEP_TIME_IN_SECONDS = 2.0f;
+
     protected final PhysicsElement element;
-    protected final MinecraftSpace space;
 
     private final Frame frame;
+    private final Clock sleepTimer;
     private boolean terrainLoading;
     private float dragCoefficient;
     private BuoyancyType buoyancyType;
     private DragType dragType;
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape.Convex shape, float mass, float dragCoefficient, float friction, float restitution) {
-        super(shape, mass);
-        this.space = space;
+        super(space, shape, mass);
         this.element = element;
         this.frame = new Frame();
+        this.sleepTimer = new Clock();
 
         this.setTerrainLoadingEnabled(!this.isStatic());
         this.setDragCoefficient(dragCoefficient);
         this.setFriction(friction);
         this.setRestitution(restitution);
-        this.setBuoyancyType(BuoyancyType.ALL);
-        this.setDragType(DragType.ALL);
+        this.setBuoyancyType(BuoyancyType.WATER);
+        this.setDragType(DragType.SIMPLE);
     }
 
     public PhysicsElement getElement() {
@@ -92,18 +93,13 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         return this.frame;
     }
 
-    public MinecraftSpace getSpace() {
-        return this.space;
+    public Clock getSleepTimer() {
+        return this.sleepTimer;
     }
 
     @Override
     public Vector3f getOutlineColor() {
         return this.isActive() ? new Vector3f(1.0f, 1.0f, 1.0f) : new Vector3f(1.0f, 0.0f, 0.0f);
-    }
-
-    @Override
-    public float getOutlineAlpha() {
-        return 1.0f;
     }
 
     public void updateFrame() {
@@ -112,11 +108,6 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
 
     public boolean isNear(BlockPos blockPos) {
         return Convert.toMinecraft(this.boundingBox(new BoundingBox())).intersects(new AABB(blockPos).inflate(0.5f));
-    }
-
-    @Override
-    public MinecraftShape.Convex getCollisionShape() {
-        return (MinecraftShape.Convex) super.getCollisionShape();
     }
 
     public boolean isWaterBuoyancyEnabled() {
@@ -128,7 +119,8 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
     }
 
     public boolean isWaterDragEnabled() {
-        return dragType == DragType.WATER || dragType == DragType.ALL;
+        // We check for simple drag here, but complex drag is always used for water buoyancy.
+        return dragType == DragType.WATER || dragType == DragType.ALL || dragType == DragType.SIMPLE;
     }
 
     public boolean isAirDragEnabled() {
@@ -146,6 +138,7 @@ public abstract class ElementRigidBody extends PhysicsRigidBody implements Debug
         NONE,
         AIR,
         WATER,
+        SIMPLE,
         ALL
     }
 }

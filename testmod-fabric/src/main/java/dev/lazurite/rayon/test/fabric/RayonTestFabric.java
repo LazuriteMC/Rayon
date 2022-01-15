@@ -1,6 +1,6 @@
 package dev.lazurite.rayon.test.fabric;
 
-import dev.lazurite.rayon.impl.Rayon;
+import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.test.RayonTest;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.test.common.item.WandItem;
@@ -31,7 +31,7 @@ public class RayonTestFabric implements ModInitializer {
                         .entityFactory(StoneBlockEntity::new)
                         .spawnGroup(MobCategory.MISC)
                         .defaultAttributes(LivingEntity::createLivingAttributes)
-                        .dimensions(EntityDimensions.fixed(0.375f, 0.125f))
+                        .dimensions(EntityDimensions.fixed(0.75f, 0.25f))
                         .trackRangeBlocks(80)
                         .build()
         );
@@ -53,6 +53,6 @@ public class RayonTestFabric implements ModInitializer {
                 new ResourceLocation(RayonTest.MODID, "blue_dirt"),
                 new BlockItem(RayonTest.BLUE_DIRT, new Item.Properties().tab(CreativeModeTab.TAB_MISC)));
 
-        Rayon.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true, true);
+        BlockProperty.addBlockProperty(RayonTest.BLUE_DIRT, 1.0f, 2.0f, true, true);
     }
 }

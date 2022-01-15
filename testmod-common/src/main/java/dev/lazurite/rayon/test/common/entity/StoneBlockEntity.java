@@ -1,8 +1,7 @@
 package dev.lazurite.rayon.test.common.entity;
 
 import dev.lazurite.rayon.api.EntityPhysicsElement;
-import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -18,9 +17,7 @@ public class StoneBlockEntity extends LivingEntity implements EntityPhysicsEleme
 
     public StoneBlockEntity(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
-        this.rigidBody.setMass(10f);
-        this.rigidBody.setDragType(ElementRigidBody.DragType.NONE);
-        this.rigidBody.setBuoyancyType(ElementRigidBody.BuoyancyType.NONE);
+        this.rigidBody.setMass(20.0f);
     }
 
     @Override

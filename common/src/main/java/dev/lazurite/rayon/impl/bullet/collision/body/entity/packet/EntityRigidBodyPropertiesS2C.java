@@ -2,7 +2,7 @@ package dev.lazurite.rayon.impl.bullet.collision.body.entity.packet;
 
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 

@@ -2,7 +2,7 @@ package dev.lazurite.rayon.impl.bullet.collision.body.entity.fabric;
 
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityNetworking;
-import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.entity.packet.EntityRigidBodyMovementBidirectional;
 import dev.lazurite.rayon.impl.bullet.collision.body.entity.packet.EntityRigidBodyPropertiesS2C;
 import dev.lazurite.toolbox.api.util.PlayerUtil;

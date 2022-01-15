@@ -16,6 +16,9 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftShape.Concave {
+    List<Triangle> getTriangles(Quaternion quaternion);
+    float getVolume();
+
     static Convex convex(AABB box) {
         return MinecraftShape.convex(Convert.toBullet(box));
     }
@@ -40,8 +43,6 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
         return new Concave(Triangle.getMeshOf(pattern));
     }
 
-    List<Triangle> getTriangles(Quaternion quaternion);
-
     final class Convex extends HullCollisionShape implements MinecraftShape {
         private final List<Triangle> triangles;
 
@@ -53,6 +54,11 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
         @Override
         public List<Triangle> getTriangles(Quaternion quaternion) {
             return Collections.unmodifiableList(this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList());
+        }
+
+        @Override
+        public float getVolume() {
+            return aabbVolume();
         }
     }
 
@@ -79,6 +85,12 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
         @Override
         public List<Triangle> getTriangles(Quaternion quaternion) {
             return Collections.unmodifiableList(this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList());
+        }
+
+        @Override
+        public float getVolume() {
+            final var box = boundingBox(new Vector3f(), new Quaternion(), new BoundingBox());
+            return box.getXExtent() * box.getYExtent() * box.getZExtent();
         }
     }
 }

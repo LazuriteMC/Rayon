@@ -1,11 +1,12 @@
 package dev.lazurite.rayon.impl.util.debug;
 
-import com.jme3.bullet.collision.PhysicsCollisionObject;
+
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import dev.lazurite.rayon.api.event.render.DebugRenderEvents;
+import dev.lazurite.rayon.impl.bullet.collision.body.MinecraftRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
@@ -43,24 +44,21 @@ public final class CollisionObjectDebugger {
         builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        // test
         space.getTerrainMap().values().forEach(terrain -> CollisionObjectDebugger.renderBody(terrain, builder, stack, cameraPos, tickDelta));
         space.getRigidBodiesByClass(ElementRigidBody.class).forEach(elementRigidBody -> CollisionObjectDebugger.renderBody(elementRigidBody, builder, stack, cameraPos, tickDelta));
         Tesselator.getInstance().end();
     }
 
-    public static void renderBody(PhysicsCollisionObject body, BufferBuilder builder, PoseStack stack, Vec3 cameraPos, float tickDelta) {
-        if (body instanceof Debuggable debuggable) {
-            final var position = body.isStatic() ?
-                    body.getPhysicsLocation(new Vector3f()) :
-                    ((ElementRigidBody) body).getFrame().getLocation(new Vector3f(), tickDelta);
+    public static void renderBody(MinecraftRigidBody rigidBody, BufferBuilder builder, PoseStack stack, Vec3 cameraPos, float tickDelta) {
+        final var position = rigidBody.isStatic() ?
+                rigidBody.getPhysicsLocation(new Vector3f()) :
+                ((ElementRigidBody) rigidBody).getFrame().getLocation(new Vector3f(), tickDelta);
 
-            final var rotation = body.isStatic() ?
-                    body.getPhysicsRotation(new Quaternion()) :
-                    ((ElementRigidBody) body).getFrame().getRotation(new Quaternion(), tickDelta);
+        final var rotation = rigidBody.isStatic() ?
+                rigidBody.getPhysicsRotation(new Quaternion()) :
+                ((ElementRigidBody) rigidBody).getFrame().getRotation(new Quaternion(), tickDelta);
 
-            renderShape((MinecraftShape) body.getCollisionShape(), position, rotation, builder, stack, cameraPos, debuggable.getOutlineColor(), debuggable.getOutlineAlpha());
-        }
+        renderShape(rigidBody.getMinecraftShape(), position, rotation, builder, stack, cameraPos, rigidBody.getOutlineColor(), 1.0f);
     }
 
     public static void renderShape(MinecraftShape shape, Vector3f position, Quaternion rotation, BufferBuilder builder, PoseStack stack, Vec3 cameraPos, Vector3f color, float alpha) {

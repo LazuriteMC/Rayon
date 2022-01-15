@@ -2,7 +2,7 @@ package dev.lazurite.rayon.api.event.collision;
 
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.terrain.TerrainRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.toolbox.api.event.Event;
 
 /**

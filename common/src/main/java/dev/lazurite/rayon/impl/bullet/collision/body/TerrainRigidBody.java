@@ -1,29 +1,26 @@
-package dev.lazurite.rayon.impl.bullet.collision.body.terrain;
+package dev.lazurite.rayon.impl.bullet.collision.body;
 
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.objects.PhysicsBody;
-import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
+import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
+import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
-import dev.lazurite.rayon.impl.util.debug.Debuggable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class TerrainRigidBody extends PhysicsRigidBody implements Debuggable {
+public class TerrainRigidBody extends MinecraftRigidBody {
     private final BlockPos blockPos;
     private final BlockState state;
 
     public static TerrainRigidBody from(ChunkCache.BlockData blockData) {
-        final var blockProperty = Rayon.getBlockProperty(blockData.blockState().getBlock());
+        final var blockProperty = BlockProperty.getBlockProperty(blockData.blockState().getBlock());
         final var friction = blockProperty == null ? 0.75f : blockProperty.friction();
         final var restitution = blockProperty == null ? 0.25f : blockProperty.restitution();
-        return new TerrainRigidBody(blockData.shape(), blockData.blockPos(), blockData.blockState(), friction, restitution);
+        return new TerrainRigidBody(MinecraftSpace.get(blockData.level()), blockData.shape(), blockData.blockPos(), blockData.blockState(), friction, restitution);
     }
 
-    public TerrainRigidBody(MinecraftShape shape, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
-        super((CollisionShape) shape, PhysicsBody.massForStatic);
+    public TerrainRigidBody(MinecraftSpace space, MinecraftShape shape, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
+        super(space, shape);
         this.blockPos = blockPos;
         this.state = blockState;
 
@@ -52,10 +49,5 @@ public class TerrainRigidBody extends PhysicsRigidBody implements Debuggable {
     @Override
     public Vector3f getOutlineColor() {
         return new Vector3f(0.25f, 0.25f, 1.0f);
-    }
-
-    @Override
-    public float getOutlineAlpha() {
-        return 1.0f;
     }
 }

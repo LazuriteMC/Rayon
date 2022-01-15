@@ -20,7 +20,7 @@ import net.minecraftforge.fml.LogicalSide;
 public class ServerEventHandlerImpl {
     public static void register() {
         // Space Events
-//        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
+        PhysicsSpaceEvents.STEP.register(PressureGenerator::step);
         PhysicsSpaceEvents.STEP.register(TerrainGenerator::step);
 
         // Entity Events

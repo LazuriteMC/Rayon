@@ -6,7 +6,7 @@ import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityNetworking;
-import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.EntityCollisionGenerator;
 import dev.lazurite.rayon.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.impl.bullet.collision.space.supplier.level.ClientLevelSupplier;
@@ -89,7 +89,7 @@ public final class ClientEventHandler {
 
     public static void onEntityStartLevelTick(Level level) {
         final var space = MinecraftSpace.get(level);
-        EntityCollisionGenerator.applyEntityCollisions(space);
+        EntityCollisionGenerator.step(space);
 
         for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
             /* Movement */

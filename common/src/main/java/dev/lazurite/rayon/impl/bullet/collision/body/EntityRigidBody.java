@@ -1,8 +1,7 @@
-package dev.lazurite.rayon.impl.bullet.collision.body.entity;
+package dev.lazurite.rayon.impl.bullet.collision.body;
 
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
-import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import net.minecraft.world.entity.player.Player;
