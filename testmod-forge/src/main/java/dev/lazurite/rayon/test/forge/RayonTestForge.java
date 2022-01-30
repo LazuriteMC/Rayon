@@ -40,8 +40,6 @@ public class RayonTestForge {
     public RayonTestForge() {
         RayonTest.init();
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
-        FMLJavaModLoadingContext.get().getModEventBus().register(RayonTestClientForge.class);
-
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
