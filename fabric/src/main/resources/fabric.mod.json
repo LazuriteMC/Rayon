@@ -15,7 +15,7 @@
   "license": "MIT",
   "environment": "*",
   "icon": "icon.png",
-  "mixins": [ "rayon.mixins.json", "rayon-fabric.mixins.json" ],
+  "mixins": [ "rayon.mixins.json" ],
 
   "entrypoints": {
     "main": [ "dev.lazurite.rayon.impl.fabric.RayonFabric" ],
@@ -24,8 +24,7 @@
 
   "depends": {
     "minecraft": ">=1.18",
-    "fabricloader": ">=0.12",
-    "fabric-api-base": "*"
+    "fabricloader": ">=0.12"
   },
 
   "custom": {

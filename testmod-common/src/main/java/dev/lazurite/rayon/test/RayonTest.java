@@ -3,7 +3,6 @@ package dev.lazurite.rayon.test;
 import dev.lazurite.rayon.api.event.collision.ElementCollisionEvents;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.test.common.item.WandItem;
-import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;

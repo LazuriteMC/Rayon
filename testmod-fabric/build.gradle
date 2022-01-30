@@ -10,19 +10,21 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
-dependencies {
-    modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
-
-    implementation project(path: ':fabric', configuration: 'namedElements')
-    common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
-    common(project(path: ':testmod-common', configuration: 'namedElements')) { transitive = false }
-}
-
 tasks.withType(ProcessResources) {
     inputs.property "version", version
 
     filesMatching "fabric.mod.json", {
         expand "version": version
     }
+}
+
+dependencies {
+    implementation project(path: ':fabric', configuration: 'namedElements')
+    common(project(path: ':common', configuration: 'namedElements'))
+    common(project(path: ':testmod-common', configuration: 'namedElements'))
+
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
+    common("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
+    common("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
+    common("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
 }

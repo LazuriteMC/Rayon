@@ -3,19 +3,23 @@ architectury {
     forge()
 }
 
+loom {
+    forge {
+        mixinConfig "rayon.mixins.json", "toolbox.mixins.json"
+
+        localMods {
+            forge {
+                it.add(project(":forge").sourceSets.main)
+            }
+        }
+    }
+}
+
 configurations {
     common
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
-}
-
-dependencies {
-    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    implementation project(path: ':forge', configuration: 'namedElements')
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    common(project(path: ':testmod-common', configuration: 'namedElements'))
 }
 
 tasks.withType(ProcessResources) {
@@ -26,14 +30,14 @@ tasks.withType(ProcessResources) {
     }
 }
 
-loom {
-    forge {
-        mixinConfig 'rayon.mixins.json'
+dependencies {
+    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-        localMods {
-            forge {
-                it.add(project(":forge").sourceSets.main)
-            }
-        }
-    }
+    implementation(project(path: ":forge", configuration: "namedElements"))
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    common(project(path: ':testmod-common', configuration: 'namedElements')) { transitive false }
+
+    common("dev.lazurite:toolbox-forge:$toolbox_version") { transitive false }
+    common("dev.lazurite:transporter-forge:$transporter_version") { transitive false }
+    common("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
 }

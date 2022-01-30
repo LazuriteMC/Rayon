@@ -6,6 +6,7 @@ license = "MIT"
 modId = "rayon_test"
 version = "${version}"
 displayName = "Rayon Test"
+description = "A test mod for Rayon"
 authors = "Lazurite Team"
 
 [[dependencies.rayon_test]]

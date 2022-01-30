@@ -1,14 +1,23 @@
 plugins {
     id 'architectury-plugin' version "$architectury_plugin_version"
-    id 'com.github.johnrengelman.shadow' version "$shadow_version"
     id 'dev.architectury.loom' version "$loom_version" apply false
+    id 'java'
 }
 
-allprojects {
-    apply plugin: 'java'
+architectury {
+    minecraft = rootProject.minecraft_version
+}
+
+subprojects {
+    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'maven-publish'
 
     version rayon_version
     group maven_group
+
+    archivesBaseName = rootProject.archivesBaseName + '-' + name
+    loom.silentMojangMappingsLicense()
 
     java {
         toolchain {
@@ -17,15 +26,6 @@ allprojects {
 
         withSourcesJar()
     }
-}
-
-subprojects {
-    apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
-    apply plugin: 'maven-publish'
-
-    archivesBaseName = rootProject.archivesBaseName + '-' + name
-    loom.silentMojangMappingsLicense()
 
     repositories {
         maven {
@@ -37,7 +37,6 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:$minecraft_version"
         mappings loom.officialMojangMappings()
-        api "com.github.stephengold:Libbulletjme:$libbulletjme_version"
     }
 
     publishing {
@@ -50,6 +49,13 @@ subprojects {
                     username property('publish.lazurite.alias')
                     password property('publish.lazurite.secret')
                 }
+            }
+        }
+
+        publications {
+            "$name"(MavenPublication) {
+                artifactId = archivesBaseName
+                from components.java
             }
         }
     }

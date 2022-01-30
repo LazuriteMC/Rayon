@@ -2,15 +2,8 @@ architectury.common(forge_enabled.toBoolean())
 
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
-    modApi "dev.lazurite:transporter-common:$transporter_version"
-    modApi "dev.lazurite:toolbox-common:$toolbox_version"
-}
+    implementation "com.github.stephengold:Libbulletjme:$libbulletjme_version"
 
-publishing {
-    publications {
-        common(MavenPublication) {
-            artifactId = archivesBaseName
-            from components.java
-        }
-    }
+    modImplementation("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
+    modImplementation("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
 }

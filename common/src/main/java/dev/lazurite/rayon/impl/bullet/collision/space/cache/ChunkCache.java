@@ -8,8 +8,6 @@ import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.Disassembler;
 import dev.lazurite.transporter.api.pattern.Pattern;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -48,7 +46,6 @@ public interface ChunkCache {
                 );
     }
 
-    @Environment(EnvType.CLIENT)
     static Pattern genShapeForBlock(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
         final var blockEntity = blockGetter.getBlockEntity(blockPos);
         final var transformation = new PoseStack();

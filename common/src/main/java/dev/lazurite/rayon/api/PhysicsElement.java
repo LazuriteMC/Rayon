@@ -5,8 +5,6 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.world.entity.Entity;
 
 /**
@@ -36,7 +34,6 @@ public interface PhysicsElement<T> {
      * @param tickDelta the delta time between ticks
      * @return the lerped vector
      */
-    @Environment(EnvType.CLIENT)
     default Vector3f getPhysicsLocation(Vector3f store, float tickDelta) {
         return getRigidBody().getFrame().getLocation(store, tickDelta);
     }
@@ -47,7 +44,6 @@ public interface PhysicsElement<T> {
      * @param tickDelta the delta time between ticks
      * @return the "slerped" quaternion
      */
-    @Environment(EnvType.CLIENT)
     default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
         return getRigidBody().getFrame().getRotation(store, tickDelta);
     }

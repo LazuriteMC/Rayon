@@ -1,7 +1,5 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.supplier.level;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.ResourceKey;
@@ -15,7 +13,6 @@ import java.util.Optional;
  * This is a {@link LevelSupplier} which returns a single
  * {@link ClientLevel} object in a {@link List} object.
  */
-@Environment(EnvType.CLIENT)
 public record ClientLevelSupplier(Minecraft minecraft) implements LevelSupplier {
     @Override
     public List<Level> getAll() {

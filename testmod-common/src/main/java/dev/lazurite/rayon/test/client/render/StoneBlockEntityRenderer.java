@@ -5,8 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.test.common.entity.StoneBlockEntity;
 import dev.lazurite.rayon.test.RayonTest;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -14,7 +12,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
-@Environment(EnvType.CLIENT)
 public class StoneBlockEntityRenderer extends EntityRenderer<StoneBlockEntity> {
     private static final ResourceLocation texture = new ResourceLocation(RayonTest.MODID, "textures/entity/stone_block.png");
     private final StoneBlockEntityModel model;

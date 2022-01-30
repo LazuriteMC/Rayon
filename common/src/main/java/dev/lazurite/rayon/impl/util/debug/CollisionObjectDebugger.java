@@ -11,8 +11,6 @@ import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +19,6 @@ import net.minecraft.world.phys.Vec3;
  * This class handles debug rendering on the client. Press F3+r to render
  * all {@link ElementRigidBody} objects present in the {@link MinecraftSpace}.
  */
-@Environment(EnvType.CLIENT)
 public final class CollisionObjectDebugger {
     private static boolean enabled;
 

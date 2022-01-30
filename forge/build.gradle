@@ -1,13 +1,13 @@
-apply plugin: 'com.github.johnrengelman.shadow'
+plugins {
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
+}
+
+loom.forge.mixinConfig 'rayon.mixins.json', 'toolbox.mixins.json'
 
 architectury {
     platformSetupLoomIde()
     forge()
 }
-
-loom.forge.mixinConfig "rayon.mixins.json"
-loom.forge.mixinConfig "rayon-forge.mixins.json"
-shadowJar.exclude "fabric.mod.json"
 
 configurations {
     common
@@ -18,28 +18,17 @@ configurations {
 }
 
 dependencies {
-    common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
-    shadowCommon("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
-
     forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
 
-    modApi "dev.lazurite:transporter-forge:$transporter_version"
-    modApi "dev.lazurite:toolbox-forge:$toolbox_version"
-    shadowCommon "dev.lazurite:transporter-forge:$transporter_version"
-    shadowCommon "dev.lazurite:toolbox-forge:$toolbox_version"
-}
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    common("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
+    common("dev.lazurite:toolbox-forge:$toolbox_version") { transitive false }
+    common("dev.lazurite:transporter-forge:$transporter_version") { transitive false }
 
-remapJar {
-    dependsOn shadowJar
-    input.set shadowJar.archiveFile
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+    shadowCommon("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
+    shadowCommon("dev.lazurite:toolbox-forge:$toolbox_version") { transitive false }
+    shadowCommon("dev.lazurite:transporter-forge:$transporter_version") { transitive false }
 }
 
 tasks.withType(ProcessResources) {
@@ -50,19 +39,21 @@ tasks.withType(ProcessResources) {
     }
 }
 
-sourcesJar {
-    from project(":common").sourceSets.main.allSource
-}
-
 shadowJar {
+    exclude "fabric.mod.json"
+
     configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
 }
 
-publishing {
-    publications {
-        forge(MavenPublication) {
-            artifactId = archivesBaseName
-            from components.java
-        }
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    classifier null
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
     }
 }
