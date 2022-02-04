@@ -69,18 +69,33 @@ public class Triangle {
     public static List<Triangle> getMeshOf(Pattern pattern) {
         final var triangles = new ArrayList<Triangle>();
 
-        for (var quad : pattern.getQuads()) {
-            triangles.add(new Triangle(
-                    Convert.toBullet(quad.getPoints().get(0)),
-                    Convert.toBullet(quad.getPoints().get(1)),
-                    Convert.toBullet(quad.getPoints().get(2))
-            ));
+//        for (var quad : pattern.getQuads()) {
+//            triangles.add(new Triangle(
+//                    Convert.toBullet(quad.getPoints().get(0)),
+//                    Convert.toBullet(quad.getPoints().get(1)),
+//                    Convert.toBullet(quad.getPoints().get(2))
+//            ));
+//
+//            triangles.add(new Triangle(
+//                    Convert.toBullet(quad.getPoints().get(0)),
+//                    Convert.toBullet(quad.getPoints().get(3)),
+//                    Convert.toBullet(quad.getPoints().get(1))
+//            ));
+//        }
 
-            triangles.add(new Triangle(
-                    Convert.toBullet(quad.getPoints().get(0)),
-                    Convert.toBullet(quad.getPoints().get(3)),
-                    Convert.toBullet(quad.getPoints().get(1))
-            ));
+        for (var quad : pattern.getQuads()) {
+            final var centroid = new Vector3f();
+
+            for (var point : quad.getPoints()) {
+                centroid.addLocal(Convert.toBullet(point));
+            }
+
+            centroid.divideLocal(4);
+
+            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(0)), centroid, Convert.toBullet(quad.getPoints().get(1))));
+            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(1)), centroid, Convert.toBullet(quad.getPoints().get(2))));
+            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(2)), centroid, Convert.toBullet(quad.getPoints().get(3))));
+            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(3)), centroid, Convert.toBullet(quad.getPoints().get(0))));
         }
 
         return triangles;

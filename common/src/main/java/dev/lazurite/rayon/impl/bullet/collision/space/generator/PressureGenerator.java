@@ -6,6 +6,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.Triangle;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.math.Convert;
 import net.minecraft.core.BlockPos;
 
 import java.util.ArrayList;
@@ -62,8 +63,6 @@ public class PressureGenerator {
             final var mass = rigidBody.getMass();
             final var density = mass / rigidBody.getMinecraftShape().getVolume();
             final var dragCoefficient = rigidBody.getDragCoefficient();
-            final var waterHeight = chunkCache.getFluidColumn(new BlockPos(location.x, location.y, location.z))
-                    .map(fluidColumn -> (float) fluidColumn.getTop().blockPos().getY()).orElse(0.0f);
 
             final var triangles = rigidBody.getMinecraftShape().getTriangles(rotation);
             final var crossSectionalAreas = new HashMap<Triangle, Float>();
@@ -87,10 +86,12 @@ public class PressureGenerator {
                         location.y + centroid.y,
                         location.z + centroid.z);
 
-                chunkCache.getFluidColumn(blockPos).ifPresent(fluidColumn -> {
-                    final var waterHeightRelative = waterHeight - location.y - centroid.y - (1.0f - fluidColumn.getTopHeight(new Vector3f()));
+                final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
-                    if (waterHeightRelative > 0.0f) {
+                chunkCache.getFluidColumn(blockPos).ifPresent(fluidColumn -> {
+                    final var waterHeight = fluidColumn.getTop().blockPos().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y;
+
+                    if (waterHeight > 0.0f) {
                         submergedTriangles.add(triangle);
                     }
                 });
@@ -102,56 +103,59 @@ public class PressureGenerator {
             for (var triangle : triangles) {
                 final var centroid = triangle.getCentroid();
                 final var area = triangle.getArea();
+
                 final var blockPos = new BlockPos(
                         location.x + centroid.x,
                         location.y + centroid.y,
                         location.z + centroid.z);
 
-                chunkCache.getFluidColumn(blockPos).ifPresentOrElse(
+                if (submergedTriangles.contains(triangle)) {
+                    final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
-                        /* If a fluid column is present, the rigid body might be underwater */
-                        fluidColumn -> {
-                            final var waterHeightRelative = waterHeight - location.y - centroid.y - (1.0f - fluidColumn.getTopHeight(new Vector3f()));
+                    final var waterHeight = chunkCache.getFluidColumn(blockPos)
+                            .map(fluidColumn -> (float) fluidColumn.getTop().blockPos().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y).orElse(0.0f);
 
-                            /* Check if the rigid body is really underwater... */
-                            if (waterHeightRelative > 0.0f) {
+                    chunkCache.getFluidColumn(new BlockPos(location.x, location.y, location.z)).ifPresent(fluidColumn -> {
+                        final var flowForce = new Vector3f(fluidColumn.getFlow());
 
-                                /* Do water buoyancy */
-                                if (rigidBody.isWaterBuoyancyEnabled()) {
-                                    /* Check to make sure the triangle centroid is actually submerged */
-                                    final var pressure = gravity.y * WATER_DENSITY * waterHeightRelative;
-                                    final var buoyantForce = new Vector3f(area).multLocal(pressure);
+                        if (Float.isFinite(flowForce.lengthSquared()) && flowForce.lengthSquared() > 0.0f) {
+                            rigidBody.applyForce(flowForce, centroid);
+                        }
+                    });
 
-                                    if (Float.isFinite(buoyantForce.lengthSquared()) && buoyantForce.lengthSquared() > 0.0f) {
-                                        rigidBody.applyForce(buoyantForce.multLocal(addedMassAdjustment), centroid);
-                                    }
-                                }
+                    /* Do water buoyancy */
+                    if (rigidBody.isWaterBuoyancyEnabled()) {
+                        /* Check to make sure the triangle centroid is actually submerged */
+                        final var pressure = gravity.y * WATER_DENSITY * waterHeight;
+                        final var buoyantForce = new Vector3f(area).multLocal(pressure);
 
-                                /* Do water drag */
-                                if (rigidBody.isWaterDragEnabled()) {
-                                    final var tangentialVelocity = new Vector3f(angularVelocity).cross(centroid); // angular velocity converted to linear parallel to edge of circle (tangential)
-                                    final var netVelocity = new Vector3f(tangentialVelocity).addLocal(linearVelocity); // total linear + tangential velocity
+                        if (Float.isFinite(buoyantForce.lengthSquared()) && buoyantForce.lengthSquared() > 0.0f) {
+                            rigidBody.applyForce(buoyantForce.multLocal(addedMassAdjustment), centroid);
+                        }
+                    }
 
-                                    if (Math.signum(netVelocity.dot(area)) == 1) {
-                                        final var dragForce = new Vector3f(area).multLocal(-0.5f * dragCoefficient * WATER_DENSITY * netVelocity.lengthSquared());
-                                        dragForce.multLocal(-1.0f * Math.signum(netVelocity.dot(dragForce)));
+                    /* Do water drag */
+                    if (rigidBody.isWaterDragEnabled()) {
+                        final var tangentialVelocity = new Vector3f(angularVelocity).cross(centroid); // angular velocity converted to linear parallel to edge of circle (tangential)
+                        final var netVelocity = new Vector3f(tangentialVelocity).addLocal(linearVelocity); // total linear + tangential velocity
 
-                                        /* This stopping force is how we prevent objects from entering orbit upon touching water :( */
-                                        final var stoppingForce = new Vector3f(netVelocity).multLocal(-1.0f * rigidBody.getMass() * crossSectionalAreas.get(triangle) / totalArea).divideLocal(timeStep);
+                        if (Math.signum(netVelocity.dot(area)) == 1) {
+                            final var dragForce = new Vector3f(area).multLocal(-0.5f * dragCoefficient * WATER_DENSITY * netVelocity.lengthSquared());
+                            dragForce.multLocal(-1.0f * Math.signum(netVelocity.dot(dragForce)));
 
-                                        /* So if the stopping force is smaller, we apply that instead. */
-                                        if (dragForce.length() < stoppingForce.length()) {
-                                            rigidBody.applyForce(dragForce.multLocal(addedMassAdjustment), centroid);
-                                        } else {
-                                            rigidBody.applyForce(stoppingForce.divideLocal(STOPPING_TIME), centroid);
-                                        }
-                                    }
-                                }
+                            /* This stopping force is how we prevent objects from entering orbit upon touching water :( */
+                            final var stoppingForce = new Vector3f(netVelocity).multLocal(-1.0f * rigidBody.getMass() * crossSectionalAreas.get(triangle) / totalArea).divideLocal(timeStep);
+
+                            /* So if the stopping force is smaller, we apply that instead. */
+                            if (dragForce.length() < stoppingForce.length()) {
+                                rigidBody.applyForce(dragForce.multLocal(addedMassAdjustment), centroid);
+                            } else {
+                                rigidBody.applyForce(stoppingForce.divideLocal(STOPPING_TIME), centroid);
                             }
-
-                        /* If there isn't a fluid column, do air buoyancy/drag */
-                        }, () -> {
-                            // TODO this is rly borky
+                        }
+                    }
+                } else {
+                    // TODO this is rly borky
 //                            if (rigidBody.isAirBuoyancyEnabled()) {
 //                                final var pressure = (float) (SEA_LEVEL_PRESSURE * Math.exp(MOLAR_MASS_OF_AIR * gravity.y * (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
 //                                final var buoyantForce = new Vector3f(area).multLocal(pressure);
@@ -161,25 +165,25 @@ public class PressureGenerator {
 //                                }
 //                            }
 
-                            /* Do (complex) air drag */
-                            if (rigidBody.isAirDragEnabled()) {
-                                /* air_density_at_sea_level * e^(gravity * molar_mass_of_air * sea_level / (gas_constant * temperature)) */
-                                /* 1.2 * e^(-9.8 * 0.0289644 * 62 / (8.3144598 * 300) */
-                                final var airDensity = (float) (AIR_DENSITY * Math.exp(MOLAR_MASS_OF_AIR * gravity.y * (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
+                    /* Do (complex) air drag */
+                    if (rigidBody.isAirDragEnabled()) {
+                        /* air_density_at_sea_level * e^(gravity * molar_mass_of_air * sea_level / (gas_constant * temperature)) */
+                        /* 1.2 * e^(-9.8 * 0.0289644 * 62 / (8.3144598 * 300) */
+                        final var airDensity = (float) (AIR_DENSITY * Math.exp(MOLAR_MASS_OF_AIR * gravity.y * (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
 
-                                final var tangentialVelocity = new Vector3f(angularVelocity).cross(centroid); // angular velocity converted to linear parallel to edge of circle (tangential)
-                                final var netVelocity = new Vector3f(tangentialVelocity).addLocal(linearVelocity); // total linear + tangential velocity
+                        final var tangentialVelocity = new Vector3f(angularVelocity).cross(centroid); // angular velocity converted to linear parallel to edge of circle (tangential)
+                        final var netVelocity = new Vector3f(tangentialVelocity).addLocal(linearVelocity); // total linear + tangential velocity
 
-                                if (Math.signum(netVelocity.dot(area)) == 1) {
-                                    final var dragForce = new Vector3f(area).multLocal(-0.5f * dragCoefficient * airDensity * netVelocity.lengthSquared());
-                                    dragForce.multLocal(-1.0f * Math.signum(netVelocity.dot(dragForce))); // make sure all the vectors are facing the same way
+                        if (Math.signum(netVelocity.dot(area)) == 1) {
+                            final var dragForce = new Vector3f(area).multLocal(-0.5f * dragCoefficient * airDensity * netVelocity.lengthSquared());
+                            dragForce.multLocal(-1.0f * Math.signum(netVelocity.dot(dragForce))); // make sure all the vectors are facing the same way
 
-                                    if (Float.isFinite(dragForce.lengthSquared()) && dragForce.lengthSquared() > 0.0f) {
-                                        rigidBody.applyForce(dragForce, centroid);
-                                    }
-                                }
+                            if (Float.isFinite(dragForce.lengthSquared()) && dragForce.lengthSquared() > 0.0f) {
+                                rigidBody.applyForce(dragForce, centroid);
                             }
-                        });
+                        }
+                    }
+                }
             }
 
             /* Do (simple) air drag */

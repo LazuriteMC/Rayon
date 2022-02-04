@@ -81,7 +81,7 @@ public interface ChunkCache {
         private final FluidData top;
         private final FluidData bottom;
         private final Vector3f flow;
-        private final float topHeight;
+        private final float height;
 
         public FluidColumn(BlockPos start, Level level) {
             final var cursor = new BlockPos(start).mutable();
@@ -103,13 +103,14 @@ public interface ChunkCache {
                 fluidState = level.getFluidState(cursor);
             }
 
-            // Water height (in case of flowing water)
-            this.top = new FluidData(level, new BlockPos(cursor), level.getFluidState(cursor.below()));
-            final var voxelShape = top.fluidState().getShape(level, top.blockPos().below());
-            this.topHeight = voxelShape.isEmpty() ? 0.875f : (float) voxelShape.bounds().getYsize();
+            cursor.set(cursor.below());
+            fluidState = level.getFluidState(cursor);
+
+            this.top = new FluidData(level, new BlockPos(cursor), fluidState);
+            this.height = fluidState.getHeight(level, cursor);
 
             // Water flow direction
-            this.flow = Convert.toBullet(top.fluidState().getFlow(level, cursor.below()));
+            this.flow = Convert.toBullet(fluidState.getFlow(level, cursor));
         }
 
         public boolean contains(BlockPos blockPos) {
@@ -127,16 +128,45 @@ public interface ChunkCache {
             return this.bottom;
         }
 
-        public float getTopHeight(Vector3f pos) {
-            if (pos.lengthSquared() > 1.0f) {
-                throw new RuntimeException("Top height coordinates should be local (<= 1.0)");
-            }
+        public float getTopHeight(Vector3f position) {
+//            if (flow.lengthSquared() == 0) {
+//                return 0.875f;
+//            }
+//            final var x = position.x;
+//            final var z = position.z;
+//
+//            final var minHeight = 0.125f;
+//            final var maxHeight = height;
+//
+//            final var xhat = flow.dot(new Vector3f(1, 0, 0));
+//            final var zhat = flow.dot(new Vector3f(0, 0, 1));
+//
+//            if (xhat == 0) {
+//                if (zhat > 0) {
+//                    return (1.0f - z) * maxHeight + z * minHeight;
+//                } else if (zhat < 0) {
+//                    return (1.0f - z) * minHeight + z * maxHeight;
+//                }
+//            } else if (zhat == 0) {
+//                if (xhat > 0) {
+//                    return (1.0f - x) * maxHeight + x * minHeight;
+//                } else if (xhat < 0) {
+//                    return (1.0f - x) * minHeight + x * maxHeight;
+//                }
+//            }
 
-            return this.topHeight;
+//            final var hitResult = topShape.clip(VectorHelper.toVec3(Convert.toMinecraft(position)), new Vec3(top.blockPos.getX() + 0.5f, top.blockPos.getY(), top.blockPos.getZ() + 0.5f), top.blockPos);
+//            final var y = topShape.collide(Direction.Axis.Y, new AABB(top.blockPos).move(VectorHelper.toVec3(Convert.toMinecraft(position))), 0.875f);
+
+//            if (hitResult != null) {
+//                return position.y - (float) hitResult.getLocation().y;
+//            }
+
+            return height;
         }
 
         public int getHeight() {
-            return this.top.blockPos.getY() - this.bottom.blockPos.getY();
+            return this.top.blockPos.getY() - this.bottom.blockPos.getY() + 1;
         }
 
         public Vector3f getFlow() {
