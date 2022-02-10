@@ -43,7 +43,6 @@ dependencies {
 remapJar {
     dependsOn shadowJar
     input.set shadowJar.archiveFile
-    classifier null
 }
 
 tasks.withType(ProcessResources) {

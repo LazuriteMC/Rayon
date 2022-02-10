@@ -17,7 +17,7 @@ public class BlockStateBaseMixin {
     @Inject(method = "updateShape", at = @At("HEAD"))
     public void updateShape(Direction direction, BlockState blockState, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2, CallbackInfoReturnable<BlockState> info) {
         if (levelAccessor instanceof Level level) {
-            MinecraftSpace.get(level).doBlockUpdate(blockPos);
+            MinecraftSpace.getOptional(level).ifPresent(space -> space.doBlockUpdate(blockPos));
         }
     }
 }

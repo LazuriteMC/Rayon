@@ -52,10 +52,12 @@ subprojects {
             }
         }
 
-        publications {
-            "$name"(MavenPublication) {
-                artifactId = archivesBaseName
-                from components.java
+        if (!name.contains('testmod')) {
+            publications {
+                "$name"(MavenPublication) {
+                    artifactId = archivesBaseName
+                    from components.java
+                }
             }
         }
     }
