@@ -36,8 +36,8 @@ dependencies {
     modApi("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
 
     shadowCommon("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
-    shadowCommon("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
-    shadowCommon("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
+    include("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
+    include("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
 }
 
 remapJar {

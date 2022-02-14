@@ -19,51 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
-    /* I blame forgay */
-
-    @Shadow public Camera camera;
-    private Entity entity;
-    private float tickDelta;
-
-    @Inject(method = "render", at = @At("HEAD"))
-    public void render(Entity entity, double d, double e, double f, float g, float h, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo info) {
-        this.entity = entity;
-        this.tickDelta = h;
-    }
-
-    @ModifyVariable(method = "render", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    public double renderX(double d) {
-        if (this.entity instanceof EntityPhysicsElement element) {
-            final var location = element.getPhysicsLocation(new Vector3f(), this.tickDelta);
-            final var cameraPos = camera.getPosition();
-            return location.x - cameraPos.x;
-        }
-
-        return d;
-    }
-
-    @ModifyVariable(method = "render", at = @At("HEAD"), ordinal = 1, argsOnly = true)
-    public double renderY(double e) {
-        if (this.entity instanceof EntityPhysicsElement element) {
-            final var location = element.getPhysicsLocation(new Vector3f(), this.tickDelta);
-            final var cameraPos = camera.getPosition();
-            return location.y - cameraPos.y;
-        }
-
-        return e;
-    }
-
-    @ModifyVariable(method = "render", at = @At("HEAD"), ordinal = 2, argsOnly = true)
-    public double renderZ(double f) {
-        if (this.entity instanceof EntityPhysicsElement element) {
-            final var location = element.getPhysicsLocation(new Vector3f(), this.tickDelta);
-            final var cameraPos = camera.getPosition();
-            return location.z - cameraPos.z;
-        }
-
-        return f;
-    }
-
     @ModifyVariable(
             method = "renderShadow",
             at = @At(value = "STORE", opcode = Opcodes.DSTORE),
