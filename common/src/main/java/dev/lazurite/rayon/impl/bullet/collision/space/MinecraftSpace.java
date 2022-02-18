@@ -7,14 +7,17 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.api.event.collision.ElementCollisionEvents;
 import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
 import dev.lazurite.rayon.impl.bullet.collision.space.storage.SpaceStorage;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
+import dev.lazurite.rayon.impl.event.network.EntityNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
@@ -128,6 +131,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                             rigidBody.getPhysicsLocation(new Vector3f()),
                             rigidBody.getPhysicsRotation(new Quaternion()),
                             rigidBody.getPhysicsRotation(new Quaternion()));
+                }
+
+                if (isServer() && rigidBody instanceof EntityRigidBody entityRigidBody) {
+                    EntityNetworking.sendMovement(entityRigidBody);
+                    EntityNetworking.sendProperties(entityRigidBody);
                 }
             } else if (collisionObject instanceof TerrainRigidBody terrain) {
                 this.terrainMap.put(terrain.getBlockPos(), terrain);
