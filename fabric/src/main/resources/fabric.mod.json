@@ -15,7 +15,7 @@
   "license": "MIT",
   "environment": "*",
   "icon": "icon.png",
-  "mixins": [ "rayon.mixins.json" ],
+  "mixins": [ "rayon.mixins.json", "toolbox.mixins.json" ],
 
   "entrypoints": {
     "main": [ "dev.lazurite.rayon.impl.fabric.RayonFabric" ],
