@@ -7,3 +7,12 @@ dependencies {
     modImplementation("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
     modImplementation("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
 }
+
+publishing {
+    publications {
+        common(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}

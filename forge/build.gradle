@@ -56,3 +56,12 @@ components.java {
         skip()
     }
 }
+
+publishing {
+    publications {
+        forge(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}

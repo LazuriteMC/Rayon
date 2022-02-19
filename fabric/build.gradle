@@ -55,3 +55,11 @@ tasks.withType(ProcessResources) {
 sourcesJar {
     from project(":common").sourceSets.main.allSource
 }
+publishing {
+    publications {
+        fabric(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}
