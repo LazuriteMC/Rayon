@@ -34,7 +34,7 @@ public final class ClientEventHandler {
 
     public static void register() {
         // Client Events
-        ClientEvents.Lifecycle.LOGIN.register(ClientEventHandler::onGameJoin);
+        ClientEvents.Lifecycle.PRE_LOGIN.register(ClientEventHandler::onGameJoin);
         ClientEvents.Lifecycle.DISCONNECT.register(ClientEventHandler::onDisconnect);
         ClientEvents.Tick.END_CLIENT_TICK.register(ClientEventHandler::onClientTick);
 
@@ -69,7 +69,7 @@ public final class ClientEventHandler {
         }
     }
 
-    public static void onGameJoin(Minecraft minecraft, ClientLevel level, LocalPlayer player) {
+    public static void onGameJoin(Minecraft minecraft) {
 //        var supplier = RayonCore.isImmersivePortalsPresent() ? new ImmersiveWorldSupplier(minecraft) : new ClientLevelSupplier(minecraft);
         final var supplier = new ClientLevelSupplier(minecraft);
         thread = new PhysicsThread(minecraft, Thread.currentThread(), supplier, "Client Physics Thread");

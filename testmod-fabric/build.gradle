@@ -23,7 +23,7 @@ dependencies {
     common(project(path: ':common', configuration: 'namedElements'))
     common(project(path: ':testmod-common', configuration: 'namedElements'))
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     common("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
     common("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
     common("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
