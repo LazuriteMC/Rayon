@@ -2,9 +2,9 @@ package dev.lazurite.rayon.impl.dev.client.render;
 
 import com.jme3.math.Quaternion;
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.lazurite.rayon.impl.dev.entity.StoneBlockEntity;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
-import dev.lazurite.rayon.impl.dev.entity.StoneBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -15,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 public class StoneBlockEntityRenderer extends EntityRenderer<StoneBlockEntity> {
     private static final ResourceLocation texture = new ResourceLocation(Rayon.MODID, "textures/entity/stone_block.png");
     private final StoneBlockEntityModel model;
-
     public StoneBlockEntityRenderer(EntityRendererProvider.Context ctx, StoneBlockEntityModel model) {
         super(ctx);
         this.model = model;

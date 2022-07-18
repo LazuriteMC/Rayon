@@ -1,4 +1,4 @@
 {
-  "item.rayon_dev.wand_item" : "Wand Item",
-  "entity.rayon_dev.stone_block_entity" : "Stone Block"
+  "item.rayon.wand_item" : "Wand Item",
+  "entity.rayon.stone_block_entity" : "Stone Block"
 }

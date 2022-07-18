@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 public class StoneBlockEntityModel extends EntityModel<StoneBlockEntity> {
     private final ModelPart modelPart;
-
     public StoneBlockEntityModel(int x, int y, int z) {
         var cuboidData = CubeListBuilder.create().addBox(0, 0, 0, x, y, z).getCubes();
         var cuboids = new ArrayList<ModelPart.Cube>();
