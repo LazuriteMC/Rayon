@@ -21,8 +21,8 @@ pluginManagement {
 
 rootProject.name = 'rayon'
 
-include 'common', 'fabric', 'testmod-common', 'testmod-fabric'
+include 'common', 'fabric'
 
 if (forge_enabled.toBoolean()) {
-    include 'forge', 'testmod-forge'
+    include 'forge'
 }
