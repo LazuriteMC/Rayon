@@ -20,11 +20,13 @@ import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
 import dev.lazurite.toolbox.api.network.PacketRegistry;
 import dev.lazurite.toolbox.api.util.PlayerUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public final class ServerEventHandler {
     private static PhysicsThread thread;
@@ -48,11 +50,16 @@ public final class ServerEventHandler {
         ServerEvents.Lifecycle.LOAD_LEVEL.register(ServerEventHandler::onLevelLoad);
         ServerEvents.Tick.START_LEVEL_TICK.register(ServerEventHandler::onStartLevelTick);
         ServerEvents.Tick.START_LEVEL_TICK.register(ServerEventHandler::onEntityStartLevelTick);
+        ServerEvents.Block.BLOCK_UPDATE.register(ServerEventHandler::onBlockUpdate);
 
         // Entity Events
         ServerEvents.Entity.LOAD.register(ServerEventHandler::onEntityLoad);
         ServerEvents.Entity.START_TRACKING.register(ServerEventHandler::onStartTrackingEntity);
         ServerEvents.Entity.STOP_TRACKING.register(ServerEventHandler::onStopTrackingEntity);
+    }
+
+    public static void onBlockUpdate(Level level, BlockState blockState, BlockPos blockPos) {
+        MinecraftSpace.getOptional(level).ifPresent(space -> space.doBlockUpdate(blockPos));
     }
 
     public static void onServerStart(MinecraftServer server) {

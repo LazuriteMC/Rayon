@@ -34,13 +34,13 @@ public class RayonDevForge {
     }
 
     @SubscribeEvent
-    public void onInitialize(FMLCommonSetupEvent event) {
+    public static void onInitialize(FMLCommonSetupEvent event) {
         RayonDev.WAND_ITEM = (WandItem) WAND_ITEM.get();
         RayonDev.STONE_BLOCK_ENTITY = (EntityType<StoneBlockEntity>) STONE_BLOCK_ENTITY.get();
     }
 
     @SubscribeEvent
-    public void onRegisterAttributes(EntityAttributeCreationEvent event) {
+    public static void onRegisterAttributes(EntityAttributeCreationEvent event) {
         event.put(STONE_BLOCK_ENTITY.get(), LivingEntity.createLivingAttributes().build());
     }
 }

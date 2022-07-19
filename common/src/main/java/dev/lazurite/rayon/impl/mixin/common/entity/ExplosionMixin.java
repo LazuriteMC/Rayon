@@ -1,7 +1,7 @@
-package dev.lazurite.rayon.impl.mixin.common;
+package dev.lazurite.rayon.impl.mixin.common.entity;
 
+import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.api.PhysicsElement;
-import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
@@ -22,7 +22,8 @@ import java.util.Set;
  */
 @Mixin(Explosion.class)
 public class ExplosionMixin {
-    @Unique private Entity entity;
+    @Unique
+    private Entity entity;
 
     @Inject(
             method = "explode",
@@ -44,12 +45,8 @@ public class ExplosionMixin {
             )
     )
     public Vec3 setVelocity(Vec3 velocity) {
-        if (entity instanceof PhysicsElement) {
-            var rigidBody = ((PhysicsElement) entity).getRigidBody();
-
-            MinecraftSpace.get(entity.level).getWorkerThread().execute(() ->
-                rigidBody.applyCentralImpulse(Convert.toBullet(velocity).multLocal(rigidBody.getMass()).multLocal(100))
-            );
+        if (entity instanceof EntityPhysicsElement element) {
+            element.getRigidBody().applyCentralImpulse(Convert.toBullet(velocity).multLocal(element.getRigidBody().getMass() * 100f));
         }
 
         return velocity;

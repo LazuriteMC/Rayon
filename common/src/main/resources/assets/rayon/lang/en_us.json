@@ -1,4 +1,7 @@
 {
   "debug.rayon.on": "Rigid Body Hitboxes: shown",
-  "debug.rayon.off": "Rigid Body Hitboxes: hidden"
+  "debug.rayon.off": "Rigid Body Hitboxes: hidden",
+
+  "item.rayon.wand_item" : "Wand Item",
+  "entity.rayon.stone_block_entity" : "Stone Block"
 }

@@ -4,11 +4,10 @@
   "package": "dev.lazurite.rayon.impl.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "common.BlockStateBaseMixin",
-    "common.ExplosionMixin",
     "common.LevelMixin",
     "common.entity.EntityMixin",
-    "common.entity.EntityTrackerEntryMixin"
+    "common.entity.EntityTrackerEntryMixin",
+    "common.entity.ExplosionMixin"
   ],
   "client": [
     "client.EntityRenderDispatcherMixin",
