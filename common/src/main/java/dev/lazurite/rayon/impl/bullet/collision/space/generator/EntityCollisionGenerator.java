@@ -19,8 +19,10 @@ public class EntityCollisionGenerator {
                 final var normal = location.subtract(entityPos).multLocal(new Vector3f(1, 0, 1)).normalize();
 
                 final var intersection = entity.getBoundingBox().intersect(Convert.toMinecraft(box));
-                final var force = normal.clone().multLocal((float) intersection.getSize() / (float) Convert.toMinecraft(box).getSize())
-                        .multLocal(mass).multLocal(new Vector3f(1, 0, 1));
+                final var force = normal.clone()
+                        .multLocal((float) intersection.getSize() / (float) Convert.toMinecraft(box).getSize())
+                        .multLocal(mass)
+                        .multLocal(new Vector3f(1, 0, 1));
                 rigidBody.applyCentralImpulse(force);
             }
         }

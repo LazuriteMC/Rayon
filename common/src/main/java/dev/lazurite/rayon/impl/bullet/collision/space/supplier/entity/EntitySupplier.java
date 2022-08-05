@@ -11,7 +11,6 @@ import net.minecraft.world.entity.vehicle.Minecart;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public interface EntitySupplier {
     static List<Entity> getInsideOf(ElementRigidBody rigidBody) {
@@ -20,14 +19,9 @@ public interface EntitySupplier {
         }
 
         final var space = rigidBody.getSpace();
-        final var thread = space.getWorkerThread();
+        final var box = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox()));
 
-        if (!thread.getParentThread().equals(Thread.currentThread())) {
-            return CompletableFuture.supplyAsync(() -> getInsideOf(rigidBody), thread.getParentExecutor()).join();
-        } else {
-            var box = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox()));
-            return rigidBody.getSpace().getLevel().getEntitiesOfClass(Entity.class, box,
-                    entity -> (entity instanceof Boat || entity instanceof Minecart || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement));
-        }
+        return rigidBody.getSpace().getLevel().getEntitiesOfClass(Entity.class, box,
+                entity -> (entity instanceof Boat || entity instanceof Minecart || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement));
     }
 }
