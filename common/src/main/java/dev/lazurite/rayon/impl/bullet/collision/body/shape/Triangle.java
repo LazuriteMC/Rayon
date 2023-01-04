@@ -5,6 +5,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,20 +70,6 @@ public class Triangle {
     public static List<Triangle> getMeshOf(Pattern pattern) {
         final var triangles = new ArrayList<Triangle>();
 
-//        for (var quad : pattern.getQuads()) {
-//            triangles.add(new Triangle(
-//                    Convert.toBullet(quad.getPoints().get(0)),
-//                    Convert.toBullet(quad.getPoints().get(1)),
-//                    Convert.toBullet(quad.getPoints().get(2))
-//            ));
-//
-//            triangles.add(new Triangle(
-//                    Convert.toBullet(quad.getPoints().get(0)),
-//                    Convert.toBullet(quad.getPoints().get(3)),
-//                    Convert.toBullet(quad.getPoints().get(1))
-//            ));
-//        }
-
         for (var quad : pattern.getQuads()) {
             final var centroid = new Vector3f();
 
@@ -132,8 +119,10 @@ public class Triangle {
     }
 
     private static Vector3f transform(Vector3f vector, Quaternion quaternion) {
-        final var mcVector = Convert.toMinecraft(vector);
-        mcVector.transform(Convert.toMinecraft(quaternion));
-        return Convert.toBullet(mcVector);
+        return Convert.toBullet(
+                Convert.toMinecraft(vector).mulTransposeDirection(
+                        Convert.toMinecraft(quaternion).get(new Matrix4f())
+                )
+        );
     }
 }
