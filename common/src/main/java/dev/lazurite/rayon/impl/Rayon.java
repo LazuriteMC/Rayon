@@ -14,6 +14,9 @@ public class Rayon {
 	public static final Logger LOGGER = LogManager.getLogger("Rayon");
 
 	public static void intialize() {
+		// prevent annoying libbulletjme spam
+		java.util.logging.LogManager.getLogManager().reset();
+
 		NativeLoader.load();
 		Transporter.initialize();
 		EntityNetworking.register();

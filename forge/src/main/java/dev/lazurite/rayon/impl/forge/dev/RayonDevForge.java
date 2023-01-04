@@ -6,8 +6,9 @@ import dev.lazurite.rayon.impl.dev.entity.StoneBlockEntity;
 import dev.lazurite.rayon.impl.dev.item.WandItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -19,7 +20,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class RayonDevForge {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Rayon.MODID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Rayon.MODID);
-    public static final RegistryObject<Item> WAND_ITEM = ITEMS.register("wand_item", () -> new WandItem(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_MISC)));
+    public static final RegistryObject<Item> WAND_ITEM = ITEMS.register("wand_item", () -> new WandItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<EntityType<? extends LivingEntity>> STONE_BLOCK_ENTITY = ENTITIES.register("stone_block_entity",
             () -> EntityType.Builder.of(StoneBlockEntity::new, MobCategory.MISC)
                     .sized(0.75f, 0.25f)
@@ -42,5 +43,12 @@ public class RayonDevForge {
     @SubscribeEvent
     public static void onRegisterAttributes(EntityAttributeCreationEvent event) {
         event.put(STONE_BLOCK_ENTITY.get(), LivingEntity.createLivingAttributes().build());
+    }
+
+    @SubscribeEvent
+    public static void onRegisterCreativeTab(CreativeModeTabEvent.BuildContents event) {
+        if (event.getTab() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(RayonDev.WAND_ITEM);
+        }
     }
 }
