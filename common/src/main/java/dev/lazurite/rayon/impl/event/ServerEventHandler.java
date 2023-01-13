@@ -156,7 +156,7 @@ public final class ServerEventHandler {
             if (entity instanceof EntityPhysicsElement element) {
                 final var rigidBody = element.getRigidBody();
 
-                if (rigidBody.getPriorityPlayer().equals(player)) {
+                if (player.equals(rigidBody.getPriorityPlayer())) {
                     PhysicsThread.get(level).execute(() -> {
                         rigidBody.setPhysicsRotation(rotation);
                         rigidBody.setPhysicsLocation(location);
