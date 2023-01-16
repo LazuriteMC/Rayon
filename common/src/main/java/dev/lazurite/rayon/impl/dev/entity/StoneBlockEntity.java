@@ -2,6 +2,8 @@ package dev.lazurite.rayon.impl.dev.entity;
 
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
+import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -13,10 +15,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.ArrayList;
 
 public class StoneBlockEntity extends LivingEntity implements EntityPhysicsElement {
-    private final EntityRigidBody rigidBody = new EntityRigidBody(this);
+    private final EntityRigidBody rigidBody;
 
     public StoneBlockEntity(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
+        this.rigidBody = new EntityRigidBody(this);
+//        this.rigidBody = new EntityRigidBody(this, MinecraftSpace.get(level), MinecraftShape.box(getBoundingBox()));
         this.rigidBody.setMass(20.0f);
     }
 

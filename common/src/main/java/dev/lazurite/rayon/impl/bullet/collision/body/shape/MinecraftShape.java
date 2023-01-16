@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.impl.bullet.collision.body.shape;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
@@ -10,14 +11,22 @@ import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
 import net.minecraft.world.phys.AABB;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftShape.Concave {
+public sealed interface MinecraftShape permits MinecraftShape.Box, MinecraftShape.Convex, MinecraftShape.Concave {
     List<Triangle> getTriangles(Quaternion quaternion);
     float getVolume();
+
+    static Box box(AABB box) {
+        return MinecraftShape.box(Convert.toBullet(box));
+    }
+
+    static Box box(BoundingBox box) {
+        return new Box(box);
+    }
 
     static Convex convex(AABB box) {
         return MinecraftShape.convex(Convert.toBullet(box));
@@ -43,6 +52,28 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
         return new Concave(Triangle.getMeshOf(pattern));
     }
 
+    /* Mostly stable */
+    final class Box extends BoxCollisionShape implements MinecraftShape {
+
+        private final List<Triangle> triangles;
+
+        public Box(BoundingBox boundingBox) {
+            super(boundingBox.getExtent(new Vector3f()).mult(0.5f));
+            this.triangles = new ArrayList<>(MinecraftShape.convex(boundingBox).triangles); // a lil hacky
+        }
+
+        @Override
+        public List<Triangle> getTriangles(Quaternion quaternion) {
+            return this.triangles;
+        }
+
+        @Override
+        public float getVolume() {
+            return this.toHullShape().aabbVolume();
+        }
+    }
+
+    /* Recommended */
     final class Convex extends HullCollisionShape implements MinecraftShape {
         private final List<Triangle> triangles;
 
@@ -53,12 +84,12 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
 
         @Override
         public List<Triangle> getTriangles(Quaternion quaternion) {
-            return Collections.unmodifiableList(this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList());
+            return this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList();
         }
 
         @Override
         public float getVolume() {
-            return aabbVolume();
+            return this.aabbVolume();
         }
     }
 
@@ -84,7 +115,7 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
 
         @Override
         public List<Triangle> getTriangles(Quaternion quaternion) {
-            return Collections.unmodifiableList(this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList());
+            return this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList();
         }
 
         @Override

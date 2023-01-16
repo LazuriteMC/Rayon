@@ -10,11 +10,11 @@ public class EntityRigidBody extends ElementRigidBody {
     private Player priorityPlayer;
     private boolean dirtyProperties = true;
 
-    public EntityRigidBody(EntityPhysicsElement element, MinecraftSpace space, MinecraftShape.Convex shape, float mass, float dragCoefficient, float friction, float restitution) {
+    public EntityRigidBody(EntityPhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(element, space, shape, mass, dragCoefficient, friction, restitution);
     }
 
-    public EntityRigidBody(EntityPhysicsElement element, MinecraftSpace space, MinecraftShape.Convex shape) {
+    public EntityRigidBody(EntityPhysicsElement element, MinecraftSpace space, MinecraftShape shape) {
         this(element, space, shape, 10.0f, 0.25f, 1.0f, 0.5f);
     }
 
