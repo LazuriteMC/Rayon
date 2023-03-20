@@ -21,7 +21,6 @@ import dev.lazurite.toolbox.api.math.VectorHelper;
 import dev.lazurite.toolbox.api.network.PacketRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -44,7 +43,7 @@ public final class ClientEventHandler {
         ClientEvents.Tick.END_LEVEL_TICK.register(ClientEventHandler::onEntityStartLevelTick);
 
         // Render Events
-        ClientEvents.Render.BEFORE_DEBUG.register((poseStack, camera, level, tickDelta) -> ClientEventHandler.onDebugRender(level, new PoseStack(), tickDelta));
+        ClientEvents.Render.BEFORE_DEBUG.register((poseStack, camera, level, tickDelta) -> ClientEventHandler.onDebugRender(level, poseStack, tickDelta));
 
         // Entity Events
         ClientEvents.Entity.LOAD.register(ClientEventHandler::onEntityLoad);

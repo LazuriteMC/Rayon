@@ -13,7 +13,6 @@ import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.world.phys.Vec3;
 
 /**
  * This class handles debug rendering on the client. Press F3+r to render
@@ -41,12 +40,12 @@ public final class CollisionObjectDebugger {
         builder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        space.getTerrainMap().values().forEach(terrain -> CollisionObjectDebugger.renderBody(terrain, builder, stack, cameraPos, tickDelta));
-        space.getRigidBodiesByClass(ElementRigidBody.class).forEach(elementRigidBody -> CollisionObjectDebugger.renderBody(elementRigidBody, builder, stack, cameraPos, tickDelta));
+        space.getTerrainMap().values().forEach(terrain -> CollisionObjectDebugger.renderBody(terrain, builder, stack, tickDelta));
+        space.getRigidBodiesByClass(ElementRigidBody.class).forEach(elementRigidBody -> CollisionObjectDebugger.renderBody(elementRigidBody, builder, stack, tickDelta));
         Tesselator.getInstance().end();
     }
 
-    public static void renderBody(MinecraftRigidBody rigidBody, BufferBuilder builder, PoseStack stack, Vec3 cameraPos, float tickDelta) {
+    public static void renderBody(MinecraftRigidBody rigidBody, BufferBuilder builder, PoseStack stack, float tickDelta) {
         final var position = rigidBody.isStatic() ?
                 rigidBody.getPhysicsLocation(new Vector3f()) :
                 ((ElementRigidBody) rigidBody).getFrame().getLocation(new Vector3f(), tickDelta);
@@ -55,18 +54,18 @@ public final class CollisionObjectDebugger {
                 rigidBody.getPhysicsRotation(new Quaternion()) :
                 ((ElementRigidBody) rigidBody).getFrame().getRotation(new Quaternion(), tickDelta);
 
-        renderShape(rigidBody.getMinecraftShape(), position, rotation, builder, stack, cameraPos, rigidBody.getOutlineColor(), 1.0f);
+        renderShape(rigidBody.getMinecraftShape(), position, rotation, builder, stack, rigidBody.getOutlineColor(), 1.0f);
     }
 
-    public static void renderShape(MinecraftShape shape, Vector3f position, Quaternion rotation, BufferBuilder builder, PoseStack stack, Vec3 cameraPos, Vector3f color, float alpha) {
+    public static void renderShape(MinecraftShape shape, Vector3f position, Quaternion rotation, BufferBuilder builder, PoseStack stack, Vector3f color, float alpha) {
         final var triangles = shape.getTriangles(Quaternion.IDENTITY);
-        final var positionMinusCamera = new Vector3f(position).subtract(Convert.toBullet(cameraPos));
+        final var cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
         for (var triangle : triangles) {
             final var vertices = triangle.getVertices();
 
             stack.pushPose();
-            stack.translate(positionMinusCamera.x, positionMinusCamera.y, positionMinusCamera.z);
+            stack.translate(position.x - cameraPos.x, position.y - cameraPos.y, position.z - cameraPos.z);
             stack.mulPose(Convert.toMinecraft(rotation));
             final var p1 = vertices[0];
             final var p2 = vertices[1];

@@ -82,9 +82,10 @@ public class PressureGenerator {
                 }
 
                 final var blockPos = new BlockPos(
-                        location.x + centroid.x,
-                        location.y + centroid.y,
-                        location.z + centroid.z);
+                        (int) (location.x + centroid.x),
+                        (int) (location.y + centroid.y),
+                        (int) (location.z + centroid.z)
+                );
 
                 final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
@@ -105,9 +106,10 @@ public class PressureGenerator {
                 final var area = triangle.getArea();
 
                 final var blockPos = new BlockPos(
-                        location.x + centroid.x,
-                        location.y + centroid.y,
-                        location.z + centroid.z);
+                        (int) (location.x + centroid.x),
+                        (int) (location.y + centroid.y),
+                        (int) (location.z + centroid.z)
+                );
 
                 if (submergedTriangles.contains(triangle)) {
                     final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
@@ -115,7 +117,7 @@ public class PressureGenerator {
                     final var waterHeight = chunkCache.getFluidColumn(blockPos)
                             .map(fluidColumn -> (float) fluidColumn.getTop().blockPos().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y).orElse(0.0f);
 
-                    chunkCache.getFluidColumn(new BlockPos(location.x, location.y, location.z)).ifPresent(fluidColumn -> {
+                    chunkCache.getFluidColumn(new BlockPos((int) location.x, (int) location.y, (int) location.z)).ifPresent(fluidColumn -> {
                         final var flowForce = new Vector3f(fluidColumn.getFlow());
 
                         if (Float.isFinite(flowForce.lengthSquared()) && flowForce.lengthSquared() > 0.0f) {
