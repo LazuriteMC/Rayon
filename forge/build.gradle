@@ -1,8 +1,4 @@
-plugins {
-    id 'com.github.johnrengelman.shadow' version "$shadow_version"
-}
-
-loom.forge.mixinConfig 'rayon.mixins.json', 'toolbox.mixins.json'
+loom.forge.mixinConfig 'rayon.mixins.json'
 
 architectury {
     platformSetupLoomIde()
@@ -22,13 +18,11 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     common("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
-    common("dev.lazurite:toolbox-forge:$toolbox_version") { transitive false }
-    common("dev.lazurite:transporter-forge:$transporter_version") { transitive false }
-
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
     shadowCommon("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
-    shadowCommon("dev.lazurite:toolbox-forge:$toolbox_version") { transitive false }
-    shadowCommon("dev.lazurite:transporter-forge:$transporter_version") { transitive false }
+
+    modApi include("dev.lazurite:toolbox-forge:$toolbox_version") { transitive false }
+    modApi include("dev.lazurite:transporter-forge:$transporter_version") { transitive false }
 }
 
 tasks.withType(ProcessResources) {
@@ -54,14 +48,5 @@ remapJar {
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
-    }
-}
-
-publishing {
-    publications {
-        forge(MavenPublication) {
-            artifactId = archivesBaseName
-            from components.java
-        }
     }
 }

@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
     id 'architectury-plugin' version "$architectury_plugin_version"
     id 'dev.architectury.loom' version "$loom_version" apply false
     id 'java'
@@ -9,11 +10,12 @@ architectury {
 }
 
 subprojects {
+    apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'dev.architectury.loom'
     apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
 
-    version rayon_version
+    version "${mod_version}+${minecraft_version}"
     group maven_group
 
     archivesBaseName = rootProject.archivesBaseName + '-' + name
@@ -32,6 +34,7 @@ subprojects {
             name 'Lazurite'
             url 'https://lazurite.dev/releases'
         }
+        mavenLocal()
     }
 
     dependencies {
@@ -44,11 +47,17 @@ subprojects {
             maven {
                 name 'Lazurite'
                 url 'https://lazurite.dev/releases'
-
-                credentials {
-                    username property('publish.lazurite.alias')
-                    password property('publish.lazurite.secret')
+                credentials(PasswordCredentials)
+                authentication {
+                    register("basic", BasicAuthentication)
                 }
+            }
+        }
+
+        publications {
+            "${project.name}"(MavenPublication) {
+                artifactId = archivesBaseName
+                from components.java
             }
         }
     }

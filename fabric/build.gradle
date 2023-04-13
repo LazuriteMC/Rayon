@@ -1,7 +1,3 @@
-plugins {
-    id 'com.github.johnrengelman.shadow' version "$shadow_version"
-}
-
 architectury {
     platformSetupLoomIde()
     fabric()
@@ -28,16 +24,13 @@ components.java {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
 
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     common(project(path: ":common", configuration: "namedElements"))
     common("com.github.stephengold:Libbulletjme:$libbulletjme_version")
-    modApi "dev.lazurite:toolbox-fabric:$toolbox_version"
-    modApi "dev.lazurite:transporter-fabric:$transporter_version"
-
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
     shadowCommon("com.github.stephengold:Libbulletjme:$libbulletjme_version") { transitive false }
-    shadowCommon("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
-    shadowCommon("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
+
+    modApi include("dev.lazurite:toolbox-fabric:$toolbox_version") { transitive false }
+    modApi include("dev.lazurite:transporter-fabric:$transporter_version") { transitive false }
 }
 
 remapJar {
@@ -55,12 +48,4 @@ tasks.withType(ProcessResources) {
 
 sourcesJar {
     from project(":common").sourceSets.main.allSource
-}
-publishing {
-    publications {
-        fabric(MavenPublication) {
-            artifactId = archivesBaseName
-            from components.java
-        }
-    }
 }
