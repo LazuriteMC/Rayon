@@ -8,18 +8,16 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public interface EntitySupplier {
-    static List<Entity> getInsideOf(ElementRigidBody rigidBody) {
+    static List<Entity> getInsideOf(ElementRigidBody rigidBody, AABB box) {
         if (!rigidBody.isInWorld()) {
-            return new ArrayList<>();
+            return List.of();
         }
-
-        final var space = rigidBody.getSpace();
-        final var box = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox()));
 
         return rigidBody.getSpace().getLevel().getEntitiesOfClass(Entity.class, box,
                 entity -> (entity instanceof Boat || entity instanceof Minecart || entity instanceof LivingEntity) && !(entity instanceof PhysicsElement));

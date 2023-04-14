@@ -131,6 +131,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                             rigidBody.getPhysicsLocation(new Vector3f()),
                             rigidBody.getPhysicsRotation(new Quaternion()),
                             rigidBody.getPhysicsRotation(new Quaternion()));
+                    rigidBody.updateBoundingBox();
                 }
 
                 if (isServer() && rigidBody instanceof EntityRigidBody entityRigidBody) {
@@ -167,9 +168,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     public void doBlockUpdate(BlockPos blockPos) {
-        this.chunkCache.loadBlockData(blockPos);
-        this.chunkCache.loadFluidData(blockPos);
         this.wakeNearbyElementRigidBodies(blockPos);
+
+        //if (this.chunkCache.isActive(blockPos)) {
+        //    this.chunkCache.loadBlockData(blockPos);
+        //    this.chunkCache.loadFluidData(blockPos);
+        //}
     }
 
     public void wakeNearbyElementRigidBodies(BlockPos blockPos) {

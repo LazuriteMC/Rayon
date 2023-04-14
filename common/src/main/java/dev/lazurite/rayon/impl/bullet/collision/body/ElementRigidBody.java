@@ -28,6 +28,8 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
     private float dragCoefficient;
     private BuoyancyType buoyancyType;
     private DragType dragType;
+    private BoundingBox currentBoundingBox = new BoundingBox();
+    private AABB currentMinecraftBoundingBox = new AABB(0, 0, 0, 0, 0 ,0);
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(space, shape, mass);
@@ -111,10 +113,11 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
 
     public void updateFrame() {
         getFrame().from(getFrame(), getPhysicsLocation(new Vector3f()), getPhysicsRotation(new Quaternion()));
+        this.updateBoundingBox();
     }
 
     public boolean isNear(BlockPos blockPos) {
-        return Convert.toMinecraft(this.boundingBox(new BoundingBox())).intersects(new AABB(blockPos).inflate(0.5f));
+        return this.currentMinecraftBoundingBox.intersects(new AABB(blockPos).inflate(0.5f));
     }
 
     public boolean isWaterBuoyancyEnabled() {
@@ -133,6 +136,20 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
     public boolean isAirDragEnabled() {
         return dragType == DragType.AIR || dragType == DragType.ALL;
     }
+
+    public void updateBoundingBox() {
+        this.currentBoundingBox = this.boundingBox(this.currentBoundingBox);
+        this.currentMinecraftBoundingBox = Convert.toMinecraft(this.currentBoundingBox);
+    }
+
+    public AABB getCurrentMinecraftBoundingBox() {
+        return currentMinecraftBoundingBox;
+    }
+
+    public BoundingBox getCurrentBoundingBox() {
+        return currentBoundingBox;
+    }
+
 
     public enum BuoyancyType {
         NONE,

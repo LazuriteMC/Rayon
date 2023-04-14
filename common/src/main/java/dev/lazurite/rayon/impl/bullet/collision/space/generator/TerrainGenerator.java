@@ -24,12 +24,12 @@ public class TerrainGenerator {
                 continue;
             }
 
-            final var aabb = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox())).inflate(0.5f);
+            final var aabb = rigidBody.getCurrentMinecraftBoundingBox().inflate(0.5f);
 
             BlockPos.betweenClosedStream(aabb).forEach(blockPos -> {
                 chunkCache.getBlockData(blockPos).ifPresent(blockData -> {
                     space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrain -> {
-                        if (Block.getId(blockData.blockState()) != Block.getId(terrain.getBlockState())) {
+                        if (blockData.blockState() != terrain.getBlockState()) {
                             space.removeCollisionObject(terrain);
 
                             final var terrain2 = TerrainRigidBody.from(blockData);
