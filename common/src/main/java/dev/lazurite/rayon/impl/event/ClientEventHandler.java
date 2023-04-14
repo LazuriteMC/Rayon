@@ -85,29 +85,25 @@ public final class ClientEventHandler {
     }
 
     public static void onEntityLoad(Entity entity) {
-        if (entity instanceof EntityPhysicsElement element) {
+        if (EntityPhysicsElement.is(entity)) {
             var level = entity.level;
 
-            PhysicsThread.get(level).execute(() ->
-                MinecraftSpace.getOptional(level).ifPresent(space -> {
-                    if (element.getRigidBody() != null) {
-                        space.addCollisionObject(element.getRigidBody());
-                    }
-                })
+            PhysicsThread.get(level).execute(
+                    () -> MinecraftSpace.getOptional(level).ifPresent(
+                            space -> space.addCollisionObject(EntityPhysicsElement.get(entity).getRigidBody())
+                    )
             );
         }
     }
 
     public static void onEntityUnload(Entity entity) {
-        if (entity instanceof EntityPhysicsElement element) {
+        if (EntityPhysicsElement.is(entity)) {
             var level = entity.level;
 
-            PhysicsThread.get(level).execute(() ->
-                MinecraftSpace.getOptional(level).ifPresent(space -> {
-                    if (element.getRigidBody() != null) {
-                        space.removeCollisionObject(element.getRigidBody());
-                    }
-                })
+            PhysicsThread.get(level).execute(
+                    () -> MinecraftSpace.getOptional(level).ifPresent(
+                            space -> space.removeCollisionObject(EntityPhysicsElement.get(entity).getRigidBody())
+                    )
             );
         }
     }
@@ -142,8 +138,8 @@ public final class ClientEventHandler {
         if (level != null) {
             var entity = Minecraft.getInstance().level.getEntity(entityId);
 
-            if (entity instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
-                var rigidBody = element.getRigidBody();
+            if (EntityPhysicsElement.is(entity)) {
+                var rigidBody = EntityPhysicsElement.get(entity).getRigidBody();
 
                 PhysicsThread.get(level).execute(() -> {
                     rigidBody.setPhysicsRotation(rotation);
@@ -172,8 +168,8 @@ public final class ClientEventHandler {
         if (level != null) {
             var entity = level.getEntity(entityId);
 
-            if (entity instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
-                var rigidBody = element.getRigidBody();
+            if (EntityPhysicsElement.is(entity)) {
+                var rigidBody = EntityPhysicsElement.get(entity).getRigidBody();
 
                 PhysicsThread.get(level).execute(() -> {
                     rigidBody.setMass(mass);

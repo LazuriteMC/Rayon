@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * @since 1.0.0
  */
 public interface PhysicsElement<T> {
+
     /**
      * Gets {@link ElementRigidBody} object associated with this element. You should create and
      * store this in your {@link PhysicsElement} implementation in the constructor. You're able

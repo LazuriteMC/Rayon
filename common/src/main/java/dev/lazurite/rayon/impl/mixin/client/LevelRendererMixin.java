@@ -3,6 +3,7 @@ package dev.lazurite.rayon.impl.mixin.client;
 import com.jme3.math.Vector3f;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
+import dev.lazurite.rayon.api.PhysicsElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -22,9 +23,10 @@ public class LevelRendererMixin {
             )
     )
     public void renderEntity_render(EntityRenderDispatcher dispatcher, Entity entity, double d, double e, double f, float g, float h, PoseStack poseStack, MultiBufferSource multiBufferSource, int i) {
-        if (entity instanceof EntityPhysicsElement element) {
-            final var cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-            final var location = element.getPhysicsLocation(new Vector3f(), h);
+        if (EntityPhysicsElement.is(entity)) {
+            var element = EntityPhysicsElement.get(entity);
+            var cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+            var location = element.getPhysicsLocation(new Vector3f(), h);
             dispatcher.render(entity, location.x - cameraPos.x, location.y - cameraPos.y, location.z - cameraPos.z, g, h, poseStack, multiBufferSource, i);
         }
 

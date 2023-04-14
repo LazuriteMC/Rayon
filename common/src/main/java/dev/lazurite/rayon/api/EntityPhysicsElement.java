@@ -10,6 +10,14 @@ import org.jetbrains.annotations.Nullable;
  * @see PhysicsElement
  */
 public interface EntityPhysicsElement extends PhysicsElement<Entity> {
+    static boolean is(Entity entity) {
+        return entity instanceof EntityPhysicsElement element && element.getRigidBody() != null;
+    }
+
+    static EntityPhysicsElement get(Entity entity) {
+        return (EntityPhysicsElement) entity;
+    }
+
     @Override @Nullable
     EntityRigidBody getRigidBody();
 

@@ -97,35 +97,23 @@ public final class ServerEventHandler {
     }
 
     public static void onEntityLoad(Entity entity) {
-        if (entity instanceof EntityPhysicsElement element && !PlayerUtil.tracking(entity).isEmpty()) {
+        if (EntityPhysicsElement.is(entity) && !PlayerUtil.tracking(entity).isEmpty()) {
             var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> {
-                if (element.getRigidBody() != null) {
-                    space.addCollisionObject(element.getRigidBody());
-                }
-            });
+            space.getWorkerThread().execute(() -> space.addCollisionObject(EntityPhysicsElement.get(entity).getRigidBody()));
         }
     }
 
     public static void onStartTrackingEntity(Entity entity, ServerPlayer player) {
-        if (entity instanceof EntityPhysicsElement element) {
+        if (EntityPhysicsElement.is(entity)) {
             var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> {
-                if (element.getRigidBody() != null) {
-                    space.addCollisionObject(element.getRigidBody());
-                }
-            });
+            space.getWorkerThread().execute(() -> space.addCollisionObject(EntityPhysicsElement.get(entity).getRigidBody()));
         }
     }
 
     public static void onStopTrackingEntity(Entity entity, ServerPlayer player) {
-        if (entity instanceof EntityPhysicsElement element && PlayerUtil.tracking(entity).isEmpty()) {
+        if (EntityPhysicsElement.is(entity) && PlayerUtil.tracking(entity).isEmpty()) {
             var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> {
-                if (element.getRigidBody() != null) {
-                    space.removeCollisionObject(element.getRigidBody());
-                }
-            });
+            space.getWorkerThread().execute(() -> space.removeCollisionObject(EntityPhysicsElement.get(entity).getRigidBody()));
         }
     }
 
@@ -147,7 +135,7 @@ public final class ServerEventHandler {
             }
 
             /* Set entity position */
-            final var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
+            var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
             rigidBody.getElement().cast().absMoveTo(location.x, location.y, location.z);
         }
     }
@@ -163,8 +151,8 @@ public final class ServerEventHandler {
         var level = player.level;
         var entity = level.getEntity(entityId);
 
-        if (entity instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
-            var rigidBody = element.getRigidBody();
+        if (EntityPhysicsElement.is(entity)) {
+            var rigidBody = EntityPhysicsElement.get(entity).getRigidBody();
 
             if (player.equals(rigidBody.getPriorityPlayer())) {
                 PhysicsThread.get(level).execute(() -> {
