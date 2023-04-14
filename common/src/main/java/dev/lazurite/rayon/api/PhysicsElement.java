@@ -6,6 +6,7 @@ import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This is the main interface you'll want to implement into your physics object. It provides
@@ -20,7 +21,7 @@ public interface PhysicsElement<T> {
      * to set up the attributes and settings of your rigid body however you like that way.
      * @return the {@link ElementRigidBody}
      */
-    ElementRigidBody getRigidBody();
+    @Nullable ElementRigidBody getRigidBody();
 
     /**
      * For generating a new {@link MinecraftShape.Convex}.
@@ -35,7 +36,11 @@ public interface PhysicsElement<T> {
      * @return the lerped vector
      */
     default Vector3f getPhysicsLocation(Vector3f store, float tickDelta) {
-        return getRigidBody().getFrame().getLocation(store, tickDelta);
+        var rigidBody = getRigidBody();
+        if (rigidBody == null) {
+            return new Vector3f();
+        }
+        return rigidBody.getFrame().getLocation(store, tickDelta);
     }
 
     /**
@@ -45,7 +50,11 @@ public interface PhysicsElement<T> {
      * @return the "slerped" quaternion
      */
     default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
-        return getRigidBody().getFrame().getRotation(store, tickDelta);
+        var rigidBody = getRigidBody();
+        if (rigidBody == null) {
+            return new Quaternion();
+        }
+        return rigidBody.getFrame().getRotation(store, tickDelta);
     }
 
     /**
@@ -53,6 +62,7 @@ public interface PhysicsElement<T> {
      * (e.g. {@link EntityPhysicsElement} -> {@link Entity})
      * @return this as {@link T}
      */
+    @SuppressWarnings("unchecked")
     default T cast() {
         return (T) this;
     }

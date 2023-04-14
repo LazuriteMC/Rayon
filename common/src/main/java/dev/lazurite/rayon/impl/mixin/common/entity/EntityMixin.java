@@ -37,8 +37,8 @@ public abstract class EntityMixin {
 
     @Inject(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
     public void saveWithoutId(CompoundTag tag, CallbackInfoReturnable<CompoundTag> info) {
-        if (this instanceof EntityPhysicsElement element) {
-            final var rigidBody = element.getRigidBody();
+        if (this instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
+            var rigidBody = element.getRigidBody();
             tag.put("orientation", QuaternionHelper.toTag(Convert.toMinecraft(rigidBody.getPhysicsRotation(new Quaternion()))));
             tag.put("linearVelocity", VectorHelper.toTag(Convert.toMinecraft(rigidBody.getLinearVelocity(new Vector3f()))));
             tag.put("angularVelocity", VectorHelper.toTag(Convert.toMinecraft(rigidBody.getAngularVelocity(new Vector3f()))));
@@ -54,7 +54,7 @@ public abstract class EntityMixin {
 
     @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
     public void load(CompoundTag tag, CallbackInfo info) {
-        if (this instanceof EntityPhysicsElement element) {
+        if (this instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
             element.getRigidBody().readTagInfo(tag);
         }
     }

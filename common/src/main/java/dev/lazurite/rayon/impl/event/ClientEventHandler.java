@@ -57,7 +57,7 @@ public final class ClientEventHandler {
     }
 
     public static void onLevelLoad(Minecraft minecraft, ClientLevel level) {
-        final var space = new MinecraftSpace(thread, level);
+        var space = new MinecraftSpace(thread, level);
         ((SpaceStorage) level).setSpace(space);
         PhysicsSpaceEvents.INIT.invoke(space);
     }
@@ -70,7 +70,7 @@ public final class ClientEventHandler {
 
     public static void onGameJoin(Minecraft minecraft) {
 //        var supplier = RayonCore.isImmersivePortalsPresent() ? new ImmersiveWorldSupplier(minecraft) : new ClientLevelSupplier(minecraft);
-        final var supplier = new ClientLevelSupplier(minecraft);
+        var supplier = new ClientLevelSupplier(minecraft);
         thread = new PhysicsThread(minecraft, Thread.currentThread(), supplier, "Client Physics Thread");
     }
 
@@ -86,34 +86,38 @@ public final class ClientEventHandler {
 
     public static void onEntityLoad(Entity entity) {
         if (entity instanceof EntityPhysicsElement element) {
-            final var level = entity.level;
+            var level = entity.level;
 
             PhysicsThread.get(level).execute(() ->
-                    MinecraftSpace.getOptional(level).ifPresent(space ->
-                            space.addCollisionObject(element.getRigidBody())
-                    )
+                MinecraftSpace.getOptional(level).ifPresent(space -> {
+                    if (element.getRigidBody() != null) {
+                        space.addCollisionObject(element.getRigidBody());
+                    }
+                })
             );
         }
     }
 
     public static void onEntityUnload(Entity entity) {
         if (entity instanceof EntityPhysicsElement element) {
-            final var level = entity.level;
+            var level = entity.level;
 
             PhysicsThread.get(level).execute(() ->
-                    MinecraftSpace.getOptional(level).ifPresent(space ->
-                            space.removeCollisionObject(element.getRigidBody())
-                    )
+                MinecraftSpace.getOptional(level).ifPresent(space -> {
+                    if (element.getRigidBody() != null) {
+                        space.removeCollisionObject(element.getRigidBody());
+                    }
+                })
             );
         }
     }
 
     public static void onEntityStartLevelTick(Level level) {
-        final var space = MinecraftSpace.get(level);
+        var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.step(space);
 
         for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
-            final var player = Minecraft.getInstance().player;
+            var player = Minecraft.getInstance().player;
 
             /* Movement */
             if (rigidBody.isActive() && rigidBody.isPositionDirty() && player != null && player.equals(rigidBody.getPriorityPlayer())) {
@@ -121,25 +125,25 @@ public final class ClientEventHandler {
             }
 
             /* Set entity position */
-            final var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
+            var location = rigidBody.getFrame().getLocation(new Vector3f(), 1.0f);
             rigidBody.getElement().cast().absMoveTo(location.x, location.y, location.z);
         }
     }
 
     public static void onMovementPacketReceived(PacketRegistry.ClientboundContext context) {
-        final var buf = context.byteBuf();
-        final var entityId = buf.readInt();
-        final var rotation = Convert.toBullet(QuaternionHelper.fromBuffer(buf));
-        final var location = Convert.toBullet(VectorHelper.fromBuffer(buf));
-        final var linearVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
-        final var angularVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
-        final var level = Minecraft.getInstance().level;
+        var buf = context.byteBuf();
+        var entityId = buf.readInt();
+        var rotation = Convert.toBullet(QuaternionHelper.fromBuffer(buf));
+        var location = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var linearVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var angularVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var level = Minecraft.getInstance().level;
 
         if (level != null) {
-            final var entity = Minecraft.getInstance().level.getEntity(entityId);
+            var entity = Minecraft.getInstance().level.getEntity(entityId);
 
-            if (entity instanceof EntityPhysicsElement element) {
-                final var rigidBody = element.getRigidBody();
+            if (entity instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
+                var rigidBody = element.getRigidBody();
 
                 PhysicsThread.get(level).execute(() -> {
                     rigidBody.setPhysicsRotation(rotation);
@@ -153,23 +157,23 @@ public final class ClientEventHandler {
     }
 
     public static void onPropertiesPacketReceived(PacketRegistry.ClientboundContext context) {
-        final var buf = context.byteBuf();
-        final var entityId = buf.readInt();
-        final var mass = buf.readFloat();
-        final var dragCoefficient = buf.readFloat();
-        final var friction = buf.readFloat();
-        final var restitution = buf.readFloat();
-        final var terrainLoading = buf.readBoolean();
-        final var buoyancyType = buf.readEnum(ElementRigidBody.BuoyancyType.class);
-        final var dragType = buf.readEnum(ElementRigidBody.DragType.class);
-        final var priorityPlayer = buf.readUUID();
-        final var level = Minecraft.getInstance().level;
+        var buf = context.byteBuf();
+        var entityId = buf.readInt();
+        var mass = buf.readFloat();
+        var dragCoefficient = buf.readFloat();
+        var friction = buf.readFloat();
+        var restitution = buf.readFloat();
+        var terrainLoading = buf.readBoolean();
+        var buoyancyType = buf.readEnum(ElementRigidBody.BuoyancyType.class);
+        var dragType = buf.readEnum(ElementRigidBody.DragType.class);
+        var priorityPlayer = buf.readUUID();
+        var level = Minecraft.getInstance().level;
 
         if (level != null) {
-            final var entity = level.getEntity(entityId);
+            var entity = level.getEntity(entityId);
 
-            if (entity instanceof EntityPhysicsElement element) {
-                final var rigidBody = element.getRigidBody();
+            if (entity instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
+                var rigidBody = element.getRigidBody();
 
                 PhysicsThread.get(level).execute(() -> {
                     rigidBody.setMass(mass);

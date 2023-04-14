@@ -98,27 +98,39 @@ public final class ServerEventHandler {
 
     public static void onEntityLoad(Entity entity) {
         if (entity instanceof EntityPhysicsElement element && !PlayerUtil.tracking(entity).isEmpty()) {
-            final var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
+            var space = MinecraftSpace.get(entity.level);
+            space.getWorkerThread().execute(() -> {
+                if (element.getRigidBody() != null) {
+                    space.addCollisionObject(element.getRigidBody());
+                }
+            });
         }
     }
 
     public static void onStartTrackingEntity(Entity entity, ServerPlayer player) {
         if (entity instanceof EntityPhysicsElement element) {
-            final var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
+            var space = MinecraftSpace.get(entity.level);
+            space.getWorkerThread().execute(() -> {
+                if (element.getRigidBody() != null) {
+                    space.addCollisionObject(element.getRigidBody());
+                }
+            });
         }
     }
 
     public static void onStopTrackingEntity(Entity entity, ServerPlayer player) {
         if (entity instanceof EntityPhysicsElement element && PlayerUtil.tracking(entity).isEmpty()) {
-            final var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> space.removeCollisionObject(element.getRigidBody()));
+            var space = MinecraftSpace.get(entity.level);
+            space.getWorkerThread().execute(() -> {
+                if (element.getRigidBody() != null) {
+                    space.removeCollisionObject(element.getRigidBody());
+                }
+            });
         }
     }
 
     public static void onEntityStartLevelTick(Level level) {
-        final var space = MinecraftSpace.get(level);
+        var space = MinecraftSpace.get(level);
         EntityCollisionGenerator.step(space);
 
         for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
@@ -141,30 +153,27 @@ public final class ServerEventHandler {
     }
 
     public static void onMovementPacketReceived(PacketRegistry.ServerboundContext context) {
-        final var buf = context.byteBuf();
-        final var entityId = buf.readInt();
-        final var rotation = Convert.toBullet(QuaternionHelper.fromBuffer(buf));
-        final var location = Convert.toBullet(VectorHelper.fromBuffer(buf));
-        final var linearVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
-        final var angularVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
-        final var player = context.player();
-        final var level = player.level;
+        var buf = context.byteBuf();
+        var entityId = buf.readInt();
+        var rotation = Convert.toBullet(QuaternionHelper.fromBuffer(buf));
+        var location = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var linearVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var angularVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
+        var player = context.player();
+        var level = player.level;
+        var entity = level.getEntity(entityId);
 
-        if (level != null) {
-            final var entity = level.getEntity(entityId);
+        if (entity instanceof EntityPhysicsElement element && element.getRigidBody() != null) {
+            var rigidBody = element.getRigidBody();
 
-            if (entity instanceof EntityPhysicsElement element) {
-                final var rigidBody = element.getRigidBody();
-
-                if (player.equals(rigidBody.getPriorityPlayer())) {
-                    PhysicsThread.get(level).execute(() -> {
-                        rigidBody.setPhysicsRotation(rotation);
-                        rigidBody.setPhysicsLocation(location);
-                        rigidBody.setLinearVelocity(linearVelocity);
-                        rigidBody.setAngularVelocity(angularVelocity);
-                        rigidBody.activate();
-                    });
-                }
+            if (player.equals(rigidBody.getPriorityPlayer())) {
+                PhysicsThread.get(level).execute(() -> {
+                    rigidBody.setPhysicsRotation(rotation);
+                    rigidBody.setPhysicsLocation(location);
+                    rigidBody.setLinearVelocity(linearVelocity);
+                    rigidBody.setAngularVelocity(angularVelocity);
+                    rigidBody.activate();
+                });
             }
         }
     }
