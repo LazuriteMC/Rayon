@@ -27,7 +27,7 @@ public class EntityTrackerEntryMixin {
             )
     )
     public void rotate(Consumer consumer, Object object) {
-        if (!(entity instanceof EntityPhysicsElement)) {
+        if (!EntityPhysicsElement.is(entity)) {
             consumer.accept(object);
         }
     }
@@ -41,7 +41,7 @@ public class EntityTrackerEntryMixin {
             )
     )
     public void velocity(Consumer consumer, Object object) {
-        if (!(entity instanceof EntityPhysicsElement)) {
+        if (!EntityPhysicsElement.is(entity)) {
             consumer.accept(object);
         }
     }
@@ -55,7 +55,7 @@ public class EntityTrackerEntryMixin {
             )
     )
     public void multiple(Consumer consumer, Object object) {
-        if (!(entity instanceof EntityPhysicsElement)) {
+        if (!EntityPhysicsElement.is(entity)) {
             consumer.accept(object);
         }
     }

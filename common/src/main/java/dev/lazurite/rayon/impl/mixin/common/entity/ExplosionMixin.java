@@ -45,7 +45,8 @@ public class ExplosionMixin {
             )
     )
     public Vec3 setVelocity(Vec3 velocity) {
-        if (entity instanceof EntityPhysicsElement element) {
+        if (EntityPhysicsElement.is(entity)) {
+            var element = EntityPhysicsElement.get(entity);
             element.getRigidBody().applyCentralImpulse(Convert.toBullet(velocity).multLocal(element.getRigidBody().getMass() * 100f));
         }
 
