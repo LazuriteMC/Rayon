@@ -3,18 +3,19 @@ package dev.lazurite.rayon.impl.bullet.collision.space.cache;
 import com.jme3.bounding.BoundingBox;
 import dev.lazurite.rayon.impl.Rayon;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
-import dev.lazurite.transporter.impl.Transporter;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import java.util.*;
@@ -37,16 +38,16 @@ public class SimpleChunkCache implements ChunkCache {
     private final Map<BlockPos, BlockData> blockData;
     private final List<FluidColumn> fluidColumns;
     private final Long2ObjectMap<List<FluidColumn>> fluidColumnByIndex;
-    private final Set<BlockPos> activePositions;
+    private final LongSet activePositions;
     private final Long2ObjectMap<List<BlockPos>> activeColumn;
 
     SimpleChunkCache(MinecraftSpace space) {
         this.space = space;
         this.blockData = new ConcurrentHashMap<>();
         this.fluidColumns = new ArrayList<>();
-        this.activePositions = new ObjectOpenCustomHashSet<>(QUICK_BLOCK_POS);
-        this.activeColumn = new Long2ObjectOpenHashMap<>();
-        this.fluidColumnByIndex = new Long2ObjectOpenHashMap<>();
+        this.activePositions = new LongOpenHashSet();
+        this.activeColumn = new Long2ObjectOpenHashMap<>(65536);
+        this.fluidColumnByIndex = new Long2ObjectOpenHashMap<>(65536);
     }
 
     @Override
@@ -66,37 +67,17 @@ public class SimpleChunkCache implements ChunkCache {
 
     @Override
     public void loadBlockData(BlockPos blockPos) {
-        this.blockData.remove(blockPos);
-
         final var level = space.getLevel();
         final var blockState = level.getBlockState(blockPos);
-        final var blockPos2 = blockPos.immutable();
 
+        loadBlockData(blockPos.immutable(), level, blockState);
+    }
+
+    private void loadBlockData(BlockPos blockPos, Level level, BlockState blockState) {
         if (ChunkCache.isValidBlock(blockState)) {
-            final var properties = BlockProperty.getBlockProperty(blockState.getBlock());
-            MinecraftShape shape = null;
-
-            if (!blockState.isCollisionShapeFullBlock(level, blockPos) || (properties != null && !properties.isFullBlock())) {
-                Pattern pattern;
-
-                if (space.isServer()) {
-                    pattern = Transporter.getPatternBuffer().getBlock(Block.getId(blockState));
-                } else {
-                    pattern = ChunkCache.genShapeForBlock(level, blockPos, blockState);
-                }
-
-                if (pattern != null && !pattern.getQuads().isEmpty()) {
-                    shape = MinecraftShape.concave(pattern);
-                }
-            }
-
-            if (shape == null) {
-                final var voxelShape = blockState.getCollisionShape(space.getLevel(), blockPos);
-                final var boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
-                shape = MinecraftShape.convex(boundingBox);
-            }
-
-            this.blockData.put(blockPos2, new BlockData(level, blockPos2, blockState, shape));
+            this.blockData.put(blockPos, new BlockData(level, blockPos, blockState, ShapeCache.getShapeFor(blockState, level, blockPos)));
+        } else {
+            this.blockData.remove(blockPos);
         }
     }
 
@@ -114,28 +95,32 @@ public class SimpleChunkCache implements ChunkCache {
             final var aabb = rigidBody.getCurrentMinecraftBoundingBox().inflate(1.0f);
 
             BlockPos.betweenClosedStream(aabb).forEach(blockPos -> {
-                this.activeColumn.computeIfAbsent(columnIndex(blockPos), (a) -> new ArrayList<>()).add(blockPos.immutable());
-                this.activePositions.add(blockPos.immutable());
-
-                var blockData = this.blockData.get(blockPos);
-
-                if (blockData != null) {
-                    final var blockState = level.getBlockState(blockPos);
-
-                    if (blockData.blockState() != blockState) {
-                        loadBlockData(blockPos);
-                    }
-                } else {
-                    loadBlockData(blockPos);
+                if (this.activePositions.contains(blockPos.asLong())) {
+                    return;
                 }
 
-                if (this.getFluidColumn(blockPos).isEmpty()) {
-                    loadFluidData(blockPos);
+                var pos = blockPos.immutable();
+                this.activeColumn.computeIfAbsent(columnIndex(pos), (a) -> new ObjectArrayList<>(512)).add(pos);
+                this.activePositions.add(pos.asLong());
+
+                var blockData = this.blockData.get(pos);
+                final var blockState = level.getBlockState(pos);
+
+                if (blockData != null) {
+                    if (blockData.blockState() != blockState) {
+                        loadBlockData(pos, level, blockState);
+                    }
+                } else {
+                    loadBlockData(pos, level, blockState);
+                }
+
+                if (this.getFluidColumn(pos).isEmpty()) {
+                    loadFluidData(pos);
                 }
             });
         }
 
-        this.blockData.keySet().removeIf(blockPos -> !this.activePositions.contains(blockPos));
+        this.blockData.keySet().removeIf(blockPos -> !this.activePositions.contains(blockPos.asLong()));
         this.fluidColumns.removeIf(column -> {
             var x = !isInActiveColumn(column);
 
@@ -205,6 +190,6 @@ public class SimpleChunkCache implements ChunkCache {
 
     @Override
     public boolean isActive(BlockPos blockPos) {
-        return this.activePositions.contains(blockPos);
+        return this.activePositions.contains(blockPos.asLong());
     }
 }

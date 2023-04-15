@@ -6,9 +6,16 @@ import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 
+/**
+ * Mods should implement it on their own, with will allow for better performance
+ */
 public class EntityCollisionGenerator {
     public static void step(MinecraftSpace space) {
         for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
+            if (rigidBody.getElement().skipVanillaEntityCollisions()) {
+                continue;
+            }
+
             final var box = rigidBody.getCurrentBoundingBox();
             final var location = rigidBody.getPhysicsLocation(new Vector3f()).subtract(new Vector3f(0, -box.getYExtent(), 0));
             final var mass = rigidBody.getMass();

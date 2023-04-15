@@ -19,6 +19,7 @@ import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.impl.event.network.EntityNetworking;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 
@@ -45,6 +46,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final ChunkCache chunkCache;
 
     private volatile boolean stepping;
+    private final Set<SectionPos> previousBlockUpdates;
 
     /**
      * Allows users to retrieve the {@link MinecraftSpace} associated
@@ -70,6 +72,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         this.thread = thread;
         this.level = level;
+        this.previousBlockUpdates = new HashSet<>();
         this.chunkCache = ChunkCache.create(this);
         this.terrainMap = new ConcurrentHashMap<>();
         this.setGravity(new Vector3f(0, -9.807f, 0));
@@ -97,6 +100,21 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         if (!isStepping() && !isEmpty()) {
             this.stepping = true;
+
+            for (var rigidBody : getRigidBodiesByClass(ElementRigidBody.class)) {
+                if (!rigidBody.terrainLoadingEnabled()) {
+                    continue;
+                }
+
+                for (var blockPos : this.previousBlockUpdates) {
+                    if (rigidBody.isNear(blockPos)) {
+                        rigidBody.activate();
+                        break;
+                    }
+                }
+            }
+            this.previousBlockUpdates.clear();
+
             this.chunkCache.refreshAll();
 
             // Step 3 times per tick, re-evaluating forces each step
@@ -168,12 +186,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     public void doBlockUpdate(BlockPos blockPos) {
-        this.wakeNearbyElementRigidBodies(blockPos);
-
-        //if (this.chunkCache.isActive(blockPos)) {
-        //    this.chunkCache.loadBlockData(blockPos);
-        //    this.chunkCache.loadFluidData(blockPos);
-        //}
+        this.previousBlockUpdates.add(SectionPos.of(blockPos));
     }
 
     public void wakeNearbyElementRigidBodies(BlockPos blockPos) {

@@ -12,6 +12,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 
@@ -55,9 +56,15 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
     }
 
     public void readTagInfo(CompoundTag tag) {
-        this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
-        this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
-        this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
+        if (tag.contains("orientation")) {
+            this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
+        }
+        if (tag.contains("linearVelocity")) {
+            this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
+        }
+        if (tag.contains("angularVelocity")) {
+            this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
+        }
 //        this.setMass(tag.getFloat("mass"));
 //        this.setDragCoefficient(tag.getFloat("dragCoefficient"));
 //        this.setFriction(tag.getFloat("friction"));
@@ -118,6 +125,10 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
 
     public boolean isNear(BlockPos blockPos) {
         return this.currentMinecraftBoundingBox.intersects(new AABB(blockPos).inflate(0.5f));
+    }
+
+    public boolean isNear(SectionPos blockPos) {
+        return this.currentMinecraftBoundingBox.intersects(new AABB(blockPos.center()).inflate(8.5f));
     }
 
     public boolean isWaterBuoyancyEnabled() {
