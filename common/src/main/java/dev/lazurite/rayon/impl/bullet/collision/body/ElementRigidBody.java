@@ -12,6 +12,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import dev.lazurite.toolbox.api.math.VectorHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 
@@ -28,6 +29,8 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
     private float dragCoefficient;
     private BuoyancyType buoyancyType;
     private DragType dragType;
+    private BoundingBox currentBoundingBox = new BoundingBox();
+    private AABB currentMinecraftBoundingBox = new AABB(0, 0, 0, 0, 0 ,0);
 
     public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(space, shape, mass);
@@ -53,9 +56,15 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
     }
 
     public void readTagInfo(CompoundTag tag) {
-        this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
-        this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
-        this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
+        if (tag.contains("orientation")) {
+            this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
+        }
+        if (tag.contains("linearVelocity")) {
+            this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
+        }
+        if (tag.contains("angularVelocity")) {
+            this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
+        }
 //        this.setMass(tag.getFloat("mass"));
 //        this.setDragCoefficient(tag.getFloat("dragCoefficient"));
 //        this.setFriction(tag.getFloat("friction"));
@@ -111,10 +120,15 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
 
     public void updateFrame() {
         getFrame().from(getFrame(), getPhysicsLocation(new Vector3f()), getPhysicsRotation(new Quaternion()));
+        this.updateBoundingBox();
     }
 
     public boolean isNear(BlockPos blockPos) {
-        return Convert.toMinecraft(this.boundingBox(new BoundingBox())).intersects(new AABB(blockPos).inflate(0.5f));
+        return this.currentMinecraftBoundingBox.intersects(new AABB(blockPos).inflate(0.5f));
+    }
+
+    public boolean isNear(SectionPos blockPos) {
+        return this.currentMinecraftBoundingBox.intersects(new AABB(blockPos.center()).inflate(8.5f));
     }
 
     public boolean isWaterBuoyancyEnabled() {
@@ -133,6 +147,20 @@ public abstract class ElementRigidBody extends MinecraftRigidBody {
     public boolean isAirDragEnabled() {
         return dragType == DragType.AIR || dragType == DragType.ALL;
     }
+
+    public void updateBoundingBox() {
+        this.currentBoundingBox = this.boundingBox(this.currentBoundingBox);
+        this.currentMinecraftBoundingBox = Convert.toMinecraft(this.currentBoundingBox);
+    }
+
+    public AABB getCurrentMinecraftBoundingBox() {
+        return currentMinecraftBoundingBox;
+    }
+
+    public BoundingBox getCurrentBoundingBox() {
+        return currentBoundingBox;
+    }
+
 
     public enum BuoyancyType {
         NONE,

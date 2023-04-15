@@ -91,8 +91,7 @@ public final class ServerEventHandler {
     public static void onElementAddedToSpace(MinecraftSpace space, ElementRigidBody rigidBody) {
         if (rigidBody instanceof EntityRigidBody entityBody) {
             final var pos = entityBody.getElement().cast().position();
-            final var box = entityBody.getElement().cast().getBoundingBox();
-            entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYsize() / 2.0, 0)));
+            entityBody.setPhysicsLocation(Convert.toBullet(pos));
         }
     }
 

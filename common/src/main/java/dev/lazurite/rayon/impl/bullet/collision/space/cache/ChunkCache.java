@@ -74,6 +74,8 @@ public interface ChunkCache {
     Optional<BlockData> getBlockData(BlockPos blockPos);
     Optional<FluidColumn> getFluidColumn(BlockPos blockPos);
 
+    boolean isActive(BlockPos blockPos);
+
     record BlockData (Level level, BlockPos blockPos, BlockState blockState, MinecraftShape shape) { }
     record FluidData (Level level, BlockPos blockPos, FluidState fluidState) { }
 
@@ -82,8 +84,10 @@ public interface ChunkCache {
         private final FluidData bottom;
         private final Vector3f flow;
         private final float height;
+        private long index;
 
         public FluidColumn(BlockPos start, Level level) {
+            this.index = Integer.toUnsignedLong(start.getX()) << 32l | Integer.toUnsignedLong(start.getZ());
             final var cursor = new BlockPos(start).mutable();
             var fluidState = level.getFluidState(cursor);
 
@@ -171,6 +175,10 @@ public interface ChunkCache {
 
         public Vector3f getFlow() {
             return this.flow;
+        }
+
+        public long getIndex() {
+            return this.index;
         }
     }
 }

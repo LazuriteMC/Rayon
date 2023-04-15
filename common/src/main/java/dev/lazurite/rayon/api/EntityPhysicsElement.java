@@ -26,4 +26,8 @@ public interface EntityPhysicsElement extends PhysicsElement<Entity> {
         final var box = cast().getBoundingBox();
         return MinecraftShape.convex(box.contract(box.getXsize() * 0.25, box.getYsize() * 0.25, box.getZsize() * 0.25));
     }
+
+    default boolean skipVanillaEntityCollisions() {
+        return false;
+    }
 }
