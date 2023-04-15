@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.supplier.entity;
 
 import dev.lazurite.rayon.api.EntityPhysicsElement;
+import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +18,6 @@ public interface EntitySupplier {
         }
 
         return rigidBody.getSpace().getLevel().getEntitiesOfClass(Entity.class, box,
-                entity -> (entity instanceof Boat || entity instanceof Minecart || entity instanceof LivingEntity) && !EntityPhysicsElement.is(entity instanceof PhysicsElement));
+                entity -> (entity instanceof Boat || entity instanceof Minecart || entity instanceof LivingEntity) && !EntityPhysicsElement.is(entity));
     }
 }
