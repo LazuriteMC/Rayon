@@ -6,7 +6,6 @@ import com.jme3.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 
 public class Convert {
     public static AABB toMinecraft(BoundingBox box) {
@@ -22,23 +21,23 @@ public class Convert {
                 (float) box.getZsize());
     }
 
-    public static com.jme3.math.Quaternion toBullet(Quaternionf quat) {
-        return new com.jme3.math.Quaternion(quat.x(), quat.y(), quat.z(), quat.w());
+    public static com.jme3.math.Quaternion toBullet(com.mojang.math.Quaternion quat) {
+        return new com.jme3.math.Quaternion(quat.i(), quat.j(), quat.k(), quat.r());
     }
 
     public static Vector3f toBullet(BlockPos blockPos) {
         return new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f);
     }
 
-    public static Quaternionf toMinecraft(Quaternion quat) {
-        return new Quaternionf(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
+    public static com.mojang.math.Quaternion toMinecraft(Quaternion quat) {
+        return new com.mojang.math.Quaternion(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
     }
 
-    public static org.joml.Vector3f toMinecraft(Vector3f vector3f) {
-        return new org.joml.Vector3f(vector3f.x, vector3f.y, vector3f.z);
+    public static com.mojang.math.Vector3f toMinecraft(Vector3f vector3f) {
+        return new com.mojang.math.Vector3f(vector3f.x, vector3f.y, vector3f.z);
     }
 
-    public static Vector3f toBullet(org.joml.Vector3f vector3f) {
+    public static Vector3f toBullet(com.mojang.math.Vector3f vector3f) {
         return new Vector3f(vector3f.x(), vector3f.y(), vector3f.z());
     }
 

@@ -5,7 +5,6 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,10 +118,8 @@ public class Triangle {
     }
 
     private static Vector3f transform(Vector3f vector, Quaternion quaternion) {
-        return Convert.toBullet(
-                Convert.toMinecraft(vector).mulTransposeDirection(
-                        Convert.toMinecraft(quaternion).get(new Matrix4f())
-                )
-        );
+        final var mcVector = Convert.toMinecraft(vector);
+        mcVector.transform(Convert.toMinecraft(quaternion));
+        return Convert.toBullet(mcVector);
     }
 }
