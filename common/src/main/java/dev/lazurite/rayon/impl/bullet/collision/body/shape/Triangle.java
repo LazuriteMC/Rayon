@@ -5,10 +5,12 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Triangle {
     private final Vector3f[] vertices;
@@ -19,7 +21,33 @@ public class Triangle {
         final var x = box.getXExtent() * 0.5f;
         final var y = box.getYExtent() * 0.5f;
         final var z = box.getZExtent() * 0.5f;
+        final var triangles = new ArrayList<Triangle>( 6 * 2);
+        createBoxMesh(x, y, z, Vector3f.ZERO, triangles::add);
+        return triangles;
+    }
 
+    public static List<Triangle> getMeshOf(VoxelShape voxelShape) {
+        if (voxelShape.isEmpty()) {
+            return List.of();
+        }
+
+        var vec = new Vector3f();
+        var aabbs = voxelShape.toAabbs();
+        final var triangles = new ArrayList<Triangle>( 6 * 2 * aabbs.size());
+
+        for (var box : aabbs) {
+            final var x = box.getXsize() * 0.5f;
+            final var y = box.getYsize() * 0.5f;
+            final var z = box.getZsize() * 0.5f;
+            var center = box.getCenter();
+            vec.set((float) center.x, (float) center.y, (float) center.z).subtractLocal(0.5f, 0.5f, 0.5f);
+            createBoxMesh((float) x, (float) y, (float) z, vec, triangles::add);
+        }
+        return triangles;
+
+    }
+
+    public static void createBoxMesh(final float x, final float y, final float z, final Vector3f offset, Consumer<Triangle> consumer) {
         final var points = new Vector3f[] {
                 // south
                 new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(0, 0, z),
@@ -58,13 +86,10 @@ public class Triangle {
                 new Vector3f(x, -y, -z), new Vector3f(x, -y, z), new Vector3f(0, -y, 0)
         };
 
-        final var triangles = new ArrayList<Triangle>();
 
         for (int i = 0; i < points.length; i += 3) {
-            triangles.add(new Triangle(points[i], points[i + 1], points[i + 2]));
+            consumer.accept(new Triangle(points[i].add(offset), points[i + 1].add(offset), points[i + 2].add(offset)));
         }
-
-        return triangles;
     }
 
     public static List<Triangle> getMeshOf(Pattern pattern) {
