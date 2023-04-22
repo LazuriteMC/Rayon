@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.space.supplier.entity.ClientEntitySupplier;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.event.network.EntityNetworking;
 import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
@@ -71,7 +72,7 @@ public final class ClientEventHandler {
     public static void onGameJoin(Minecraft minecraft) {
 //        var supplier = RayonCore.isImmersivePortalsPresent() ? new ImmersiveWorldSupplier(minecraft) : new ClientLevelSupplier(minecraft);
         var supplier = new ClientLevelSupplier(minecraft);
-        thread = new PhysicsThread(minecraft, Thread.currentThread(), supplier, "Client Physics Thread");
+        thread = new PhysicsThread(minecraft, Thread.currentThread(), supplier, new ClientEntitySupplier(), "Client Physics Thread");
     }
 
     public static void onDisconnect(Minecraft minecraft, ClientLevel level) {

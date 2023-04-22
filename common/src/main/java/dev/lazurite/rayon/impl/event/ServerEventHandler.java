@@ -6,6 +6,7 @@ import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.PressureGenerator;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
+import dev.lazurite.rayon.impl.bullet.collision.space.supplier.entity.ServerEntitySupplier;
 import dev.lazurite.rayon.impl.event.network.EntityNetworking;
 import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.EntityCollisionGenerator;
@@ -63,7 +64,7 @@ public final class ServerEventHandler {
     }
 
     public static void onServerStart(MinecraftServer server) {
-        thread = new PhysicsThread(server, Thread.currentThread(), new ServerLevelSupplier(server), "Server Physics Thread");
+        thread = new PhysicsThread(server, Thread.currentThread(), new ServerLevelSupplier(server), new ServerEntitySupplier(), "Server Physics Thread");
     }
 
     public static void onServerStop(MinecraftServer server) {
