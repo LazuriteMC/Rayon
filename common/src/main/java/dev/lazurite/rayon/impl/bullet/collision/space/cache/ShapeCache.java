@@ -9,11 +9,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
 
 public final class ShapeCache {
+    private static final MinecraftShape FALLBACK_SHAPE = MinecraftShape.convex(new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
+
     private static final IdentityHashMap<BlockState, MinecraftShape> SHAPES_SERVER = new IdentityHashMap<>();
     private static final IdentityHashMap<BlockState, MinecraftShape> SHAPES_CLIENT = new IdentityHashMap<>();
 
@@ -37,6 +40,7 @@ public final class ShapeCache {
         return isClientSide ? SHAPES_CLIENT : SHAPES_SERVER;
     }
 
+    @Nullable
     private static MinecraftShape createShapeFor(BlockState blockState, Level level, BlockPos blockPos) {
         final var properties = BlockProperty.getBlockProperty(blockState.getBlock());
         MinecraftShape shape = null;
@@ -57,8 +61,11 @@ public final class ShapeCache {
 
         if (shape == null) {
             final var voxelShape = blockState.getCollisionShape(level, blockPos);
-            final var boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
-            shape = MinecraftShape.convex(boundingBox);
+            if (!voxelShape.isEmpty()) {
+                shape = MinecraftShape.convex(voxelShape);
+            } else {
+                shape = FALLBACK_SHAPE;
+            }
         }
         return shape;
     }

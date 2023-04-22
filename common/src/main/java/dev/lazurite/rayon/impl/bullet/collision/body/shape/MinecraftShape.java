@@ -10,6 +10,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.transporter.api.pattern.Pattern;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,10 @@ public sealed interface MinecraftShape permits MinecraftShape.Box, MinecraftShap
 
     static Convex convex(AABB box) {
         return MinecraftShape.convex(Convert.toBullet(box));
+    }
+
+    static Convex convex(VoxelShape voxelShape) {
+        return new Convex(Triangle.getMeshOf(voxelShape));
     }
 
     static Convex convex(BoundingBox box) {
