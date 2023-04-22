@@ -30,6 +30,7 @@ public class PhysicsThread extends Thread implements Executor {
     private final Executor parentExecutor;
     private final Thread parentThread;
     private final LevelSupplier levelSupplier;
+    private final EntitySupplier entitySupplier;
 
     public volatile Throwable throwable;
     public volatile boolean running = true;
@@ -46,10 +47,11 @@ public class PhysicsThread extends Thread implements Executor {
         return MinecraftSpace.get(level).getWorkerThread();
     }
 
-    public PhysicsThread(Executor parentExecutor, Thread parentThread, LevelSupplier levelSupplier, String name) {
+    public PhysicsThread(Executor parentExecutor, Thread parentThread, LevelSupplier levelSupplier, EntitySupplier entitySupplier, String name) {
         this.parentExecutor = parentExecutor;
         this.parentThread = parentThread;
         this.levelSupplier = levelSupplier;
+        this.entitySupplier = entitySupplier;
 
         this.setName(name);
         this.setUncaughtExceptionHandler((thread, throwable) -> {
@@ -93,6 +95,13 @@ public class PhysicsThread extends Thread implements Executor {
      */
     public LevelSupplier getLevelSupplier() {
         return this.levelSupplier;
+    }
+
+    /**
+     * A utility class for getting entity information.
+     */
+    public EntitySupplier getEntitySupplier() {
+        return this.entitySupplier;
     }
 
     /**
