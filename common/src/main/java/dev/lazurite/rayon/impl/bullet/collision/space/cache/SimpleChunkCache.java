@@ -13,10 +13,9 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -92,7 +91,7 @@ public class SimpleChunkCache implements ChunkCache {
                 continue;
             }
 
-            final var aabb = rigidBody.getCurrentMinecraftBoundingBox().inflate(1.0f);
+            final var aabb = rigidBody.getCurrentMinecraftBoundingBox().inflate(1.0f + Mth.sqrt(rigidBody.getSquaredSpeed()) / 20);
 
             BlockPos.betweenClosedStream(aabb).forEach(blockPos -> {
                 if (this.activePositions.contains(blockPos.asLong())) {
