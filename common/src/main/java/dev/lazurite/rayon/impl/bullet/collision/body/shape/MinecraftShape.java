@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public sealed interface MinecraftShape permits MinecraftShape.Box, MinecraftShape.Convex, MinecraftShape.Concave {
+public interface MinecraftShape {
     List<Triangle> getTriangles(Quaternion quaternion);
     float getVolume();
 
