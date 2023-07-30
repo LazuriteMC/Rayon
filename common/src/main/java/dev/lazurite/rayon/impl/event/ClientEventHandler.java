@@ -87,7 +87,7 @@ public final class ClientEventHandler {
 
     public static void onEntityLoad(Entity entity) {
         if (EntityPhysicsElement.is(entity)) {
-            var level = entity.level;
+            var level = entity.level();
 
             PhysicsThread.get(level).execute(
                     () -> MinecraftSpace.getOptional(level).ifPresent(
@@ -99,7 +99,7 @@ public final class ClientEventHandler {
 
     public static void onEntityUnload(Entity entity) {
         if (EntityPhysicsElement.is(entity)) {
-            var level = entity.level;
+            var level = entity.level();
 
             PhysicsThread.get(level).execute(
                     () -> MinecraftSpace.getOptional(level).ifPresent(

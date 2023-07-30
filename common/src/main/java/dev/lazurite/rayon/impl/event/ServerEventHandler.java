@@ -98,21 +98,21 @@ public final class ServerEventHandler {
 
     public static void onEntityLoad(Entity entity) {
         if (EntityPhysicsElement.is(entity) && !PlayerUtil.tracking(entity).isEmpty()) {
-            var space = MinecraftSpace.get(entity.level);
+            var space = MinecraftSpace.get(entity.level());
             space.getWorkerThread().execute(() -> space.addCollisionObject(EntityPhysicsElement.get(entity).getRigidBody()));
         }
     }
 
     public static void onStartTrackingEntity(Entity entity, ServerPlayer player) {
         if (EntityPhysicsElement.is(entity)) {
-            var space = MinecraftSpace.get(entity.level);
+            var space = MinecraftSpace.get(entity.level());
             space.getWorkerThread().execute(() -> space.addCollisionObject(EntityPhysicsElement.get(entity).getRigidBody()));
         }
     }
 
     public static void onStopTrackingEntity(Entity entity, ServerPlayer player) {
         if (EntityPhysicsElement.is(entity) && PlayerUtil.tracking(entity).isEmpty()) {
-            var space = MinecraftSpace.get(entity.level);
+            var space = MinecraftSpace.get(entity.level());
             space.getWorkerThread().execute(() -> space.removeCollisionObject(EntityPhysicsElement.get(entity).getRigidBody()));
         }
     }
@@ -148,7 +148,7 @@ public final class ServerEventHandler {
         var linearVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
         var angularVelocity = Convert.toBullet(VectorHelper.fromBuffer(buf));
         var player = context.player();
-        var level = player.level;
+        var level = player.level();
         var entity = level.getEntity(entityId);
 
         if (EntityPhysicsElement.is(entity)) {

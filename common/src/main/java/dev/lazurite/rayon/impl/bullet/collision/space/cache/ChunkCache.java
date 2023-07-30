@@ -38,7 +38,7 @@ public interface ChunkCache {
 
         return properties != null ? properties.collidable() :
                 !blockState.isAir() &&
-                !block.isPossibleToRespawnInThis() && (
+                !block.isPossibleToRespawnInThis(blockState) && (
                         blockState.getFluidState().isEmpty() || (
                                 blockState.hasProperty(BlockStateProperties.WATERLOGGED) &&
                                 blockState.getValue(BlockStateProperties.WATERLOGGED)
